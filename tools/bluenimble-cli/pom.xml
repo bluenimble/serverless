@@ -17,14 +17,15 @@
 	<groupId>com.bluenimble.serverless</groupId>
 	<artifactId>bluenimble-cli</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
+	
 	<packaging>jar</packaging>
 	<name>bluenimble-cli</name>
-	<parent>
-		<groupId>com.bluenimble.platform</groupId>
-		<artifactId>bluenimble-tools</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
-	</parent>
-	<build>
+
+	<properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    
+    <build>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<resources>
 			<resource>
@@ -43,13 +44,34 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.0.2</version>
+				<configuration>
+					<excludes>
+						<exclude>main/</exclude>
+					</excludes>
+					<archive>
+						<manifestEntries>
+							<Built-By>BlueNimble Team</Built-By>
+							<url>https://www.bluenimble.com</url>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>model</artifactId>
+			<artifactId>bluenimble-jvm-sdk</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.diogonunes</groupId>
+		    <artifactId>JCDP</artifactId>
+		    <version>2.0.3.1</version>
 		</dependency>
 	</dependencies>
 </project>

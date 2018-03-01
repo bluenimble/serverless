@@ -26,8 +26,7 @@ import com.bluenimble.platform.json.AbstractEmitter;
 import com.bluenimble.platform.json.JsonEmitter;
 import com.bluenimble.platform.json.JsonEntity;
 import com.bluenimble.platform.json.JsonObject;
-
-import print.color.Ansi.FColor;
+import com.diogonunes.jcdp.color.api.Ansi.FColor;
 
 public class FriendlyJsonEmitter extends AbstractEmitter {
 	

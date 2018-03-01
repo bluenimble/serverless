@@ -49,8 +49,7 @@ import com.bluenimble.platform.cli.printing.impls.FriendlyJsonEmitter;
 import com.bluenimble.platform.cli.printing.impls.PrettyPrinter;
 import com.bluenimble.platform.encoding.Base64;
 import com.bluenimble.platform.json.JsonObject;
-
-import print.color.Ansi.FColor;
+import com.diogonunes.jcdp.color.api.Ansi.FColor;
 
 public abstract class AbstractTool implements Tool {
 	

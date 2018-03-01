@@ -22,10 +22,9 @@ import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.cli.Tool;
 import com.bluenimble.platform.cli.printing.AbstractPrinter;
 import com.bluenimble.platform.cli.printing.Panel;
-
-import print.color.Ansi.Attribute;
-import print.color.Ansi.BColor;
-import print.color.Ansi.FColor;
+import com.diogonunes.jcdp.color.api.Ansi.Attribute;
+import com.diogonunes.jcdp.color.api.Ansi.BColor;
+import com.diogonunes.jcdp.color.api.Ansi.FColor;
 
 /*
  * 

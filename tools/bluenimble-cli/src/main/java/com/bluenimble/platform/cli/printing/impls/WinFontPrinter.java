@@ -19,21 +19,20 @@ package com.bluenimble.platform.cli.printing.impls;
 import org.fusesource.jansi.AnsiConsole;
 
 import com.bluenimble.platform.cli.Tool;
-
-import print.color.Ansi.Attribute;
-import print.color.Ansi.BColor;
-import print.color.Ansi.FColor;
-import print.color.ColoredPrinterWIN;
+import com.diogonunes.jcdp.color.ColoredPrinter;
+import com.diogonunes.jcdp.color.api.Ansi.Attribute;
+import com.diogonunes.jcdp.color.api.Ansi.BColor;
+import com.diogonunes.jcdp.color.api.Ansi.FColor;
 
 public class WinFontPrinter implements FontPrinter {
 	
 	private String ANSI_RESET = "\u001B[0m";
 	private String ANSI_CLEAR = "\033[H\033[2J";
 	
-	private ColoredPrinterWIN cp;
+	private ColoredPrinter cp;
 	
 	public WinFontPrinter (FColor fc, BColor bc) {
-		cp = new ColoredPrinterWIN.Builder (1, false).foreground (fc).background (bc).build ();
+		cp = new ColoredPrinter.Builder (1, false).foreground (fc).background (bc).build ();
 	}
 
 	@Override

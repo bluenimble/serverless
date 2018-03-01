@@ -17,10 +17,9 @@
 package com.bluenimble.platform.cli.printing.impls;
 
 import com.bluenimble.platform.cli.Tool;
-
-import print.color.Ansi.Attribute;
-import print.color.Ansi.BColor;
-import print.color.Ansi.FColor;
+import com.diogonunes.jcdp.color.api.Ansi.Attribute;
+import com.diogonunes.jcdp.color.api.Ansi.BColor;
+import com.diogonunes.jcdp.color.api.Ansi.FColor;
 
 public interface FontPrinter {
 
