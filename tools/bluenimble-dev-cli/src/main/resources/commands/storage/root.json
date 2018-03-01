@@ -1,0 +1,13 @@
+{
+
+	"description": "get storage root",
+
+	"request": {
+		"method": "get",
+		"service": "[ keys.endpoint ]/storage/[vars.storage.provider]/objects",
+		"headers": {
+			"Accept": "application/json"
+		}
+	}
+
+}

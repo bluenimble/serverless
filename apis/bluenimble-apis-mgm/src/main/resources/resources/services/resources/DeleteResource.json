@@ -1,0 +1,13 @@
+{
+	    "verb": "delete",
+	"endpoint": "/resources/::path",
+	
+	"security": {
+		"roles": ["admin", "developer"]
+	},
+	
+	"spi": {
+		"class": "com.bluenimble.platform.apis.mgm.spis.resources.DeleteResourceSpi"
+	} 
+	
+}

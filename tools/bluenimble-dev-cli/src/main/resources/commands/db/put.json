@@ -1,0 +1,22 @@
+{
+	"handlers": {
+		"record": {
+			"description": "add or update a record",
+			
+			"args": [{
+				"name": "entity", "desc": "database entity name"
+			}, {
+				"name": "record", "desc": "a variable name holding a json object representing your record\nUse the json create, json set and json load commands to create records"
+			}],
+		
+			"request": {
+				"method": "post",
+				"service": "[ keys.endpoint ]/db/[vars.database.provider]/entities/[arg.0]/records",
+				"contentType": "application/json",
+				"body": {
+					"payload": "[arg.1]"
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,92 @@
+{
+	
+	    "verb": "post",
+	"endpoint": "/security/oauth/:provider",
+		"name": "OAuth Login",
+	
+	"spec": {
+		"fields": {
+			"provider": { "max": "2" },
+			"authcode": { }
+		}
+	},
+	
+	"security": {
+		"enabled": "false"
+	},
+	
+	"spi": {
+		"class": "im.default:OAuthSpi"
+	},
+	
+	"custom": {
+		"providers": {
+			"fb": {
+				"keys": {
+					"clientId": "your client_id",
+					"clientSecret": "your client_secret"
+				}, 
+				"endpoints": {
+					"authorize": {
+						"url": "https://graph.facebook.com/v2.5/oauth/access_token"
+					},
+					"profile": {
+						"url": "https://graph.facebook.com/v2.5/me",
+						"params": { "fields": "id,email,first_name,last_name,name,picture" }
+					}
+				}
+			},
+			"gp": {
+				"keys": {
+					"clientId": "your client_id",
+					"clientSecret": "your client_secret"
+				},		
+				"endpoints": {
+					"authorize": {
+						"url": "https://www.googleapis.com/oauth2/v3/token",
+						"params": { "grant_type": "authorization_code" }
+					},
+					"profile": {
+						"url": "https://www.googleapis.com/plus/v1/people/me"
+					} 
+				}	
+			}, 
+			"gh": {
+				"keys": {
+					"clientId": "your client_id",
+					"clientSecret": "your client_secret"
+				},		
+				"endpoints": {
+					"authorize": { 
+						"url": "https://github.com/login/oauth/access_token", 
+						"params": { "grant_type": "authorization_code" }
+					},
+					"profile": {
+						"url": "https://api.github.com/user"
+					} 
+				}	
+			}, 
+			"li": {
+				"keys": {
+					"clientId": "your client_id",
+					"clientSecret": "your client_secret"
+				},		
+				"endpoints": {
+					"authorize": {
+						"url": "https://www.linkedin.com/uas/oauth2/accessToken", 
+						"params": { "grant_type": "authorization_code" }
+					},
+					"profile": {
+						"url": "https://api.linkedin.com/v1/people/~:(id,first-name,last-name,headline,public-profile-url,picture-urls::(original))",
+						"params": { "format": "json" }
+					},
+					"email": {
+						"url": "https://api.linkedin.com/v1/people/~:(email-address)",
+						"params": { "format": "json" }
+					} 
+				}	
+			}
+		}
+	}
+	
+}

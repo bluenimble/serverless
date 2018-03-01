@@ -1,0 +1,20 @@
+{
+	"handlers": {
+		"records": {
+			"description": "load records",
+			
+			"args": [{
+				"name": "records", "desc": "a variable name holding a json object containing your records\nUse the json create, json set and json load commands to create records"
+			}],
+		
+			"request": {
+				"method": "post",
+				"service": "[ keys.endpoint ]/db/[vars.database.provider]/records",
+				"contentType": "application/json",
+				"body": {
+					"payload": "[arg.0]"
+				}
+			}
+		}
+	}
+}

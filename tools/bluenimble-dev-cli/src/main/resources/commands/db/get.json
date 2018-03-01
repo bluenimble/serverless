@@ -1,0 +1,18 @@
+{
+	"handlers": {
+		"record": {
+			"description": "get record by id",
+			
+			"args": [{
+				"name": "entity", "desc": "database entity name"
+			}, {
+				"name": "id", "desc": "record id"
+			}],
+		
+			"request": {
+				"method": "get",
+				"service": "[ keys.endpoint ]/db/[vars.database.provider]/entities/[arg.0]/records/[arg.1]"
+			}
+		}
+	}
+}

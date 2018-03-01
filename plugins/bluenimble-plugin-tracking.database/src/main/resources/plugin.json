@@ -1,0 +1,21 @@
+{
+	"name": "tracking.database",
+	"title": "Database based requests tracking",
+	
+	"spi": {
+		"class": "com.bluenimble.platform.plugins.tracking.DatabaseBasedTrackingPlugin",
+		"properties": {
+			"version": "1.0",
+			"vendor": {
+				"name": "BlueNimble, Inc",
+				"links": [{
+					"Read More": "https://www.bluenimble.com"
+				}]
+			},
+			"tracker": {
+				"name": "database",
+				"keepAliveTime": "5"
+			}
+		}
+	}
+}	

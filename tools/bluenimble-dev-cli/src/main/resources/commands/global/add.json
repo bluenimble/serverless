@@ -1,0 +1,38 @@
+{
+
+	"handlers": {
+		"feature": {
+			"description": "add a new feature to your space\nuse command desc space to list all features available in your space",
+			
+			"args": [{
+				"name": "feature", "desc": "a variable name of a json object representing your feature.\nExample: { feature: 'storage', name: '2ndary-storage', provider: 's3', spec: { your s3 credentials } }"
+			}],
+		
+			"request": {
+				"method": "put",
+				"service": "[ keys.endpoint ]/space/features",
+				"contentType": "application/json",
+				"body": {
+					"payload": "[arg.0]"
+				}
+			}
+		},
+		"secrets": {
+			"description": "add new secrets to the space",
+			
+			"args": [{
+				"name": "name", "desc": "the name identifier of the secrets"
+			}],
+		
+			"request": {
+				"method": "put",
+				"service": "[ keys.endpoint ]/space/secrets/[arg.0]",
+				"contentType": "application/json",
+				"body": {
+					"payload": "[arg.1]"
+				}
+			}
+		}
+	}
+
+}

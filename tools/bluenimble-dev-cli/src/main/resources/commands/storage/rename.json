@@ -1,0 +1,24 @@
+{
+
+	"handlers": {
+		"object": {
+			"description": "rename a storage object",
+		
+			"args": [{
+				"name": "path", "desc": "the object's path.\n Example. pictures/thumbnails/123456.jpg"
+			}, {
+				"name": "name", "desc": "object new name"
+			}],
+		
+			"request": {
+				"method": "put",
+				"service": "[ keys.endpoint ]/storage/[vars.storage.provider]/objects/[arg.0]/rename",
+				"params": {
+					"name": "[arg.1]"
+				}
+			}
+		
+		}
+	}
+
+}

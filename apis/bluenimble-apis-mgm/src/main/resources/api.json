@@ -1,0 +1,15 @@
+{
+	"namespace": "mgm", 
+	"name": "BlueNimble Management API",
+	
+	"security": {
+		"schemes": {
+			"signature": {}
+		}
+	},
+
+	"spi": {
+		"class": "com.bluenimble.platform.apis.mgm.KeyStoreAwareApiSpi"
+	}
+	
+}

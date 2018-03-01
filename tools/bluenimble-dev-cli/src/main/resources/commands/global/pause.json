@@ -1,0 +1,18 @@
+{
+
+	"handlers": {
+		"api": {
+			"description": "pause an api",
+		
+			"args": [{
+				"name": "api", "desc": "api namespace to pause"
+			}],
+		
+			"request": {
+				"method": "put",
+				"service": "[ keys.endpoint ]/apis/[arg.0]"
+			}
+		}
+	}
+
+}

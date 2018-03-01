@@ -1,0 +1,24 @@
+{
+
+	"handlers": {
+		"object": {
+			"description": "create a storage object (folder or file)",
+		
+			"args": [{
+				"name": "path", "desc": "the object's path.\n Example. /pictures/thumbnails/123456.jpg"
+			}, {
+				"name": "file path", "desc": "if you're creating a file, then specify a valid local file path to upload", "required": "false"
+			}],
+		
+			"request": {
+				"method": "post",
+				"service": "[ keys.endpoint ]/storage/[vars.storage.provider]/objects/[arg.0]",
+				"contentType": "multipart/form-data",
+				"body": {
+					"payload": "[arg.1]"
+				}
+			}
+		}
+	}
+
+}

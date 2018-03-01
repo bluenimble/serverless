@@ -1,0 +1,22 @@
+{
+	    "verb": "post",
+	"endpoint": "/db/:provider/entities/:entity/query/:serializer",
+	
+	"spec": {
+		"fields": {
+			"provider": { "max": "100", "value": "default" },
+			"entity": 	{ "max": "100" },
+			"payload": 	{ "type": "Map" },
+			"serializer": 	{ }
+		}
+	},
+	
+	"security": {
+		"roles": ["admin", "developer"]
+	},
+	
+	"spi": {
+		"class": "com.bluenimble.platform.apis.mgm.spis.db.QueryEntitySpi"
+	} 
+	
+}

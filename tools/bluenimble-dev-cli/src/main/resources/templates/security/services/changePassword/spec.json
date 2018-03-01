@@ -1,0 +1,24 @@
+{
+	
+	    "verb": "post",
+	"endpoint": "/security/chpwd",
+	    "name": "Change Password",
+	
+	"spec": {
+		"fields": {
+			"user": 	{ },
+			"password": { 
+                "title": "Password",
+				"min": "8", 
+				"vType": "Regex", 
+				"format": "^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8,}$", 
+				"errMsg": "Weak password! It should be 8 characters or more, contains at least 1 upper case letter, another in lower case, one numeral and one of the special characters !@#$&*" 
+			}
+		}
+	},
+	
+	"spi": {
+		"class": "im.default:ChangePasswordSpi"
+	}
+	
+}

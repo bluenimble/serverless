@@ -1,0 +1,19 @@
+{
+	    "verb": "delete",
+	"endpoint": "/apis/:api",
+	
+	"spec": {
+		"fields": {
+			"api": { "min": "1", "max": "50", "vType": "Regex", "format": "^[a-zA-Z0-9_-]*$" }
+		}
+	},
+	
+	"security": {
+		"roles": ["admin", "developer"]
+	},
+	
+	"spi": {
+		"class": "com.bluenimble.platform.apis.mgm.spis.apis.UninstallApiSpi"
+	}
+	
+}

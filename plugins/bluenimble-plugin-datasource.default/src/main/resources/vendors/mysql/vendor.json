@@ -1,0 +1,5 @@
+{
+	"template": "jdbc:mysql://[host][:port][/database]",
+	"port": "3306",
+	"driver": "com.mysql.jdbc.Driver"
+}

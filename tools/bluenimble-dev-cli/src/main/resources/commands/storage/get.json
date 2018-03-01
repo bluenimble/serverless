@@ -1,0 +1,31 @@
+{
+
+	"handlers": {
+		"object": {
+			"description": "get a storage object. If it's a folder, this command will list direct child objects",
+		
+			"args": [{
+				"name": "path", "desc": "the object's path.\n Example. pictures/thumbnails/123456.jpg",
+				"required": "false"
+			}, {
+				"name": "filter", "desc": "apply filter to get only a subset children of the current object. Supports following filters: 'folders', 'files', 'empty', 'notEmpty', 'start:aPrefix', 'end:aSuffix', 'contain:aToken', 'exp:aRegEx'.\nExample 'get object /path/to/object' or 'get object /path/to/object folders' or 'get object /path/to/object start:abc'",
+				"required": "false"
+			}, {
+				"name": "result format", "desc": "result content type or format. application/json, image/jpg, application/octet-stream...\nDefault to application/json",
+				"required": "false"
+			}],
+		
+			"request": {
+				"method": "get",
+				"service": "[ keys.endpoint ]/storage/[vars.storage.provider]/objects/[arg.0 | '.']",
+				"headers": {
+					"Accept": "[ arg.2 | 'application/json' ]"
+				},
+				"params": {
+					"filter": "[ arg.1 | '*' ]"
+				}
+			}
+		}
+	}
+
+}

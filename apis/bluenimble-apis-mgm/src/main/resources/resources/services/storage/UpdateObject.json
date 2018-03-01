@@ -1,0 +1,21 @@
+{
+	    "verb": "put",
+	"endpoint": "/storage/:provider/objects/::object",
+	
+	"spec": {
+		"fields": {
+			"payload": 	{ "type": "Stream", "scope": "s", "required": "false" },
+			"object": 	{ },
+			"append": 	{ "type": "Boolean", "required": "false", "value": "false" }
+		}
+	},
+	
+	"security": {
+		"roles": ["admin", "developer"]
+	},
+	
+	"spi": {
+		"class": "com.bluenimble.platform.apis.mgm.spis.storage.UpdateObjectSpi"
+	} 
+	
+}

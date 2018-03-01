@@ -1,0 +1,30 @@
+{
+	    "verb": "post",
+	"endpoint": "/db/:provider/entities/:entity",
+	
+	"spec": {
+		"fields": {
+			"entity": { "type": "AlphaNumeric" },
+			"payload": { 
+				"type": "Map",
+				"fields": {
+					"fields": { 
+						"type": "Array",  
+						"fields": {
+							"name": {}
+						}
+					}
+				}
+			}
+		}
+	},
+	
+	"security": {
+		"roles": ["admin", "developer"]
+	},
+	
+	"spi": {
+		"class": "com.bluenimble.platform.apis.mgm.spis.db.DropEntitySpi"
+	} 
+	
+}

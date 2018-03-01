@@ -1,0 +1,83 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements. See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.bluenimble.platform.server.plugins.media;
+
+import com.bluenimble.platform.api.Api;
+import com.bluenimble.platform.api.ApiContentTypes;
+import com.bluenimble.platform.api.ApiMediaProcessor;
+import com.bluenimble.platform.api.impls.media.JsonMediaProcessor;
+import com.bluenimble.platform.api.impls.media.StreamMediaProcessor;
+import com.bluenimble.platform.api.impls.media.TextMediaProcessor;
+import com.bluenimble.platform.api.impls.media.engines.TemplateEngine;
+import com.bluenimble.platform.api.impls.media.engines.TemplateEnginesRegistry;
+import com.bluenimble.platform.api.impls.media.engines.handlebars.HandlebarsTemplateEngine;
+import com.bluenimble.platform.api.impls.media.engines.javascript.JavascriptEngine;
+import com.bluenimble.platform.plugins.impls.AbstractPlugin;
+import com.bluenimble.platform.server.ApiServer;
+import com.bluenimble.platform.server.ApiServer.Event;
+
+public class MediaPlugin extends AbstractPlugin {
+
+	private static final long serialVersionUID = 3203657740159783537L;
+	
+	public static final String HandlebarsEngine 	= "hb";
+	public static final String JavascriptEngine 	= "js";
+	
+	private TemplateEnginesRegistry enginesRegistry = new TemplateEnginesRegistry ();
+	
+	private ApiServer server;
+	
+	@Override
+	public void init (final ApiServer server) throws Exception {
+		
+		this.server = server;
+		
+		TextMediaProcessor text = new TextMediaProcessor (this);
+		
+		server.addMediaProcessor (ApiContentTypes.Text, text);
+		server.addMediaProcessor (ApiContentTypes.Html, text);
+		server.addMediaProcessor (ApiContentTypes.Json, new JsonMediaProcessor (this));
+		server.addMediaProcessor (ApiContentTypes.Stream, new StreamMediaProcessor ());
+		
+	}
+
+	@Override
+	public void onEvent (Event event, Object target) {
+		if (!Api.class.isAssignableFrom (target.getClass ())) {
+			return;
+		}
+		
+		Api api = (Api)target;
+		
+		if (event.equals (Event.Install)) {
+			enginesRegistry.add (api, HandlebarsEngine, new HandlebarsTemplateEngine (this, api));
+			enginesRegistry.add (api, JavascriptEngine, new JavascriptEngine (this, api));
+		} else if (event.equals (Event.Uninstall)) {
+			enginesRegistry.remove (api, HandlebarsEngine);
+			enginesRegistry.remove (api, JavascriptEngine);
+		} 
+	}
+
+	public TemplateEngine loockupEngine (Api api, String name) {
+		return enginesRegistry.get (api, name);
+	}
+	
+	public ApiMediaProcessor getMediaProcessor (String name) {
+		return server.getMediaProcessors ().get (name);
+	}
+	
+}

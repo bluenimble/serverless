@@ -1,0 +1,6 @@
+{
+	"name": "security.default",
+	"spi": {
+		"class": "com.bluenimble.platform.server.plugins.security.ApiSecurityPlugin"
+	}
+}	

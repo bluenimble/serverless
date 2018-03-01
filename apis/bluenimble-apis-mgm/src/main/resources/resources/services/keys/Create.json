@@ -1,0 +1,21 @@
+{
+	    "verb": "post",
+	"endpoint": "/keys",
+	
+	"spec": {
+		"fields": {
+			"role": 		{ "required": "false" },
+			"pack": 		{ "type": "Integer", "required": "false" },
+			"expiryDate":	{ "type": "Date", "required": "false", "format": "yyyy-MM-dd" }
+		}
+	},
+	
+	"security": {
+		"roles": ["admin"]
+	},
+	
+	"spi": {
+		"class": "com.bluenimble.platform.apis.mgm.spis.keys.CreateKeysSpi"
+	} 
+	
+}

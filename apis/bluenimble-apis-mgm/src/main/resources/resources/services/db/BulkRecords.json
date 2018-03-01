@@ -1,0 +1,20 @@
+{
+	    "verb": "post",
+	"endpoint": "/db/:provider/records",
+	
+	"spec": {
+		"fields": {
+			"provider": { "max": "100", "value": "default" },
+			"payload": 	{ "type": "Map" }
+		}
+	},
+	
+	"security": {
+		"roles": ["admin", "developer"]
+	},
+	
+	"spi": {
+		"class": "com.bluenimble.platform.apis.mgm.spis.db.BulkRecordsSpi"
+	} 
+	
+}

@@ -1,0 +1,28 @@
+{
+	"handlers": {
+		"database": {
+			"description": "export database",
+			
+			"args": [{
+				"name": "options", 
+				"desc": "comma separated list of export options",
+				"required": "false"
+			}, {
+				"name": "file", 
+				"desc": "valid storage file name"
+			}, {
+				"name": "entities", 
+				"desc": "comma separated list of database entities to export",
+				"required": "false"
+			}],
+		
+			"request": {
+				"method": "get",
+				"service": "[ keys.endpoint ]/db/[vars.database.provider]",
+				"params": {
+					"options": "[arg.0]", "file": "[arg.1]", "entities": "[arg.2]"
+				}
+			}
+		}
+	}
+}

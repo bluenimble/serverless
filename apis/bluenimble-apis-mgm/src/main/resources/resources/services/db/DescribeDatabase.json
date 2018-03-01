@@ -1,0 +1,19 @@
+{
+	    "verb": "get",
+	"endpoint": "/db/:provider/describe",
+	
+	"spec": {
+		"fields": {
+			"provider": { "max": "100", "value": "default" }
+		}
+	},
+	
+	"security": {
+		"roles": ["admin", "developer"]
+	},
+	
+	"spi": {
+		"class": "com.bluenimble.platform.apis.mgm.spis.db.DescribeDatabaseSpi"
+	} 
+	
+}

@@ -1,0 +1,21 @@
+{
+
+	"handlers": {
+		"api": {
+			"description": "print an api logs",
+		
+			"args": [{
+				"name": "api", "desc": "namespace of the api"
+			}],
+			
+			"request": {
+				"method": "get",
+				"service": "[ keys.endpoint ]/apis/[arg.0]/logs/tail",
+				"headers": {
+					"Accept": "application/octet-stream"
+				}
+			}
+		}
+	}
+
+}

@@ -1,0 +1,21 @@
+{
+
+	"name": "datasource.default",
+	
+	"title": "Datasource (Databases and services) Implementation",
+	"description": "Datasource feature to a BlueNimble instance",
+	
+	"spi": {
+		"class": "com.bluenimble.platform.plugins.datasource.DataSourcePlugin",
+		"properties": {
+			"version": "1.0",
+			"vendor": {
+				"name": "BlueNimble, Inc",
+				"links": [{
+					"Read More": "https://www.bluenimble.com"
+				}]
+			}
+		}
+	}
+	
+}

@@ -1,0 +1,18 @@
+{
+	"handlers": {
+		"record": {
+			"description": "delete a record by id",
+			
+			"args": [{
+				"name": "entity", "desc": "database entity name"
+			}, {
+				"name": "record", "desc": "record id"
+			}],
+		
+			"request": {
+				"method": "delete",
+				"service": "[ keys.endpoint ]/db/[vars.database.provider]/entities/[arg.0]/records/[arg.1]"
+			}
+		}
+	}
+}

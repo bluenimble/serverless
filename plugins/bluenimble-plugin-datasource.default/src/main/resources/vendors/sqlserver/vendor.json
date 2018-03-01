@@ -1,0 +1,3 @@
+{
+	"template": "jdbc:sqlserver://{host}{\database}{:port}"
+}

@@ -1,0 +1,20 @@
+{
+	    "verb": "delete",
+	"endpoint": "/space/features/:feature/:name",
+	
+	"spec": {
+		"fields": {
+			"name": 	{ }, 
+			"feature": 	{ }
+		}
+	},
+	
+	"security": {
+		"roles": ["admin"]
+	},
+	
+	"spi": {
+		"class": "com.bluenimble.platform.apis.mgm.spis.spaces.DeleteFeatureSpi"
+	} 
+	
+}

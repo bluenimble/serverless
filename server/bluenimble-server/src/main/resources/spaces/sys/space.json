@@ -1,0 +1,14 @@
+{
+	"namespace": "sys",
+	"name": "BlueNimble Management Space",
+	"features": {
+		"scripting": {
+			"default": {
+				"provider": "bnb-javascript"
+			}
+		}
+	},
+	"quota": {
+        "workers": "60"
+    }
+}

@@ -1,0 +1,28 @@
+{
+
+	"handlers": {
+		"api": {
+			"description": "push/install an api",
+			
+			"args": [{
+				"name": "api", "desc": "namespace of the api to push/install"
+			}, {
+				"name": "start", "desc": "start api on install. Default to true", "required": "false"
+			}],
+			
+			"request": {
+				"method": "post",
+				"service": "[ keys.endpoint ]/apis",
+				"contentType": "multipart/form-data",
+				"body": {
+					"payload": "[ vars.api.folder | bn.workspace ]/[arg.0]"
+				},
+				"params": {
+					"start": "[ arg.1 | 'true' ]"
+				}
+			}
+		}
+	}
+
+
+}

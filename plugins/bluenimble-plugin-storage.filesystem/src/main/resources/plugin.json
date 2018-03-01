@@ -1,0 +1,17 @@
+{
+	"name": "storage.filesystem.default",
+	"title": "Provides a storage feature to a BlueNimble Instance (based on FileSystem mounts)",
+	"spi": {
+		"class": "com.bluenimble.platform.server.plugins.storage.fs.FileSystemStoragePlugin",
+		"properties": {
+			"version": "1.0",
+			"vendor": {
+				"name": "BlueNimble, Inc",
+				"links": [{
+					"Read More": "https://www.bluenimble.com"
+				}]
+			},
+			"root": "[vars.plugins.storage.fs.root | '/data/bluenimble/runtime/plugins/storage/fs']"
+		}
+	}
+}	

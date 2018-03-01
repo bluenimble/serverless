@@ -1,0 +1,18 @@
+{
+
+	"handlers": {
+		"space": {
+			"description": "create a new space",
+			
+			"args": [{
+				"name": "namespace", "desc": "space namespace"
+			}],
+		
+			"request": {
+				"method": "post",
+				"service": "[ keys.endpoint ]/spaces/[arg.0]",
+			}
+		}
+	}
+
+}

@@ -1,0 +1,19 @@
+{
+	"name": "tracing.log4j",
+	"title": "BlueNimble Tracing - Log4J Provider",
+	
+	"spi": {
+		"class": "com.bluenimble.platform.plugins.tracing.log4j.Log4JTracerPlugin",
+		"properties": {
+			"version": "1.0",
+			"vendor": {
+				"name": "BlueNimble, Inc",
+				"links": [{
+					"Read More": "https://www.bluenimble.com"
+				}]
+			},
+			"initOnInstall": "true",
+			"asyncLogging": "true"
+		}
+	}
+}	

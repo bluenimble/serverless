@@ -1,0 +1,26 @@
+{
+
+	"handlers": {
+		"object": {
+			"description": "copy or move a storage object",
+		
+			"args": [{
+				"name": "path", "desc": "the object's to copy/move.\n Example. pictures/thumbnails"
+			}, {
+				"name": "folder", "desc": "folder where to copy the target object"
+			}, {
+				"name": "move", "desc": "move object", "type": "Boolean", "required": "false"
+			}],
+		
+			"request": {
+				"method": "put",
+				"service": "[ keys.endpoint ]/storage/[vars.storage.provider]/objects/[arg.0]/copy",
+				"params": {
+					"folder": "[arg.1]",
+					"move": "[arg.2]"
+				}
+			}
+		}
+	}
+
+}

@@ -1,0 +1,79 @@
+{
+
+	"ServiceNotFound": {
+		"en": "service not found for request {0}" 
+	},
+	"ServiceNotAvailable": {
+		"en": "service {0} currently paused" 
+	},
+	"InvalidContentType": {
+		"en": "Invalid Content-Type {0}" 
+	},
+	"CantCallService": {
+		"en": "{0} not allowed to sign url" 
+	},
+	"ServiceExecutionError": {
+		"en": "System error occurred" 
+	},
+	"Required": {
+		"en": "{0} is required"
+	},
+	"StringFormat": {
+		"en": "{0} is not a valid value, it should be like {1}" 
+	},
+	"StringMin": {
+		"en": "{0} ({2}) length should be greater or equals to {1}" 
+	},
+	"StringMax": {
+		"en": "{0} ({2}) length should be less or equals to {1}" 
+	},
+	"StringLov": {
+		"en": "{0} ({2}) value should be one of the following [{1}]" 
+	},
+	"IntegerType": {
+		"en": "{0} must be a valid number" 
+	},
+	"IntegerMin": {
+		"en": "{0} ({2}) should be greater or equals to {1}"
+	},
+	"IntegerMax": {
+		"en": "{0} ({2}) should be less than {1}"
+	},
+	"DecimalType": {
+		"en": "{0} must be a valid decimal"
+	},
+	"DecimalMin": {
+		"en": "{0} ({2}) should be greater or equals to {1}"
+	},
+	"DecimalMax": {
+		"en": "{0} ({2}) should be less or equals to {1}"
+	},
+	"DateTimeType": {
+		"en": "{0} must be a valid date in this format {1}"
+	},
+	"DateTimeMin": {
+		"en": "{0} should be after or the same as {1}"
+	},
+	"DateTimeMax": {
+		"en": "{0} should be before or the same as {1}"
+	},
+	"EmailType": {
+		"en": "{0} must be a valid email address"
+	},
+	"UrlType": {
+		"en": "{0} must be a valid Url"
+	},
+	"Regex": {
+		"en": "{0} invalid format"
+	},
+	"AlphaNumeric": {
+		"en": "{0} must be a valid alpha numeric. Only digits 0-9 and letters A-Z a-z are allowed"
+	},
+	"BooleanType": {
+		"en": "{0} must be a valid boolean"
+	},
+	"StreamType": {
+		"en": "{0} must be a valid stream"
+	}
+
+}

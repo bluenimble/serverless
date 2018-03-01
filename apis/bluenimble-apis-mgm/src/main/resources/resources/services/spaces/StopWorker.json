@@ -1,0 +1,19 @@
+{
+	    "verb": "post",
+	"endpoint": "/space/workers/:worker/stop",
+	
+	"spec": {
+		"fields": {
+			"worker": 	{ "type": "Long", "min": "1" }
+		}
+	},
+	
+	"security": {
+		"roles": ["admin"]
+	},
+	
+	"spi": {
+		"class": "com.bluenimble.platform.apis.mgm.spis.spaces.DescribeSpaceByNamespaceSpi"
+	} 
+	
+}

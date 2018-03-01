@@ -1,0 +1,20 @@
+{
+	"name": "indexer.elasticsearch",
+	"title": "Provides an indexer/search feature to a BlueNimble Instance (based on ElasticSearch)",
+	"spi": {
+		"class": "com.bluenimble.platform.server.plugins.indexer.elasticsearch.ElasticSearchPlugin",
+		"properties": {
+			"version": "1.0",
+			"vendor": {
+				"name": "BlueNimble, Inc",
+				"links": [{
+					"Read More": "https://www.bluenimble.com"
+				}]
+			},
+			"remote": {
+				"plugin": "remote.default",
+				"object": "http"
+			}
+		}
+	}
+}	

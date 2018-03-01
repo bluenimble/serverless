@@ -1,0 +1,18 @@
+{
+
+	"handlers": {
+		"api": {
+			"description": "status of an api",
+		
+			"args": [{
+				"name": "api", "desc": "namespace of the api"
+			}],
+			
+			"request": {
+				"method": "get",
+				"service": "[ keys.endpoint ]/apis/[arg.0]/status"
+			}
+		}
+	}
+
+}

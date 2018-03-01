@@ -1,0 +1,26 @@
+{
+	"name": "security.keystore",
+	"title": "BlueNimble Default Key Store Manager",
+	
+	"spi": {
+		"class": "com.bluenimble.platform.plugins.keystores.KeyStorePlugin",
+		"properties": {
+			"version": "1.0",
+			"vendor": {
+				"name": "BlueNimble, Inc",
+				"links": [{
+					"Read More": "https://www.bluenimble.com"
+				}]
+			},
+			"listener": {
+				"pool": "10",
+				"delay": "5",
+				"period": "300",
+				"file": "space.keystore",
+				"flushRate": "10"
+			},
+			"closable": "false",
+			"async": "false"
+		}
+	}
+}	

@@ -1,0 +1,24 @@
+{
+
+	"handlers": {
+		"space": {
+			"description": "change a space definition",
+			
+			"args": [{
+				"name": "space", "desc": "space to change"
+			}, {
+				"name": "definition", "desc": "a json variable containing the new space definition"
+			}],
+		
+			"request": {
+				"method": "put",
+				"service": "[ keys.endpoint ]/spaces/[arg.0]",
+				"contentType": "application/json",
+				"body": {
+					"payload": "[arg.1]"
+				}
+			}
+		}
+	}
+
+}

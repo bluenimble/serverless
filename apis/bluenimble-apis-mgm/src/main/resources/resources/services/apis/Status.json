@@ -1,0 +1,19 @@
+{
+	    "verb": "get",
+	"endpoint": "/apis/:api/status",
+	
+	"spec": {
+		"fields": {
+			"api": 	{ }
+		}
+	},
+	
+	"security": {
+		"roles": ["admin", "developer"]
+	},
+	
+	"spi": {
+		"class": "com.bluenimble.platform.apis.mgm.spis.apis.ChangeApiStatusSpi"
+	} 
+	
+}

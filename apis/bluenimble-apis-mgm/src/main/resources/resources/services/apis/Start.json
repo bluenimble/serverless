@@ -1,0 +1,19 @@
+{
+	    "verb": "put",
+	"endpoint": "/apis/:api/start",
+	
+	"spec": {
+		"fields": {
+			"api": 	{ }
+		}
+	},
+	
+	"security": {
+		"roles": ["admin", "developer"]
+	},
+	
+	"spi": {
+		"class": "com.bluenimble.platform.apis.mgm.spis.apis.ChangeApiStatusSpi"
+	} 
+	
+}

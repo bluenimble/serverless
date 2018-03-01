@@ -1,0 +1,17 @@
+{
+	"name": "email",
+	"feature": "messenger",
+	"provider": "bnb-smtp",
+	"spec": {
+		"server": {
+			"mail.smtp.host": "smtp.office365.com",
+			"mail.smtp.port": "587",
+			"mail.smtp.auth": "true",
+			"mail.smtp.starttls.enable": "true"
+		}, 
+		"auth": {
+			"user": "your office365 email", 
+			"password": "your office365 password"
+		}
+	}
+}

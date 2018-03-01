@@ -1,0 +1,21 @@
+{
+
+	"secrets": {
+		"default": {
+			"key": "", "algorithm": "AES", "age": "60"
+		}
+	},
+	
+	"features": {
+		"scripting": {
+			"default": {
+				"provider": "bnb-javascript"
+			}
+		}
+	},
+	
+	"runtime": {
+		"timeout": "10000"
+	}
+  
+}

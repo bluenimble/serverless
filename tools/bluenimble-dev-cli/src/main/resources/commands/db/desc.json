@@ -1,0 +1,12 @@
+{
+	"handlers": {
+		"database": {
+			"description": "describe database",
+			
+			"request": {
+				"method": "get",
+				"service": "[ keys.endpoint ]/db/[vars.database.provider]/describe"
+			}
+		}
+	}
+}

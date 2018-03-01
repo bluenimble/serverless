@@ -1,0 +1,19 @@
+{
+	    "verb": "get",
+	"endpoint": "/cache/:provider/buckets",
+	
+	"spec": {
+		"fields": {
+			"provider": { "max": "100", "value": "default" }
+		}
+	},
+	
+	"security": {
+		"roles": ["admin", "developer"]
+	},
+	
+	"spi": {
+		"class": "com.bluenimble.platform.apis.mgm.spis.cache.ListBucketsSpi"
+	} 
+	
+}

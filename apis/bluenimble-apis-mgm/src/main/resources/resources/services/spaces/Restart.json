@@ -1,0 +1,19 @@
+{
+	    "verb": "post",
+	"endpoint": "/spaces/:space/restart",
+	
+	"spec": {
+		"fields": {
+			"space": {  }
+		}
+	},
+	
+	"security": {
+		"roles": ["super"]
+	},
+	
+	"spi": {
+		"class": "com.bluenimble.platform.apis.mgm.spis.spaces.RestartSpaceSpi"
+	} 
+	
+}

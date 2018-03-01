@@ -1,0 +1,17 @@
+{
+	"name": "media.bnb",
+	"title": "Provides basic media processors such as text, json, xml and html",
+	
+	"spi": {
+		"class": "com.bluenimble.platform.server.plugins.media.MediaPlugin",
+		"properties": {
+			"version": "1.0",
+			"vendor": {
+				"name": "BlueNimble, Inc",
+				"links": [{
+					"Read More": "https://www.bluenimble.com"
+				}]
+			}
+		}
+	}
+}	

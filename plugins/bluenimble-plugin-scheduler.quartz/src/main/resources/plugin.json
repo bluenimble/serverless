@@ -1,0 +1,21 @@
+{
+	"name": "scheduler.quartz",
+	"title": "Provide Task scheduling to spaces",
+	"spi": {
+		"class": "com.bluenimble.platform.server.plugins.scheduler.SchedulerPlugin",
+		"properties": {
+			"version": "1.0",
+			"vendor": {
+				"name": "BlueNimble, Inc",
+				"links": [{
+					"Read More": "https://www.bluenimble.com"
+				}]
+			},
+			"scheduler": {
+				"org.quartz.scheduler.instanceName": "DefaultScheduler",
+				"org.quartz.scheduler.instanceId": "AUTO",
+				"org.quartz.threadPool.threadCount": "[ vars.plugins.scheduler.threadPool | '10' ]"
+			}
+		}
+	}
+}	

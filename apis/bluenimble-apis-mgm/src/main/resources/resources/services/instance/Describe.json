@@ -1,0 +1,31 @@
+{
+	    "verb": "get",
+	"endpoint": "/instance/:options",
+	
+	"spec": {
+		"fields": {
+			"options": { "value": "info" }
+		}
+	},
+	
+	"security": {
+		/* should turn true or remove this property as by default services are secure */
+		"enabled": "false", 
+		"roles": ["super"]
+	},
+	
+	"media": {
+		"text/html": {
+			"success": {
+				"*": {
+					"resource": "templates/html/describe.html"
+				}
+			}
+		}
+	},
+	
+	"spi": {
+		"class": "com.bluenimble.platform.apis.mgm.spis.instance.DescribeInstanceSpi"
+	} 
+	
+}

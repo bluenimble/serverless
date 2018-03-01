@@ -1,0 +1,19 @@
+{
+	"name": "email",
+	"feature": "messenger",
+	"provider": "bnb-smtp",
+	"spec": {
+		"server": {
+			"mail.smtp.host": "email-smtp.us-west-2.amazonaws.com",
+			"mail.transport.protocol": "smtp",
+			"mail.smtp.port": "25",
+			"mail.smtp.auth": "true",
+			"mail.smtp.starttls.enable": "true",
+			"mail.smtp.starttls.required": "true"
+		}, 
+		"auth": {
+			"user": "your aws smtp username", 
+			"password": "your aws smtp password"
+		}
+	}
+}

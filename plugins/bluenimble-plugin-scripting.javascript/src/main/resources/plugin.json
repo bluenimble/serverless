@@ -1,0 +1,16 @@
+{
+	"name": "scripting.javascript",
+	"title": "Javascript Scripting Engine (based on Nashorn)",
+	"spi": {
+		"class": "com.bluenimble.platform.server.plugins.scripting.ScriptingPlugin",
+		"properties": {
+			"version": "1.0",
+			"vendor": {
+				"name": "BlueNimble, Inc",
+				"links": [{
+					"Read More": "https://www.bluenimble.com"
+				}]
+			}
+		}
+	}
+}	

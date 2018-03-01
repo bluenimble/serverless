@@ -1,0 +1,30 @@
+{
+
+	"handlers": {
+		"api": {
+			"description": "stop an api",
+		
+			"args": [{
+				"name": "api", "desc": "namespace of the api to stop"
+			}],
+			
+			"request": {
+				"method": "put",
+				"service": "[ keys.endpoint ]/apis/[arg.0]/stop"
+			}
+		}, 
+		"worker": {
+			"description": "stop a worker by id",
+		
+			"args": [{
+				"name": "worker", "desc": "id of the worker"
+			}],
+			
+			"request": {
+				"method": "post",
+				"service": "[ keys.endpoint ]/space/workers/[arg.0]/stop"
+			}
+		}
+	}
+
+}

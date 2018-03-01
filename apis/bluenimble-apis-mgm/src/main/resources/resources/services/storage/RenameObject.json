@@ -1,0 +1,20 @@
+{
+	    "verb": "put",
+	"endpoint": "/storage/:provider/objects/::object/rename",
+	
+	"spec": {
+		"fields": {
+			"object": 	{  },
+			"name": 	{  }
+		}
+	},
+	
+	"security": {
+		"roles": ["admin", "developer"]
+	},
+	
+	"spi": {
+		"class": "com.bluenimble.platform.apis.mgm.spis.storage.RenameObjectSpi"
+	} 
+	
+}

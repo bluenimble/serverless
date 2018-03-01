@@ -1,0 +1,26 @@
+{
+	"handlers": {
+		"records": {
+			"description": "find records using query",
+			
+			"args": [{
+				"name": "entity", "desc": "database entity name"
+			}, {
+				"name": "query", "desc": "a variable name holding a json object representing your query\nUse the json create, json set and json load commands to create queries\nExample: { where: { age: '32' } }"
+			}, {
+				"name": "allStopLevel", "desc": "the level where the 'all fields' json result serializer will stop", "required": "false"
+			}, {
+				"name": "minStopLevel", "desc": "the level where the 'min fields' json result serializer will stop", "required": "false"
+			}],
+		
+			"request": {
+				"method": "post",
+				"service": "[ keys.endpoint ]/db/[vars.database.provider]/entities/[arg.0]/query/[arg.2 | '1'],[arg.3 | '2']",
+				"contentType": "application/json",
+				"body": {
+					"payload": "[arg.1]"
+				}
+			}
+		}
+	}
+}

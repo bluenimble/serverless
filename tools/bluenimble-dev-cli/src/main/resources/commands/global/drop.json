@@ -1,0 +1,18 @@
+{
+
+	"handlers": {
+		"api": {
+			"description": "uninstall an api from a bluenimble instance",
+			
+			"args": [{
+				"name": "api", "desc": "api namespace to drop/uninstall"
+			}],
+		
+			"request": {
+				"method": "delete",
+				"service": "[ keys.endpoint ]/apis/[arg.0]"
+			}
+		}
+	}
+
+}

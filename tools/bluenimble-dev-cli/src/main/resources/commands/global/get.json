@@ -1,0 +1,19 @@
+{
+
+	"handlers": {
+		"push": {
+			"description": "get the status of a previous api push",
+			
+			"args": [{
+				"name": "pushId", "desc": "the push id"
+			}],
+			
+			"request": {
+				"method": "get",
+				"service": "[ keys.endpoint ]/apis/[arg.0]"
+			}
+		}
+	}
+
+
+}

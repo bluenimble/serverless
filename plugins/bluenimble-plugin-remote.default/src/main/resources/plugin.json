@@ -1,0 +1,16 @@
+{
+	"name": "remote.default",
+	"title": "Provides network features to a BlueNimble Instance (Http, Coap, Mqtt, Ldap, ...)",
+	"spi": {
+		"class": "com.bluenimble.platform.server.plugins.remote.RemotePlugin",
+		"properties": {
+			"version": "1.0",
+			"vendor": {
+				"name": "BlueNimble, Inc",
+				"links": [{
+					"Read More": "https://www.bluenimble.com"
+				}]
+			}
+		}
+	}
+}	

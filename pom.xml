@@ -1,0 +1,89 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.bluenimble.serverless</groupId>
+	<artifactId>bluenimble-serverless</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	
+	<packaging>pom</packaging>
+	<name>BlueNimble Serverless Platform</name>
+
+	<properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <appName>BlueNimble Serverless Platform</appName>
+    </properties>
+
+	<url>https://www.bluenimble.com</url>
+    <description>BlueNimble Enterprise-Class Serverless Platform</description>
+    <inceptionYear>2016</inceptionYear>
+    <organization>
+        <name>BlueNimble, Inc.</name>
+        <url>https://www.bluenimble.com</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>Apache 2</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>mloukili@bluenimble.com</id>
+            <name>Simo Loukili</name>
+            <email>mloukili@bluenimble.com</email>
+            <organization>BlueNimble, Inc.</organization>
+            <organizationUrl>http://www.bluenimble.com</organizationUrl>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+                <role>founder</role>
+            </roles>
+            <timezone>+8</timezone>
+        </developer>
+        <developer>
+            <id>mbendriss</id>
+            <name>Mehdi Bendriss</name>
+            <email>mbendriss@bluenimble.com</email>
+            <organization>BlueNimble, Inc.</organization>
+            <organizationUrl>http://www.bluenimble.com</organizationUrl>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+            <timezone>+0</timezone>
+        </developer>
+        <developer>
+            <id>abouassoule</id>
+            <name>Abdelghani Bouassoule</name>
+            <email>abouassoule@bluenimble.com</email>
+            <organization>BlueNimble, Inc.</organization>
+            <organizationUrl>http://www.bluenimble.com</organizationUrl>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+            <timezone>+0</timezone>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git@github.com:bluenimble/bluenimble-serverless.git</connection>
+        <developerConnection>scm:git:git@github.com:bluenimble/bluenimble-serverless.git</developerConnection>
+        <url>scm:git:git@github.com:bluenimble/bluenimble-serverless.git</url>
+    </scm>
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/bluenimble/bluenimble-serverless/issues</url>
+    </issueManagement>
+	
+	<modules>
+		<module>server</module>
+		<module>plugins</module>
+		<module>sdks</module>
+		<module>apis</module>
+	</modules>
+
+</project>

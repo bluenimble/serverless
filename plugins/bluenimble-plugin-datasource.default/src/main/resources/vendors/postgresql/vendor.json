@@ -1,0 +1,3 @@
+{
+	"template": "jdbc:jdbc:postgresql://{host}{:port}{/database}"
+}

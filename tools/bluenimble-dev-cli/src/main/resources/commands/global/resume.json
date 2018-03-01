@@ -1,0 +1,18 @@
+{
+
+	"handlers": {
+		"api": {
+			"description": "resume a paused api",
+		
+			"args": [{
+				"name": "api", "desc": "namespace of the api to resume"
+			}],
+			
+			"request": {
+				"method": "put",
+				"service": "[ keys.endpoint ]/apis/[arg.0]/resume"
+			}
+		}
+	}
+
+}

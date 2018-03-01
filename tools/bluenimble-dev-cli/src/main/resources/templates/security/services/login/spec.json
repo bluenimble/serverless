@@ -1,0 +1,39 @@
+{
+	
+	    "verb": "post",
+	"endpoint": "/security/login",
+	    "name": "Login",
+	
+	"spec": {
+		"contentType": "application/json",
+		"fields": {
+			"payload": { "type": "Map",
+				"fields": {
+					"user": 	{ }, 
+					"password": { }
+				}
+			}
+		}
+	},
+	
+	/**
+	 * Uncomment this section: 1. to set email preferences for signing users  2. change default configuration 
+	 *
+	
+			"custom": {
+				// if set to true, an email will be send to the user using the "email" configuration bellow
+				"requiresActivation": "true"
+			},
+	 
+	 *
+	 **/
+ 	
+	"security": {
+		"enabled": "false"
+	},
+	
+	"spi": {
+		"class": "im.default:LoginSpi"
+	}
+	
+}

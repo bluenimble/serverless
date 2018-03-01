@@ -1,0 +1,25 @@
+{
+	    "verb": "put",
+	"endpoint": "/apis/:api/services/status",
+	
+	"spec": {
+		"contentType": "application/json",
+		"fields": {
+			"payload": 	{ 
+				"type": "Map",
+				"fields": {
+					"verb": {}, "endpoint": {}
+				}
+			}
+		}
+	},
+	
+	"security": {
+		"roles": ["admin", "developer"]
+	},
+	
+	"spi": {
+		"class": "com.bluenimble.platform.apis.mgm.spis.services.ChangeServiceStatusSpi"
+	} 
+	
+}

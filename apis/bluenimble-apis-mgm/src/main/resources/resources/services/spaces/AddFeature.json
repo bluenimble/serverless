@@ -1,0 +1,24 @@
+{
+	    "verb": "put",
+	"endpoint": "/space/features",
+	
+	"spec": {
+		"contentType": "application/json",
+		"fields": {
+			"payload": { "type": "Map",
+				"fields": {
+					"name": {}, "feature": { }, "provider": { }, "spec": { "required": "false", "type": "Map" }
+				}
+			}
+		}
+	},
+	
+	"security": {
+		"roles": ["admin"]
+	},
+	
+	"spi": {
+		"class": "com.bluenimble.platform.apis.mgm.spis.spaces.AddFeatureSpi"
+	} 
+	
+}

@@ -1,0 +1,20 @@
+{
+	    "verb": "get",
+	"endpoint": "/keys",
+	
+	"spec": {
+		"fields": {
+			"offset": { "value": "0" },
+			"length": { "value": "100" }
+ 		}
+	},
+	
+	"security": {
+		"roles": ["admin"]
+	},
+	
+	"spi": {
+		"class": "com.bluenimble.platform.apis.mgm.spis.keys.ListKeysSpi"
+	} 
+	
+}

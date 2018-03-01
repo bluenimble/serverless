@@ -1,0 +1,19 @@
+{
+	    "verb": "get",
+	"endpoint": "/space/:options",
+	
+	"spec": {
+		"fields": {
+			"options": { "value": "info" }
+		}
+	},
+	
+	"security": {
+		"roles": ["super", "admin"]
+	},
+	
+	"spi": {
+		"class": "com.bluenimble.platform.apis.mgm.spis.spaces.DescribeSpaceSpi"
+	} 
+	
+}

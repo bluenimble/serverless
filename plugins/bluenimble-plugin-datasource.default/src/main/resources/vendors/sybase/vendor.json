@@ -1,0 +1,3 @@
+{
+	"template": "jdbc:jtds:sybase://{host}{:port}{/database}"
+}

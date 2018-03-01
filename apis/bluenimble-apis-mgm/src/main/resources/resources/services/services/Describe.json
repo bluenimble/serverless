@@ -1,0 +1,19 @@
+{
+	    "verb": "get",
+	"endpoint": "/apis/:api/services/:verb/::endpoint",
+	
+	"spec": {
+		"fields": {
+			"verb": { "lov": [ "get", "post", "delete", "put", "head" ] }
+		}
+	},
+	
+	"security": {
+		"roles": ["admin", "developer"]
+	},
+	
+	"spi": {
+		"class": "com.bluenimble.platform.apis.mgm.spis.services.DescribeServiceSpi"
+	} 
+	
+}

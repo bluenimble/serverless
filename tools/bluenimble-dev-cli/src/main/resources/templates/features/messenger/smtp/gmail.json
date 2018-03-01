@@ -1,0 +1,17 @@
+{
+	"name": "email",
+	"feature": "messenger",
+	"provider": "bnb-smtp",
+	"spec": {
+		"server": {
+			"mail.smtp.host": "smtp.gmail.com",
+			"mail.smtp.port": "587",
+			"mail.smtp.auth": "true",
+			"mail.smtp.starttls.enable": "true"
+		}, 
+		"auth": {
+			"user": "your gmail email", 
+			"password": "your gmail password"
+		}
+	}
+}

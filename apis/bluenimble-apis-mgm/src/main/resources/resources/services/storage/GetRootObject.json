@@ -1,0 +1,13 @@
+{
+	    "verb": "get",
+	"endpoint": "/storage/:provider/objects",
+	
+	"security": {
+		"roles": ["admin", "developer"]
+	},
+	
+	"spi": {
+		"class": "com.bluenimble.platform.apis.mgm.spis.storage.GetObjectSpi"
+	} 
+	
+}

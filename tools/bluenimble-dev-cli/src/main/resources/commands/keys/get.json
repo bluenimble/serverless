@@ -1,0 +1,19 @@
+{
+
+	"handlers": {
+		"keys": {
+			"description": "get the secret key attached to the access key in argument",
+			
+			"args": [{
+				"name": "accessKey", "desc": "the access key"
+			}],
+			
+			"request": {
+				"method": "get",
+				"service": "[ keys.endpoint.default ]/keys/[arg.0]"
+			}
+		}
+	}
+
+
+}

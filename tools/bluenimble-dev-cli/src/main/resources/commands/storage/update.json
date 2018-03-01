@@ -1,0 +1,30 @@
+{
+
+	"handlers": {
+		"object": {
+			"description": "update the content of an object. If the object is a folder, the command will fail.",
+		
+			"args": [{
+				"name": "path", "desc": "the object's path.\n Example. pictures/thumbnails/123456.jpg"
+			}, {
+				"name": "file", "desc": "a valid local file path to upload"
+			}, {
+				"name": "append", "desc": "if set to true, the content of thee local file will be appended to the content of the remote storage object"
+			}],
+		
+			"request": {
+				"method": "put",
+				"service": "[ keys.endpoint ]/storage/[vars.storage.provider]/objects/[arg.0]",
+				"contentType": "multipart/form-data",
+				"body": {
+					"payload": "[arg.1]"
+				},
+				"params": {
+					"append": "[args.2]"
+				}
+			}
+		
+		}
+	}
+
+}

@@ -1,0 +1,20 @@
+{
+	    "verb": "post",
+	"endpoint": "/apis",
+	
+	"spec": {
+		"fields": {
+			"payload": 	{ "type": "Stream", "scope": "s" },
+			"start": 	{ "type": "Boolean" }
+		}
+	},
+	
+	"security": {
+		"roles": ["admin", "developer"]
+	},
+	
+	"spi": {
+		"class": "com.bluenimble.platform.apis.mgm.spis.apis.InstallApiSpi"
+	} 
+	
+}

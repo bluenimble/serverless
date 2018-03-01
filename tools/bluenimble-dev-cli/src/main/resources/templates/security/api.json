@@ -1,0 +1,28 @@
+{
+
+	"security": {
+		"schemes": {
+			"token": {
+				"auth": { "secrets": "default" }
+			},
+			"cookie": {
+				"auth": { "secrets": "default" }
+			},
+			"signature": {
+				"auth": { 
+					"query": {
+						"entity": "AppKeys", "where": { "accessKey": ":accessKey" }
+					}	 
+				}
+			},
+			"basic": {
+				"auth": { 
+					"query": {
+						"entity": "Users", "where": { "email": ":id", "password": ":password" }
+					}	 
+				}
+			}
+		}
+	}
+	
+}

@@ -1,0 +1,19 @@
+{
+	    "verb": "post",
+	"endpoint": "/spaces/:space/refresh",
+	
+	"spec": {
+		"fields": {
+			"payload": { "type": "Map" }
+		}
+	},
+	
+	"security": {
+		"roles": ["admin"]
+	},
+	
+	"spi": {
+		"class": "com.bluenimble.platform.apis.mgm.spis.spaces.RefreshSpaceSpi"
+	} 
+	
+}

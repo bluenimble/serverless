@@ -1,0 +1,3 @@
+{
+	"template": "jdbc:orient:remote://{host}{:port}{/database}"
+}

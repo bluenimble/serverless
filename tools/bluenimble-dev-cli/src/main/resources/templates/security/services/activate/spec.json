@@ -1,0 +1,21 @@
+{
+	
+	    "verb": "post",
+	"endpoint": "/security/activate/:activationCode",
+	    "name": "Activate Account",
+	
+	"spec": {
+		"fields": {
+			"activationCode": { }
+		}
+	},
+	
+	"security": {
+		"enabled": "false"
+	},
+	
+	"spi": {
+		"class": "im.default:ActivateSpi"
+	}
+	
+}

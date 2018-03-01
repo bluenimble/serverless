@@ -1,0 +1,21 @@
+{
+	    "verb": "post",
+	"endpoint": "/cache/:provider/buckets/:bucket",
+	
+	"spec": {
+		"fields": {
+			"provider": { "max": "100", "value": "default" },
+			"bucket": 	{ "min": 4, "max": "20", "vType": "AlphaNumeric" },
+			"ttl": 		{ "type": "Long", "min": 0, "required": "false", "value": "0" }
+		}
+	},
+	
+	"security": {
+		"roles": ["admin"]
+	},
+	
+	"spi": {
+		"class": "com.bluenimble.platform.apis.mgm.spis.cache.CreateBucketSpi"
+	} 
+	
+}

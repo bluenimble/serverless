@@ -1,0 +1,18 @@
+{
+
+	"handlers": {
+		"api": {
+			"description": "start an api",
+		
+			"args": [{
+				"name": "api", "desc": "namespace of the api to start"
+			}],
+			
+			"request": {
+				"method": "put",
+				"service": "[ keys.endpoint ]/apis/[arg.0]/start"
+			}
+		}
+	}
+
+}

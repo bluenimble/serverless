@@ -1,0 +1,17 @@
+{
+	"name": "email",
+	"feature": "messenger",
+	"provider": "bnb-smtp",
+	"spec": {
+		"server": {
+			"mail.smtp.host": "smtp.mail.yahoo.com",
+			"mail.smtp.port": "587",
+			"mail.smtp.auth": "true",
+			"mail.smtp.starttls.enable": "true"
+		}, 
+		"auth": {
+			"user": "your yahoo email", 
+			"password": "your yahoo password"
+		}
+	}
+}

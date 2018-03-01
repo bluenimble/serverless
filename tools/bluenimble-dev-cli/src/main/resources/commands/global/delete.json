@@ -1,0 +1,32 @@
+{
+
+	"handlers": {
+		"feature": {
+			"description": "delete a feature from your space.\nuse command desc space to list all features available in your space",
+			
+			"args": [{
+				"name": "feature", "desc": "feature. 'storage', 'database', 'cache', 'messenger', ..."
+			}, {
+				"name": "name", "desc": "given name"
+			}],
+			
+			"request": {
+				"method": "delete",
+				"service": "[ keys.endpoint ]/space/features/[arg.0]/[arg.1]",
+			}
+		},
+		"secrets": {
+			"description": "delete a secrets from your space.\nuse command desc space to list all secrets available in your space",
+			
+			"args": [{
+				"name": "name", "desc": "secrets id"
+			}],
+			
+			"request": {
+				"method": "delete",
+				"service": "[ keys.endpoint ]/space/secrets/[arg.0]",
+			}
+		}
+	}
+
+}

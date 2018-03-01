@@ -1,0 +1,24 @@
+{
+
+	"id": "[vars.id | 'bn']",
+	"type": "[vars.type | 'standard']",
+	"name": "BlueNimble",
+	"description": "BlueNimble Serverless Platform",
+	"version": "[version]",
+
+	"debug": "[ vars.debug | 'true' ]",
+	
+	"spaces": "[ vars.spaces | '' ]",
+	"deleteInstalledSpaces": "[ vars.deleteInstalledSpaces | 'true' ]",
+	
+	"weight": "[vars.weight | '10']",
+	
+	"pluginsRegistry": {
+		"class": "com.bluenimble.platform.plugins.impls.DefaultPluginsRegistry"
+	},
+	
+	"tracer": {
+		"class": "tracing.log4j:default"
+	}
+
+}

@@ -1,0 +1,23 @@
+{
+
+	"handlers": {
+		"object": {
+			"description": "delete a storage object",
+		
+			"args": [{
+				"name": "path", "desc": "the object's path.\n Example. pictures/thumbnails"
+			}, {
+				"name": "force", "desc": "if it's a folder and it's not empty, the delete command will fail unless you set force to true/yes/1", "type": "Boolean", "required": "false"
+			}],
+		
+			"request": {
+				"method": "delete",
+				"service": "[ keys.endpoint ]/storage/[vars.storage.provider]/objects/[arg.0]",
+				"params": {
+					"force": "[arg.1]"
+				}
+			}
+		}
+	}
+
+}

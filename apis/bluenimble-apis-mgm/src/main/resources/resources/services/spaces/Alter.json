@@ -1,0 +1,21 @@
+{
+	    "verb": "put",
+	"endpoint": "/spaces/:space",
+	
+	"spec": {
+		"contentType": "application/json",
+		"fields": {
+			"space": {  },
+			"payload": { "type": "Map" }
+		}
+	},
+	
+	"security": {
+		"roles": ["super"]
+	},
+	
+	"spi": {
+		"class": "com.bluenimble.platform.apis.mgm.spis.spaces.AlterSpaceSpi"
+	} 
+	
+}

@@ -1,0 +1,24 @@
+{
+	"name": "messenger.smtp.bnb",
+	"title": "Provides an SMTP Messenger feature to a BlueNimble Instance",
+	
+	"spi": {
+		"class": "com.bluenimble.platform.server.plugins.messenger.smtp.SmtpMessengerPlugin",
+		"properties": {
+			"version": "1.0",
+			"vendor": {
+				"name": "BlueNimble, Inc",
+				"links": [{
+					"Read More": "https://www.bluenimble.com"
+				}]
+			},
+			"mimeTypes": [
+				"text/html;; x-java-content-handler=com.sun.mail.handlers.text_html",  
+				"text/xml;; x-java-content-handler=com.sun.mail.handlers.text_xml",
+				"text/plain;; x-java-content-handler=com.sun.mail.handlers.text_plain",
+				"multipart/*;; x-java-content-handler=com.sun.mail.handlers.multipart_mixed",
+				"message/rfc822;; x-java-content- handler=com.sun.mail.handlers.message_rfc822"
+			]
+		}
+	}
+}	

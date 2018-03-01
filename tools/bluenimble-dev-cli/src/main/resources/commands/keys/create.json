@@ -1,0 +1,28 @@
+{
+
+	"handlers": {
+		"keys": {
+			"description": "create new keys",
+
+			"args": [{
+				"name": "pack", "desc": "number of key pairs to create", "type": "Integer"
+			}, {
+				"name": "role", "desc": "role of the user who will be using these keys. ADMIN or DEVELOPER"
+			}, {
+				"name": "expiryDate", "desc": "when these key pairs will expire", "required": "false"
+			}],
+			
+			"request": {
+				"method": "post",
+				"service": "[ keys.endpoint.cloud | keys.endpoint.default ]/keys",
+				"params": {
+					"pack": "[ arg.0 | '1' ]",
+					"role": "[ arg.1 | 'Developer' ]",
+					"expiryDate": "[arg.2]"
+				}
+			}
+		}
+	}
+
+
+}

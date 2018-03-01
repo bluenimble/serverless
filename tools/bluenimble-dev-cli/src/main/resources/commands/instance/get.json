@@ -1,0 +1,21 @@
+{
+
+	"handlers": {
+		"space": {
+			"description": "describe a space",
+			
+			"args": [{
+				"name": "space", "desc": "describes the space given by its namespace"
+			}, {
+				"name": "options", "desc": "get also information about apis installed in this space. Default to true",
+				"required": "false"
+			}],
+		
+			"request": {
+				"method": "get",
+				"service": "[ keys.endpoint ]/spaces/[arg.0]/[ arg.1 | 'info' ]"
+			}
+		}
+	}
+
+}

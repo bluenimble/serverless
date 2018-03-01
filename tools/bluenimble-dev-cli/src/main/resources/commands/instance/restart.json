@@ -1,0 +1,18 @@
+{
+
+	"handlers": {
+		"space": {
+			"description": "restart a space. This restarts only the space executor without restarting installed apis",
+			
+			"args": [{
+				"name": "space", "desc": "space to restart"
+			}],
+		
+			"request": {
+				"method": "post",
+				"service": "[ keys.endpoint ]/spaces/[arg.0]/restart"
+			}
+		}
+	}
+
+}

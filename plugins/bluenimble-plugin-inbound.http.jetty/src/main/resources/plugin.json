@@ -1,0 +1,34 @@
+{
+	"name": "inbound.http.jetty",
+	"title": "Providing HTTP Inbound Protocol to a BlueNimble Instance (Based on Jetty)",
+	
+	"spi": {
+		"class": "com.bluenimble.platform.plugins.inbound.http.jetty.JettyPlugin",
+		"properties": {
+			
+			"version": "1.0",
+			"vendor": {
+				"name": "BlueNimble, Inc",
+				"links": [{
+					"Read More": "https://www.bluenimble.com"
+				}]
+			},
+			
+			"async": "true",
+			
+			"port": "[ vars.plugins.http.port | '8080' ]",
+			"context": "/",
+			"idleTimeout": "30",
+			
+			"pool": {
+				"idleTimeout": "300"
+			},
+			
+			"ssl": {
+				"port": "[ vars.plugins.https.port | '8443' ]",
+				"keystore": "[ vars.plugins.https.keystore | '' ]",
+				"password": "[ vars.plugins.https.password | '' ]"
+			}
+		}
+	}
+}	

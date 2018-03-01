@@ -1,0 +1,37 @@
+{
+	
+	    "verb": "post",
+	"endpoint": "/security/activation/resend/:id",
+	    "name": "Resend Action Request",
+	
+		/**
+		 * Uncomment this section: 1. to set email preferences for signing users  2. change default configuration 
+		 *
+		
+				"custom": {
+					"email": {
+						"messenger": "my-smtp-config", // in order to add a config, use add feature command. (Required)
+						"fromEmail": "", // a preference email such as welcome@your-business.com. (Optional)
+						"fromName": "XYZ Team", // a preference sender name. (Optional)
+						"subject": "Welcome to XYZ", // signup email subject. (Optional)
+						"template": "templates/emails/signup.html", // an html email template to use. There is one by default in you api resources folder. (Required)
+					},
+					// the database feature holding the users table/entity
+					"database": "default",
+					// the users table/entity
+					"usersEntity": "Users"
+
+				},
+		 
+		 *
+		 **/
+	 	
+	"security": {
+		"enabled": "false"
+	},
+	
+	"spi": {
+		"class": "im.default:ResendActivationSpi"
+	}
+	
+}

@@ -1,0 +1,23 @@
+package com.beesphere.crypto;
+
+import java.io.*;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.security.cert.CertificateFactory;
+
+
+public class ReadX509 {
+
+	private String hello = "yo!";
+	
+	public static void main(String[] args) throws CertificateException, FileNotFoundException, IOException {
+		System.out.println(read (new FileInputStream("personnal_nyal.cer")));
+	}
+	
+	public static X509Certificate read (InputStream inStream) throws CertificateException, IOException {
+		CertificateFactory cf = CertificateFactory.getInstance("X.509");
+		X509Certificate cert = (X509Certificate)cf.generateCertificate(inStream);
+		inStream.close();
+		return cert;
+	}	
+}
