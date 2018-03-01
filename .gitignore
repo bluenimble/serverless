@@ -22,11 +22,8 @@ out
 *.iml
 .idea/
 
-tests/src/test/java/com/orientechnologies/orient/test/database/auto/_*.xml
-
 export/
 
-distribution/.orientdb_history
 ### Gradle template
 .gradle
 /build/
