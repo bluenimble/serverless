@@ -86,9 +86,7 @@ public class BeanUtils {
 		if (PackageClassLoader.class.isAssignableFrom (loader.getClass ())) {
 			PackageClassLoader pcl = (PackageClassLoader)loader;
 			if (pcl.hasSynonym (clazz)) {
-				System.out.println ("Has Synonym!");
 				clazz = pcl.synonym (clazz);
-				System.out.println (" is... " + clazz);
 			}
 			bean = ((PackageClassLoader)loader).lookupObject (clazz);
 		}

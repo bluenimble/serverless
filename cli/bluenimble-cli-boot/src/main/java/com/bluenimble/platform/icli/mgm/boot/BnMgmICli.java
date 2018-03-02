@@ -99,7 +99,7 @@ public class BnMgmICli {
 		
 		Home = new File (homePath);
 		
-		Software = Json.load (BnMgmICli.class.getResourceAsStream ("bnb.json"));
+		Software = Json.load (new File (Home, "update.json"));
 		
 		upgrade ();
 		
@@ -127,7 +127,7 @@ public class BnMgmICli {
 			
 			File [] files = Home.listFiles ();
 			for (File f : files) {
-				if (f.getName ().equals ("boot") || f.getName ().equals ("tmp") || f.getName ().equals ("bn.bat") || f.getName ().equals ("bn.sh")) {
+				if (f.getName ().equals ("boot") || f.getName ().equals ("tmp") || f.getName ().equals ("bnb.bat") || f.getName ().equals ("bnb.sh")) {
 					continue;
 				}
 				FileUtils.delete (f);

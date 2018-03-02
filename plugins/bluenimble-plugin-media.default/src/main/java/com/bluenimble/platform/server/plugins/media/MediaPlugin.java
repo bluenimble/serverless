@@ -16,6 +16,11 @@
  */
 package com.bluenimble.platform.server.plugins.media;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+
+import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiContentTypes;
 import com.bluenimble.platform.api.ApiMediaProcessor;
@@ -26,6 +31,7 @@ import com.bluenimble.platform.api.impls.media.engines.TemplateEngine;
 import com.bluenimble.platform.api.impls.media.engines.TemplateEnginesRegistry;
 import com.bluenimble.platform.api.impls.media.engines.handlebars.HandlebarsTemplateEngine;
 import com.bluenimble.platform.api.impls.media.engines.javascript.JavascriptEngine;
+import com.bluenimble.platform.api.media.MediaTypeUtils;
 import com.bluenimble.platform.plugins.impls.AbstractPlugin;
 import com.bluenimble.platform.server.ApiServer;
 import com.bluenimble.platform.server.ApiServer.Event;
@@ -45,6 +51,15 @@ public class MediaPlugin extends AbstractPlugin {
 	public void init (final ApiServer server) throws Exception {
 		
 		this.server = server;
+		
+		// install mimes
+		InputStream mimes = null;
+		try {
+			mimes = new FileInputStream (new File (home, "mimes"));
+			MediaTypeUtils.install (mimes);
+		} finally {
+			IOUtils.closeQuietly (mimes);
+		}
 		
 		TextMediaProcessor text = new TextMediaProcessor (this);
 		

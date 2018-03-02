@@ -1,0 +1,27 @@
+{
+	    "verb": "get",
+	"endpoint": "/static/::path",
+	
+	"security": {
+		/* should turn true or remove this property as by default services are secure */
+		"enabled": "false", 
+		"roles": ["super"]
+	},
+	
+	"media": {
+		"*": {
+			"base": "application/octet-stream"
+		}
+	},
+	
+	"custom": {
+		"resources": {
+			"root": "app"
+		}
+	},
+	
+	"spi": {
+		"class": "com.bluenimble.platform.api.impls.spis.GetResourceApiServiceSpi"
+	} 
+	
+}

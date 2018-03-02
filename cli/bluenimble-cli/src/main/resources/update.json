@@ -4,10 +4,7 @@
 	"copyright": 	"Copyright (c) BlueNimble, Inc. (https://www.bluenimble.com)",
 	"endpoints": {
 		"version": 		"https://apis.bluenimble.space/customer/software/icli/version",
-		"download": 	"http://downloads.bluenimble.com/developer/bluenimble-icli.zip",
-		"signup": 		"",
-		"login": 		"",
-		"snippets": 	""
+		"download": 	"http://downloads.bluenimble.com/developer/bluenimble-cli.zip"
 	},
-	"package": "bluenimble-icli.zip"
+	"package": "bluenimble-cli.zip"
 }

@@ -16,6 +16,7 @@
  */
 package com.bluenimble.platform.api.impls.spis;
 
+import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiOutput;
@@ -35,6 +36,11 @@ public class GetResourceApiServiceSpi extends AbstractApiServiceSpi {
 		String Path = "path";
 	}
 
+	interface Custom {
+		String Resources 	= "resources";
+		String Root 		= "root";
+	}
+
 	@Override
 	public ApiOutput execute (Api api, ApiConsumer consumer, ApiRequest request, ApiResponse response) throws ApiServiceExecutionException {
 		
@@ -42,6 +48,11 @@ public class GetResourceApiServiceSpi extends AbstractApiServiceSpi {
 		
 		if (Lang.isNullOrEmpty (path)) {
 			throw new ApiServiceExecutionException ("Resource / not found").status (ApiResponse.BAD_REQUEST);
+		}
+		
+		String location = (String)Json.find (request.getService ().getCustom (), Custom.Resources, Custom.Root);
+		if (!Lang.isNullOrEmpty (location)) {
+			path = location + Lang.SLASH + path;
 		}
 		
 		ApiResource r;

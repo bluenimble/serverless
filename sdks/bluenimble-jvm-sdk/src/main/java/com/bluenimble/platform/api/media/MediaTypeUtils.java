@@ -27,55 +27,37 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Lang;
 
 public class MediaTypeUtils {
 	
 	static final Map<String, String> MediaTypes = new HashMap<String, String> ();
 	
-	static {
-		try {
-			load ();
-		} catch (IOException ex) {
-			throw new RuntimeException (ex.getMessage (), ex);
-		}
-		
-	}
-	
-	private static void load () throws IOException {
+	public static void install (InputStream mimes) throws IOException {
 		
 		String line;
 		
-		InputStream mimes = null;
-		
-		try {
-			mimes = MediaTypeUtils.class.getResourceAsStream ("bnb.mimes");
-			
-			BufferedReader br = new BufferedReader (new InputStreamReader (mimes));
-			while ((line = br.readLine ()) != null) {
-				line = line.trim ();
-				if (Lang.BLANK.equals (line) || line.startsWith (Lang.SHARP)) {
-					continue;
-				}
-				int indexOfEq = line.lastIndexOf (Lang.EQUALS);
-				if (indexOfEq < 1) {
-					continue;
-				}
-				String 		mime 		= line.substring (0, indexOfEq);
-				String [] 	extensions 	= Lang.split (line.substring (indexOfEq + 1), Lang.COMMA);
-				
-				for (String extension : extensions) {
-					if (MediaTypes.containsKey (extension)) {
-						System.out.println ("extension: " + extension + " found twice. Line " + line);
-					}
-					MediaTypes.put (extension, mime);
-				}
-				
-				
+		BufferedReader br = new BufferedReader (new InputStreamReader (mimes));
+		while ((line = br.readLine ()) != null) {
+			line = line.trim ();
+			if (Lang.BLANK.equals (line) || line.startsWith (Lang.SHARP)) {
+				continue;
 			}
-		} finally {
-			IOUtils.closeQuietly (mimes);
+			int indexOfEq = line.lastIndexOf (Lang.EQUALS);
+			if (indexOfEq < 1) {
+				continue;
+			}
+			String 		mime 		= line.substring (0, indexOfEq);
+			String [] 	extensions 	= Lang.split (line.substring (indexOfEq + 1), Lang.COMMA);
+			
+			for (String extension : extensions) {
+				if (MediaTypes.containsKey (extension)) {
+					System.out.println ("extension: " + extension + " found twice. Line " + line);
+				}
+				MediaTypes.put (extension, mime);
+			}
+			
+			
 		}
 
 	}
