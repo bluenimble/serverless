@@ -48,7 +48,7 @@
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>3.0.2</version>
 				<configuration>
-					<outputDirectory>../../build/bluenimble/lib</outputDirectory>
+					<outputDirectory>../../build/bluenimble-${project.version}/lib</outputDirectory>
 					<excludes>
 						<exclude>main/</exclude>
 					</excludes>
@@ -69,15 +69,15 @@
 						<configuration>
 							<target>
 							
-								<copy todir="../../build/bluenimble">
+								<copy todir="../../build/bluenimble-${project.version}">
 									<fileset dir="src/main/resources" />
 								</copy>
 			
-								<replace dir="../../build/bluenimble" value="${project.version}">
+								<replace dir="../../build/bluenimble-${project.version}" value="${project.version}">
 									<replacetoken>[version]</replacetoken>
 								</replace>
 								
-								<replace file="../../build/bluenimble/config/instance.json" token="[version]" value="${project.version}"/>
+								<replace file="../../build/bluenimble-${project.version}/config/instance.json" token="[version]" value="${project.version}"/>
 								
 							</target>
 						</configuration>

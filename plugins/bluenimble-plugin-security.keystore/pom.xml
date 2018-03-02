@@ -65,7 +65,7 @@
                 <version>2.5.3</version>
                 <configuration>
                     <descriptor>../../assemblies/plugin.xml</descriptor>
-                    <outputDirectory>../../build/bluenimble/plugins</outputDirectory>
+                    <outputDirectory>../../build/bluenimble-${project.version}/plugins</outputDirectory>
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>

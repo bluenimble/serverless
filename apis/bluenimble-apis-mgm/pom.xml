@@ -65,7 +65,7 @@
                 <version>2.5.3</version>
                 <configuration>
                     <descriptor>../../assemblies/api.xml</descriptor>
-                    <outputDirectory>../../build/bluenimble/spaces/sys</outputDirectory>
+                    <outputDirectory>../../build/bluenimble-${project.version}/spaces/sys</outputDirectory>
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>
