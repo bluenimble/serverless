@@ -21,13 +21,13 @@ set JAVA="%JAVA_HOME:"=%\bin\java"
 :okJava
 if not "%BN_HOME%" == "" goto gotHome
 set BN_HOME=%CURRENT_DIR%
-if exist "%BN_HOME%\bn.bat" goto okHome
+if exist "%BN_HOME%\bnb.bat" goto okHome
 cd ..
 set BN_HOME=%cd%
 cd %CURRENT_DIR%
 
 :gotHome
-if exist "%BN_HOME%\bn.bat" goto okHome
+if exist "%BN_HOME%\bnb.bat" goto okHome
 echo The BN_HOME environment variable is not defined correctly
 echo This environment variable is needed to run this program
 goto end

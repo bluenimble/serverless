@@ -22,4 +22,12 @@
       </includes>
     </fileSet>
   </fileSets>
+  
+  <dependencySets>
+	<dependencySet>
+	  <outputDirectory>${file.separator}lib</outputDirectory>
+	  <scope>runtime</scope>
+	</dependencySet>
+  </dependencySets>
+
 </assembly>

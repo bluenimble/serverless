@@ -16,13 +16,13 @@ set JAVA="%JAVA_HOME:"=%\bin\java"
 :okJava
 if not "%BN_HOME%" == "" goto gotHome
 set BN_HOME=%CURRENT_DIR%
-if exist "%BN_HOME%\bn.bat" goto okHome
+if exist "%BN_HOME%\bnb.bat" goto okHome
 cd ..
 set BN_HOME=%cd%
 cd %CURRENT_DIR%
 
 :gotHome
-if exist "%BN_HOME%\bn.bat" goto okHome
+if exist "%BN_HOME%\bnb.bat" goto okHome
 echo The BN_HOME environment variable is not defined correctly
 echo This environment variable is needed to run this program
 goto end
@@ -48,7 +48,7 @@ rem AND ATTACH TO THE CURRENT HOST, PORT 1044
 rem BlueNimble MAXIMUM HEAP. USE SYNTAX -Xmx<memory>, WHERE <memory> HAS THE TOTAL MEMORY AND SIZE UNIT. EXAMPLE: -Xmx512m
 set MAXHEAP=-Xmx384m
 
-set CPATH=%BN_HOME%/boot/bluenimble-api.jar;%BN_HOME%/boot/bluenimble-mgr-icli-boot.jar
+set CPATH=%BN_HOME%/boot/bluenimble-jvm-sdk-[version].jar;%BN_HOME%/boot/bluenimble-cli-boot-[version].jar
 
 call %JAVA% %MAXHEAP% %JAVA_OPTS_SCRIPT% -cp %CPATH% com.bluenimble.platform.icli.mgm.boot.BnMgmICli
 

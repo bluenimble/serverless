@@ -25,11 +25,11 @@ done
 PRGDIR=`dirname "$PRG"`
 
 # Only set BN_HOME if not already set
-[ -f "$BN_HOME"/bn.sh ] || BN_HOME=`cd "$PRGDIR" ; pwd`
+[ -f "$BN_HOME"/bnb.sh ] || BN_HOME=`cd "$PRGDIR" ; pwd`
 export BN_HOME
 cd "$BN_HOME"
 
-BN_PID=$BN_HOME/bn.pid
+BN_PID=$BN_HOME/bnb.pid
 
 if [ -f "$BN_PID" ]
 then

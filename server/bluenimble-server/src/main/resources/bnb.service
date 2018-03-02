@@ -6,8 +6,8 @@ After=network.target
 Type=simple
 User=root
 Group=root
-ExecStart=/opt/bluenimble/platform/bn.sh
-ExecStop=/opt/bluenimble/platform/bn.stop.sh
+ExecStart=/opt/bluenimble/platform/bnb.sh
+ExecStop=/opt/bluenimble/platform/bnb.stop.sh
 TimeoutSec=600
 [Install]
 WantedBy=multi-user.target

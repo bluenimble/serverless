@@ -99,7 +99,7 @@ public class BnMgmICli {
 		
 		Home = new File (homePath);
 		
-		Software = Json.load (BnMgmICli.class.getResourceAsStream ("bn.json"));
+		Software = Json.load (BnMgmICli.class.getResourceAsStream ("bnb.json"));
 		
 		upgrade ();
 		

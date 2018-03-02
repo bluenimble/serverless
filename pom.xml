@@ -84,6 +84,7 @@
 		<module>plugins</module>
 		<module>sdks</module>
 		<module>apis</module>
+		<module>cli</module>
 	</modules>
 
 </project>

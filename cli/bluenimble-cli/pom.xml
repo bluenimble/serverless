@@ -33,6 +33,9 @@
 				<excludes>
 					<exclude>**/*.java</exclude>
 				</excludes>
+				<includes>
+					<include>**/*.json</include>
+				</includes>
 			</resource>
 		</resources>
 		<plugins>
@@ -78,6 +81,34 @@
                     </execution>
                 </executions>
               </plugin>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<phase>install</phase>
+						<configuration>
+							<target>
+							
+								<replace dir="../../build/${project.artifactId}-${project.version}" value="${project.version}">
+									<replacetoken>[version]</replacetoken>
+								</replace>
+
+								<move 	file="../../build/${project.artifactId}-${project.version}/lib/bluenimble-jvm-sdk-${project.version}.jar" 
+										todir="../../build/${project.artifactId}-${project.version}/boot" />
+								<move 	file="../../build/${project.artifactId}-${project.version}/lib/bluenimble-cli-boot-${project.version}.jar" 
+										todir="../../build/${project.artifactId}-${project.version}/boot" />
+								<move 	file="../../build/${project.artifactId}-${project.version}/lib/javax.persistence-api-2.2.jar" 
+										todir="../../build/${project.artifactId}-${project.version}/build-libs" />
+							
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 	<dependencies>

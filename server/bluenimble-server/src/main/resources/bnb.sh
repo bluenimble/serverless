@@ -25,7 +25,7 @@ done
 PRGDIR=`dirname "$PRG"`
 
 # Only set BN_HOME if not already set
-[ -f "$BN_HOME"/bn.sh ] || BN_HOME=`cd "$PRGDIR" ; pwd`
+[ -f "$BN_HOME"/bnb.sh ] || BN_HOME=`cd "$PRGDIR" ; pwd`
 export BN_HOME
 cd "$BN_HOME"
 
@@ -45,7 +45,7 @@ export JAVA
 
 JAVA_OPTS_SCRIPT="-Djna.nosys=true -XX:+HeapDumpOnOutOfMemoryError -XX:MaxDirectMemorySize=7879m -Djava.awt.headless=true -Dfile.encoding=UTF8 -Djava.net.preferIPv4Stack=true -DBN_HOME=$BN_HOME"
 
-BN_PID=$BN_HOME/bn.pid
+BN_PID=$BN_HOME/bnb.pid
 
 if [ -f "$BN_PID" ]; then
     echo "removing old pid file $BN_PID"

@@ -20,7 +20,7 @@ done
 PRGDIR=`dirname "$PRG"`
 
 # Only set BN_HOME if not already set
-[ -f "$BN_HOME"/bn.sh ] || BN_HOME=`cd "$PRGDIR" ; pwd`
+[ -f "$BN_HOME"/bnb.sh ] || BN_HOME=`cd "$PRGDIR" ; pwd`
 export BN_HOME
 cd "$BN_HOME"
 
@@ -36,7 +36,7 @@ export JAVA
 
 JAVA_OPTS_SCRIPT="-Xms60m -Djna.nosys=true -XX:+HeapDumpOnOutOfMemoryError -Djava.awt.headless=true -Dfile.encoding=UTF8 -DBN_HOME=$BN_HOME"
 
-BN_PID=$BN_HOME/bn.pid
+BN_PID=$BN_HOME/bnb.pid
 
 if [ -f "$BN_PID" ]; then
     echo "removing old pid file $BN_PID"
@@ -58,5 +58,5 @@ MAXDISKCACHE=""
 echo $$ > $BN_PID
 
 exec "$JAVA" $JAVA_OPTS $BN_OPTS_MEMORY $JAVA_OPTS_SCRIPT $MAXDISKCACHE \
-    -cp "$BN_HOME/boot/bluenimble-api.jar:$BN_HOME/boot/bluenimble-mgr-icli-boot.jar" \
+    -cp "$BN_HOME/boot/bluenimble-jvm-sdk-[version].jar:$BN_HOME/boot/bluenimble-cli-boot-[version].jar" \
     $* com.bluenimble.platform.icli.mgm.boot.BnMgmICli

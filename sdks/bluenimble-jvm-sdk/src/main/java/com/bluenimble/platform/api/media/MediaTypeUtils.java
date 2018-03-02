@@ -50,7 +50,7 @@ public class MediaTypeUtils {
 		InputStream mimes = null;
 		
 		try {
-			mimes = MediaTypeUtils.class.getResourceAsStream ("bn.mimes");
+			mimes = MediaTypeUtils.class.getResourceAsStream ("bnb.mimes");
 			
 			BufferedReader br = new BufferedReader (new InputStreamReader (mimes));
 			while ((line = br.readLine ()) != null) {
