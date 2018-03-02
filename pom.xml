@@ -8,15 +8,15 @@
 	<version>1.0.0-SNAPSHOT</version>
 	
 	<packaging>pom</packaging>
-	<name>BlueNimble Serverless Platform</name>
+	<name>BlueNimble Serverless</name>
 
 	<properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <appName>BlueNimble Serverless Platform</appName>
+        <appName>BlueNimble Serverless</appName>
     </properties>
 
 	<url>https://www.bluenimble.com</url>
-    <description>BlueNimble Enterprise-Class Serverless Platform</description>
+    <description>BlueNimble Enterprise-Class Serverless</description>
     <inceptionYear>2016</inceptionYear>
     <organization>
         <name>BlueNimble, Inc.</name>
@@ -70,13 +70,13 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git@github.com:bluenimble/bluenimble-serverless.git</connection>
-        <developerConnection>scm:git:git@github.com:bluenimble/bluenimble-serverless.git</developerConnection>
-        <url>scm:git:git@github.com:bluenimble/bluenimble-serverless.git</url>
+        <connection>scm:git:git@github.com:bluenimble/serverless.git</connection>
+        <developerConnection>scm:git:git@github.com:bluenimble/serverless.git</developerConnection>
+        <url>scm:git:git@github.com:bluenimble/serverless.git</url>
     </scm>
     <issueManagement>
         <system>GitHub Issues</system>
-        <url>https://github.com/bluenimble/bluenimble-serverless/issues</url>
+        <url>https://github.com/bluenimble/serverless/issues</url>
     </issueManagement>
 	
 	<modules>

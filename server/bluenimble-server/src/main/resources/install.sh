@@ -9,8 +9,8 @@ echo       "Copyright (c) BlueNimble, Inc. (https://www.bluenimble.com)"
 echo       ""
 echo       "Install BlueNimble"
 
-if [ ! -f "boot.keys" ]; then
-	echo "[ERROR] boot.keys not found"
+if [ ! -f "root.keys" ]; then
+	echo "[ERROR] root.keys not found"
 	exit 1
 fi
 
@@ -56,15 +56,15 @@ wget --no-cache http://downloads.bluenimble.com/platform/bluenimble-server.tar.g
   sudo tar -xvzf bluenimble-server.tar.gz -C /opt/bluenimble/platform && \
   rm -f bluenimble-server.tar.gz
 
-sudo chmod 755 /opt/bluenimble/platform/bn.sh
-sudo chmod 755 /opt/bluenimble/platform/bn.stop.sh
+sudo chmod 755 /opt/bluenimble/platform/bnb.sh
+sudo chmod 755 /opt/bluenimble/platform/bnb.stop.sh
 sudo chmod 755 /opt/bluenimble/platform/upgrade.sh
 
 echo "Create BlueNimble SPA auto-start Service"
-sudo cp /opt/bluenimble/platform/bn.service /etc/systemd/system/bn.service
-sudo chmod 664 /etc/systemd/system/bn.service
-sudo systemctl enable /etc/systemd/system/bn.service
+sudo cp /opt/bluenimble/platform/bnb.service /etc/systemd/system/bnb.service
+sudo chmod 664 /etc/systemd/system/bnb.service
+sudo systemctl enable /etc/systemd/system/bnb.service
 sudo systemctl daemon-reload
 
 echo "Start BlueNimble Server Service"
-sudo systemctl start bn.service
+sudo systemctl start bnb.service

@@ -22,16 +22,4 @@
       </includes>
     </fileSet>
   </fileSets>
-  
-  <dependencySets>
-	<dependencySet>
-	  <outputDirectory>${file.separator}lib</outputDirectory>
-	  <scope>runtime</scope>
-	  <excludes>
-          <exclude>com.bluenimble.serverless:bluenimble-jvm-sdk</exclude>
-          <exclude>com.bluenimble.serverless:bluenimble-icli</exclude>
-      </excludes>
-	</dependencySet>
-  </dependencySets>
-  
 </assembly>

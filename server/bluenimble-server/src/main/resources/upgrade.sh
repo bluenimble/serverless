@@ -23,11 +23,11 @@ echo       "  Download the new version"
 wget http://downloads.bluenimble.com/platform/bluenimble-server.tar.gz
 tar -xvzf bluenimble-server.tar.gz -C .
 rm -f bluenimble-server.tar.gz
-chmod u+x bn.sh
-chmod u+x bn.stop.sh
+chmod u+x bnb.sh
+chmod u+x bnb.stop.sh
 chmod u+x upgrade.sh
 
-cp $oldInstall/boot.lf /opt/bluenimble/platform/boot.lf
+cp $oldInstall/boot.lf /opt/bluenimble/platform/root.keys
 
 echo       "  Start BlueNimble service"
-systemctl start bn.service
+systemctl start bnb.service
