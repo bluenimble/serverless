@@ -8,7 +8,9 @@
 			}
 		}
 	},
-	"quota": {
-        "workers": "60"
-    }
+	
+	"runtime": {
+		"timeout": "10000"
+	}
+	
 }

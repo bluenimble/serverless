@@ -1,0 +1,44 @@
+{
+	"namespace": "playground",
+	"name": "Playground Space",
+	
+	"secrets": {
+		"default": {
+			"key": "tNPcBu47rP0B1hJK",
+			"algorithm": "AES",
+			"age": "60"
+		}
+	},
+
+	"features": {
+		"scripting": {
+			"default": {
+				"provider": "bnb-javascript"
+			}
+		},
+		"storage": {
+			"default": {
+				"provider": "bnb-storage",
+				"spec": {
+					"mount": "playground"
+				}
+			}
+		},
+		"remote": {
+			"default": {
+				"provider": "bnb-remote",
+				"spec": {
+					"trustAll": "true",
+					"headers": {
+						"Content-Type": "application/json"
+					},
+					"serializer": "json"
+				}
+			}
+		}
+	},	
+	
+	"runtime": {
+		"timeout": "10000"
+	}
+}
