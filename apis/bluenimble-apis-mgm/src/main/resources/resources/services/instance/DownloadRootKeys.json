@@ -1,0 +1,27 @@
+{
+	    "verb": "get",
+	"endpoint": "/instance/keys",
+	
+	"spec": {
+		"fields": {
+			"paraphrase": { "value": "serverless" }
+		}
+	},
+	
+	"media": {
+		"*": {
+			"base": "application/octet-stream"
+		}
+	},
+	
+	"security": {
+		/* should set to true or remove this property */
+		"enabled": "false", 
+		"roles": ["super"]
+	},
+	
+	"spi": {
+		"class": "com.bluenimble.platform.apis.mgm.spis.instance.DownloadRootKeysSpi"
+	} 
+	
+}

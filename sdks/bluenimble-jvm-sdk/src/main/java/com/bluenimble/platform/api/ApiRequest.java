@@ -28,7 +28,7 @@ public interface ApiRequest extends ApiContext {
 	
 	String Output 				= "Container.Request.Output";
 
-	String MediaType 			= "Container.Request.MediaType";
+	String SelectedMedia 		= "Container.Request.SelectedMedia";
 	String MediaSelector 		= "Container.Request.MediaSelector";
 
 	String Transport			= "transport";

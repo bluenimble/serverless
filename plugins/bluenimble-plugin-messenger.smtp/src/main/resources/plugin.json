@@ -1,6 +1,6 @@
 {
 	"name": "messenger.smtp.bnb",
-	"title": "Provides an SMTP Messenger feature to a BlueNimble Instance",
+	"title": "Messenger Implementation - SMTP",
 	
 	"spi": {
 		"class": "com.bluenimble.platform.server.plugins.messenger.smtp.SmtpMessengerPlugin",

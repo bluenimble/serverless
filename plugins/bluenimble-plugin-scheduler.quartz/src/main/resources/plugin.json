@@ -1,6 +1,7 @@
 {
 	"name": "scheduler.quartz",
-	"title": "Provide Task scheduling to spaces",
+	"title": "Scheduler Implementation - Run Jobs - Quartz",
+	
 	"spi": {
 		"class": "com.bluenimble.platform.server.plugins.scheduler.SchedulerPlugin",
 		"properties": {

@@ -92,8 +92,8 @@ public class TextMediaProcessor implements ApiMediaProcessor {
 	public void process (Api api, ApiService service, ApiConsumer consumer, ApiOutput output, final ApiRequest request, ApiResponse response) 
 			throws ApiMediaException {
 		
-		String contentType = (String)request.get (ApiRequest.MediaType);
-		if (Lang.isNullOrEmpty (contentType)) {
+		String contentType = (String)request.get (ApiRequest.SelectedMedia);
+		if (Lang.isNullOrEmpty (contentType) || Lang.STAR.equals  (contentType)) {
 			contentType = ApiContentTypes.Text;
 		}
 		

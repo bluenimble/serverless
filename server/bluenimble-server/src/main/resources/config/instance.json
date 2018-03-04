@@ -2,8 +2,7 @@
 
 	"id": "[vars.id | 'bn']",
 	"type": "[vars.type | 'standard']",
-	"name": "BlueNimble",
-	"description": "BlueNimble Serverless Platform",
+	"name": "BlueNimble Serverless",
 	"version": "[version]",
 
 	"debug": "[ vars.debug | 'true' ]",

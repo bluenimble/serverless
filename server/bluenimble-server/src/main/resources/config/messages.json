@@ -63,6 +63,15 @@
 	"UrlType": {
 		"en": "{0} must be a valid Url"
 	},
+	"StartsWith": {
+		"en": "{0} does not start with {1}"
+	},
+	"EndsWith": {
+		"en": "{0} does not end with {1}"
+	},
+	"Contains": {
+		"en": "{0} does not contain {1}"
+	},
 	"Regex": {
 		"en": "{0} invalid format"
 	},

@@ -1,6 +1,6 @@
 {
 	"name": "security.keystore",
-	"title": "BlueNimble Default Key Store Manager",
+	"title": "Space KeyStore Manager Implementation - Filesystem based keypairs storage",
 	
 	"spi": {
 		"class": "com.bluenimble.platform.plugins.keystores.KeyStorePlugin",

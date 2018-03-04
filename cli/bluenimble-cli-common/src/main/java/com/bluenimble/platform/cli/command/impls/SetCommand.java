@@ -30,8 +30,6 @@ public class SetCommand extends AbstractCommand {
 
 	private static final long serialVersionUID = 1852287917060945550L;
 	
-	private static final String ParaPhraseVar 	= "paraphrase";
-	
 	public SetCommand () {
 		super ("set", I18nProvider.get (I18N_COMMANDS + "set.desc"));
 	}
@@ -62,14 +60,16 @@ public class SetCommand extends AbstractCommand {
 		final Map<String, Object> vars = (Map<String, Object>)tool.getContext (Tool.ROOT_CTX).get (ToolContext.VARS);
 		
 		try {
-			if (varName.equals (ParaPhraseVar)) {
+			if (varName.equals (Tool.ParaPhraseVar)) {
 				tool.setParaphrase ((String)value, true);
 				tool.printer ().content ("Security", "Paraphase Updated");
 			}
 			
-			vars.put (varName, varName.equals (ParaPhraseVar) ? tool.getParaphrase (false) : value);
+			vars.put (varName, varName.equals (Tool.ParaPhraseVar) ? tool.getParaphrase (false) : value);
 			
-			tool.saveVariable (varName, varName.equals (ParaPhraseVar) ? tool.getParaphrase (false) : value);
+			tool.saveVariable (varName, varName.equals (Tool.ParaPhraseVar) ? tool.getParaphrase (false) : value);
+			
+			
 			
 		} catch (Exception e) {
 			throw new CommandExecutionException (e.getMessage (), e);

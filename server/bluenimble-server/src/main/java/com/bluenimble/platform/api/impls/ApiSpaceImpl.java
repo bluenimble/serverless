@@ -773,7 +773,7 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 			list (new Selector () {
 				@Override
 				public boolean select (Api api) {
-					aApis.add (api.describe (DescribeOption.Info));
+					aApis.add (api.describe (options));
 					return false;
 				}
 			});

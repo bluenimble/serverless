@@ -239,5 +239,5 @@ ApiRequest.prototype.Output 		= JC_ApiRequest.Output;
 ApiRequest.prototype.Payload 		= JC_ApiRequest.Payload;
 ApiRequest.prototype.Transport 		= JC_ApiRequest.Transport;
 
-ApiRequest.prototype.MediaType 		= JC_ApiRequest.MediaType;
+ApiRequest.prototype.SelectedMedia	= JC_ApiRequest.SelectedMedia;
 ApiRequest.prototype.MediaSelector 	= JC_ApiRequest.MediaSelector;

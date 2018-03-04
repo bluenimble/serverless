@@ -237,10 +237,9 @@ public abstract class AbstractApiServer implements ApiServer {
 				JsonArray aSpaces = new JsonArray ();
 				describe.set (DescribeOption.Option.spaces.name (), aSpaces);
 				for (ApiSpace space : spaces) {
-					aSpaces.add (space.describe (DescribeOption.Info));
+					aSpaces.add (space.describe (options));
 				}
 			}
-			
 		}
 		
 		return describe;

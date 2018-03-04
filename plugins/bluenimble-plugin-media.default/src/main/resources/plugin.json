@@ -1,6 +1,6 @@
 {
-	"name": "media.bnb",
-	"title": "Provides basic media processors such as text, json, xml and html",
+	"name": "media.default",
+	"title": "Media Processor Implementation - text, json, html, stream with templating engine",
 	
 	"spi": {
 		"class": "com.bluenimble.platform.server.plugins.media.MediaPlugin",

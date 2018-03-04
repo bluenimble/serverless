@@ -27,8 +27,11 @@ import com.bluenimble.platform.cli.printing.Printer;
 
 public interface Tool extends Serializable {
 	
-	String				ROOT_CTX = ".";
-	File 				Home = new File (System.getProperty ("user.home"));
+	String				ROOT_CTX 		= ".";
+	File 				Home 			= new File (System.getProperty ("user.home"));
+	
+	String 				ParaPhraseVar 	= "paraphrase";
+	
 	
 	int 				FAILURE   		= 0;
 	int 				SUCCESS 		= 1;

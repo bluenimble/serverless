@@ -67,6 +67,10 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 		validators.put (StreamValidator.Type.toLowerCase (), 		new StreamValidator ());
 		validators.put (AlphaNumericValidator.Type.toLowerCase (), 	new AlphaNumericValidator ());
 		
+		vtypes.put (StartsWithValidator.Type.toLowerCase (), 		new StartsWithValidator ());
+		vtypes.put (EndsWithValidator.Type.toLowerCase (), 			new EndsWithValidator ());
+		vtypes.put (ContainsValidator.Type.toLowerCase (), 			new ContainsValidator ());
+
 		vtypes.put (EmailValidator.Type.toLowerCase (), 			new EmailValidator ());
 		vtypes.put (UrlValidator.Type.toLowerCase (), 				new UrlValidator ());
 		vtypes.put (RegexValidator.Type.toLowerCase (), 			new RegexValidator ());

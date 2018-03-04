@@ -1,6 +1,6 @@
 {
 	"name": "server.ext",
-	"title": "BlueNimble Core Instance Extensions",
+	"title": "Instance Extensions - ApiRequest Visitor",
 	
 	"spi": {
 		"class": "com.bluenimble.platform.plugins.ext.ExtensionsPlugin",

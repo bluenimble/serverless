@@ -1,6 +1,7 @@
 {
 	"name": "storage.filesystem.default",
-	"title": "Provides a storage feature to a BlueNimble Instance (based on FileSystem mounts)",
+	"title": "Storage Implementation - FileSystem POSIX",
+	
 	"spi": {
 		"class": "com.bluenimble.platform.server.plugins.storage.fs.FileSystemStoragePlugin",
 		"properties": {

@@ -32,6 +32,7 @@ public class DescribeOption implements Serializable {
 	public static final DescribeOption Features 	= new DescribeOption (Option.features);
 	public static final DescribeOption Apis 		= new DescribeOption (Option.apis);
 	public static final DescribeOption All 			= new DescribeOption (Option.all);
+	public static final DescribeOption Services 	= new DescribeOption (Option.services);
 
 	public static final Map<DescribeOption.Option, DescribeOption> AllOptions = new HashMap<DescribeOption.Option, DescribeOption> ();
 	static {
@@ -41,6 +42,7 @@ public class DescribeOption implements Serializable {
 		AllOptions.put (Option.plugins, Plugins);
 		AllOptions.put (Option.features, Features);
 		AllOptions.put (Option.apis, Apis);
+		AllOptions.put (Option.services, Services);
 	} 
 	
 	public enum Option {

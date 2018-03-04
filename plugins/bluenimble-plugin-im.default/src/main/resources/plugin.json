@@ -1,6 +1,7 @@
 {
 	"name": "im.default",
-	"title": "Default BlueNimble Identity Management",
+	"title": "Identity Management - Login, Signup, Activate, OAuth, Forget Password",
+	
 	"spi": {
 		"class": "com.bluenimble.platform.plugins.im.IMPlugin",
 		"properties": {

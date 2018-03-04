@@ -55,8 +55,8 @@ public class JsonMediaProcessor implements ApiMediaProcessor {
 	public void process (Api api, ApiService service, ApiConsumer consumer, ApiOutput output, ApiRequest request, final ApiResponse response) 
 			throws ApiMediaException {
 
-		String contentType = (String)request.get (ApiRequest.MediaType);
-		if (Lang.isNullOrEmpty (contentType)) {
+		String contentType = (String)request.get (ApiRequest.SelectedMedia);
+		if (Lang.isNullOrEmpty (contentType) || Lang.STAR.equals  (contentType)) {
 			contentType = ApiContentTypes.Json;
 		}
 
@@ -67,7 +67,7 @@ public class JsonMediaProcessor implements ApiMediaProcessor {
 			
 			JsonObject mediaSet = service == null ? null : service.getMedia ();
 			if (mediaSet != null && !mediaSet.isEmpty ()) {
-				mediaDef = Json.getObject (mediaSet, ApiContentTypes.Json);
+				mediaDef = Json.getObject (mediaSet, contentType);
 			}
 			if (mediaDef == null) {
 				mediaDef = Json.getObject (mediaSet, Lang.STAR);

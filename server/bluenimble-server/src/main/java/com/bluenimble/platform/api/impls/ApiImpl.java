@@ -480,13 +480,18 @@ public class ApiImpl implements Api {
 		// don't apply matching, check if it's in supported first
 		if (!Json.isNullOrEmpty (service.getMedia ())) {
 			JsonObject oMedia = Json.getObject (service.getMedia (), requestedMedia);
+			boolean anySelected = false;
+			if (Json.isNullOrEmpty (oMedia)) {
+				oMedia = Json.getObject (service.getMedia (), Lang.STAR);
+				anySelected = oMedia != null;
+			}
 			if (!Json.isNullOrEmpty (oMedia)) {
 				String baseMedia = Json.getString (oMedia, ApiService.Spec.Media.Base);
-				request.set (ApiRequest.MediaType, requestedMedia, ApiRequest.Scope.Parameter);
+				request.set (ApiRequest.SelectedMedia, anySelected ? Lang.STAR : requestedMedia, ApiRequest.Scope.Parameter);
 				return mediaProcessors.get (baseMedia);
 			}
 		} else if (mediaProcessors.containsKey (requestedMedia)) {
-			request.set (ApiRequest.MediaType, requestedMedia, ApiRequest.Scope.Parameter);
+			request.set (ApiRequest.SelectedMedia, requestedMedia, ApiRequest.Scope.Parameter);
 			return mediaProcessors.get (requestedMedia);
 		}
 		
@@ -521,7 +526,7 @@ public class ApiImpl implements Api {
 			requestedMedia = ApiContentTypes.Json;
 		}
 		
-		request.set (ApiRequest.MediaType, requestedMedia, ApiRequest.Scope.Parameter);
+		request.set (ApiRequest.SelectedMedia, requestedMedia, ApiRequest.Scope.Parameter);
 		
 		return mediaProcessors.get (requestedMedia);
 	}

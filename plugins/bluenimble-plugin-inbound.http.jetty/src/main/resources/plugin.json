@@ -1,6 +1,6 @@
 {
 	"name": "inbound.http.jetty",
-	"title": "Providing HTTP Inbound Protocol to a BlueNimble Instance (Based on Jetty)",
+	"title": "In-bound Protocol- HTTP/HTTP2 - Jetty",
 	
 	"spi": {
 		"class": "com.bluenimble.platform.plugins.inbound.http.jetty.JettyPlugin",

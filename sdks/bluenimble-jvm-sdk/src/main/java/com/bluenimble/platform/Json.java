@@ -109,8 +109,12 @@ public class Json {
     public static void store (JsonObject source, File file) throws IOException {
     	store (source, file, null);
     }
-
+    
     public static void store (JsonObject source, File file, String paraphrase) throws IOException {
+    	store (source, file, paraphrase, false);
+    }
+
+    public static void store (JsonObject source, File file, String paraphrase, boolean base64) throws IOException {
     	if (source == null) {
     		source = new JsonObject ();
     	}
@@ -127,17 +131,33 @@ public class Json {
     	if (!Lang.isNullOrEmpty (paraphrase)) {
     		OutputStream out = null;
     		try {
-    			out = new FileOutputStream (file);
+    			out = base64 ? new ByteArrayOutputStream () : new FileOutputStream (file);
     			EncryptionProvider.Default.crypt (
     				new ByteArrayInputStream (((ByteArrayOutputStream)os).toByteArray ()), 
-    				out, paraphrase, Mode.Encrypt
+    				out, pad (paraphrase), Mode.Encrypt
     			);
+    			
+    			if (base64) {
+    				byte [] bytes = Base64.encodeBase64 (((ByteArrayOutputStream)out).toByteArray ());
+    				out = new FileOutputStream (file);
+    				out.write (bytes);
+    				out.flush ();
+    			}
     		} catch (EncryptionProviderException e) {
     			throw new IOException (e.getMessage (), e);
 			} finally {
         		IOUtils.closeQuietly (out);
         	}
     	}
+    }
+    
+    public static void encrypt (JsonObject source, String paraphrase, OutputStream out) throws EncryptionProviderException {
+    	
+    	EncryptionProvider.Default.crypt (
+    		new ByteArrayInputStream (source.toString ().getBytes ()), 
+			out, pad (paraphrase), Mode.Encrypt
+		);
+    	
     }
 
     public static JsonObject getObject (JsonObject source, String name) {
@@ -565,6 +585,24 @@ public class Json {
 			Base64.encodeBase64String (IOUtils.toByteArray (new FileInputStream (new File ("tests/files/demos.keys.bin"))))
 		);
 		
+		
+	}
+	
+	private static String pad (String paraphrase) {
+		if (paraphrase.length () == 16) {
+			return paraphrase;
+		} else if (paraphrase.length () > 16) {
+			return paraphrase.substring (0, 15);
+		} else {
+			StringBuilder sb = new StringBuilder (paraphrase);
+			
+			for (int i = 0; i < (16 - paraphrase.length ()); i++) {
+				sb.append ("0");
+			}
+			String s = sb.toString ();
+			sb.setLength (0);
+			return s;
+		}
 		
 	}
     

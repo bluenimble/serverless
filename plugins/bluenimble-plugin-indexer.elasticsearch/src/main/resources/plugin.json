@@ -1,6 +1,7 @@
 {
 	"name": "indexer.elasticsearch",
-	"title": "Provides an indexer/search feature to a BlueNimble Instance (based on ElasticSearch)",
+	"title": "Indexer Implementation - ElasticSearch",
+	
 	"spi": {
 		"class": "com.bluenimble.platform.server.plugins.indexer.elasticsearch.ElasticSearchPlugin",
 		"properties": {

@@ -77,6 +77,9 @@ public class ApiByteArrayOutput implements ApiOutput {
 
 	@Override
 	public void pipe (OutputStream out, long position, long count) throws IOException {
+		if (count <= 0) {
+			count = bytes.length;
+		}
 		IOUtils.copy (new ByteArrayInputStream (bytes, (int)position, (int)count), out);
 	}
 

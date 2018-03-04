@@ -1,6 +1,6 @@
 {
 	"name": "tracking.indexer",
-	"title": "Indexer based requests tracking",
+	"title": "Requests Tracking implementation - Indexer backend",
 	
 	"spi": {
 		"class": "com.bluenimble.platform.plugins.tracking.IndexerBasedTrackingPlugin",

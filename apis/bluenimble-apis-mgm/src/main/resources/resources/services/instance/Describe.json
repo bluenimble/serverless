@@ -9,7 +9,7 @@
 	},
 	
 	"security": {
-		/* should turn true or remove this property as by default services are secure */
+		/* should set to true or remove this property */
 		"enabled": "false", 
 		"roles": ["super"]
 	},

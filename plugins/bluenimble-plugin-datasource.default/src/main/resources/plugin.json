@@ -2,8 +2,7 @@
 
 	"name": "datasource.default",
 	
-	"title": "Datasource (Databases and services) Implementation",
-	"description": "Datasource feature to a BlueNimble instance",
+	"title": "Datasource Implementation - Major RDBMSs (Oracle, MySQL, MariaDB, DB2, SqlServer, ...)",
 	
 	"spi": {
 		"class": "com.bluenimble.platform.plugins.datasource.DataSourcePlugin",

@@ -1,0 +1,31 @@
+.lshadow {
+    box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.1);
+    -webkit-box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.1);
+}
+.gshadow {
+    box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.3);
+}
+.rounded {
+    -webkit-border-radius: 12px;
+    -moz-border-radius: 12px;
+    border-radius: 12px;
+}
+
+.rounded-6 {
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
+}
+
+.rounded-bottom {
+    -webkit-border-radius: 0px 0px 12px 12px;
+    -moz-border-radius: 0px 0px 12px 12px;
+    border-radius: 0px 0px 12px 12px;
+}
+
+.rounded-top {
+    -webkit-border-radius: 12px 12px 0px 0px;
+    -moz-border-radius: 12px 12px 0px 0px;
+    border-radius: 12px 12px 0px 0px;
+}

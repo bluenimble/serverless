@@ -72,9 +72,9 @@ public class StreamMediaProcessor implements ApiMediaProcessor {
 		
 		String contentType = output != null ? output.contentType () : null;
 		if (Lang.isNullOrEmpty (contentType)) {
-			contentType = (String)request.get (ApiRequest.MediaType); 
+			contentType = (String)request.get (ApiRequest.SelectedMedia); 
 		}
-		if (Lang.isNullOrEmpty (contentType)) {
+		if (Lang.isNullOrEmpty (contentType) || Lang.STAR.equals  (contentType)) {
 			contentType = ApiContentTypes.Stream;
 		}
 		

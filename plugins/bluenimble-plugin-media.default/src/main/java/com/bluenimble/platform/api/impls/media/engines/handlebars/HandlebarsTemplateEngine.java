@@ -21,9 +21,6 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.github.jknack.handlebars.Handlebars;
-import com.github.jknack.handlebars.Template;
-import com.github.jknack.handlebars.io.TemplateSource;
 import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.api.Api;
@@ -36,6 +33,11 @@ import com.bluenimble.platform.api.impls.media.engines.TemplateEngineException;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.server.plugins.media.MediaPlugin;
+import com.github.jknack.handlebars.Handlebars;
+import com.github.jknack.handlebars.Helper;
+import com.github.jknack.handlebars.Options;
+import com.github.jknack.handlebars.Template;
+import com.github.jknack.handlebars.io.TemplateSource;
 
 public class HandlebarsTemplateEngine implements TemplateEngine {
 
@@ -59,6 +61,13 @@ public class HandlebarsTemplateEngine implements TemplateEngine {
 		engine = new Handlebars (new ResourceTemplateLoader (api));
 		engine.startDelimiter (Json.getString (features, StartDelimitter, DefaultStartDelimitter));
 		engine.endDelimiter (Json.getString (features, EndDelimitter, DefaultEndDelimitter));
+		
+		engine.registerHelper ("json", new Helper<JsonObject>() {
+			public CharSequence apply (JsonObject data, Options options) {
+				return new Handlebars.SafeString (data.toString ());
+			}
+		});
+		
 	}
 	
 	@Override

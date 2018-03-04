@@ -41,8 +41,6 @@ public class Log4JTracerPlugin extends AbstractPlugin {
 		
 		pcl.addSynonym (Synonyms.Default, DefaultTracer.class.getName ());
 		
-		System.out.println (pcl.synonym (Synonyms.Default));
-		
 	}
 
 	public boolean isAsyncLogging () {

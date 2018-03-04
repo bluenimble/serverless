@@ -171,6 +171,16 @@ public class BlueNimble extends RunnableTool {
 		loadScripts (new File (Home, "scripts"));
 		loadScripts (new File (Work, "scripts"));
 		
+		@SuppressWarnings("unchecked")
+		Map<String, Object> vars = (Map<String, Object>)getContext (Tool.ROOT_CTX).get (ToolContext.VARS);
+		if (!vars.containsKey (Tool.ParaPhraseVar)) {
+			try {
+				setParaphrase ("serverless", true);
+			} catch (Exception e) {
+				System.out.println ("ERROR: Can't set default paraphrase. Cause: " + e.getMessage ());
+			}			
+		}
+		
 		loadKeys (this);
 		
 		try {
@@ -517,7 +527,7 @@ public class BlueNimble extends RunnableTool {
 		}
 		if (oVars.containsKey (DefaultVars.Paraphrase)) {
 			try {
-				setParaphrase (Json.getString (oVars, DefaultVars.Paraphrase), false);
+				super.setParaphrase (Json.getString (oVars, DefaultVars.Paraphrase), false);
 			} catch (Exception e) {
 				printer ().error ("Can't read user paraphrase. Cause: " + e.getMessage ());
 			}
@@ -529,6 +539,28 @@ public class BlueNimble extends RunnableTool {
 		for (Object key : oVars.keySet ()) {
 			vars.put (String.valueOf (key), oVars.get (key));
 		}
+	}
+	
+	@Override
+	public void setParaphrase (String paraphrase, boolean encrypt) throws Exception {
+		super.setParaphrase (paraphrase, encrypt);
+		
+		// loop over keys, encrypt
+		if (KeysMap == null || KeysMap.isEmpty ()) {
+			return;
+		}
+		
+		Iterator<String> names = KeysMap.keySet ().iterator ();
+		while (names.hasNext ()) {
+			String k = names.next ();
+			updateKeys (KeysMap.get (k), paraphrase);
+		}
+		
+		
+	}
+
+	private void updateKeys (Keys keys, String paraphrase) throws Exception {
+		Json.store (keys.json (), new File (keysFolder (), keys.alias () + CliSpec.KeysExt), paraphrase, true);
 	}
 	
 }
