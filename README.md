@@ -1,4 +1,4 @@
-[![The Hybrid Serverless Platform](./assets/images/bluenimble-main.jpg)](https://www.bluenimble.com)
+[![The Hybrid Serverless Platform](./assets/images/bluenimble-main.png)](https://www.bluenimble.com)
 
 ## Getting Started
 
@@ -9,30 +9,11 @@
  * OpenJDK is also [not supported](https://github.com/processing/processing/wiki/Supported-Platforms#linux)
 
 ### Install BlueNimble
-#### Install from sources
-* Clone the [source repository](http://github.com/bluenimble/serverless) from Github. 
-    * On the command line, enter:
-    ````
-    git clone https://github.com/bluenimble/serverless.git
-    ````
-    * You can probably use [Git for Windows](http://windows.github.com/) or [Git for Mac](http://mac.github.com/) instead of the command line, however these aren't tested/supported and we only use the command line for development.
-* Build binaries
-    * On the command line, enter:
-    ````
-    mvn install
-    ````
+
 #### Install from binaries
 * Download either [bluenimble-1.0.0.zip](https://blueNimble-1.0.0) or [bluenimble-1.0.0.tar.gz](https://blueNimble-1.0.0)
 * Untar or Unzip the archive to a folder
-   * Mac or Linux users
-    ````
-    ./bnb.sh
-    ````
-   * Windows users
-    ````
-    ./bnb.bat
-    ````
-* If you're using Mac or Linux, on the command line, enter:
+* If you're a Mac or Linux user, on the command line, enter:
     ````
     cd ~/blueNimble-1.0.0 && chmod 755 *.sh
     ````
@@ -45,6 +26,20 @@
     ````
     ./bnb.bat
     ````
+#### Install from sources
+* Install git and maven 
+* Clone the [source repository](http://github.com/bluenimble/serverless) from Github. 
+    * On the command line, enter:
+    ````
+    git clone https://github.com/bluenimble/serverless.git
+    ````
+    * You can probably use [Git for Windows](http://windows.github.com/) or [Git for Mac](http://mac.github.com/) instead of the command line, however these aren't tested/supported and we only use the command line for development.
+* Build binaries
+    * On the command line, enter:
+    ````
+    mvn install
+    ````
+
 
 License
 =======
