@@ -22,23 +22,28 @@
     mvn install
     ````
 #### Install from binaries
-* Download BlueNimble
-[blueNimble-1.0.0.zip](https://blueNimble-1.0.0)
-[blueNimble-1.0.0.tar.gz](https://blueNimble-1.0.0)
-
+* Download either [bluenimble-1.0.0.zip](https://blueNimble-1.0.0) or [bluenimble-1.0.0.tar.gz](https://blueNimble-1.0.0)
 * Untar or Unzip the archive to a folder
+   * Mac or Linux users
+    ````
+    ./bnb.sh
+    ````
+   * Windows users
+    ````
+    ./bnb.bat
+    ````
 * If you're using Mac or Linux, on the command line, enter:
     ````
     cd ~/blueNimble-1.0.0 && chmod 755 *.sh
     ````
 #### Start BlueNimble
-* Windows users
-    ````
-    ./bnb.bat
-    ````
 * Mac or Linux users
     ````
     ./bnb.sh
+    ````
+* Windows users
+    ````
+    ./bnb.bat
     ````
 
 License
