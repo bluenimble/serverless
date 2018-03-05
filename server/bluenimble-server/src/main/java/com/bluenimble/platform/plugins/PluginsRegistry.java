@@ -28,10 +28,10 @@ public interface PluginsRegistry extends ClassLoaderRegistry {
 	void				start		() 								throws PluginRegistryException;
 	void				shutdown	();
 	
-	void  				install 	(File file) 				throws PluginRegistryException;
+	void  				install 	(File file) 					throws PluginRegistryException;
 	void 				uninstall 	(Plugin plugin, boolean keepBinaries) 			
-																throws PluginRegistryException;
-	void 				uninstall 	(File 	pluginFile) 		throws PluginRegistryException;
+																	throws PluginRegistryException;
+	void 				uninstall 	(File 	pluginFile) 			throws PluginRegistryException;
 	
 	Plugin 				lockup 		(String name);
 	

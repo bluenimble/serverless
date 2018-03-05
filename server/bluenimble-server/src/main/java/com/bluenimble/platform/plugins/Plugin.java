@@ -62,5 +62,5 @@ public interface Plugin extends Traceable {
 			getVendor		();
 	
 	void	setTracer 		(Tracer tracer);
-
+	
 }

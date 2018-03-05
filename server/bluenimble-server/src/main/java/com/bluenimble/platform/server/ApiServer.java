@@ -67,6 +67,9 @@ public interface ApiServer extends Traceable {
 		String Recyclables 	= "recyclables";
 	}
 	
+	interface EventTarget {
+	}
+	
 	String 					id 						();
 	String 					type 					();
 	int 					weight 					();

@@ -218,22 +218,23 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 		
 		ApiFileStreamSource is = new ApiFileStreamSource (fApiFile, ConfigKeys.ApiExt);
 		try {
-			return _install (is);
+			return install (is);
 		} finally {
 			IOUtils.closeQuietly (is.stream ());
 		}
 		
 	}
 	
+	/*
 	@Override
-	public Api install (ApiStreamSource source /*, JsonObject descriptor */) throws ApiManagementException {
+	public Api install (ApiStreamSource source) throws ApiManagementException {
 		
 		boolean started = isStarted ();
 		
 		// if the space is new, start it before 
 		if (!started) {
 			
-			// start executor (this is important is the space just created since it will be down)
+			// start executor (this is important if the space just created since it will be down)
 			try {
 				started = start ();
 			} catch (Exception e) {
@@ -256,8 +257,10 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 		
 		return _install (source);
 	}
+	*/
 	
-	public Api _install (ApiStreamSource source) throws ApiManagementException {
+	@Override
+	public Api install (ApiStreamSource source) throws ApiManagementException {
 		if (source == null) {
 			throw new ApiManagementException ("missing api payload");
 		}

@@ -3,8 +3,8 @@
 
     <Appenders>
 		<RollingFile name="All">
-			<FileName>${bluenimble.runtime}/logs/bluenimble.log</FileName>
-			<FilePattern>${bluenimble.runtime}/logs/bluenimble.%d{yyyy-MM-dd-hh-mm}.log.zip
+			<FileName>${sys:bluenimble.runtime}/logs/bluenimble.log</FileName>
+			<FilePattern>${sys:bluenimble.runtime}/logs/bluenimble.%d{yyyy-MM-dd-hh-mm}.log.zip
 			</FilePattern>
 			<PatternLayout>
 				<Pattern>%d{ISO8601} %-5p [%X{namespace}] - %msg%n</Pattern>
@@ -15,8 +15,8 @@
 			<DefaultRolloverStrategy max="10" />
 		</RollingFile>
 		<RollingFile name="Requests">
-			<FileName>${bluenimble.runtime}/logs/requests.log</FileName>
-			<FilePattern>${bluenimble.runtime}/logs/requests.%d{yyyy-MM-dd-hh-mm}.log.zip</FilePattern>
+			<FileName>${sys:bluenimble.runtime}/logs/requests.log</FileName>
+			<FilePattern>${sys:bluenimble.runtime}/logs/requests.%d{yyyy-MM-dd-hh-mm}.log.zip</FilePattern>
 			<PatternLayout>
 				<Pattern>%d{ISO8601} %-5p [%X{namespace}] [%X{request}] - %msg%n</Pattern>
 			</PatternLayout>

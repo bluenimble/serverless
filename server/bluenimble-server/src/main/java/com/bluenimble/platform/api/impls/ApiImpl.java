@@ -252,12 +252,14 @@ public class ApiImpl implements Api {
 			} catch (Exception ex) {
 				failed (ex);
 			} 
+			
 			// start services manager
 			try {
 				servicesManager.onStart (context);
 			} catch (Exception ex) {
 				failed (ex);
 			} 
+			
 		} finally {
 			context.recycle ();
 		}

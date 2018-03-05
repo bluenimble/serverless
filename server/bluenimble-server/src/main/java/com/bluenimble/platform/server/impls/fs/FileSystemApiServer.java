@@ -327,7 +327,7 @@ public class FileSystemApiServer extends AbstractApiServer {
 			} else if (aFile.isFile ()) {
 				ApiFileStreamSource is = new ApiFileStreamSource (aFile, ConfigKeys.ApiExt);
 				try {
-					api = space._install (is);
+					api = space.install (is);
 				} catch (Exception ex) {
 					failed.put (space.getNamespace () + " > " + aFile.getName (), ex);
 					continue;

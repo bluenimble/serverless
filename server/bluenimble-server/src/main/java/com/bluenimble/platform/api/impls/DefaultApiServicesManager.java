@@ -258,6 +258,7 @@ public class DefaultApiServicesManager implements ApiServicesManager {
 
 		startService (service, null, false);
 	}
+	
 	private void startService (ApiService service, ApiContext context, boolean pause) {
 		ApiServiceImpl sImpl = (ApiServiceImpl)service;
 		
