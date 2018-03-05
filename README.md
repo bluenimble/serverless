@@ -1,16 +1,53 @@
-[![The Hybrid Serverless Platform](./assets/images/bluenimble-main.jpg)](https://www.bluenimble.com)
+BlueNimble is a Hybrid Serverless Platform taking a simple approach to create applications, focusing on developer productivity and infrastructure agnosticity.
 
-## Getting Started
+We believe that serverless is a new way of running computations and should not be tied to a spacific clustering or microservices technology. If it's the case, embrassing new technologies and deployment models in the future become very complicated, adding to the fact that developers are, no more, coding application business logic, but, also, they should be knowledgeable of many components of the infrastructure and solve issues raising from that level which is not part of the application they are building.
 
-### Install Java 8
- * On Windows and Linux, install the latest [JRE 8](http://www.oracle.com/technetwork/java/javase/downloads) from Oracle. 
- * On Mac OS X, download and install [JDK 8](http://www.oracle.com/technetwork/java/javase/downloads). 
- * Previous versions of Java are [not supported](https://github.com/processing/processing/wiki/Supported-Platforms#java-versions).
- * OpenJDK is also [not supported](https://github.com/processing/processing/wiki/Supported-Platforms#linux)
+## Quick Start - Single Node
+
+### Install Java 8 or higher
+ * On Mac, Windows or Linux, install the latest [OpenJDK JRE](http://openjdk.java.net)   
+ * [ORACLE JRE](http://www.oracle.com/technetwork/java/javase/downloads) is also supported 
+ * Previous versions to Java 8 are not supported
 
 ### Install BlueNimble
+
+#### Install Server from binaries
+* Download either [bluenimble-1.0.0.zip](https://blueNimble-1.0.0) or [bluenimble-1.0.0.tar.gz](https://blueNimble-1.0.0)
+* Untar or Unzip the archive to a folder
+* If you're a Mac or Linux user, on the command line, enter:
+    ````
+    cd ~/blueNimble-1.0.0 && chmod 755 *.sh
+    ````
+#### Start BlueNimble Server 
+* Mac or Linux users
+    ````
+    ./bnb.sh
+    ````
+* Windows users
+    ````
+    ./bnb.bat
+    ````
+#### Install BlueNimble CLI from binaries
+* Download either [bluenimble-cli-1.0.0.zip](https://blueNimble-1.0.0) or [bluenimble-cli-1.0.0.tar.gz](https://blueNimble-1.0.0)
+* Untar or Unzip the archive to a folder
+* If you're a Mac or Linux user, on the command line, enter:
+    ````
+    cd ~/blueNimble-cli-1.0.0 && chmod 755 *.sh
+    ````
+The CLI could be installed in any other machine, not necessarily where the server is installed 
+
+#### Start BlueNimble CLI 
+* Mac or Linux users
+    ````
+    ./bnb.sh
+    ````
+* Windows users
+    ````
+    ./bnb.bat
+    ````
 #### Install from sources
-* Clone the [source repository](http://github.com/bluenimble/serverless) from Github. 
+* Install git and maven 
+* Clone the [blunimble/serverless repository](http://github.com/bluenimble/serverless) from Github. 
     * On the command line, enter:
     ````
     git clone https://github.com/bluenimble/serverless.git
@@ -21,30 +58,11 @@
     ````
     mvn install
     ````
-#### Install from binaries
-* Download either [bluenimble-1.0.0.zip](https://blueNimble-1.0.0) or [bluenimble-1.0.0.tar.gz](https://blueNimble-1.0.0)
-* Untar or Unzip the archive to a folder
-   * Mac or Linux users
-    ````
-    ./bnb.sh
-    ````
-   * Windows users
-    ````
-    ./bnb.bat
-    ````
-* If you're using Mac or Linux, on the command line, enter:
-    ````
-    cd ~/blueNimble-1.0.0 && chmod 755 *.sh
-    ````
-#### Start BlueNimble
-* Mac or Linux users
-    ````
-    ./bnb.sh
-    ````
-* Windows users
-    ````
-    ./bnb.bat
-    ````
+This command will build both BlueNimble Server and the CLI 
+
+### Check Server startup and download the keys
+Type in https://server-ip:8080 (server-ip is where you installed bluenimble) or localhost if you're in your laptop. If you see page similar to this one, BlueNimble Serverless is up and running.   
+
 
 License
 =======
