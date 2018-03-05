@@ -100,6 +100,8 @@ public interface ApiSpace extends Traceable {
 	void				stop					(long worker) 																							throws ApiManagementException;
 	void				start					(String apiNs) 																							throws ApiManagementException;
 
+	void				save					() 																										throws ApiManagementException;
+	
 	void				restart					(String spaceNs) 																						throws ApiManagementException;
 	void				refresh					(JsonObject descriptor) 																				throws ApiManagementException;
 	void				alter					(String spaceNs, JsonObject change) 																	throws ApiManagementException;

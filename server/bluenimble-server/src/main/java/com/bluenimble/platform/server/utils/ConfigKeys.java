@@ -65,6 +65,7 @@ public interface ConfigKeys {
 
 	String LogExt			= ".log";
 	String JsonExt			= ".json";
+	String KeyStoreExt		= ".keystore";
 	
 	interface Descriptor {
 		String Space 	= "space" + JsonExt;
@@ -73,6 +74,7 @@ public interface ConfigKeys {
 	}
 	
 	String StatusFile 		= "status" + JsonExt;
+	String KeyStoreFile 	= "space" + KeyStoreExt;
 
 	String InstanceConfig	= "config/instance" + JsonExt;
 	String DefaultMessages	= "config/messages" + JsonExt;

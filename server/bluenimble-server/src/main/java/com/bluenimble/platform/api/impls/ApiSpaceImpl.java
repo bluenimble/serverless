@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.lang.Thread.State;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -62,6 +63,7 @@ import com.bluenimble.platform.reflect.BeanUtils;
 import com.bluenimble.platform.scripting.ScriptingEngine;
 import com.bluenimble.platform.security.KeyPair;
 import com.bluenimble.platform.security.SpaceKeyStore;
+import com.bluenimble.platform.security.SpaceKeyStoreException;
 import com.bluenimble.platform.server.ApiServer;
 import com.bluenimble.platform.server.ApiServer.Event;
 import com.bluenimble.platform.server.FeatureNotFoundException;
@@ -112,6 +114,8 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 	
 	StatusManager 					statusManager;
 	
+	protected File 					home;
+
 	private Tracer 					tracer 		= NoTracing.Instance;
 
 	public ApiSpaceImpl (FileSystemApiServer server, JsonObject descriptor, File home) throws Exception {
@@ -127,6 +131,19 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 		return Json.getString (descriptor, Spec.Namespace);
 	}
 
+	@Override
+	public void save () throws ApiManagementException {
+		try {
+			Json.store (descriptor, new File (home, ConfigKeys.Descriptor.Space));
+		} catch (IOException e) {
+			throw new ApiManagementException (e.getMessage (), e);
+		}
+	}
+	
+	public File home () {
+		return home;
+	}
+	
 	@Override
 	public JsonObject instance (DescribeOption... opts) throws ApiAccessDeniedException {
 		if (!Spaces.Sys.equals (getNamespace ())) {
@@ -548,11 +565,9 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 			allSecrets = new JsonObject ();
 		}
 		allSecrets.set (name, secrets);
-		try {
-			saveDescriptor ();
-		} catch (IOException e) {
-			throw new ApiManagementException (e.getMessage (), e);
-		}
+
+		// save
+		save ();
 	}
 
 	@Override
@@ -562,11 +577,8 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 			allSecrets = new JsonObject ();
 		}
 		allSecrets.remove (name);
-		try {
-			saveDescriptor ();
-		} catch (IOException e) {
-			throw new ApiManagementException (e.getMessage (), e);
-		}
+		// save
+		save ();
 	}
 
 	@Override
@@ -636,11 +648,8 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 			throw new ApiManagementException (e.getMessage (), e);
 		}
 		
-		try {
-			saveDescriptor ();
-		} catch (IOException e) {
-			throw new ApiManagementException (e.getMessage (), e);
-		}
+		// save
+		save ();
 	}
 
 	@Override
@@ -657,11 +666,8 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 			throw new ApiManagementException (e.getMessage (), e);
 		}
 		
-		try {
-			saveDescriptor ();
-		} catch (IOException e) {
-			throw new ApiManagementException (e.getMessage (), e);
-		}
+		// save
+		save ();
 	}
 
 	@Override
@@ -670,10 +676,11 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 			ApiSpaceImpl space = (ApiSpaceImpl)space (spaceNs);
 			JsonObject descriptor = space.getDescriptor ();
 			descriptor.putAll (change);
-			space.saveDescriptor ();
 		} catch (Exception e) {
 			throw new ApiManagementException (e.getMessage (), e);
 		}
+		// save
+		save ();
 	}
 
 	@Override
@@ -753,6 +760,22 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 		}
 		
 		descriptor = descriptor.duplicate ();
+		
+		if (opts.containsKey (DescribeOption.Option.keys)) {
+			List<KeyPair> keys = null;
+			try {
+				keys = keystore.list (0, 100);
+			} catch (SpaceKeyStoreException e) {
+				tracer.log (Tracer.Level.Error, Lang.BLANK, e);
+			}
+			JsonArray aKeys = new JsonArray ();
+			if (keys != null) {
+				for (KeyPair kp : keys) {
+					aKeys.add (kp.toJson ());
+				}
+			}
+			describe.set (DescribeOption.Option.keys.name (), aKeys);
+		}
 		
 		if (opts.containsKey (DescribeOption.Option.secrets)) {
 			describe.set (DescribeOption.Option.secrets.name (), descriptor.get (Spec.secrets.class.getSimpleName ()));
@@ -1020,11 +1043,8 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 		this.descriptor.remove (secretsKey);
 		this.descriptor.set (secretsKey, Json.getObject (descriptor, secretsKey));
 		
-		try {
-			saveDescriptor ();
-		} catch (IOException e) {
-			throw new ApiManagementException (e.getMessage (), e);
-		}
+		// save
+		save ();
 		
 	}
 	

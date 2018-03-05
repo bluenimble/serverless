@@ -80,7 +80,20 @@ public class SpaceKeyStoreImpl implements SpaceKeyStore {
 			return null;
 		}
 		List<KeyPair> list = new ArrayList<KeyPair>(keys.values ());
-		return list.subList (offset, offset + length);
+		
+		int toIndex = 0;
+		
+		if (length < 0) {
+			toIndex = list.size () - 1;
+		} else {
+			toIndex = offset + length - 1;
+		}
+		
+		if (toIndex >= (list.size () - 1)) {
+			return list;
+		}
+		
+		return list.subList (offset, toIndex);
 	}
 
 	@Override

@@ -296,7 +296,7 @@ public class FileSystemApiServer extends AbstractApiServer {
 		try {
 			space = (ApiSpaceImpl)create (oSpace, false);
 			// save space descriptor, change maybe made by plugins onEvent/Create
-			Json.store (oSpace, fDescriptor);
+			// Json.store (oSpace, fDescriptor);
 		} catch (Exception ex) {
 			throw new ServerStartupException (ex.getMessage (), ex);
 		}
@@ -608,6 +608,12 @@ public class FileSystemApiServer extends AbstractApiServer {
 		File spaceStatus = new File (fSpace, ConfigKeys.StatusFile);
 		if (spaceStatus.exists () && spaceStatus.isFile ()) {
 			FileUtils.copy (spaceStatus, spaceInRuntime, true);
+		}
+		
+		// copy space.keystore if any - this is valid only if defaut security applied
+		File spaceKeyStore = new File (fSpace, ConfigKeys.KeyStoreFile);
+		if (spaceKeyStore.exists () && spaceKeyStore.isFile ()) {
+			FileUtils.copy (spaceKeyStore, spaceInRuntime, true);
 		}
 		
 		if (Json.getBoolean (descriptor, ConfigKeys.DeleteInstalledSpaces, true)) {

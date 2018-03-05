@@ -31,14 +31,14 @@
 			}
 			
 		</script>
-	
+		
 		<div class="container" style="margin-top: 20px; margin-bottom: 10px; padding-left: 10px;">
 			<div class="columns">
 				<div class="column col-2">
 					<h4>[[output.name]]</h4>
 				</div>
 				<div class="column col-10">
-					<div class="rounded-6" style="padding: 12px; border: 2px solid #e85600; background-color: #f9f7f5;">
+					<div class="rounded-6" style="padding: 12px; border: 2px solid #e85600; background-color: #fbfbfb;">
 						<span><b>Important Security Notice</b></span><br/>
 						<span style="font-size: 15px;">The reason you see this page is because BlueNimble just got installed, thus the 'Management API' isn't secure. Download the root keys and visit the documentation to secure this node</span>
 					</div>
@@ -61,13 +61,13 @@
 					  <li class="menu-item">
 					      [[output.keys.secretKey]]
 					  </li>
-					  <a href="/sys/mgm/instance/keys" class="btn btn-success gshadow" style="margin-top: 10px; margin-left: 8px;">Download Keys</a>
 					</ul>
 				</div>
 			</div>				
 		</div>
-		
+
 		<div class="divider" data-content="Spaces & APIs"></div>
+
 		<div class="container">
 			[[#each output.spaces]]
 				<div class="container" style="margin-bottom: 20px;">
@@ -83,10 +83,11 @@
 								</div>
 							</div>
 						</div>
-						<div class="column col-10">
+						<div class="column col-5">
 							<ul class="menu">
 							  <li class="divider" data-content="APIs">
 							  </li>
+							  [[#if apis]]
 							  [[#each apis]]
 							  <li class="menu-item">
 							    <a href="#" class="api" id="[[../namespace]]-[[namespace]]">
@@ -94,6 +95,25 @@
 							    </a>
 							  </li>
 							  [[/each]]
+							  [[else]]
+							  <li class="menu-item">No Running APIs</li>
+							  [[/if]]
+							</ul>
+						</div>
+						<div class="column col-5">
+							<ul class="menu">
+							  <li class="divider" data-content="Keys">
+							  </li>
+							  [[#if keys]]
+							  [[#each keys]]
+							  <li class="menu-item">
+							    <span><b>[[accessKey]]</b><span> (Role: <u>[[properties.role]]</u>)</span>
+								<a href="/sys/mgm/space/[[../namespace/]]/[[accessKey]]" class="btn btn-success btn-sm float-right">Download</a></span>
+							  </li>
+							  [[/each]]
+							  [[else]]
+							  <li class="menu-item">No Defined Keys</li>
+							  [[/if]]
 							</ul>
 						</div>
 					</div>

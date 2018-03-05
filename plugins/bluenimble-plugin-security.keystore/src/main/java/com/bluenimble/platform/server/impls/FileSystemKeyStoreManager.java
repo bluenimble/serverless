@@ -41,6 +41,7 @@ import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.impls.AbstractApiSpace;
+import com.bluenimble.platform.api.impls.ApiSpaceImpl;
 import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
@@ -309,7 +310,7 @@ public class FileSystemKeyStoreManager implements KeyStoreManager {
 	}
 
 	private File keyStoreFile (ApiSpace space, boolean create) throws IOException {
-		File ksf = new File (((AbstractApiSpace)space).home (), keyStoreFile);
+		File ksf = new File (((ApiSpaceImpl)space).home (), keyStoreFile);
 		if (!ksf.exists () && create) {
 			ksf.createNewFile ();
 		}
