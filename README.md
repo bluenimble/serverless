@@ -5,10 +5,10 @@ We believe that serverless is a new way of running computations and should not b
 ## Getting Started
 
 ### Install Java 8
- * On Windows and Linux, install the latest [JRE 8](http://openjdk.java.net) from OpenJDK.   
- * On Mac OS X, download and install [JDK 8](http://www.oracle.com/technetwork/java/javase/downloads). 
- * Oracle JDK is also supported [JRE 8](http://www.oracle.com/technetwork/java/javase/downloads)
- * Previous versions of Java are [not supported](https://github.com/processing/processing/wiki/Supported-Platforms#java-versions).
+ * On Windows and Linux, install the latest [JRE](http://openjdk.java.net) from OpenJDK.   
+ * On Mac OS X, download and install [JDK](http://www.oracle.com/technetwork/java/javase/downloads)
+ * Oracle [JRE](http://www.oracle.com/technetwork/java/javase/downloads) is also supported 
+ * Previous versions to Java 8 are not supported
 
 ### Install BlueNimble
 
