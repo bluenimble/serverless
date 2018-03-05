@@ -4,7 +4,7 @@ We believe that serverless is a new way of running computations and should not b
 
 ## Getting Started
 
-### Install Java 8
+### Install Java 8 or higher
  * On Windows and Linux, install the latest [JRE](http://openjdk.java.net) from OpenJDK.   
  * On Mac OS X, download and install [JDK](http://www.oracle.com/technetwork/java/javase/downloads)
  * Oracle [JRE](http://www.oracle.com/technetwork/java/javase/downloads) is also supported 
