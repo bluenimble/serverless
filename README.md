@@ -3,10 +3,10 @@
 ## Getting Started
 
 ### Install Java 8
-    * On Windows and Linux, install the latest [JRE 8](http://www.oracle.com/technetwork/java/javase/downloads) from Oracle. 
-    * On Mac OS X, download and install [JDK 8](http://www.oracle.com/technetwork/java/javase/downloads). 
-    * Previous versions of Java are [not supported](https://github.com/processing/processing/wiki/Supported-Platforms#java-versions).
-    * OpenJDK is also [not supported](https://github.com/processing/processing/wiki/Supported-Platforms#linux)
+ * On Windows and Linux, install the latest [JRE 8](http://www.oracle.com/technetwork/java/javase/downloads) from Oracle. 
+ * On Mac OS X, download and install [JDK 8](http://www.oracle.com/technetwork/java/javase/downloads). 
+ * Previous versions of Java are [not supported](https://github.com/processing/processing/wiki/Supported-Platforms#java-versions).
+ * OpenJDK is also [not supported](https://github.com/processing/processing/wiki/Supported-Platforms#linux)
 
 ### Install BlueNimble
 #### Install from sources
