@@ -32,11 +32,11 @@
     cd ~/blueNimble-1.0.0 && chmod 755 *.sh
     ````
 #### Start BlueNimble
-    * Windows users
+* Windows users
     ````
     ./bnb.bat
     ````
-    * Mac or Linux users
+* Mac or Linux users
     ````
     ./bnb.sh
     ````
