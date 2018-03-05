@@ -1,7 +1,7 @@
 fix pack: DSClients--jdbc_sqlj-11.1.2.2-FP002  
 IBM Data Server Driver for JDBC and SQLJ V11.1.2 Fix Pack 2
 Platforms:  AIX, AIX 64-bit, pSeries, Inspur K-UX, Linux, Linux 32-bit,x86, Linux 64-bit,x86_64, Linux 64-bit,zSeries, Linux PPC64LE, Windows, Windows 32-bit, x86, Windows 64-bit, x86
-Applies to versions:  11.1.0.0, 11.1.1.1, 11.1.2.2
+Applies to versions:  11.1.0.0-SNAPSHOT, 11.1.1.1, 11.1.2.2
 Upgrades to:  11.1.2.2
 Severity: 
 Categories: 
