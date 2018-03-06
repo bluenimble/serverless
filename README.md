@@ -70,7 +70,7 @@ Type in https://server-ip:8080 (server-ip is where you installed bluenimble) or 
 By default, BlueNimble's built with a playground space. 
 * From the install page, click the green button associated with the playground space to download the security keys.
 * In order to install playground.keys into the CLI, type in:  
-    ````shell
+    ````vim
     load keys path_to/playground.keys
     ````
 
