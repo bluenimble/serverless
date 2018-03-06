@@ -11,14 +11,14 @@ We believe that serverless is a new way of running computations and should not b
 
 ### Install BlueNimble
 
-#### Install Server from binaries
+#### Install from binaries
 * Download either [bluenimble-1.0.0.zip](https://blueNimble-1.0.0) or [bluenimble-1.0.0.tar.gz](https://blueNimble-1.0.0)
 * Untar or Unzip the archive to a folder
 * If you're a Mac or Linux user, on the command line, enter:
     ````
     cd ~/blueNimble-1.0.0 && chmod 755 *.sh
     ````
-#### Start BlueNimble Server 
+#### Start BlueNimble 
 * Mac or Linux users
     ````
     ./bnb.sh
@@ -70,7 +70,7 @@ Type in https://server-ip:8080 (server-ip is where you installed bluenimble) or 
 By default, BlueNimble's built with a playground space. 
 * From the install page, click the green button associated with the playground space to download the security keys.
 * In order to install playground.keys into the CLI, type in:  
-    ````vim
+    ````bash
     load keys path_to/playground.keys
     ````
 
