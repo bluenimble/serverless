@@ -60,11 +60,19 @@ The CLI could be installed in any other machine, not necessarily where the serve
     ````
 This command will build both BlueNimble Server and the CLI 
 
-### Check Server startup and download the keys
-
-Type in https://server-ip:8080 (server-ip is where you installed bluenimble) or localhost if you're in your laptop. If you see a page similar to the one below, then BlueNimble Serverless is up and running.   
+### Check Server startup and install security keys
+#### Check Server startup
+Type in https://server-ip:8080 (server-ip is where you installed bluenimble) or localhost if you're in your laptop. If you see a page similar to the one below, then BlueNimble is up and running.   
 
 ![BlueNimble Server Install Page](https://github.com/bluenimble/serverless/blob/master/assets/images/bluenimble-install-short.png)
+
+#### Download and Install security keys
+By default, BlueNimble's built with a playground space. 
+* From the install page, click the green button associated with the playground space to download the security keys.
+* In order to install playground.keys into the CLI, type in:  
+    ````shell
+    load keys path_to/playground.keys
+    ````
 
 License
 =======
