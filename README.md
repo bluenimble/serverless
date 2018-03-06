@@ -9,9 +9,7 @@ Using BlueNimble, Developers focus on coding application business logic, without
 ## Quick Start - Single Node
 
 ### Install Java 8 or higher
- * On Mac, Windows or Linux, install the latest [OpenJDK JRE](http://openjdk.java.net)   
- * [ORACLE JRE](http://www.oracle.com/technetwork/java/javase/downloads) is also supported 
- * Previous versions to Java 8 are not supported
+ * On Mac, Windows or Linux, install the latest [OpenJDK JRE](http://openjdk.java.net) or [ORACLE JRE](http://www.oracle.com/technetwork/java/javase/downloads). Previous versions to Java 8 are not supported.
 
 ### Install BlueNimble
 
