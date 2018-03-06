@@ -29,7 +29,7 @@ Using BlueNimble, Developers focus on coding application business logic, without
     ./bnb.bat
     ````
 #### Install CLI from binaries
-* Download either [bluenimble-cli-1.0.0.zip](https://bluenimble-1.0.0) or [bluenimble-cli-1.0.0.tar.gz](https://blueNimble-1.0.0) and decompress to a folder of your choice
+* Download either [bluenimble-cli-1.0.0.zip](https://bluenimble-1.0.0) or [bluenimble-cli-1.0.0.tar.gz](https://blueNimble-1.0.0) and decompress in a folder of your choice
 * If you're a Mac or Linux user, set the right .sh file mode:
     ````
     cd ~/blueNimble-cli-1.0.0 && chmod 755 *.sh
