@@ -23,6 +23,7 @@ import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 
+import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.icli.mgm.BlueNimble;
 import com.bluenimble.platform.icli.mgm.CliSpec;
 
@@ -56,6 +57,7 @@ public class KeysMonitor {
             	}
                 try {
 					BlueNimble.loadKeys (bluenimble, file);
+					BlueNimble.useKeys (file.getName ().substring (0, file.getName ().lastIndexOf (Lang.DOT)));
 				} catch (Exception e) {
 					bluenimble.printer ().error (e.getMessage ());
 				}
@@ -67,6 +69,7 @@ public class KeysMonitor {
             	}
                 try {
 					BlueNimble.loadKeys (bluenimble, file);
+					BlueNimble.useKeys (file.getName ().substring (0, file.getName ().lastIndexOf (Lang.DOT)));
 				} catch (Exception e) {
 					bluenimble.printer ().error (e.getMessage ());
 				}

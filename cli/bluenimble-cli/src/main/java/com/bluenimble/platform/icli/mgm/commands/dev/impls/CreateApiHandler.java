@@ -39,7 +39,7 @@ public class CreateApiHandler implements CommandHandler {
 
 	private static final long serialVersionUID = 7185236990672693349L;
 	
-	private static final String DefaultTemplate = "default";
+	private static final String DefaultTemplate = "blank/javascript";
 	private static final String Namespace 	= "namespace";
 	
 	private static final CommandHandler SecureApiHandler = new SecureApiHandler ();
@@ -112,14 +112,29 @@ public class CreateApiHandler implements CommandHandler {
 		}
 		oApis.set (namespace, sApiFolder);
 		
+		boolean secure = true;
+		
 		try {
+			JsonObject apiSpec = Json.load (new File (apiFolder, "api.json"));
+			
+			JsonObject codeGen = Json.getObject (apiSpec, "_codegen_");
+			
+			secure = Json.getBoolean (codeGen, "secure", true);
+			
+			if (codeGen != null) {
+				apiSpec.remove ("_codegen_");
+				Json.store (apiSpec, new File (apiFolder, "api.json"));
+			}
+			
 			BlueNimble.saveConfig ();
-			tool.printer ().content ("Api '" + namespace + "' created! path: $ws/ " + sApiFolder, Json.load (new File (apiFolder, "api.json")).toString (2));
+			tool.printer ().content ("Api '" + namespace + "' created! path: $ws/ " + sApiFolder, apiSpec.toString (2));
 		} catch (Exception e) {
 			throw new CommandExecutionException (e.getMessage (), e);
 		}
 		
-		SecureApiHandler.execute (tool, new String [] { namespace, "token+cookie", Lang.STAR });
+		if (secure) {
+			SecureApiHandler.execute (tool, new String [] { namespace, "token+signature", Lang.STAR });
+		}
 
 		return new DefaultCommandResult (CommandResult.OK, null);
 	}

@@ -69,8 +69,6 @@ public class SetCommand extends AbstractCommand {
 			
 			tool.saveVariable (varName, varName.equals (Tool.ParaPhraseVar) ? tool.getParaphrase (false) : value);
 			
-			
-			
 		} catch (Exception e) {
 			throw new CommandExecutionException (e.getMessage (), e);
 		}

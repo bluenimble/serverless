@@ -1,10 +1,6 @@
 {
 	"name": 		"bluenimble",
-	"title": 		"BlueNimble iCli",
+	"title": 		"BlueNimble Serverless CLI",
 	"copyright": 	"Copyright (c) BlueNimble, Inc. (https://www.bluenimble.com)",
-	"endpoints": {
-		"version": 		"https://apis.bluenimble.space/customer/software/icli/version",
-		"download": 	"http://downloads.bluenimble.com/developer/bluenimble-cli.zip"
-	},
-	"package": "bluenimble-cli.zip"
+	"package": 		"bluenimble-cli.zip"
 }

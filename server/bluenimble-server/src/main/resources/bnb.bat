@@ -1,12 +1,20 @@
 @echo off
 rem
-rem Copyright (c) BlueNimble, Inc. (http://www.bluenimble.com)
+rem Copyright (c) BlueNimble, Inc. (https://www.bluenimble.com)
 rem
 
-echo       
-echo       BlueNimble Platform
-echo       Copyright (c) BlueNimble, Inc. (http://www.bluenimble.com)
-echo       
+echo(       
+echo     ______ _            _   _ _           _     _      
+echo     ^| ___ \ ^|          ^| \ ^| (_)         ^| ^|   ^| ^|     
+echo     ^| ^|_/ / ^|_   _  ___^|  \^| ^|_ _ __ ___ ^| ^|__ ^| ^| ___ 
+echo     ^| ___ \ ^| ^| ^| ^|/ _ \ . ` ^| ^| '_ ` _ \^| '_ \^| ^|/ _ \
+echo     ^| ^|_/ / ^| ^|_^| ^|  __/ ^|\  ^| ^| ^| ^| ^| ^| ^| ^|_) ^| ^|  __/
+echo     \____/^|_^|\__,_^|\___\_^| \_/_^|_^| ^|_^| ^|_^|_.__/^|_^|\___^|
+                                                   
+echo(       
+echo       BlueNimble Serverless Platform - Server Node
+echo       Copyright (c) BlueNimble, Inc. (https://www.bluenimble.com)
+echo(       
 
 rem Guess BN_HOME if not defined
 set CURRENT_DIR=%cd%

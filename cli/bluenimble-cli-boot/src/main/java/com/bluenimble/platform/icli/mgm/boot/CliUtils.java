@@ -23,7 +23,7 @@ import com.bluenimble.platform.Lang;
 
 public class CliUtils {
 	
-	public static final String VersionPrefix = "bn.version-";
+	public static final String VersionPrefix = "bnb.cli.version-";
 	
 	public static File fVersion (File home) {
 		File [] files = home.listFiles (new FileFilter () {
@@ -52,8 +52,17 @@ public class CliUtils {
 			return 0;
 		}
 		String [] aVersion = Lang.split (sVersion, Lang.DOT);
+		int patch = 0;
+		if (aVersion.length >= 3) {
+			String sPatch = aVersion [2];
+			int indexOfDash = sPatch.indexOf (Lang.DASH);
+			if (indexOfDash >= 0) {
+				sPatch = sPatch.substring (0, indexOfDash);
+			}
+			patch = Integer.valueOf (sPatch);
+		}
 		try {
-			return (Integer.valueOf (aVersion [0]) * 100) + (Integer.valueOf (aVersion [1]) * 10) + Integer.valueOf (aVersion [2]);
+			return (Integer.valueOf (aVersion [0]) * 100) + (Integer.valueOf (aVersion [1]) * 10) + patch;
 		} catch (Exception ex) {
 			return 0;
 		}

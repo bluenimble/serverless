@@ -75,7 +75,6 @@ public class BlueNimble extends RunnableTool {
 		String CacheProvider 	= "cache.provider";
 		String QueryAll 		= "q.all";
 		String QueryCount 		= "q.count";
-		String TemplateFunctions= "templates.functions";
 		String TemplateServices = "templates.services";
 		String TemplateApi 		= "templates.api";
 		String Paraphrase 		= "paraphrase";
@@ -175,7 +174,7 @@ public class BlueNimble extends RunnableTool {
 		Map<String, Object> vars = (Map<String, Object>)getContext (Tool.ROOT_CTX).get (ToolContext.VARS);
 		if (!vars.containsKey (Tool.ParaPhraseVar)) {
 			try {
-				setParaphrase ("serverless", true);
+				processCommand ("set paraphrase serverless");
 			} catch (Exception e) {
 				System.out.println ("ERROR: Can't set default paraphrase. Cause: " + e.getMessage ());
 			}			
@@ -184,7 +183,7 @@ public class BlueNimble extends RunnableTool {
 		loadKeys (this);
 		
 		try {
-			new KeysMonitor (2000).start (BlueNimble.this);
+			new KeysMonitor (1000).start (BlueNimble.this);
 		} catch (Exception e) {
 			System.out.println ("ERROR: Can't start monitors. Cause: " + e.getMessage ());
 		}
@@ -520,10 +519,10 @@ public class BlueNimble extends RunnableTool {
 			oVars.set (DefaultVars.QueryCount, new JsonObject ().set ("where", new JsonObject ()).set ("select", new JsonArray ().set (null, "count(1)")));
 		}
 		if (!oVars.containsKey (DefaultVars.TemplateServices)) {
-			oVars.set (DefaultVars.TemplateServices, "default");
+			oVars.set (DefaultVars.TemplateServices, "blank/javascript");
 		}
 		if (!oVars.containsKey (DefaultVars.TemplateApi)) {
-			oVars.set (DefaultVars.TemplateApi, "default");
+			oVars.set (DefaultVars.TemplateApi, "blank/javascript");
 		}
 		if (oVars.containsKey (DefaultVars.Paraphrase)) {
 			try {
@@ -539,6 +538,7 @@ public class BlueNimble extends RunnableTool {
 		for (Object key : oVars.keySet ()) {
 			vars.put (String.valueOf (key), oVars.get (key));
 		}
+		
 	}
 	
 	@Override

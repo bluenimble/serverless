@@ -101,7 +101,9 @@ public class BnMgmICli {
 		
 		Software = Json.load (new File (Home, "update.json"));
 		
-		upgrade ();
+		if (!Json.isNullOrEmpty (Software)) {
+			upgrade ();
+		}
 		
 		Scl = 
 			new PackageClassLoader (
@@ -188,7 +190,7 @@ public class BnMgmICli {
 
 				System.out.println ("\n    Newer version found " + newVersion);
 				
-				System.out.println ("\n    Download software version [" + newVersion + "]");
+				System.out.println ("\n    Download [" + newVersion + "]");
 				
 				GetRequest downloadRequest = new GetRequest (HttpUtils.createEndpoint (new URI ( uDownload )));
 				

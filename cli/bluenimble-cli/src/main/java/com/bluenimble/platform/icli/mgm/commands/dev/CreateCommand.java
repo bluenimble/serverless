@@ -25,7 +25,6 @@ import com.bluenimble.platform.cli.command.CommandResult;
 import com.bluenimble.platform.cli.command.impls.PrefixedCommand;
 import com.bluenimble.platform.icli.mgm.BlueNimble;
 import com.bluenimble.platform.icli.mgm.commands.dev.impls.CreateApiHandler;
-import com.bluenimble.platform.icli.mgm.commands.dev.impls.CreateFunctionHandler;
 import com.bluenimble.platform.icli.mgm.commands.dev.impls.CreateServiceHandler;
 
 public class CreateCommand extends PrefixedCommand {
@@ -35,14 +34,12 @@ public class CreateCommand extends PrefixedCommand {
 	interface Subject {
 		String Api 		= "api";
 		String Service 	= "service";
-		String Function = "function";
 	}
 	
 	public CreateCommand () {
 		super ("create", "create 'function', 'api' or 'service'. Ex. create function finance/makePayment. create api contacts. create service /users");
 		addHandler (Subject.Api, new CreateApiHandler ());
 		addHandler (Subject.Service, new CreateServiceHandler ());
-		addHandler (Subject.Function, new CreateFunctionHandler ());
 	}
 
 	@Override

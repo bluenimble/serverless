@@ -41,7 +41,7 @@ import com.bluenimble.platform.icli.mgm.CliSpec.Templates;
 
 public class CodeGenUtils {
 
-	private static final String DefaultTemplate = "default";
+	private static final String DefaultTemplate = "blank/javascript";
 	
 	private static final String FindVerb		= "find";
 	
@@ -141,7 +141,7 @@ public class CodeGenUtils {
 		}
 	}
 
-	public static void writeService (Tool tool, String verb, String model, File specsFolder, File scriptsFolder) throws CommandExecutionException {
+	public static void writeService (Tool tool, String verb, String model, File specsFolder, File functionsFolder) throws CommandExecutionException {
 		
 		String path = null;
 		
@@ -159,11 +159,11 @@ public class CodeGenUtils {
 		}
 		
 		if (Lang.STAR.equals (verb)) {
-			writeService (tool, ApiVerb.GET.name ().toLowerCase (), model, specsFolder, scriptsFolder);
-			writeService (tool, ApiVerb.POST.name ().toLowerCase (), model, specsFolder, scriptsFolder);
-			writeService (tool, ApiVerb.PUT.name ().toLowerCase (), model, specsFolder, scriptsFolder);
-			writeService (tool, ApiVerb.DELETE.name ().toLowerCase (), model, specsFolder, scriptsFolder);
-			writeService (tool, FindVerb, model, specsFolder, scriptsFolder);
+			writeService (tool, ApiVerb.GET.name ().toLowerCase (), model, specsFolder, functionsFolder);
+			writeService (tool, ApiVerb.POST.name ().toLowerCase (), model, specsFolder, functionsFolder);
+			writeService (tool, ApiVerb.PUT.name ().toLowerCase (), model, specsFolder, functionsFolder);
+			writeService (tool, ApiVerb.DELETE.name ().toLowerCase (), model, specsFolder, functionsFolder);
+			writeService (tool, FindVerb, model, specsFolder, functionsFolder);
 			return;
 		}
 		
@@ -194,7 +194,7 @@ public class CodeGenUtils {
 		}
 		
 		File spec 	= new File (verbFolder, "spec.json");
-		File script = new File (verbFolder, "script.js");
+		File function = new File (verbFolder, "function.js");
 		
 		String models = (model.endsWith ("y") ? (model.substring (0, model.length () - 1) + "ies") : model + "s");
 		
@@ -209,12 +209,12 @@ public class CodeGenUtils {
 			modelSpecFolder.mkdirs ();
 		}
 		
-		File modelScriptFolder = scriptsFolder; 
+		File modelFunctionFolder = functionsFolder; 
 		if (!Lang.BLANK.equals (model) && !Lang.BLANK.equals (path)) {
-			modelScriptFolder = new File (scriptsFolder, path == null ? models : path);
+			modelFunctionFolder = new File (functionsFolder, path == null ? models : path);
 		}
-		if (!modelScriptFolder.exists ()) {
-			modelScriptFolder.mkdirs ();
+		if (!modelFunctionFolder.exists ()) {
+			modelFunctionFolder.mkdirs ();
 		}
 		
 		String Model = Lang.BLANK.equals (model) ? Lang.BLANK : model.substring (0, 1).toUpperCase () + model.substring (1);
@@ -243,10 +243,10 @@ public class CodeGenUtils {
 		tokens.put (Tokens.Verb, verbToken);
 
 		writeFile (spec, new File (modelSpecFolder, (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + ".json"), tokens);
-		tool.printer ().node (1, "  spec file created 'services/" + (printFolder ? modelSpecFolder.getName () + "/" : "" ) + (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + ".json'"); 
+		tool.printer ().node (1, "    spec file created under 'services/" + (printFolder ? modelSpecFolder.getName () + "/" : "" ) + (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + ".json'"); 
 
-		writeFile (script, new File (modelScriptFolder, (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + ".js"), tokens);
-		tool.printer ().node (1, "script file created  'scripts/" + (printFolder ? modelScriptFolder.getName () + "/" : "" ) + (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + ".js'"); 
+		writeFile (function, new File (modelFunctionFolder, (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + ".js"), tokens);
+		tool.printer ().node (1, "function file created under 'functions/" + (printFolder ? modelFunctionFolder.getName () + "/" : "" ) + (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + ".js'"); 
 		
 	}
 

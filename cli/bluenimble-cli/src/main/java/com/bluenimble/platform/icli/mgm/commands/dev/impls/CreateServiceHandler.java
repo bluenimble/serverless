@@ -60,9 +60,9 @@ public class CreateServiceHandler implements CommandHandler {
 		
 		File resourcesFolder 	= new File (apiFolder, "resources");
 		File servicesFolder 	= new File (resourcesFolder, "services");
-		File scriptsFolder 		= new File (resourcesFolder, "scripts");
+		File functionsFolder 		= new File (resourcesFolder, "functions");
 		
-		CodeGenUtils.writeService ((AbstractTool)tool, verb, model, servicesFolder, scriptsFolder);
+		CodeGenUtils.writeService ((AbstractTool)tool, verb, model, servicesFolder, functionsFolder);
 		
 		return new DefaultCommandResult (CommandResult.OK, null);
 	}

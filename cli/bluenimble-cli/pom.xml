@@ -100,7 +100,9 @@
 										todir="../../build/${project.artifactId}-${project.version}/boot" />
 								<move 	file="../../build/${project.artifactId}-${project.version}/lib/javax.persistence-api-2.2.jar" 
 										todir="../../build/${project.artifactId}-${project.version}/build-libs" />
-							
+								
+								<touch file="../../build/${project.artifactId}-${project.version}/bnb.cli.version-${project.version}" />
+								
 							</target>
 						</configuration>
 						<goals>

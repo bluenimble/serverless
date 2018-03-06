@@ -146,11 +146,6 @@ public class DatabaseObjectImpl implements DatabaseObject {
 		document.field (key, value);
 	}
 
-/*	@Override
-	public Object get (String key) {
-		return document.field (key);
-	}*/
-	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public Object get (String key) {

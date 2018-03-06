@@ -1,0 +1,10 @@
+{
+	"name": 		"bluenimble",
+	"title": 		"BlueNimble CLI",
+	"copyright": 	"Copyright (c) BlueNimble, Inc. (https://www.bluenimble.com)",
+	"package": 		"bluenimble-cli.zip",
+	"endpoints": {
+		"version": 		"https://apis.bluenimble.space/customer/software/icli/version",
+		"download": 	"http://downloads.bluenimble.com/developer/bluenimble-cli.zip"
+	}
+}
