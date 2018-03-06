@@ -63,9 +63,8 @@ This command will build both BlueNimble Server and the CLI
 ### Check Server startup and download the keys
 
 Type in https://server-ip:8080 (server-ip is where you installed bluenimble) or localhost if you're in your laptop. If you see a page similar to the one below, then BlueNimble Serverless is up and running.   
+
 ![BlueNimble Server Install Page](https://github.com/bluenimble/serverless/blob/master/assets/images/bluenimble-install-short.png)
-
-
 
 License
 =======
