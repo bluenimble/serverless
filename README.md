@@ -28,7 +28,7 @@ Using BlueNimble, Developers focus on coding application business logic, without
     ````
     ./bnb.bat
     ````
-#### Install BlueNimble CLI from binaries
+#### Install CLI from binaries
 * Download either [bluenimble-cli-1.0.0.zip](https://bluenimble-1.0.0) or [bluenimble-cli-1.0.0.tar.gz](https://blueNimble-1.0.0) and decompress to a folder of your choice
 * If you're a Mac or Linux user, set the right .sh file mode:
     ````
@@ -36,7 +36,7 @@ Using BlueNimble, Developers focus on coding application business logic, without
     ````
 The CLI could be installed in any other machine, not necessarily where the server is installed 
 
-#### Start BlueNimble CLI 
+#### Start CLI 
 * Mac or Linux users
     ````
     ./bnb.sh
