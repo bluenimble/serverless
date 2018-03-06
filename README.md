@@ -1,8 +1,10 @@
-## BlueNimble Platform
+## What is BlueNimble?
 
-BlueNimble is a Hybrid Serverless Platform taking a simple approach to create applications, focusing on developer productivity and infrastructure agnosticity.
+BlueNimble is a Hybrid Serverless Platform, focusing on developer productivity and infrastructure agnosticity.
 
-We believe that serverless is a new way of running computations and should not be tied to a spacific clustering or microservices technology. If it's the case, embrassing new technologies and deployment models in the future become very complicated, adding to the fact that developers are, no more, coding application business logic, but, also, they should be knowledgeable of many components of the infrastructure and solve issues raising from that level which is not part of the application they are building.
+BlueNimble is a new way of creating and running applications with no binding to a spacific clustering or microservices technology. Making it easy to embrasse new technologies and deployment models in the future. 
+
+Using BlueNimble, Developers focus on coding application business logic, without any knowledge of the microservices architecture.
 
 ## Quick Start - Single Node
 
@@ -80,7 +82,7 @@ By default, BlueNimble's built with a playground space.
     keys
     ````
 
-#### Create your first api with some services
+#### Create your first api
 * Let's create an uber api. To do so, type in:  
     ````vim
     create api uber
