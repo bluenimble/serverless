@@ -20,7 +20,8 @@ Using BlueNimble, Developers focus on coding application business logic, without
 * Untar or Unzip the archive to a folder
 * If you're a Mac or Linux user, on the command line, enter:
     ````
-    cd ~/blueNimble-1.0.0 && chmod 755 *.sh
+    sudo cd ~/bluenimble-1.0.0 
+    sudo chmod 755 *.sh
     ````
 #### Start BlueNimble 
 * Mac or Linux users
