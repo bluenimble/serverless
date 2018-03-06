@@ -14,7 +14,7 @@ We believe that serverless is a new way of running computations and should not b
 ### Install BlueNimble
 
 #### Install from binaries
-* Download either [bluenimble-1.0.0.zip](https://blueNimble-1.0.0) or [bluenimble-1.0.0.tar.gz](https://blueNimble-1.0.0)
+* Download either [bluenimble-1.0.0.zip](https://bluenimble-1.0.0) or [bluenimble-1.0.0.tar.gz](https://bluenimble-1.0.0)
 * Untar or Unzip the archive to a folder
 * If you're a Mac or Linux user, on the command line, enter:
     ````
