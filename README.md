@@ -74,17 +74,17 @@ Type in http://server-ip:8080 (server-ip is where you installed bluenimble) or l
 By default, BlueNimble's built with a playground space. 
 * From the install page, click the green button associated with the playground space to download the security keys.
 * In order to install playground.keys into the CLI, type in:  
-    ````vim
+    ````sql
     load keys path_to/playground.keys
     ````
 * You can, eventually, check if the keys were installed, by issuing:   
-    ````vim
+    ````sql
     keys
     ````
 
 #### Create your first api
 * Let's create an uber api. To do so, type in:  
-    ````vim
+    ````sql
     create api uber
     ````
 This command should create the project folder and default out-of-the-box services to handle authentication such as signup and login.
