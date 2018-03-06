@@ -14,12 +14,10 @@ Using BlueNimble, Developers focus on coding application business logic, without
 ### Install BlueNimble
 
 #### Install from binaries
-* Download either [bluenimble-1.0.0.zip](https://bluenimble-1.0.0) or [bluenimble-1.0.0.tar.gz](https://bluenimble-1.0.0)
-* Untar or Unzip the archive to a folder
-* If you're a Mac or Linux user, on the command line, enter:
+* Download either [bluenimble-1.0.0.zip](https://bluenimble-1.0.0) or [bluenimble-1.0.0.tar.gz](https://bluenimble-1.0.0) and decompress in a folder of your choice
+* If you're a Mac or Linux user, set the right .sh file mode:
     ````
-    sudo cd ~/bluenimble-1.0.0 
-    sudo chmod 755 *.sh
+    cd ~/bluenimble-1.0.0 && sudo chmod 755 *.sh
     ````
 #### Start BlueNimble 
 * Mac or Linux users
@@ -31,9 +29,8 @@ Using BlueNimble, Developers focus on coding application business logic, without
     ./bnb.bat
     ````
 #### Install BlueNimble CLI from binaries
-* Download either [bluenimble-cli-1.0.0.zip](https://blueNimble-1.0.0) or [bluenimble-cli-1.0.0.tar.gz](https://blueNimble-1.0.0)
-* Untar or Unzip the archive to a folder
-* If you're a Mac or Linux user, on the command line, enter:
+* Download either [bluenimble-cli-1.0.0.zip](https://bluenimble-1.0.0) or [bluenimble-cli-1.0.0.tar.gz](https://blueNimble-1.0.0) and decompress to a folder of your choice
+* If you're a Mac or Linux user, set the right .sh file mode:
     ````
     cd ~/blueNimble-cli-1.0.0 && chmod 755 *.sh
     ````
