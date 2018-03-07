@@ -94,11 +94,11 @@ This command will create 5 services for the model 'driver' corresponding to 'cre
     push api uber
     ````
 * Try it out. Open up your browser and type in http://server-ip:8080/playground/uber/drivers/unknown, this request will call the service GET /uber/drivers. Or use curl or a GUI tool such as postman to send post and put requests 
-* Access the uber api sources, make some changes to the code, run "push api uber" to try again. The api sources is under the CLI workspace, type in 
+* Access the uber api sources, make some changes to the code, run "push api uber" to try it again. The api sources are located under the CLI workspace, type in: 
     ````sql
     ws
     ````
-This command will output where your api code is created. You can change the workspace folder by issuing:
+This command will print out where your api code is created. You can change the workspace folder by issuing: 
     ````sql
     ws path_to_a_folder
     ````
