@@ -2,7 +2,7 @@
 
 BlueNimble is a Hybrid Serverless Platform, focusing on developer productivity and application portability.
 
-BlueNimble is a new and simple way to create and run applications with no specific binding to a clustering or microservices technology. Making it pain-free to embrace new technologies and deployment models in the future. 
+BlueNimble is a new and simple way to create and run applications with no specific binding to a clustering or microservices technology, making it pain-free to embrace future technologies and deployment models.
 
 Using BlueNimble, Developers focus on coding application business logic, without any knowledge of the microservices architecture.
 
