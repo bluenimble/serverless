@@ -83,8 +83,26 @@ By default, BlueNimble's built with a playground space.
     ````sql
     create api uber
     ````
-This command should create the project folder and default out-of-the-box services to handle authentication such as signup and login.
-
+This command should create the api project in your local machine.
+* Let's create a service. Type in:  
+    ````sql
+    create service driver
+    ````
+This command will create 5 services for the model 'driver' corresponding to 'create', 'update', 'delete', 'get' and 'find'.
+* We are good to run the uber api. To do so, type in:
+    ````sql
+    push api uber
+    ````
+* Try it out. Open up your browser and type in http://server-ip:8080/playground/uber/drivers/unknown, this request will call the service GET /uber/drivers. Or use curl or a GUI tool such as postman to send post and put requests 
+* Access the uber api sources, make some changes to the code, run "push api uber" to try again. The api sources is under the CLI workspace, type in 
+    ````sql
+    ws
+    ````
+This command will output where your api code is created. You can change the workspace folder by issuing:
+    ````sql
+    ws path_to_a_folder
+    ````
+From now on, any api you create, will be stored in this folder. 
 License
 =======
 Copyright 2018 BlueNimble, Inc.
