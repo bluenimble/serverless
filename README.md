@@ -14,7 +14,7 @@ Using BlueNimble, Developers focus on coding application business logic, without
 ### Install BlueNimble
 
 #### Install from binaries
-* Download either [bluenimble-1.0.0.zip](https://bluenimble-1.0.0) or [bluenimble-1.0.0.tar.gz](https://bluenimble-1.0.0) and decompress in a folder of your choice
+* Download either [bluenimble-1.0.0-bin.zip](https://github.com/bluenimble/serverless/releases/download/v1.0.0/bluenimble-1.0.0-bin.zip) or [bluenimble-1.0.0-bin.tar.gz](https://github.com/bluenimble/serverless/releases/download/v1.0.0/bluenimble-1.0.0-bin.tar.gz) and decompress in a folder of your choice
 * If you're a Mac or Linux user, set the right .sh file mode:
     ````
     cd ~/bluenimble-1.0.0 && sudo chmod 755 *.sh
@@ -29,7 +29,7 @@ Using BlueNimble, Developers focus on coding application business logic, without
     ./bnb.bat
     ````
 #### Install CLI from binaries
-* Download either [bluenimble-cli-1.0.0.zip](https://bluenimble-1.0.0) or [bluenimble-cli-1.0.0.tar.gz](https://blueNimble-1.0.0) and decompress in a folder of your choice
+* Download either [bluenimble-cli-1.0.0-bin.zip](https://github.com/bluenimble/serverless/releases/download/v1.0.0/bluenimble-cli-1.0.0-bin.zip) or [bluenimble-cli-1.0.0-bin.tar.gz](https://github.com/bluenimble/serverless/releases/download/v1.0.0/bluenimble-cli-1.0.0-bin.tar.gz) and decompress in a folder of your choice
 * If you're a Mac or Linux user, set the right .sh file mode:
     ````
     cd ~/blueNimble-cli-1.0.0 && chmod 755 *.sh
