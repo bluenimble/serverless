@@ -104,6 +104,21 @@ This command will print out where your api code is stored. You can change the wo
     
 From now on, any api you create, will be stored in this folder. 
 
+## Terminology
+
+* BlueNimble can act as an Api Gateway and an Execution Runtime or both. In the single node setup we did, we are running Bluenimble for both. 
+* BlueNimble runs a set of Spaces. each space defines a set of features to use and accessible by the Apis you will push to it. For example, if you a space defines a database feature, all Apis, thus the functions will share this same database instance.
+* An Api is a set of services and corresponding functions. An Api may also define which security scheme to be used, tracing (logging) and requests tracking. An Api could eventually be pushed to multiple spaces (Dev, QA, Prod, ...) since the only dependency is the set of features this api is using. 
+* A Service is a an interface specification which is defined by the service.json file. A service can define validation rules to apply on requests, specific security and eventually an SPI function (Service Provider Implementation)
+* Plugins are the most important component of BliueNimble architecture when it comes to application portability. Plugins aren't just extensions, such as supporting a new feature, but they can change the behaviour of anything happening in the server. You can create plugins to accept requests through a new network protocol such as COAP, to support new security schemes, change the flow of a coming request, ... Plugins also receive events when a space is created, an api pushed or dropped. 
+  
+## Architecture
+
+### Flow Architecture
+The figure below is a hight level flow architecture
+![BlueNimble Hight-Level Flow-architecture](https://github.com/bluenimble/serverless/blob/master/assets/images/main-opt.png)
+
+
 License
 =======
 Copyright 2018 BlueNimble, Inc.
