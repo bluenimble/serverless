@@ -116,8 +116,9 @@ From now on, any api you create, will be stored in this folder.
 
 ### Flow Architecture
 The figure below is a hight level flow architecture
+<div style="background-color: #09afdf; text-align: center;">
 ![BlueNimble Hight-Level Flow-architecture](https://github.com/bluenimble/serverless/blob/master/assets/images/main-opt.png)
-
+</div>
 
 License
 =======
