@@ -86,7 +86,7 @@ By default, BlueNimble's built with a playground space.
 This command should create the api project in your local machine.
 * Let's create a service. Type in:  
     ````sql
-    create service driver
+    create service * driver
     ````
 This command will create 5 services for the model 'driver' corresponding to 'create', 'update', 'delete', 'get' and 'find'.
 * We are good to run the uber api. To do so, type in:
