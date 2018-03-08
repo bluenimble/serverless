@@ -54,10 +54,6 @@ public class SchedulerPlugin extends AbstractPlugin {
 
 	private static final long serialVersionUID = 3203657740159783537L;
 	
-	//private static final Logger 	logger 			= Logger.getLogger (SchedulerPlugin.class);
-	
-	private static final String Provider 	= "bnb-scheduler";
-	
 	public static final String _Space 		= "__INTERNAL__SPACE__";
 	public static final String _Api 		= "__INTERNAL__API__";
 	public static final String _Service 	= "__INTERNAL__SERVICE__";
@@ -140,7 +136,7 @@ public class SchedulerPlugin extends AbstractPlugin {
 			String key = keys.next ();
 			JsonObject source = Json.getObject (schedulerFeature, key);
 			
-			if (!Provider.equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
+			if (!this.getName ().equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
 				continue;
 			}
 			
@@ -216,7 +212,7 @@ public class SchedulerPlugin extends AbstractPlugin {
 			String key = keys.next ();
 			JsonObject source = Json.getObject (schedulerFeature, key);
 			
-			if (!Provider.equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
+			if (!this.getName ().equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
 				continue;
 			}
 			

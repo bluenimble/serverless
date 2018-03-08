@@ -1,5 +1,5 @@
 {
-	"name": "storage.filesystem.default",
+	"name": "storage.filesystem",
 	"title": "Storage Implementation - FileSystem POSIX",
 	
 	"spi": {

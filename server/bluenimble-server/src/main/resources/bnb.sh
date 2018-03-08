@@ -5,11 +5,11 @@
 
 echo ""
 echo "     ______ _            _   _ _           _     _      "
-echo "     | ___ \ |          | \ | (_)         | |   | |     "
-echo "     | |_/ / |_   _  ___|  \| |_ _ __ ___ | |__ | | ___ "
-echo "     | ___ \ | | | |/ _ \ . ` | | '_ ` _ \| '_ \| |/ _ \"
-echo "     | |_/ / | |_| |  __/ |\  | | | | | | | |_) | |  __/"
-echo "     \____/|_|\__,_|\___\_| \_/_|_| |_| |_|_.__/|_|\___|"
+echo "     | ___ \\ |          | \\ | (_)         | |   | |     "
+echo "     | |_/ / |_   _  ___|  \\| |_ _ __ ___ | |__ | | ___ "
+echo "     | ___ \\ | | | |/ _ \\ . \` | | '_ \` _ \\| '_ \\| |/ _ \\"
+echo "     | |_/ / | |_| |  __/ |\\  | | | | | | | |_) | |  __/"
+echo "     \\____/|_|\\__,_|\\___\\_| \\_/_|_| |_| |_|_.__/|_|\\___|"
                                                    
 echo       ""
 echo       "BlueNimble Serverless Platform - Server Node"
@@ -70,19 +70,7 @@ if [ -z "$BN_OPTS_MEMORY" ] ; then
     BN_OPTS_MEMORY="-Xmx512m"
 fi
 
-if [ -z "$BN_RUNTIME" ] ; then
-	BN_RUNTIME="/data/bluenimble/runtime"
-fi
-
-if [ -z "$BN_TENANT" ] ; then
-	BN_TENANT="/data/bluenimble/tenant"
-fi
-
 echo $$ > $BN_PID
-
-echo "BlueNimble Runtime: $BN_RUNTIME"
-
-echo "BlueNimble Tenant: $BN_TENANT"
 
 exec "$JAVA" $JAVA_OPTS $BN_OPTS_MEMORY $JAVA_OPTS_SCRIPT \
     -cp "boot/bluenimble-jvm-sdk-[version].jar:boot/bluenimble-server-boot-[version].jar" \

@@ -53,8 +53,6 @@ public class DataSourcePlugin extends AbstractPlugin {
 	
 	private static final String 	Vendors 		= "vendors";
 	
-	private static final String 	Provider 		= "bnb-ds";
-
 	private String					feature;
 	
 	private int 					weight;
@@ -102,7 +100,7 @@ public class DataSourcePlugin extends AbstractPlugin {
 			}
 			@Override
 			public String provider () {
-				return Provider;
+				return DataSourcePlugin.this.getName ();
 			}
 		});
 		
@@ -146,7 +144,7 @@ public class DataSourcePlugin extends AbstractPlugin {
 			String key = keys.next ();
 			JsonObject source = Json.getObject (dbFeature, key);
 			
-			if (!Provider.equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
+			if (!this.getName ().equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
 				continue;
 			}
 			

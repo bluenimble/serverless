@@ -47,8 +47,6 @@ public class ScriptingPlugin extends AbstractPlugin {
 
 	private static final long serialVersionUID = 3203657740159783537L;
 	
-	private static final String Provider = "bnb-javascript";
-	
 	interface Vars {
 		String Core 	= "core";
 		String Tools 	= "tools";
@@ -110,7 +108,7 @@ public class ScriptingPlugin extends AbstractPlugin {
 			}
 			@Override
 			public String provider () {
-				return Provider;
+				return ScriptingPlugin.this.getName ();
 			}
 			@Override
 			public Plugin implementor () {

@@ -52,13 +52,6 @@ goto setArgs
 
 :doneSetArgs
 
-if "%BN_RUNTIME%"=="" (set BN_RUNTIME="/data/bluenimble/runtime")
-if "%BN_TENANT%"=="" (set BN_TENANT="/data/bluenimble/tenant")
-
-echo BlueNimble Runtime: %BN_RUNTIME%
-
-echo BlueNimble Tenant: %BN_TENANT%
-
 set JAVA_OPTS_SCRIPT=-Xms60m -Xmx384m -Djna.nosys=true -XX:MaxDirectMemorySize=7879m -XX:+HeapDumpOnOutOfMemoryError -Djava.awt.headless=true -Dfile.encoding=UTF8 -Djava.net.preferIPv4Stack=true -DBNHome=%BN_HOME%
 
 rem TO DEBUG BlueNimble RUN WITH THESE OPTIONS:

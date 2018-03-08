@@ -42,8 +42,6 @@ public class OrientDatabasePlugin extends AbstractPlugin {
 
 	private static final long serialVersionUID 		= -6219529665471192558L;
 	
-	private static final String 	Provider 		= "bnb-db";
-	
 	interface Spec {
 		String Host 	= "host";
 		String Port 	= "port";
@@ -91,7 +89,7 @@ public class OrientDatabasePlugin extends AbstractPlugin {
 			}
 			@Override
 			public String provider () {
-				return Provider;
+				return OrientDatabasePlugin.this.getName ();
 			}
 		});
 		
@@ -141,7 +139,7 @@ public class OrientDatabasePlugin extends AbstractPlugin {
 			String key = keys.next ();
 			JsonObject source = Json.getObject (dbFeature, key);
 			
-			if (!Provider.equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
+			if (!this.getName ().equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
 				continue;
 			}
 			

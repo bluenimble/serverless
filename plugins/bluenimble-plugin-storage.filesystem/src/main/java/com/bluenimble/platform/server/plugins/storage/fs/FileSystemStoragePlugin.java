@@ -39,8 +39,6 @@ public class FileSystemStoragePlugin extends AbstractPlugin {
 
 	private static final long serialVersionUID = 3203657740159783537L;
 
-	private static final String Provider = "bnb-storage";
-	
 	interface Spec {
 		String Mount 	= "mount";
 	}
@@ -85,7 +83,7 @@ public class FileSystemStoragePlugin extends AbstractPlugin {
 			}
 			@Override
 			public String provider () {
-				return Provider;
+				return FileSystemStoragePlugin.this.getName ();
 			}
 			@Override
 			public Plugin implementor () {
@@ -136,7 +134,7 @@ public class FileSystemStoragePlugin extends AbstractPlugin {
 			String key = keys.next ();
 			JsonObject source = Json.getObject (storageFeature, key);
 			
-			if (!Provider.equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
+			if (!this.getName ().equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
 				continue;
 			}
 			

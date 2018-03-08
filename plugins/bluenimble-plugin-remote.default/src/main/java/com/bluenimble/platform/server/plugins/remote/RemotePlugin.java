@@ -41,8 +41,6 @@ public class RemotePlugin extends AbstractPlugin {
 
 	private static final long serialVersionUID = 3203657740159783537L;
 
-	private static final String Provider = "bnb-remote";
-	
 	interface Spec {
 		String Protocol 	= "protocol";
 	}
@@ -90,7 +88,7 @@ public class RemotePlugin extends AbstractPlugin {
 			}
 			@Override
 			public String provider () {
-				return Provider;
+				return RemotePlugin.this.getName ();
 			}
 			@Override
 			public Plugin implementor () {
@@ -134,7 +132,7 @@ public class RemotePlugin extends AbstractPlugin {
 			String key = keys.next ();
 			JsonObject source = Json.getObject (storageFeature, key);
 			
-			if (!Provider.equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
+			if (!this.getName ().equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
 				continue;
 			}
 			

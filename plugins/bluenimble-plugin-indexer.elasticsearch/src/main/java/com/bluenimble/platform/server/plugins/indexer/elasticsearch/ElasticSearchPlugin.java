@@ -38,8 +38,6 @@ public class ElasticSearchPlugin extends AbstractPlugin {
 
 	private static final long serialVersionUID = 3203657740159783537L;
 
-	private static final String 	Provider 		= "bnb-indexer";
-	
 	private interface Spec {
 		String 	RemotePlugin 	= "plugin";
 		String 	RemoteObject 	= "object";
@@ -118,7 +116,7 @@ public class ElasticSearchPlugin extends AbstractPlugin {
 			
 			@Override
 			public String provider () {
-				return Provider;
+				return ElasticSearchPlugin.this.getName ();
 			}
 			
 			@Override
@@ -194,7 +192,7 @@ public class ElasticSearchPlugin extends AbstractPlugin {
 			return null;
 		}
 		
-		if (!Provider.equalsIgnoreCase (Json.getString (indexerFeature, ApiSpace.Features.Provider))) {
+		if (!this.getName ().equalsIgnoreCase (Json.getString (indexerFeature, ApiSpace.Features.Provider))) {
 			return null;
 		}
 		

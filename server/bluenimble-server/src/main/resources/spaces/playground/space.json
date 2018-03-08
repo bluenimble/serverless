@@ -13,12 +13,12 @@
 	"features": {
 		"scripting": {
 			"default": {
-				"provider": "bnb-javascript"
+				"provider": "scripting.javascript"
 			}
 		},
 		"storage": {
 			"default": {
-				"provider": "bnb-storage",
+				"provider": "storage.filesystem",
 				"spec": {
 					"mount": "playground"
 				}
@@ -26,7 +26,7 @@
 		},
 		"remote": {
 			"default": {
-				"provider": "bnb-remote",
+				"provider": "remote.default",
 				"spec": {
 					"trustAll": "true",
 					"headers": {

@@ -46,8 +46,6 @@ public class SmtpMessengerPlugin extends AbstractPlugin {
 
 	private static final long serialVersionUID = 3203657740159783537L;
 	
-	private static final String Provider = "bnb-smtp";
-
 	interface Spec {
 		String Server 	= "server";
 		
@@ -81,7 +79,7 @@ public class SmtpMessengerPlugin extends AbstractPlugin {
 			}
 			@Override
 			public String provider () {
-				return Provider;
+				return SmtpMessengerPlugin.this.getName ();
 			}
 			@Override
 			public Plugin implementor () {
@@ -127,7 +125,7 @@ public class SmtpMessengerPlugin extends AbstractPlugin {
 			
 			JsonObject feature = Json.getObject (msgFeature, key);
 			
-			if (!Provider.equalsIgnoreCase (Json.getString (feature, ApiSpace.Features.Provider))) {
+			if (!this.getName ().equalsIgnoreCase (Json.getString (feature, ApiSpace.Features.Provider))) {
 				continue;
 			}
 			
