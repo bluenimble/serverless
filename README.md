@@ -119,8 +119,8 @@ The figure below is a hight level flow diagram
 
 ![BlueNimble Hight-Level Flow-architecture](https://github.com/bluenimble/serverless/blob/master/assets/images/main-opt.png)
 
-### Features  
-Even if developers can use any external library in their functions code. We recommend to use assets through the features/plugins interfaces. For example, the datasource plugin provide native support to a number of relational databases, you can add a new one to the plugin by only registring vendor and it's driver. This will free developers from managing security and opening/recycling/pooling of connections. 
+### Application Portability  
+Even if developers can use any external library in their functions code. We recommend to use assets through the features/plugins interfaces. For example, the datasource plugin provides native support to a number of relational databases, you can add a new one to the plugin by only registring vendor and it's driver. This will free developers from managing security and opening/recycling/pooling of connections. 
 Here is the list of the out-of-the-box features:
 - Database: For document databases. Mongodb, Couchdb and Orientdb supported out-of-the-box. You can add other vendors by implementing the Database feature plugin 
 - Datasource: Includes most known relational databases, cassandra, salesforce. Hive and Hbase could be added by droping adding a new vendor to the plugin.
