@@ -99,7 +99,7 @@ This command will create 5 services for the model 'driver' corresponding to 'cre
     ws
     ````
 This command will print out where your api code is stored. You can change the workspace folder by issuing:  
-    ````sql
+    ````
     ws pathToNewFolder
     ````
 From now on, any api you create, will be stored in this folder. 
