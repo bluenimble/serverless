@@ -16,7 +16,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.bluenimble.serverless</groupId>
 	<artifactId>bluenimble-plugin-scheduler.quartz</artifactId>
-	<version>1.0.1</version>
+	<version>1.1.0-SNAPSHOT</version>
 	
 	<packaging>jar</packaging>
 	<name>bluenimble-plugin-scheduler.quartz</name>
@@ -84,7 +84,7 @@
         <dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>bluenimble-server</artifactId>
-			<version>1.0.1</version>
+			<version>1.1.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.quartz-scheduler</groupId>
