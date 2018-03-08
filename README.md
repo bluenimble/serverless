@@ -114,8 +114,8 @@ From now on, any api you create, will be stored in this folder.
   
 ## Architecture
 
-### Flow Architecture
-The figure below is a hight level flow architecture
+### Hight Level Flow Diagram
+The figure below is a hight level flow diagram
 
 ![BlueNimble Hight-Level Flow-architecture](https://github.com/bluenimble/serverless/blob/master/assets/images/main-opt.png)
 
