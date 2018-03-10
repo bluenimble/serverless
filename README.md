@@ -108,13 +108,15 @@ From now on, any api you create, will be stored in this folder.
 
 * BlueNimble can act as an Api Gateway and an Execution Runtime or both. In the single node setup we did, we are running Bluenimble for both. 
 
-* BlueNimble runs a set of Spaces. each space defines a set of features to use and accessible by the Apis you will push to it. For example, if you a space defines a database feature, all Apis, thus the functions will share this same database instance.
+* BlueNimble runs a set of Spaces. Each space defines a set of features to use and accessible by the Apis you will push to it. For example, if a space defines a database feature, all Apis, thus the functions deployed to it, will share this same database instance.
 
 * An Api is a set of services and corresponding functions. An Api may also define which security scheme to be used, tracing (logging) and requests tracking. An Api could eventually be pushed to multiple spaces (Dev, QA, Prod, ...) since the only dependency is the set of features this api is using. 
 
 * A Service is a an interface specification which is defined by the service.json file. A service can define validation rules to apply on requests, specific security and eventually an SPI function (Service Provider Implementation)
 
-* Plugins are one of the most important components of BliueNimble architecture when it comes to application portability. Plugins aren't just extensions, such as supporting a new feature, but they can change the behaviour of anything happening in the server. You can create plugins to accept requests through a new network protocol such as COAP, to support new security mechanisms, change the flow of a coming request,... Plugins also receive events change happens to a space or an api. For example, the Kubernetes or Swarm plugins intercept the "Push Api" event to push to the cluster, also they change services SPI fuctions to delegate load to the cluster instead of the Api Gateway.   
+* Plugins are one of the most important components of the BlueNimble architecture when it comes to application portability. Plugins aren't just extensions, such as supporting a new feature, but they can change the behaviour of anything happening in the server. 
+You can create plugins to accept requests through a new network protocol such as COAP, to support new security mechanisms, change the flow of an incoming request, etc. 
+Plugins also receive events of changes happening to a space or an api. For example, the Kubernetes or Swarm plugins intercept the "`Push Api`" event to push to the cluster, they also change services SPI fuctions to delegate load to the cluster instead of the Api Gateway.   
   
 ## Architecture
 
@@ -124,20 +126,21 @@ The figure below is a hight level flow diagram
 ![BlueNimble Hight-Level Flow-architecture](https://github.com/bluenimble/serverless/blob/master/assets/images/main-opt.png)
 
 ### Application Portability  
-Even if developers can use any external library in their functions code. We recommend to use assets through the **features/plugins** interfaces. For example, the datasource plugin provides native support to a number of relational databases, you can add a new one to the plugin by only registring vendor and it's driver. This will free developers from managing security and opening/recycling/pooling of connections. 
+Even if developers can use any external library in their functions code. We recommend to use assets through the **features/plugins** interfaces. For example, the datasource plugin provides native support to a number of relational databases, you can add a new one to the plugin by only registring the vendor and it's driver. This will free developers from managing security and opening/recycling/pooling of connections. 
+
 Here is the list of the out-of-the-box features:
 
 - Database: For document databases. Mongodb, Couchdb and Orientdb supported out-of-the-box. You can add other vendors by implementing the **Database Feature** plugin. 
 
 - Datasource: Includes most known relational databases, cassandra, salesforce. Hive and Hbase could be added by adding a new vendor to the plugin.
 
-- Storage: Supports FileSystem - S3 and other blob storage services could be used through a posix complaint interface.
+- Storage: Supports FileSystem - S3 and other blob storage services could be used through a posix compliant interface.
 
 - Messenger: Supports Mail and Mobile Push Notifications. Other vendors such as STOMP, APMQ could be added by implementing the Messenger feature plugin.
 
 - Indexer: Only ElasticSearch is supported. You can implement your own Indexer using feature plugin.
 
-- Remoting: Supports only HTTP to integrate with http-aware services. You can implement your own Remoting using feature plugin 
+- Remoting: Supports only HTTP to integrate with http-aware services. You can implement your own Remoting using feature plugin.
 
 ## Documentation
 Visit the [Developer Guide](https://www.bluenimble.com/devcommunity.html), [CLI Guide](https://www.bluenimble.com/icli.html) and [SDK Reference Guide](https://www.bluenimble.com/docs/apiref/js/index.html) for more details.
