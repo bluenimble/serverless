@@ -114,8 +114,8 @@ From now on, any api you create, will be stored in this folder.
 
 * A Service is a an interface specification which is defined by the service.json file. A service can define validation rules to apply on requests, specific security and eventually an SPI function (Service Provider Implementation)
 
-* Plugins are one of the most important components of the BlueNimble architecture when it comes to application portability. Plugins aren't just extensions, such as supporting a new feature, but they can change the behaviour of anything happening in the server. 
-You can create plugins to accept requests through a new network protocol such as COAP, to support new security mechanisms, change the flow of an incoming request, etc. 
+* Plugins are one of the most important components of the BlueNimble architecture when it comes to application portability. Plugins aren't just extensions, such as supporting a new feature, but they can change the behaviour of anything happening in the server. <br/>
+You can create plugins to accept requests through a new network protocol such as COAP, to support new security mechanisms, change the flow of an incoming request, etc. <br/>
 Plugins also receive events of changes happening to a space or an api. For example, the Kubernetes or Swarm plugins intercept the "`Push Api`" event to push to the cluster, they also change services SPI fuctions to delegate load to the cluster instead of the Api Gateway.   
   
 ## Architecture
