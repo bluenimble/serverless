@@ -14,42 +14,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.db;
+package com.bluenimble.platform.plugins.database.mongodb.tests;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.Iterator;
-
+import com.bluenimble.platform.db.Database;
+import com.bluenimble.platform.db.DatabaseException;
+import com.bluenimble.platform.db.DatabaseObject;
+import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 
-public interface DatabaseObject extends Serializable {
-
-	String 		entity 			();
-
-	Object 		getId 			();
-	void 		setId 			(Object id);
+public class Create {
 	
-	Date 		getTimestamp 	();
+	public static void main (String [] args) throws DatabaseException {
+		
+		Database db = new DatabaseServer ().get ();
+		
+		DatabaseObject employee = db.create ("Employees");
+		
+		JsonArray names = new JsonArray ();
+		names.add (new JsonObject ().set ("number", "4098776623").set ("weight", 40));
+		
+		employee.set ("name", "New-1");
+		employee.set ("age", 27);
+		employee.set ("active", true);
+		employee.set ("salary", 48.50);
+		employee.set ("names", names);
+		
+		employee.save ();
+		
+		System.out.println (employee.toJson (null));
+		
+	}
 	
-	void 		set 			(String key, Object value) 	throws DatabaseException;
-	Object 		get 			(String key);
-	
-	void 		load 			(JsonObject values)			throws DatabaseException;
-
-	void 		remove 			(String key);
-	void 		clear 			();
-	
-	Iterator<String>	
-				keys 			();
-	
-	JsonObject 	toJson 			(DatabaseObjectSerializer serializer);
-	
-	boolean		has 			(String key);
-	
-	void		save 			() 							throws DatabaseException;
-	
-	void		delete 			()							throws DatabaseException;
-	
-	void		useDefaultFields(boolean useDefaultFields);
-
 }

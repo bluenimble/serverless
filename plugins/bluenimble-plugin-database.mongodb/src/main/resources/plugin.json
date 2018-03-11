@@ -1,0 +1,21 @@
+{
+
+	"name": "database.orientdb",
+	
+	"title": "Document Database Implementation - OrientDB",
+	
+	"spi": {
+		"class": "com.bluenimble.platform.plugins.database.orientdb.OrientDatabasePlugin",
+		"properties": {
+			"version": "1.0",
+			"vendor": {
+				"name": "BlueNimble, Inc",
+				"links": [{
+					"Read More": "https://www.bluenimble.com"
+				}]
+			},
+			"closable": "false"
+		}
+	}
+	
+}

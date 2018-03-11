@@ -1,3 +1,5 @@
 {
-	"template": ""
+	"template": "jdbc:oracle:thin:@[host][:port][:database]",
+	"port": "1521",
+	"driver": "oracle.jdbc.driver.OracleDriver"
 }

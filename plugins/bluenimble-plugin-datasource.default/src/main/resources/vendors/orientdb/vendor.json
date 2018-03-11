@@ -1,3 +1,5 @@
 {
-	"template": "jdbc:orient:remote://{host}{:port}{/database}"
+	"template": "jdbc:orient:remote://{host}{:port}{/database}",
+	"port": "2424",
+	"driver": "com.orientechnologies.orient.jdbc.OrientJdbcDriver"
 }

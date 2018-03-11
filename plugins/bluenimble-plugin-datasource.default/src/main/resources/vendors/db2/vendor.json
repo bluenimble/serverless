@@ -1,3 +1,5 @@
 {
-	"template": ""
+	"template": "jdbc:db2://[host][:port][/database]",
+	"port": "5021",
+	"driver": "com.ibm.db2.jcc.DB2Driver"
 }

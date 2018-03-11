@@ -1,3 +1,5 @@
 {
-	"template": "jdbc:jtds:sybase://{host}{:port}{/database}"
+	"template": "jdbc:jtds:sybase://[host][:port][/database]",
+	"port": "5000",
+	"driver": "net.sourceforge.jtds.jdbc.Driver"
 }

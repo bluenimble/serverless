@@ -23,16 +23,10 @@
 	<name>BlueNimble Serverless Plugins</name>
 	
 	<modules>
-		<module>bluenimble-plugin-database.orientdb</module>
-		<module>bluenimble-plugin-datasource.default</module>
 		<module>bluenimble-plugin-im.default</module>
 		<module>bluenimble-plugin-inbound.http.jetty</module>
 		<module>bluenimble-plugin-indexer.elasticsearch</module>
 		<module>bluenimble-plugin-media.default</module>
-		<module>bluenimble-plugin-messenger.smtp</module>
-		<module>bluenimble-plugin-remote.default</module>
-		<module>bluenimble-plugin-scheduler.quartz</module>
-		<module>bluenimble-plugin-scripting.javascript</module>
 		<module>bluenimble-plugin-security.default</module>
 		<module>bluenimble-plugin-security.keystore</module>
 		<module>bluenimble-plugin-server.ext</module>
@@ -40,6 +34,13 @@
 		<module>bluenimble-plugin-tracking.database</module>
 		<module>bluenimble-plugin-tracking.indexer</module>
 		<module>bluenimble-plugin-tracing.log4j</module>
+		<module>bluenimble-plugin-messenger.smtp</module>
+		<module>bluenimble-plugin-remote.default</module>
+		<module>bluenimble-plugin-scheduler.quartz</module>
+		<module>bluenimble-plugin-scripting.javascript</module>
+		<module>bluenimble-plugin-database.orientdb</module>
+		<module>bluenimble-plugin-database.mongodb</module>
+		<module>bluenimble-plugin-datasource.default</module>
 	</modules>
 	
 </project>

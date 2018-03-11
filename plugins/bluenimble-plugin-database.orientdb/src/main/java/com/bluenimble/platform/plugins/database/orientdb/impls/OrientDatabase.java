@@ -445,11 +445,11 @@ public class OrientDatabase implements Database {
 		ODocument childDoc 	= ((DatabaseObjectImpl)child).document;
 		
 		if (parentDoc.getIdentity () == null || !parentDoc.getIdentity ().isPersistent ()) {
-			throw new DatabaseException ("Parent Object " + parent.name () + " is not a persistent object");
+			throw new DatabaseException ("Parent Object " + parent.entity () + " is not a persistent object");
 		}
 		
 		if (childDoc.getIdentity () == null || !childDoc.getIdentity ().isPersistent ()) {
-			throw new DatabaseException ("Child Object " + child.name () + " is not a persistent object");
+			throw new DatabaseException ("Child Object " + child.entity () + " is not a persistent object");
 		}
 		
 		String query = format (

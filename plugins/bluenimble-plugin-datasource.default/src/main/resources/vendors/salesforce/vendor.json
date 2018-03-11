@@ -1,3 +1,6 @@
 {
-	"template": ""
+	"template": "jdbc:sforce://[host]",
+	"host": "login.salesforce.com",
+	"driver": "com.reliersoft.sforce.jdbc.Driver"
 }
+

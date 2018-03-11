@@ -14,42 +14,53 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.db;
+package com.bluenimble.platform.plugins.database.mongodb;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.Iterator;
 
 import com.bluenimble.platform.json.JsonObject;
 
-public interface DatabaseObject extends Serializable {
+public class DatabaseConfig implements Serializable {
 
-	String 		entity 			();
+	private static final long serialVersionUID = 2978956077302402220L;
+	
+	private String 		host;
+	
+	private String 		user;
+	private String 		password;
+	
+	private JsonObject 	pool;
+	
+	public DatabaseConfig () {
+	}
 
-	Object 		getId 			();
-	void 		setId 			(Object id);
-	
-	Date 		getTimestamp 	();
-	
-	void 		set 			(String key, Object value) 	throws DatabaseException;
-	Object 		get 			(String key);
-	
-	void 		load 			(JsonObject values)			throws DatabaseException;
+	public String getHost () {
+		return host;
+	}
+	public void setHost (String host) {
+		this.host = host;
+	}
 
-	void 		remove 			(String key);
-	void 		clear 			();
-	
-	Iterator<String>	
-				keys 			();
-	
-	JsonObject 	toJson 			(DatabaseObjectSerializer serializer);
-	
-	boolean		has 			(String key);
-	
-	void		save 			() 							throws DatabaseException;
-	
-	void		delete 			()							throws DatabaseException;
-	
-	void		useDefaultFields(boolean useDefaultFields);
+	public String getUser () {
+		return user;
+	}
+	public void setUser (String user) {
+		this.user = user;
+	}
+
+	public String getPassword () {
+		return password;
+	}
+	public void setPassword (String password) {
+		this.password = password;
+	}
+
+	public JsonObject getPool () {
+		return pool;
+	}
+
+	public void setPool (JsonObject pool) {
+		this.pool = pool;
+	}
 
 }

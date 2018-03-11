@@ -1,0 +1,5 @@
+{
+	"template": "jdbc:c*:datastax://[host][/database]",
+	"port": "9042",
+	"driver": "com.github.cassandra.jdbc.CassandraDriver"
+}

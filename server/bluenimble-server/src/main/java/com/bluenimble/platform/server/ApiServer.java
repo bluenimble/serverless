@@ -58,8 +58,7 @@ public interface ApiServer extends Traceable {
 		Uninstall,
 		Stop,
 		Start,
-		Pause,
-		Play
+		Pause
 	}
 	
 	interface Maps {

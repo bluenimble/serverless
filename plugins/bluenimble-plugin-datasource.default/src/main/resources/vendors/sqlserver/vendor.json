@@ -1,3 +1,5 @@
 {
-	"template": "jdbc:sqlserver://{host}{\database}{:port}"
+	"template": "jdbc:sqlserver://[host][:port]",
+	"port": "1433",
+	"driver": "com.microsoft.sqlserver.jdbc.SQLServerDriver"
 }

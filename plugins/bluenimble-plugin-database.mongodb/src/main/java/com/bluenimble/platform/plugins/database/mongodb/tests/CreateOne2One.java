@@ -14,42 +14,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.db;
+package com.bluenimble.platform.plugins.database.mongodb.tests;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.Iterator;
-
+import com.bluenimble.platform.db.Database;
+import com.bluenimble.platform.db.DatabaseException;
+import com.bluenimble.platform.db.DatabaseObject;
 import com.bluenimble.platform.json.JsonObject;
 
-public interface DatabaseObject extends Serializable {
-
-	String 		entity 			();
-
-	Object 		getId 			();
-	void 		setId 			(Object id);
+public class CreateOne2One {
 	
-	Date 		getTimestamp 	();
+	public static void main (String [] args) throws DatabaseException {
+		
+		Database db = new DatabaseServer ().get ();
+		
+		// create driver
+		DatabaseObject driver = db.create ("Drivers");
+		driver.set ("name", "One2One-New-2");
+		driver.set ("info", new JsonObject ().set ("x", "40987").set ("y", 76623));
+		driver.set ("salary", 48.50);
+		
+		// create car
+		DatabaseObject car = db.create ("Cars");
+		car.set ("model", "Honda");
+		car.set ("year", "2040");
+		
+		driver.set ("car", car);
+		
+		driver.save ();
+		
+		System.out.println (driver.toJson (null));
+		
+	}
 	
-	void 		set 			(String key, Object value) 	throws DatabaseException;
-	Object 		get 			(String key);
-	
-	void 		load 			(JsonObject values)			throws DatabaseException;
-
-	void 		remove 			(String key);
-	void 		clear 			();
-	
-	Iterator<String>	
-				keys 			();
-	
-	JsonObject 	toJson 			(DatabaseObjectSerializer serializer);
-	
-	boolean		has 			(String key);
-	
-	void		save 			() 							throws DatabaseException;
-	
-	void		delete 			()							throws DatabaseException;
-	
-	void		useDefaultFields(boolean useDefaultFields);
-
 }
