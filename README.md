@@ -120,7 +120,7 @@ Plugins also receive events of changes happening to a space or an api. For examp
   
 ## Architecture
 
-### Hight Level Flow Diagram
+### High Level Flow Diagram
 The figure below is a hight level flow diagram
 
 ![BlueNimble Hight-Level Flow-architecture](https://github.com/bluenimble/serverless/blob/master/assets/images/main-opt.png)
