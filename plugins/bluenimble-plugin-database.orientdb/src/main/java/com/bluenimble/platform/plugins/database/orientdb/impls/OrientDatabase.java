@@ -749,7 +749,7 @@ public class OrientDatabase implements Database {
 			
 			CompiledQuery cQuery = compile (entity, construct, query, returnBefore);
 			
-			sQuery 		= cQuery.query 		();
+			sQuery 		= (String)cQuery.query 		();
 			bindings	= cQuery.bindings 	();
 			
 			if (queryHasEntity && query.caching ().cache (Target.meta) && !Lang.isNullOrEmpty (query.name ())) {
@@ -853,7 +853,7 @@ public class OrientDatabase implements Database {
 		
 		function = fLibrary.createFunction (event + FunctionPostfix);
 		function.setLanguage ("SQL");
-		function.setCode (compile (query.entity (), query.construct (), query, false).query ());
+		function.setCode ((String)compile (query.entity (), query.construct (), query, false).query ());
 		function.save ();
 		
 		return function;

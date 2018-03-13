@@ -41,13 +41,19 @@ import com.bluenimble.platform.db.query.Query;
 import com.bluenimble.platform.db.query.Query.Operator;
 import com.bluenimble.platform.db.query.QueryCompiler;
 import com.bluenimble.platform.db.query.Select;
+import com.bluenimble.platform.db.query.Caching.Target;
 import com.bluenimble.platform.db.query.impls.SqlQueryCompiler;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
+import com.mongodb.BasicDBObject;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
 import com.mongodb.client.result.DeleteResult;
+import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.OCommandSQL;
+import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
 public class MongoDatabaseImpl implements Database {
 
@@ -93,7 +99,7 @@ public class MongoDatabaseImpl implements Database {
 		String CollStats 	= "collStats";
 	}
 	
-	private Map<String, String> QueriesCache = new ConcurrentHashMap<String, String> ();
+	private Map<String, BasicDBObject> QueriesCache = new ConcurrentHashMap<String, BasicDBObject> ();
 	
 	private MongoDatabase		db;
 	private Tracer				tracer;
@@ -187,7 +193,18 @@ public class MongoDatabaseImpl implements Database {
 	
 	@Override
 	public List<DatabaseObject> find (String name, Query query, Visitor visitor) throws DatabaseException {
-		return null;
+		
+		List<Document> result;
+		try {
+			result = (List<Document>)_query (name, Query.Construct.select, query, false);
+		} catch (Exception e) {
+			throw new DatabaseException (e.getMessage (), e);
+		}
+		if (result == null || result.isEmpty ()) {
+			return null;
+		}
+		
+		return toList (name, result, visitor);
 	}
 
 	@Override
@@ -422,9 +439,94 @@ public class MongoDatabaseImpl implements Database {
 			return null;
 		}
 		
+		if (Query.Construct.select.equals (construct)) {
+			returnBefore = false;
+		}
+		
+		boolean queryHasEntity = true;
+		
+		String entity = query.entity ();
+		
+		if (Lang.isNullOrEmpty (entity)) {
+			queryHasEntity = false;
+			entity = type;
+		}
+		
+		entity = checkNotNull (entity);
+		
+		tracer.log (Tracer.Level.Debug, "Query Entity {0}", entity);
+		
+		/*
+		if (!"Collection Exists") {
+			tracer.log (Tracer.Level.Debug, "Entity {0} not found", entity);
+			return null;
+		}
+		*/
+		
+		String cacheKey = construct.name () + query.name ();
+		
+		BasicDBObject 		mQuery 		= null;
+		Map<String, Object> bindings 	= query.bindings ();
+		
+		boolean cacheable = queryHasEntity && query.caching ().cache (Target.meta) && !Lang.isNullOrEmpty (query.name ());
+		
+		if (cacheable) {
+			mQuery 		= (BasicDBObject)QueriesCache.get (cacheKey);
+			tracer.log (Tracer.Level.Debug, "Query meta loaded from cache {0}", mQuery);
+		} 
+		
+		if (mQuery == null) {
+			
+			CompiledQuery cQuery = compile (entity, construct, query, returnBefore);
+			
+			mQuery 		= (BasicDBObject)cQuery.query ();
+			bindings	= cQuery.bindings 	();
+			
+			if (cacheable) {
+				QueriesCache.put (cacheKey, mQuery);
+				tracer.log (Tracer.Level.Debug, "Query meta stored in cache {0}", mQuery);
+			} 
+		}
+		
+		mQuery = cacheable ? applyBindings (mQuery, bindings) : mQuery;
+
+		tracer.log (Tracer.Level.Debug, "\tQuery {0}", mQuery);
+		tracer.log (Tracer.Level.Debug, "\tBindings: {0}", bindings);
+		
+		if (Query.Construct.select.equals (construct)) {
+			FindIterable<Document> result = db.getCollection (entity).find ();
+			
+			if (result == null || result.isEmpty ()) {
+				return null;
+			}
+			
+			return result;
+		} else if (Query.Construct.delete.equals (construct)) {
+			DeleteResult dr = db.getCollection (entity).deleteMany (mQuery);
+			return dr.getDeletedCount ();
+		}
+		
+	}
+	
+	private BasicDBObject applyBindings (BasicDBObject mQuery, Map<String, Object> bindings) {
+		if (bindings == null || bindings.isEmpty ()) {
+			return mQuery;
+		}
+		
+		mQuery = (BasicDBObject)mQuery.copy ();
+		
+		
+		return mQuery;
+	}
+	
+	private CompiledQuery compile (String entity, Query.Construct construct, final Query query, final boolean returnBefore) {
+		
+		BasicDBObject mq = new BasicDBObject ();
+		
 		return null;
 	}
 	
+	/*
 	private CompiledQuery compile (String entity, Query.Construct construct, final Query query, final boolean returnBefore) throws DatabaseException {
 		final String fEntity = entity;
 		QueryCompiler compiler = new SqlQueryCompiler (construct) {
@@ -472,7 +574,8 @@ public class MongoDatabaseImpl implements Database {
 		return compiler.compile (query);
 		
 	}
-
+	*/
+	
 	private String format (String query, String type) {
 		return Lang.replace (query, Tokens.Type, type);
 	}

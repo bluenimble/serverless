@@ -20,7 +20,7 @@ import java.util.Map;
 
 public interface CompiledQuery {
 
-	String 				query 		();
+	Object 				query 		();
 	Map<String, Object> bindings 	();
 	
 }
