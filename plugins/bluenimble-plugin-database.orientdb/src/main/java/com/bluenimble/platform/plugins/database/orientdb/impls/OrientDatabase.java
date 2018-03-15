@@ -71,6 +71,7 @@ public class OrientDatabase implements Database {
 	
 	public static final String		CacheQueriesBucket	= "__plugin/database/odb/QueriesBucket__";
 	private static final String 	Lucene 				= "LUCENE";
+	private static final String 	Maches 				= "MACHES";
 	
 	private static final String 	FunctionPostfix		= "_fct";
 	
@@ -807,6 +808,8 @@ public class OrientDatabase implements Database {
 			protected String operatorFor (Operator operator) {
 				if (Operator.ftq.equals (operator)) {
 					return Lucene;
+				} else if (Operator.regex.equals (operator)) {
+					return Maches;
 				}
 				return super.operatorFor (operator);
 			}

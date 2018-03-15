@@ -245,7 +245,7 @@ public class DatabaseObjectImpl implements DatabaseObject {
 			return list;
 		} else {
 			String entity 	= ref.getString (ObjectEntityKey);
-			Object id 		= ref.get (Database.Fields.Id);
+			Object id 		= ref.get (ObjectIdKey);
 			
 			if (entity == null || id == null) {
 				return null;
@@ -419,7 +419,7 @@ public class DatabaseObjectImpl implements DatabaseObject {
 				
 				Document dRef = new Document ()
 					.append (ObjectEntityKey, refObject.entity ())
-					.append (Database.Fields.Id, refObject.getId ());
+					.append (ObjectIdKey, refObject.getId ());
 				
 				if (persistent) {
 					markForUpdate (ref, dRef);

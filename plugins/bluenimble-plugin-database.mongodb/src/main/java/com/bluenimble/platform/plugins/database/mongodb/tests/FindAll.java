@@ -14,68 +14,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.db.query;
+package com.bluenimble.platform.plugins.database.mongodb.tests;
 
-import java.io.Serializable;
-import java.util.Map;
+import java.util.List;
 
-public interface Query extends Serializable {
+import com.bluenimble.platform.db.Database;
+import com.bluenimble.platform.db.DatabaseObject;
+import com.bluenimble.platform.db.impls.DefaultDatabaseObjectSerializer;
+import com.bluenimble.platform.db.query.impls.JsonQuery;
+import com.bluenimble.platform.json.JsonObject;
 
-	enum Construct {
-		select,
-		update,
-		insert,
-		delete,
-		where,
-		orderBy,
-		groupBy,
-		having
+public class FindAll {
+	
+	public static void main (String [] args) throws Exception {
+		
+		String query = "{ }";
+		
+		Database db = new DatabaseServer ().get ();
+		
+		List<DatabaseObject> employees = db.find (
+			"Employees", 
+			new JsonQuery (new JsonObject (query)),
+			null
+		);
+		
+		for (DatabaseObject employee : employees) {
+			System.out.println (employee.toJson (new DefaultDatabaseObjectSerializer (2, 2)));
+		}
+		
 	}
-	
-	enum Conjunction {
-		or,
-		and
-	}
-	
-	enum Operator {
-		eq,
-		neq,
-		gt,
-		lt,
-		gte,
-		lte,
-		like,
-		nlike,
-		btw,
-		nbtw,
-		in,
-		nin,
-		nil,
-		nnil,
-		regex,
-		ftq,
-		within,
-		near
-	}
-	
-	String				name 		();
-
-	String				entity 		();
-	void				entity 		(String entity);
-	
-	Construct			construct 	();
-
-	Caching				caching		();
-	Select 				select 		();
-	Where 				where 		();
-	GroupBy 			groupBy 	();
-	OrderBy 			orderBy 	();
-	Having 				having 		();
-
-	int 				start 		();
-	int 				count 		();
-	void 				count 		(int page);
-	
-	Map<String, Object>	bindings 	();
 	
 }

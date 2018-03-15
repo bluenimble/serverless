@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 import com.bluenimble.platform.db.Database;
+import com.bluenimble.platform.iterators.EmptyIterator;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 public class DatabaseObjectList<T> implements List<T> {
@@ -52,9 +53,29 @@ public class DatabaseObjectList<T> implements List<T> {
 		throw new UnsupportedOperationException ("contains not supported");
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Iterator<T> iterator () {
-		throw new UnsupportedOperationException ("iterator not supported");
+		if (documents == null) {
+			return new EmptyIterator<T> ();
+		}
+		
+		Iterator<ODocument> iDocs = documents.iterator ();
+		if (iDocs == null) {
+			return new EmptyIterator<T> ();
+		}
+		
+		return new Iterator<T>() {
+			@Override
+			public boolean hasNext () {
+				return iDocs.hasNext ();
+			}
+
+			@Override
+			public T next () {
+				return (T)new DatabaseObjectImpl (database, iDocs.next ());
+			}
+		};
 	}
 
 	@Override

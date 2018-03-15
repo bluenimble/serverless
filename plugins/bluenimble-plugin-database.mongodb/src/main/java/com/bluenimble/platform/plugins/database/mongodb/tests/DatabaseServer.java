@@ -16,6 +16,8 @@
  */
 package com.bluenimble.platform.plugins.database.mongodb.tests;
 
+import java.text.MessageFormat;
+
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
@@ -62,7 +64,7 @@ public class DatabaseServer {
 
 			@Override
 			public void log (Level level, Object o, Object... args) {
-				System.out.println (level + " > " + o);
+				System.out.println (level + " > " + MessageFormat.format (o.toString (), args));
 			}
 			
 		});

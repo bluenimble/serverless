@@ -20,7 +20,10 @@ import static com.mongodb.client.model.Filters.eq;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,25 +39,39 @@ import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseException;
 import com.bluenimble.platform.db.DatabaseObject;
+import com.bluenimble.platform.db.query.Caching.Target;
 import com.bluenimble.platform.db.query.CompiledQuery;
+import com.bluenimble.platform.db.query.Condition;
 import com.bluenimble.platform.db.query.Query;
 import com.bluenimble.platform.db.query.Query.Operator;
-import com.bluenimble.platform.db.query.QueryCompiler;
-import com.bluenimble.platform.db.query.Select;
-import com.bluenimble.platform.db.query.Caching.Target;
-import com.bluenimble.platform.db.query.impls.SqlQueryCompiler;
+import com.bluenimble.platform.db.query.Where;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.plugins.database.mongodb.impls.filters.BetweenFilterAppender;
+import com.bluenimble.platform.plugins.database.mongodb.impls.filters.DefaultFilterAppender;
+import com.bluenimble.platform.plugins.database.mongodb.impls.filters.FilterAppender;
+import com.bluenimble.platform.plugins.database.mongodb.impls.filters.LikeFilterAppender;
+import com.bluenimble.platform.plugins.database.mongodb.impls.filters.NilFilterAppender;
+import com.bluenimble.platform.plugins.database.mongodb.impls.filters.RegexFilterAppender;
+import com.bluenimble.platform.plugins.database.mongodb.impls.filters.TextFilterAppender;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
 import com.mongodb.client.result.DeleteResult;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.OCommandSQL;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
+/**
+ * 
+ * TODO:
+ * 	- near and within operators
+ * 	- search on relations 
+ * 	- remove, add to lists
+ * 	- pop, popOne
+ *	- start, page, sort, projections
+ * 
+ * 
+ **/
 public class MongoDatabaseImpl implements Database {
 
 	private static final long serialVersionUID = 3547537996525908902L;
@@ -62,30 +79,11 @@ public class MongoDatabaseImpl implements Database {
 	private static final String 	DateFormat 			= "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 	
 	public static final String		CacheQueriesBucket	= "__plugin/database/odb/QueriesBucket__";
-	private static final String 	Lucene 				= "LUCENE";
-	
-	private interface Tokens {
-		String Type 		= "{Type}";
-		String Field 		= "{field}";
-		String Parent 		= "{parent}";
-		String Child 		= "{child}";
-		String Collection 	= "{collection}";
-		String Value 		= "{value}";
-	}
-	
-	private interface Sql {
-		String Skip			= "skip";
-		String Limit		= "limit";
-		String ReturnBefore	= "return before";
-	}
-	
-    private static final Set<String> SystemEntities = new HashSet<String> ();
+
+	private static final Set<String> SystemEntities = new HashSet<String> ();
 	static {
 		SystemEntities.add ("OSchedule");
 	}
-	
-	private static final String CollectionAddQuery 		= "UPDATE " + Tokens.Parent + " ADD " + Tokens.Collection + " = " + Tokens.Child;
-	private static final String CollectionRemoveQuery 	= "UPDATE " + Tokens.Parent + " REMOVE " + Tokens.Collection + " = " + Tokens.Child;
 	
 	interface Describe {
 		String Size 		= "size";
@@ -97,6 +95,22 @@ public class MongoDatabaseImpl implements Database {
 	interface SpiDescribe {
 		String Size 		= "size";
 		String CollStats 	= "collStats";
+	}
+	
+	private static final FilterAppender DefaultFilterAppender = new DefaultFilterAppender ();
+	
+	private static final Map<Operator, FilterAppender> FilterAppenders = new HashMap<Operator, FilterAppender> ();
+	static {
+		FilterAppenders.put (Operator.like, new LikeFilterAppender ());
+		FilterAppenders.put (Operator.nlike, new LikeFilterAppender ());
+		FilterAppenders.put (Operator.btw, new BetweenFilterAppender ());
+		FilterAppenders.put (Operator.nbtw, new BetweenFilterAppender ());
+		FilterAppenders.put (Operator.nil, new NilFilterAppender ());
+		FilterAppenders.put (Operator.nnil, new NilFilterAppender ());
+		FilterAppenders.put (Operator.regex, new RegexFilterAppender ());
+		FilterAppenders.put (Operator.ftq, new TextFilterAppender ());
+		//FilterAppenders.put (Operator.near, "");
+		//FilterAppenders.put (Operator.within, "");
 	}
 	
 	private Map<String, BasicDBObject> QueriesCache = new ConcurrentHashMap<String, BasicDBObject> ();
@@ -194,13 +208,13 @@ public class MongoDatabaseImpl implements Database {
 	@Override
 	public List<DatabaseObject> find (String name, Query query, Visitor visitor) throws DatabaseException {
 		
-		List<Document> result;
+		FindIterable<Document> result;
 		try {
-			result = (List<Document>)_query (name, Query.Construct.select, query, false);
+			result = (FindIterable<Document>)_query (name, Query.Construct.select, query, false);
 		} catch (Exception e) {
 			throw new DatabaseException (e.getMessage (), e);
 		}
-		if (result == null || result.isEmpty ()) {
+		if (result == null) {
 			return null;
 		}
 		
@@ -286,13 +300,13 @@ public class MongoDatabaseImpl implements Database {
 	@Override
 	public void add (DatabaseObject parent, String collection, DatabaseObject child)
 			throws DatabaseException {
-		addRemove (CollectionAddQuery, parent, collection, child);
+		//addRemove (CollectionAddQuery, parent, collection, child);
 	}
 
 	@Override
 	public void remove (DatabaseObject parent, String collection, DatabaseObject child)
 			throws DatabaseException {
-		addRemove (CollectionRemoveQuery, parent, collection, child);
+		//addRemove (CollectionRemoveQuery, parent, collection, child);
 	}
 
 	@Override
@@ -428,8 +442,32 @@ public class MongoDatabaseImpl implements Database {
 		// TODO
 	}
 	
-	private List<DatabaseObject> toList (String type, List<Document> documents, Visitor visitor) {
+	private List<DatabaseObject> toList (String type, FindIterable<Document> documents, Visitor visitor) {
 		
+		if (visitor == null) {
+			List<Document> list = new ArrayList<Document>();
+			for (Document document : documents) {
+				list.add (document);
+			}
+			return new DatabaseObjectList<DatabaseObject> (this, type, list);
+		}
+		
+		DatabaseObjectImpl entity = null;
+		if (visitor.optimize ()) {
+			entity = new DatabaseObjectImpl (this, type);
+		}
+		
+		for (Document document : documents) {
+			if (visitor.optimize ()) {
+				entity.document = document;
+			} else {
+				entity = new DatabaseObjectImpl (this, type, document);
+			}
+			boolean cancel = visitor.onRecord (entity);
+			if (cancel) {
+				return null;
+			}
+		}
 		return null;
 	}
 
@@ -482,7 +520,7 @@ public class MongoDatabaseImpl implements Database {
 			mQuery 		= (BasicDBObject)cQuery.query ();
 			bindings	= cQuery.bindings 	();
 			
-			if (cacheable) {
+			if (cacheable && mQuery != null) {
 				QueriesCache.put (cacheKey, mQuery);
 				tracer.log (Tracer.Level.Debug, "Query meta stored in cache {0}", mQuery);
 			} 
@@ -490,13 +528,13 @@ public class MongoDatabaseImpl implements Database {
 		
 		mQuery = cacheable ? applyBindings (mQuery, bindings) : mQuery;
 
-		tracer.log (Tracer.Level.Debug, "\tQuery {0}", mQuery);
-		tracer.log (Tracer.Level.Debug, "\tBindings: {0}", bindings);
+		tracer.log (Tracer.Level.Debug, "       Query {0}", mQuery);
+		tracer.log (Tracer.Level.Debug, "    Bindings {0}", bindings);
 		
 		if (Query.Construct.select.equals (construct)) {
-			FindIterable<Document> result = db.getCollection (entity).find ();
-			
-			if (result == null || result.isEmpty ()) {
+			FindIterable<Document> result = db.getCollection (entity).find (mQuery);
+			// TODO: Test on Empty
+			if (result == null/* || result.isEmpty ()*/) {
 				return null;
 			}
 			
@@ -506,24 +544,82 @@ public class MongoDatabaseImpl implements Database {
 			return dr.getDeletedCount ();
 		}
 		
+		return null;
+		
 	}
 	
 	private BasicDBObject applyBindings (BasicDBObject mQuery, Map<String, Object> bindings) {
-		if (bindings == null || bindings.isEmpty ()) {
+		if (mQuery == null || bindings == null || bindings.isEmpty ()) {
 			return mQuery;
 		}
 		
 		mQuery = (BasicDBObject)mQuery.copy ();
 		
+		// TODO: apply bindings
 		
 		return mQuery;
 	}
 	
+	// REF: https://docs.mongodb.com/manual/reference/method/db.collection.find/
 	private CompiledQuery compile (String entity, Query.Construct construct, final Query query, final boolean returnBefore) {
 		
 		BasicDBObject mq = new BasicDBObject ();
 		
-		return null;
+		CompiledQuery cQuery = new CompiledQuery () {
+			@Override
+			public Object query () {
+				return mq;
+			}
+			
+			@Override
+			public Map<String, Object> bindings () {
+				return query.bindings ();
+			}
+		};
+		
+		Where where = query.where ();
+		if (where == null || where.count () == 0) {
+			return cQuery;
+		}
+		
+		// Selectors
+		Iterator<String> fields = where.conditions ();
+		while (fields.hasNext ()) {
+			String f = fields.next ();
+			Object condOrFilter = where.get (f);
+			if (Condition.class.isAssignableFrom (condOrFilter.getClass ())) {
+				Condition c = (Condition)condOrFilter;
+				BasicDBObject criteria = (BasicDBObject)mq.get (c.field ());
+				
+				boolean newlyCreated = false;
+				if (criteria == null) {
+					newlyCreated = true;
+					criteria = new BasicDBObject ();
+					mq.put (c.field (), criteria);
+				}
+				
+				FilterAppender fa = FilterAppenders.get (c.operator ());
+				if (fa == null) {
+					fa = DefaultFilterAppender;
+				}
+				
+				BasicDBObject filter = fa.append (c, criteria);
+				if (filter != null) {
+					mq.putAll ((Map<String, Object>)filter);
+					if (newlyCreated) {
+						mq.remove (c.field ());
+					}
+				}
+			}
+		}
+		
+		// Projections
+		
+		
+		// Aggregates / ?
+
+		return cQuery;
+		
 	}
 	
 	/*
@@ -576,18 +672,6 @@ public class MongoDatabaseImpl implements Database {
 	}
 	*/
 	
-	private String format (String query, String type) {
-		return Lang.replace (query, Tokens.Type, type);
-	}
-	
-	private String format (String query, String type, String field) {
-		return Lang.replace (format (query, type), Tokens.Field, field);
-	}
-	
-	private String format (String query, String parent, String collection, String child) {
-		return Lang.replace (Lang.replace (Lang.replace (query, Tokens.Collection, collection), Tokens.Parent, parent), Tokens.Child, child);
-	}
-	
 	private String checkNotNull (String eType) throws DatabaseException {
 		if (Lang.isNullOrEmpty (eType)) {
 			throw new DatabaseException ("entity name is null");
@@ -595,16 +679,6 @@ public class MongoDatabaseImpl implements Database {
 		return eType;
 	}
 	
-	private boolean option (Map<ExchangeOption, Boolean> options, ExchangeOption option, boolean defaultValue) {
-		if (options == null) {
-			return defaultValue;
-		}
-		if (!options.containsKey (option)) {
-			return defaultValue;
-		}
-		return options.get (option);
-	}
-
 	@Override
 	public Object get () {
 		return null;
@@ -618,5 +692,5 @@ public class MongoDatabaseImpl implements Database {
 	public MongoDatabase getInternal () {
 		return db;
 	}
-
+	
 }

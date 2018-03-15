@@ -23,18 +23,24 @@ import java.util.ListIterator;
 
 import org.bson.Document;
 
-import com.bluenimble.platform.db.Database;
+import com.bluenimble.platform.iterators.EmptyIterator;
 
 // http://tgrall.github.io/blog/2015/04/21/mongodb-playing-with-arrays/
 
 public class DatabaseObjectList<T> implements List<T> {
 
+	private String 				entity;
 	private List<Document> 		documents;
 	private MongoDatabaseImpl 	database;
 	
+	public DatabaseObjectList (MongoDatabaseImpl database, String entity, List<Document> documents) {
+		this.entity 	= entity;
+		this.database 	= database;
+		this.documents 	= documents;
+	}
+	
 	public DatabaseObjectList (MongoDatabaseImpl database, List<Document> documents) {
-		this.database = database;
-		this.documents = documents;
+		this (database, null, documents);
 	}
 	
 	@Override
@@ -57,7 +63,26 @@ public class DatabaseObjectList<T> implements List<T> {
 
 	@Override
 	public Iterator<T> iterator () {
-		throw new UnsupportedOperationException ("iterator not supported");
+		if (documents == null) {
+			return new EmptyIterator<T> ();
+		}
+		
+		Iterator<Document> iDocs = documents.iterator ();
+		if (iDocs == null) {
+			return new EmptyIterator<T> ();
+		}
+		
+		return new Iterator<T>() {
+			@Override
+			public boolean hasNext () {
+				return iDocs.hasNext ();
+			}
+
+			@Override
+			public T next () {
+				return _get (iDocs.next ());
+			}
+		};
 	}
 
 	@Override
@@ -114,24 +139,26 @@ public class DatabaseObjectList<T> implements List<T> {
 		documents.clear ();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public T get (int index) {
 		if (documents == null) {
 			return null;
 		}
-		
-		Document document = documents.get (index);
+		return _get (documents.get (index));
+	}
+	
+	@SuppressWarnings("unchecked")
+	private T _get (Document document) {
 		if (document == null) {
 			return null;
 		}
 		
-		String entity 	= document.getString (DatabaseObjectImpl.ObjectEntityKey);
-		Object id 		= document.get (Database.Fields.Id);
+		String e 	= entity == null ? document.getString (DatabaseObjectImpl.ObjectEntityKey) : entity;
+		Object id 	= document.get (DatabaseObjectImpl.ObjectIdKey);
 		
 		DatabaseObjectImpl dbo = new DatabaseObjectImpl (
 			database, 
-			entity, id, 
+			e, id, 
 			true
 		);
 
