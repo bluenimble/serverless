@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +68,9 @@ import com.mongodb.client.result.DeleteResult;
  * 	- remove, add to lists
  * 	- pop, popOne
  *	- start, page, sort, projections
- * 
+ * 	- delete by query
+ * 	- handle and / or in queries
+ * 	- create entity
  * 
  **/
 public class MongoDatabaseImpl implements Database {
@@ -78,13 +79,8 @@ public class MongoDatabaseImpl implements Database {
 	
 	private static final String 	DateFormat 			= "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 	
-	public static final String		CacheQueriesBucket	= "__plugin/database/odb/QueriesBucket__";
+	public static final String		CacheQueriesBucket	= "__plugin/database/mongo/QueriesBucket__";
 
-	private static final Set<String> SystemEntities = new HashSet<String> ();
-	static {
-		SystemEntities.add ("OSchedule");
-	}
-	
 	interface Describe {
 		String Size 		= "size";
 		String Entities 	= "entities";
@@ -130,23 +126,32 @@ public class MongoDatabaseImpl implements Database {
 
 	@Override
 	public void trx () {
-		// 
+		// Not Supported
 	}
 	
 	@Override
 	public void commit () throws DatabaseException {
-		
+		// Not Supported
 	}
 
 	@Override
 	public void rollback () throws DatabaseException {
-		
+		// Not Supported
 	}
 
 	@Override
 	public void createEntity (String eType, Field... fields) throws DatabaseException {
 		eType = checkNotNull (eType);
+		/*
+		ValidationOptions vops = new ValidationOptions ();
+		vops.validator (validator);
 		
+		db.createCollection (
+			eType, 
+			new CreateCollectionOptions ()
+				.validationOptions ()
+		);
+		*/	
 		
 	}
 
@@ -205,6 +210,7 @@ public class MongoDatabaseImpl implements Database {
 	    return collection.find (eq (DatabaseObjectImpl.ObjectIdKey, _id)).first ();
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<DatabaseObject> find (String name, Query query, Visitor visitor) throws DatabaseException {
 		
@@ -328,9 +334,6 @@ public class MongoDatabaseImpl implements Database {
 		describe.set (Describe.Entities, aEntities);
 		
 		for (String collection : collections) {
-			if (SystemEntities.contains (collection)) {
-				continue;
-			}
 			JsonObject oEntity = new JsonObject ();
 			oEntity.set (Describe.Name, collection);
 			oEntity.putAll (db.runCommand (new Document (SpiDescribe.CollStats, collection)));
