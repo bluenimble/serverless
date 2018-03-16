@@ -17,15 +17,10 @@
 package com.bluenimble.platform.icli.mgm.commands.dev;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.Map;
 
-import com.bluenimble.platform.IOUtils;
-import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.cli.Tool;
-import com.bluenimble.platform.cli.ToolContext;
 import com.bluenimble.platform.cli.command.CommandExecutionException;
 import com.bluenimble.platform.cli.command.CommandOption;
 import com.bluenimble.platform.cli.command.CommandResult;
@@ -42,7 +37,7 @@ public class FeaturesCommand extends AbstractCommand {
 	}
 
 	public FeaturesCommand () {
-		super ("features", "list or load feature templates");
+		super ("features", "list feature templates");
 	}
 
 	@Override
@@ -51,41 +46,16 @@ public class FeaturesCommand extends AbstractCommand {
 		
 		File features = new File (BlueNimble.Home, "templates/features");
 		
-		String template = (String)tool.currentContext ().get (ToolContext.CommandLine);
-		if (!Lang.isNullOrEmpty (template)) {
-			features = new File (features, template);
+		File [] files = features.listFiles ();
+		
+		StringBuilder sb = new StringBuilder ();
+		for (File file : files) {
+			sb.append (file.getName ().substring (0, file.getName ().lastIndexOf (Lang.DOT))).append (Lang.ENDLN);
 		}
 		
-		if (features.isDirectory ()) {
-			File [] files = features.listFiles ();
-			StringBuilder sb = new StringBuilder ();
-			for (File file : files) {
-				sb.append (file.getName ()).append (Lang.ENDLN);
-			}
-			tool.printer ().content (features.getName (), sb.toString ());
-			sb.setLength (0);
-		} else {
-			@SuppressWarnings("unchecked")
-			Map<String, Object> vars = (Map<String, Object>)tool.currentContext ().get (ToolContext.VARS);
-			
-			InputStream in = null;
-			try {
-				in = new FileInputStream (features);
-				Object value = null;
-				if (features.getName ().endsWith (".json")) {
-					value = Json.load (in);
-				} else {
-					value = IOUtils.toString (in);
-				}
-				String var = features.getParentFile ().getName () + Lang.DOT + features.getName ().substring (0, features.getName ().lastIndexOf (Lang.DOT));
-				vars.put (var, value);
-				tool.printer ().content ("Variable " + var, value.toString ());
-			} catch (Exception ex) {
-				throw new CommandExecutionException (ex.getMessage (), ex);
-			} finally {
-				IOUtils.closeQuietly (in);
-			}
-		}
+		tool.printer ().content (features.getName (), sb.toString ());
+		
+		sb.setLength (0);
 		
 		return new DefaultCommandResult (CommandResult.OK, null);
 	}

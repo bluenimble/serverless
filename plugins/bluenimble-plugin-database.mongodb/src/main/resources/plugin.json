@@ -1,6 +1,6 @@
 {
 
-	"name": "database.orientdb",
+	"name": "database.mongodb",
 	
 	"title": "Document Database Implementation - OrientDB",
 	

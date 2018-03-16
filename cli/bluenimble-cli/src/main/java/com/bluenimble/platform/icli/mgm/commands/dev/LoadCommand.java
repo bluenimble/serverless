@@ -17,6 +17,7 @@
 package com.bluenimble.platform.icli.mgm.commands.dev;
 
 import com.bluenimble.platform.cli.command.impls.PrefixedCommand;
+import com.bluenimble.platform.icli.mgm.commands.dev.impls.LoadFeatureHandler;
 import com.bluenimble.platform.icli.mgm.commands.dev.impls.LoadKeysHandler;
 
 public class LoadCommand extends PrefixedCommand {
@@ -25,10 +26,12 @@ public class LoadCommand extends PrefixedCommand {
 	
 	interface Subject {
 		String Keys 		= "keys";
+		String Feature 		= "feature";
 	}
 	
 	public LoadCommand () {
-		super ("load", "load keys. Ex. load keys a-bluenimble-instance.keys [keys name (optional)]");
+		super ("load", "load keys or load feature. Ex. load keys a-bluenimble-instance.keys [keys name (optional)]");
 		addHandler (Subject.Keys, new LoadKeysHandler ());
+		addHandler (Subject.Feature, new LoadFeatureHandler ());
 	}
 }

@@ -1,0 +1,12 @@
+{
+	"name": "a name/id developers will use to work with this feature. Default to 'default'",
+	
+	"spec": {
+		"cluster": "hosts where memcached/redis is running. Ex. host1:port1,host2:port2,...",
+		
+		"auth": {
+			"user": "username",
+			"password": "password"
+		}
+	}
+}

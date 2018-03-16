@@ -1,0 +1,14 @@
+{
+	"name": "a name/id developers will use to work with this feature. Default to 'default'",
+	
+	"spec": {
+		"host": "where orientdb is running",
+		"port": "orientdb port number",
+		"database": "database name",
+		
+		"auth": {
+			"user": "database username",
+			"password": "password"
+		}
+	}
+}
