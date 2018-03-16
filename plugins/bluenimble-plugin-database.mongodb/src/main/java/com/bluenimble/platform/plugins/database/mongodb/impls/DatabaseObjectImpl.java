@@ -390,7 +390,7 @@ public class DatabaseObjectImpl implements DatabaseObject {
 
 	@Override
 	public JsonObject toJson (DatabaseObjectSerializer serializer) {
-		return toJson (this, serializer, 0);
+		return toJson (this, serializer, 0, false);
 	}
 	
 	@Override
@@ -463,7 +463,7 @@ public class DatabaseObjectImpl implements DatabaseObject {
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private JsonObject toJson (DatabaseObjectImpl dbo, DatabaseObjectSerializer serializer, int level) {
+	private JsonObject toJson (DatabaseObjectImpl dbo, DatabaseObjectSerializer serializer, int level, boolean refresh) {
 		if (serializer == null) {
 			serializer = DatabaseObjectSerializer.Default;
 		}
@@ -489,7 +489,7 @@ public class DatabaseObjectImpl implements DatabaseObject {
 		}
 
 		// If object is partial and more than minimal fields are requested
-		if (dbo.partial && Fields.All.equals (fields)) {
+		if (dbo.partial && Fields.All.equals (fields) && refresh) {
 			dbo.refresh ();
 			keys = dbo.document.keySet ();
 			fieldNames = keys.toArray (new String [keys.size ()]); 
@@ -517,7 +517,7 @@ public class DatabaseObjectImpl implements DatabaseObject {
 			} else if (v instanceof Map) {
 				v = new JsonObject ((Map<String, Object>)v, true);
 			} else if (v instanceof DatabaseObjectImpl) {
-				v = toJson (((DatabaseObjectImpl)v), serializer, level + 1);
+				v = toJson (((DatabaseObjectImpl)v), serializer, level + 1, true);
 			} else if (v instanceof DatabaseObjectList) {
 				List<Object> list = (List<Object>)v;
 				if (list.isEmpty ()) {
@@ -529,7 +529,7 @@ public class DatabaseObjectImpl implements DatabaseObject {
 						continue;
 					}
 					if (o instanceof DatabaseObjectImpl) {
-						arr.add (toJson (((DatabaseObjectImpl)o), serializer, level + 1));
+						arr.add (toJson (((DatabaseObjectImpl)o), serializer, level + 1, true));
 					} else {
 						if (o instanceof Date) {
 							arr.add (Lang.toUTC ((Date)o));

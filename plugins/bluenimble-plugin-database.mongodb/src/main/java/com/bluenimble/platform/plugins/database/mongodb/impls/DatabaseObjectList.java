@@ -29,18 +29,20 @@ import com.bluenimble.platform.iterators.EmptyIterator;
 
 public class DatabaseObjectList<T> implements List<T> {
 
-	private String 				entity;
 	private List<Document> 		documents;
 	private MongoDatabaseImpl 	database;
+	private String 				entity;
+	private boolean 			partial;
 	
-	public DatabaseObjectList (MongoDatabaseImpl database, String entity, List<Document> documents) {
+	public DatabaseObjectList (MongoDatabaseImpl database, List<Document> documents, String entity, boolean partial) {
 		this.entity 	= entity;
 		this.database 	= database;
 		this.documents 	= documents;
+		this.partial 	= partial;
 	}
 	
 	public DatabaseObjectList (MongoDatabaseImpl database, List<Document> documents) {
-		this (database, null, documents);
+		this (database, documents, null, false);
 	}
 	
 	@Override
@@ -156,11 +158,18 @@ public class DatabaseObjectList<T> implements List<T> {
 		String e 	= entity == null ? document.getString (DatabaseObjectImpl.ObjectEntityKey) : entity;
 		Object id 	= document.get (DatabaseObjectImpl.ObjectIdKey);
 		
-		DatabaseObjectImpl dbo = new DatabaseObjectImpl (
-			database, 
-			e, id, 
-			true
-		);
+		DatabaseObjectImpl dbo = null;
+				
+		if (entity == null) {
+			dbo = new DatabaseObjectImpl (
+				database, 
+				e, id, 
+				true
+			);
+		} else {
+			dbo = new DatabaseObjectImpl (database, entity, document);
+			dbo.partial = partial;
+		}
 
 		return (T)dbo;
 	}

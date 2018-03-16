@@ -41,6 +41,7 @@
 		<module>bluenimble-plugin-database.orientdb</module>
 		<module>bluenimble-plugin-database.mongodb</module>
 		<module>bluenimble-plugin-datasource.default</module>
+		<module>bluenimble-plugin-dev.playground</module>
 	</modules>
 	
 </project>

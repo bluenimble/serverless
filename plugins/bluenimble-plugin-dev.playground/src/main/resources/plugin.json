@@ -1,0 +1,17 @@
+{
+	"name": "dev.playground",
+	"title": "Dev Playground plugin. Starts an embedded database and more for testing purposes. !!! Don't ship to productions !!!",
+	
+	"spi": {
+		"class": "com.bluenimble.platform.plugins.dev.playground.PlaygroundPlugin",
+		"properties": {
+			"version": "1.0",
+			"vendor": {
+				"name": "BlueNimble, Inc",
+				"links": [{
+					"Read More": "https://www.bluenimble.com"
+				}]
+			}
+		}
+	}
+}	

@@ -33,8 +33,7 @@ import com.mongodb.MongoClientURI;
 
 public class DatabaseServer {
 
-	public Database get () {
-		
+	public MongoClient client () {
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries (
 			MongoClient.getDefaultCodecRegistry (), 
 			CodecRegistries.fromProviders (PojoCodecProvider.builder ().automatic (true).build ())
@@ -45,9 +44,12 @@ public class DatabaseServer {
 			MongoClientOptions.builder ().cursorFinalizerEnabled (false).codecRegistry (codecRegistry)
 		);
 			
-		MongoClient client = new MongoClient (uri);
+		return new MongoClient (uri);
+			
+	}
+	public Database get () {
 		
-		return new MongoDatabaseImpl (client.getDatabase ("tests"), new Tracer () {
+		return new MongoDatabaseImpl (client ().getDatabase ("tests"), new Tracer () {
 			private static final long serialVersionUID = 4922972723643535449L;
 
 			@Override

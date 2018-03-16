@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 import com.bluenimble.platform.Json;
@@ -41,8 +42,12 @@ import com.bluenimble.platform.db.DatabaseObject;
 import com.bluenimble.platform.db.query.Caching.Target;
 import com.bluenimble.platform.db.query.CompiledQuery;
 import com.bluenimble.platform.db.query.Condition;
+import com.bluenimble.platform.db.query.OrderBy;
+import com.bluenimble.platform.db.query.OrderBy.Direction;
+import com.bluenimble.platform.db.query.OrderByField;
 import com.bluenimble.platform.db.query.Query;
 import com.bluenimble.platform.db.query.Query.Operator;
+import com.bluenimble.platform.db.query.Select;
 import com.bluenimble.platform.db.query.Where;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
@@ -58,26 +63,29 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
+import com.mongodb.client.model.Projections;
+import com.mongodb.client.model.Sorts;
 import com.mongodb.client.result.DeleteResult;
 
 /**
  * 
  * TODO:
- * 	- near and within operators
- * 	- search on relations 
- * 	- remove, add to lists
- * 	- pop, popOne
- *	- start, page, sort, projections
- * 	- delete by query
  * 	- handle and / or in queries
+ * 	- search on relations 
+ * 	- applyBindings
+ * 	- pop, popOne
+ * 	- remove, add to lists
+ * 	- near and within operators
  * 	- create entity
+ * 	- create index
+ * 	- drop index
  * 
  **/
 public class MongoDatabaseImpl implements Database {
 
 	private static final long serialVersionUID = 3547537996525908902L;
 	
-	private static final String 	DateFormat 			= "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+	//private static final String 	DateFormat 			= "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 	
 	public static final String		CacheQueriesBucket	= "__plugin/database/mongo/QueriesBucket__";
 
@@ -91,6 +99,12 @@ public class MongoDatabaseImpl implements Database {
 	interface SpiDescribe {
 		String Size 		= "size";
 		String CollStats 	= "collStats";
+	}
+	
+	interface Tokens {
+		String Sort 	= "$sort";
+		String Skip 	= "$skip";
+		String Limit 	= "$limit";
 	}
 	
 	private static final FilterAppender DefaultFilterAppender = new DefaultFilterAppender ();
@@ -139,9 +153,33 @@ public class MongoDatabaseImpl implements Database {
 		// Not Supported
 	}
 
+/*	
+$jsonSchema: {
+  bsonType: "object",
+  required: [ "phone" ],
+  properties: {
+	 phone: {
+		bsonType: "string",
+		description: "must be a string and is required"
+	 },
+	 email: {
+		bsonType : "string",
+		pattern : "@mongodb\.com$",
+		description: "must be a string and match the regular expression pattern"
+	 },
+	 status: {
+		enum: [ "Unknown", "Incomplete" ],
+		description: "can only be one of the enum values"
+	 }
+  }
+}
+*/	
 	@Override
 	public void createEntity (String eType, Field... fields) throws DatabaseException {
 		eType = checkNotNull (eType);
+		
+		throw new UnsupportedOperationException ("MongoDB - createEntity not supported");
+		
 		/*
 		ValidationOptions vops = new ValidationOptions ();
 		vops.validator (validator);
@@ -165,6 +203,7 @@ public class MongoDatabaseImpl implements Database {
 			throw new DatabaseException ("entity " + eType + ". fields required to create an index");
 		}
 		
+		throw new UnsupportedOperationException ("MongoDB - createIndex not supported");
 		
 	}
 
@@ -173,12 +212,13 @@ public class MongoDatabaseImpl implements Database {
 
 		eType = checkNotNull (eType);
 		
+		throw new UnsupportedOperationException ("MongoDB - dropIndex not supported");
 		
 	}
 
 	@Override
 	public int increment (DatabaseObject object, String field, int value) throws DatabaseException {
-		return 0;
+		throw new UnsupportedOperationException ("MongoDB - increment not supported");
 	}
 
 	@Override
@@ -216,7 +256,7 @@ public class MongoDatabaseImpl implements Database {
 		
 		FindIterable<Document> result;
 		try {
-			result = (FindIterable<Document>)_query (name, Query.Construct.select, query, false);
+			result = (FindIterable<Document>)_query (name, Query.Construct.select, query);
 		} catch (Exception e) {
 			throw new DatabaseException (e.getMessage (), e);
 		}
@@ -224,7 +264,7 @@ public class MongoDatabaseImpl implements Database {
 			return null;
 		}
 		
-		return toList (name, result, visitor);
+		return toList (name, result, visitor, query.select () != null);
 	}
 
 	@Override
@@ -292,7 +332,7 @@ public class MongoDatabaseImpl implements Database {
 		if (query == null) {
 			return 0;
 		}
-		Object result = _query (null, Query.Construct.delete, query, false);
+		Object result = _query (null, Query.Construct.delete, query);
 		if (result == null) {
 			return 0;
 		}
@@ -307,12 +347,14 @@ public class MongoDatabaseImpl implements Database {
 	public void add (DatabaseObject parent, String collection, DatabaseObject child)
 			throws DatabaseException {
 		//addRemove (CollectionAddQuery, parent, collection, child);
+		throw new UnsupportedOperationException ("MongoDB - add child to parent not supported");
 	}
 
 	@Override
 	public void remove (DatabaseObject parent, String collection, DatabaseObject child)
 			throws DatabaseException {
 		//addRemove (CollectionRemoveQuery, parent, collection, child);
+		throw new UnsupportedOperationException ("MongoDB - add child to parent not supported");
 	}
 
 	@Override
@@ -348,6 +390,7 @@ public class MongoDatabaseImpl implements Database {
 		return describe;
 	}
 	
+	/*
 	private void addRemove (String queryTpl, DatabaseObject parent, String collection, DatabaseObject child)
 			throws DatabaseException {
 		
@@ -368,7 +411,8 @@ public class MongoDatabaseImpl implements Database {
 		
 		// TODO
 	}
-
+	*/
+	
 	@Override
 	public boolean isEntity (Object value) throws DatabaseException {
 		if (value == null) {
@@ -387,8 +431,9 @@ public class MongoDatabaseImpl implements Database {
 		}
 			
 		// TODO
+		throw new UnsupportedOperationException ("MongoDB - bulk not supported");
 		
-		return result;
+		// return result;
 		
 	}
 
@@ -407,15 +452,15 @@ public class MongoDatabaseImpl implements Database {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<DatabaseObject> pop (String name, Query query, Visitor visitor) throws DatabaseException {
 		if (query == null) {
 			return null;
 		}
 		
 		// TODO
+		throw new UnsupportedOperationException ("MongoDB - bulk not supported");
 		
-		return null;
+		//return null;
 	}
 
 	@Override
@@ -445,28 +490,24 @@ public class MongoDatabaseImpl implements Database {
 		// TODO
 	}
 	
-	private List<DatabaseObject> toList (String type, FindIterable<Document> documents, Visitor visitor) {
+	private List<DatabaseObject> toList (String type, FindIterable<Document> documents, Visitor visitor, boolean partial) {
 		
 		if (visitor == null) {
-			List<Document> list = new ArrayList<Document>();
-			for (Document document : documents) {
-				list.add (document);
-			}
-			return new DatabaseObjectList<DatabaseObject> (this, type, list);
+			return new DatabaseObjectList<DatabaseObject> (this, documents.into (new ArrayList<Document> ()), type, partial);
 		}
 		
-		DatabaseObjectImpl entity = null;
+		DatabaseObjectImpl dbo = null;
 		if (visitor.optimize ()) {
-			entity = new DatabaseObjectImpl (this, type);
+			dbo = new DatabaseObjectImpl (this, type);
 		}
 		
 		for (Document document : documents) {
 			if (visitor.optimize ()) {
-				entity.document = document;
+				dbo.document = document;
 			} else {
-				entity = new DatabaseObjectImpl (this, type, document);
+				dbo = new DatabaseObjectImpl (this, type, document);
 			}
-			boolean cancel = visitor.onRecord (entity);
+			boolean cancel = visitor.onRecord (dbo);
 			if (cancel) {
 				return null;
 			}
@@ -474,14 +515,10 @@ public class MongoDatabaseImpl implements Database {
 		return null;
 	}
 
-	private Object _query (String type, Query.Construct construct, final Query query, boolean returnBefore) throws DatabaseException {
+	private Object _query (String type, Query.Construct construct, final Query query) throws DatabaseException {
 		
 		if (query == null) {
 			return null;
-		}
-		
-		if (Query.Construct.select.equals (construct)) {
-			returnBefore = false;
 		}
 		
 		boolean queryHasEntity = true;
@@ -497,13 +534,6 @@ public class MongoDatabaseImpl implements Database {
 		
 		tracer.log (Tracer.Level.Debug, "Query Entity {0}", entity);
 		
-		/*
-		if (!"Collection Exists") {
-			tracer.log (Tracer.Level.Debug, "Entity {0} not found", entity);
-			return null;
-		}
-		*/
-		
 		String cacheKey = construct.name () + query.name ();
 		
 		BasicDBObject 		mQuery 		= null;
@@ -518,7 +548,7 @@ public class MongoDatabaseImpl implements Database {
 		
 		if (mQuery == null) {
 			
-			CompiledQuery cQuery = compile (entity, construct, query, returnBefore);
+			CompiledQuery cQuery = compile (entity, construct, query);
 			
 			mQuery 		= (BasicDBObject)cQuery.query ();
 			bindings	= cQuery.bindings 	();
@@ -535,16 +565,50 @@ public class MongoDatabaseImpl implements Database {
 		tracer.log (Tracer.Level.Debug, "    Bindings {0}", bindings);
 		
 		if (Query.Construct.select.equals (construct)) {
-			FindIterable<Document> result = db.getCollection (entity).find (mQuery);
-			// TODO: Test on Empty
-			if (result == null/* || result.isEmpty ()*/) {
-				return null;
+			FindIterable<Document> cursor = db.getCollection (entity).find (mQuery);
+			
+			// start / skip
+			if (query.start () > 0) {
+				cursor.skip (query.start ());
 			}
 			
-			return result;
+			// count / limit
+			if (query.count () > 0) {
+				cursor.limit (query.count ());
+			}
+			
+	        // orderBy
+			OrderBy orderBy = query.orderBy ();
+			if (orderBy != null && orderBy.count () > 0) {
+				List<Bson> sorts = new ArrayList<Bson> ();
+				Iterator<String> oFields = orderBy.fields ();
+				while (oFields.hasNext ()) {
+					String field = oFields.next ();
+					OrderByField of = orderBy.get (field);
+					Bson sort = null;
+					if (of.direction ().equals (Direction.asc)) {
+						sort = Sorts.ascending (field);
+					} else {
+						sort = Sorts.descending (field);
+					}
+					sorts.add (sort);
+				}
+				cursor.sort (Sorts.orderBy (sorts));
+			}
+			
+			Select select = query.select ();
+			if (select != null && select.count () > 0) {
+				String [] pFields = new String [select.count ()];
+				for (int i = 0; i < select.count (); i++) {
+					System.out.println (select.get (i));
+					pFields [i] = select.get (i);
+				}
+				cursor.projection (Projections.include (pFields));
+			}
+
+			return cursor;
 		} else if (Query.Construct.delete.equals (construct)) {
-			DeleteResult dr = db.getCollection (entity).deleteMany (mQuery);
-			return dr.getDeletedCount ();
+			return db.getCollection (entity).deleteMany (mQuery);
 		}
 		
 		return null;
@@ -564,7 +628,7 @@ public class MongoDatabaseImpl implements Database {
 	}
 	
 	// REF: https://docs.mongodb.com/manual/reference/method/db.collection.find/
-	private CompiledQuery compile (String entity, Query.Construct construct, final Query query, final boolean returnBefore) {
+	private CompiledQuery compile (String entity, Query.Construct construct, final Query query) {
 		
 		BasicDBObject mq = new BasicDBObject ();
 		
@@ -580,6 +644,7 @@ public class MongoDatabaseImpl implements Database {
 			}
 		};
 		
+		// where
 		Where where = query.where ();
 		if (where == null || where.count () == 0) {
 			return cQuery;
@@ -616,64 +681,11 @@ public class MongoDatabaseImpl implements Database {
 			}
 		}
 		
-		// Projections
-		
-		
 		// Aggregates / ?
 
 		return cQuery;
 		
 	}
-	
-	/*
-	private CompiledQuery compile (String entity, Query.Construct construct, final Query query, final boolean returnBefore) throws DatabaseException {
-		final String fEntity = entity;
-		QueryCompiler compiler = new SqlQueryCompiler (construct) {
-			private static final long serialVersionUID = -1248971549807669897L;
-			
-			@Override
-			protected void onQuery (Timing timing, Query query)
-					throws DatabaseException {
-				super.onQuery (timing, query);
-				
-				if (Timing.start.equals (timing)) {
-					return;
-				}
-				
-				if (query.start () > 0) {
-					buff.append (Lang.SPACE).append (Sql.Skip).append (Lang.SPACE).append (query.start ());
-				}
-				if (query.count () > 0) {
-					buff.append (Lang.SPACE).append (Sql.Limit).append (Lang.SPACE).append (query.count ());
-				}
-			}
-			
-			@Override
-			protected void onSelect (Timing timing, Select select) throws DatabaseException {
-				super.onSelect (timing, select);
-				if (Timing.end.equals (timing) && returnBefore) {
-					buff.append (Lang.SPACE).append (Sql.ReturnBefore);
-				}
-			}
-			
-			@Override
-			protected String operatorFor (Operator operator) {
-				if (Operator.ftq.equals (operator)) {
-					return Lucene;
-				}
-				return super.operatorFor (operator);
-			}
-			
-			@Override
-			protected void entity () {
-				buff.append (fEntity);
-			}
-		}; 
-		
-		return compiler.compile (query);
-		
-	}
-	*/
 	
 	private String checkNotNull (String eType) throws DatabaseException {
 		if (Lang.isNullOrEmpty (eType)) {

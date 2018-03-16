@@ -43,6 +43,13 @@ import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoDatabase;
 
+/**
+ * 
+ * TODO:
+ * 	- Options
+ * 	- Pool size 
+ * 
+ **/
 public class MongoDatabasePlugin extends AbstractPlugin {
 
 	private static final long serialVersionUID 		= -6219529665471192558L;
@@ -61,12 +68,12 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 	
 	private String				feature;
 	
-	private int 				weight;
+	//private int 				weight;
 	
 	@Override
 	public void init (final ApiServer server) throws Exception {
 		
-		weight = server.weight ();
+		//weight = server.weight ();
 		
 		Feature aFeature = Database.class.getAnnotation (Feature.class);
 		if (aFeature == null || Lang.isNullOrEmpty (aFeature.name ())) {

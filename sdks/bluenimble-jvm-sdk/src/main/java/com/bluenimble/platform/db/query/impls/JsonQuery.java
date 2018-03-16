@@ -28,6 +28,7 @@ import com.bluenimble.platform.db.query.OrderBy;
 import com.bluenimble.platform.db.query.Query;
 import com.bluenimble.platform.db.query.Select;
 import com.bluenimble.platform.db.query.Where;
+import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 
 public class JsonQuery implements Query {
@@ -115,29 +116,47 @@ public class JsonQuery implements Query {
 
 	@Override
 	public Select select () {
-		return new JsonSelect (Json.getArray (source, Construct.select.name ()));
+		JsonArray fields = Json.getArray (source, Construct.select.name ());
+		if (fields == null) {
+			return null;
+		}
+		return new JsonSelect (fields);
 	}
 
 	@Override
 	public Where where () {
-		return new JsonWhere (
-			Json.getObject (source, Construct.where.name ())
-		);
+		JsonObject oWhere = Json.getObject (source, Construct.where.name ());
+		if (oWhere == null) {
+			return null;
+		}
+		return new JsonWhere (oWhere);
 	}
 
 	@Override
 	public GroupBy groupBy () {
-		return new JsonGroupBy (Json.getArray (source, Construct.groupBy.name ()));
+		JsonArray aGroupBy = Json.getArray (source, Construct.groupBy.name ());
+		if (aGroupBy == null) {
+			return null;
+		}
+		return new JsonGroupBy (aGroupBy);
 	}
 
 	@Override
 	public OrderBy orderBy () {
-		return new JsonOrderBy (Json.getObject (source, Construct.orderBy.name ()));
+		JsonObject oOrderBy = Json.getObject (source, Construct.orderBy.name ());
+		if (oOrderBy == null) {
+			return null;
+		}
+		return new JsonOrderBy (oOrderBy);
 	}
 
 	@Override
 	public Having having () {
-		return new JsonHaving (Json.getObject (source, Construct.having.name ()));
+		JsonObject oHaving = Json.getObject (source, Construct.having.name ());
+		if (oHaving == null) {
+			return null;
+		}
+		return new JsonHaving (oHaving);
 	}
 
 }
