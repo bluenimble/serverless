@@ -48,7 +48,6 @@ public class AddEntrySpi extends AbstractApiServiceSpi {
 			ApiResponse response) throws ApiServiceExecutionException {
 		
 		String 	provider 	= (String)request.get (CommonSpec.Provider);
-		String 	bucket 		= (String)request.get (CommonSpec.Bucket);
 		
 		final JsonObject payload = (JsonObject)request.get (ApiRequest.Payload); 
 		
@@ -61,7 +60,7 @@ public class AddEntrySpi extends AbstractApiServiceSpi {
 		
 		Cache cache = space.feature (Cache.class, provider, request);
 		
-		cache.put (bucket, Json.getString (payload, Spec.Key), payload.get (Spec.Value), Json.getLong (payload, Spec.Ttl, 0L));
+		cache.put (Json.getString (payload, Spec.Key), payload.get (Spec.Value), Json.getInteger (payload, Spec.Ttl, 0));
 		
 		return new JsonApiOutput ((JsonObject)new JsonObject ().set (CommonOutput.Added, true));
 	}

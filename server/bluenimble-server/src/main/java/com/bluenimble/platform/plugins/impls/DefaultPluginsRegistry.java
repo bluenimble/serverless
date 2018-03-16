@@ -139,7 +139,11 @@ public class DefaultPluginsRegistry implements PluginsRegistry, ClassLoaderRegis
 					new Thread () {
 						@Override
 						public void run () {
-							try { _init (server, plugin.getHome (), plugin); } catch (Exception ex) { server.tracer ().log (Tracer.Level.Error, Lang.BLANK, ex); }
+							try { 
+								_init (server, plugin.getHome (), plugin); 
+							} catch (Exception ex) { 
+								server.tracer ().log (Tracer.Level.Error, Lang.BLANK, ex); 
+							}
 						}
 					}.start ();
 				} else {

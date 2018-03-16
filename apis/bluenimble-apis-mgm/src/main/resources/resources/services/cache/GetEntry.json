@@ -1,12 +1,11 @@
 {
 	    "verb": "get",
-	"endpoint": "/cache/:provider/buckets/:bucket/entries/:entry",
+	"endpoint": "/cache/:provider/entries/:key",
 	
 	"spec": {
 		"fields": {
 			"provider": { "max": "100", "value": "default" },
-			"bucket": 	{ "min": 4, "max": "20", "vType": "AlphaNumeric" },
-			"entry": 	{  }
+			"key": 	{  }
 		}
 	},
 	

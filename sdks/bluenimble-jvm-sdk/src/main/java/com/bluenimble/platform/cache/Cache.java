@@ -19,21 +19,14 @@ package com.bluenimble.platform.cache;
 import java.io.Serializable;
 
 import com.bluenimble.platform.Feature;
-import com.bluenimble.platform.json.JsonObject;
 
 @Feature ( name = "cache" )
 public interface Cache extends Serializable {
 
-	JsonObject 	list 	();
+	void 		put 		(String key, Object value, int ttl);
+	Object 		get 		(String key, boolean remove);
+	void 		delete 		(String key);
 	
-	void 		create 	(String bucket, long ttl);
-	boolean 	exists 	(String bucket);
-	void 		drop 	(String bucket);
-	void 		clear 	(String bucket);
-	JsonObject 	get 	(String bucket, int start, int page);
-	
-	void 		put 	(String bucket, String key, Object value, long ttl);
-	Object 		get 	(String bucket, String key, boolean remove);
-	void 		delete 	(String bucket, String key);
-	
+	void 		increment 	(String key, int increment, long dValue, int ttl, boolean async);
+
 }

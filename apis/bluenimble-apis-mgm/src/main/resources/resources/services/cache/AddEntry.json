@@ -1,12 +1,11 @@
 {
 	    "verb": "post",
-	"endpoint": "/cache/:provider/buckets/:bucket/entries",
+	"endpoint": "/cache/:provider/entries",
 	
 	"spec": {
 		"contentType": "application/json",
 		"fields": {
 			"provider": { "max": "100", "value": "default" },
-			"bucket": 	{ "min": 4, "max": "20", "vType": "AlphaNumeric" },
 			"payload": 	{ 
 				"type": "Map",
 				"fields": {

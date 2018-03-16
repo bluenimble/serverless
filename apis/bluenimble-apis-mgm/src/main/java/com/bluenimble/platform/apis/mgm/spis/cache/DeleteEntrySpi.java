@@ -37,7 +37,7 @@ public class DeleteEntrySpi extends AbstractApiServiceSpi {
 	private static final long serialVersionUID = -3682312790255625219L;
 
 	interface Spec {
-		String Entry = "entry";
+		String Key = "key";
 	}
 	
 	@Override
@@ -45,8 +45,7 @@ public class DeleteEntrySpi extends AbstractApiServiceSpi {
 			ApiResponse response) throws ApiServiceExecutionException {
 		
 		String 	provider 	= (String)request.get (CommonSpec.Provider);
-		String 	bucket 		= (String)request.get (CommonSpec.Bucket);
-		String 	entry 		= (String)request.get (Spec.Entry);
+		String 	key 		= (String)request.get (Spec.Key);
 		
 		ApiSpace space;
 		try {
@@ -57,7 +56,7 @@ public class DeleteEntrySpi extends AbstractApiServiceSpi {
 		
 		Cache cache = space.feature (Cache.class, provider, request);
 		
-		cache.delete (bucket, entry);
+		cache.delete (key);
 		
 		return new JsonApiOutput ((JsonObject)new JsonObject ().set (CommonOutput.Deleted, true));
 	}

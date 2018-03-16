@@ -36,11 +36,10 @@ public class GetEntrySpi extends AbstractApiServiceSpi {
 	private static final long serialVersionUID = -3682312790255625219L;
 
 	interface Spec {
-		String Entry 		= "entry";
+		String Key 		= "key";
 	}
 	
 	interface Output {
-		String Key 		= "key";
 		String Value 	= "value";
 	}
 	
@@ -49,8 +48,7 @@ public class GetEntrySpi extends AbstractApiServiceSpi {
 			ApiResponse response) throws ApiServiceExecutionException {
 		
 		String 	provider 	= (String)request.get (CommonSpec.Provider);
-		String 	bucket 		= (String)request.get (CommonSpec.Bucket);
-		String 	entry 		= (String)request.get (Spec.Entry);
+		String 	key 		= (String)request.get (Spec.Key);
 		
 		ApiSpace space;
 		try {
@@ -61,7 +59,7 @@ public class GetEntrySpi extends AbstractApiServiceSpi {
 		
 		Cache cache = space.feature (Cache.class, provider, request);
 		
-		return new JsonApiOutput ((JsonObject)new JsonObject ().set (Output.Key, entry).set (Output.Value, cache.get (bucket, entry, false)));
+		return new JsonApiOutput ((JsonObject)new JsonObject ().set (Spec.Key, key).set (Output.Value, cache.get (key, false)));
 	}
 
 }
