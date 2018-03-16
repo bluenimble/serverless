@@ -47,8 +47,9 @@ public class OrientDatabasePlugin extends AbstractPlugin {
 		String Port 	= "port";
 		String Database = "database";
 		
-		String User 	= "user";
-		String Password = "password";
+		String Auth 	= "auth";
+			String User 	= "user";
+			String Password = "password";
 	}
 	
 	interface Protocol {
@@ -183,10 +184,15 @@ public class OrientDatabasePlugin extends AbstractPlugin {
 			return null;
 		}
 		
+		JsonObject auth = Json.getObject (spec, Spec.Auth);
+		if (Json.isNullOrEmpty (auth)) {
+			return null;
+		}
+		
 		OPartitionedDatabasePool pool = new OPartitionedDatabasePool (
 			createUrl (spec), 
-			Json.getString (spec, Spec.User), 
-			Json.getString (spec, Spec.Password),
+			Json.getString (auth, Spec.User), 
+			Json.getString (auth, Spec.Password),
 			weight, 
 			weight
 		);

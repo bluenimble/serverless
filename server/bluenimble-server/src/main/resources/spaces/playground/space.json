@@ -16,6 +16,17 @@
 				"provider": "scripting.javascript"
 			}
 		},
+		"database": {
+			"default": {
+				"provider": "database.orientdb",
+				"spec": {
+					"host": "localhost",
+					"auth": {
+						"user": "root", "password": "root"
+					}
+				}
+			}
+		},
 		"storage": {
 			"default": {
 				"provider": "storage.filesystem",

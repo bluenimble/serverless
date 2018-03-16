@@ -522,7 +522,7 @@ public class BlueNimble extends RunnableTool {
 			oVars.set (DefaultVars.TemplateServices, "blank/javascript");
 		}
 		if (!oVars.containsKey (DefaultVars.TemplateApi)) {
-			oVars.set (DefaultVars.TemplateApi, "blank/javascript");
+			oVars.set (DefaultVars.TemplateApi, "database/javascript");
 		}
 		if (oVars.containsKey (DefaultVars.Paraphrase)) {
 			try {
