@@ -96,14 +96,18 @@ This command will create 5 services for the model 'car' corresponding to 'create
 * Try it out. 
 By using the CLI default template, apis are secure by default, only IM services could be called without providing required authentication information (Token for example). 
 First, call the 'Signup' service, simulating a user signing up to your 'uber' web/mobile application. Here if a CURL example:
+
     ````curl
     curl -H "Content-Type: application/json" -X POST -d '{"user":"alien@uranus.space","password":"Alien!2025"}' http://server-ip:8080/playground/uber/security/signup
     ````
+    
 You should get a token back in response.
-Now, call the 'CreateCar' service using this token. Here is a CURL example:
+Now, call the 'CreateCar' service using this token. Here is a CURL example: 
+
     ````curl
     curl -H "Authorization: Token **TheToken**" -H "Content-Type: application/json" -X POST -d '{"name":"SpiralOrbit","scope":"SolarSystem"}' http://server-ip:8080/playground/uber/cars
     ````
+    
 * Using the default CLI api template, services already storing and reading data from the default database feature added to the current space.  
 
 * Access the uber api sources, make some changes to the code, run "push api uber" to try it again. The api sources are located under the CLI workspace, type in: 
