@@ -83,17 +83,29 @@ By default, BlueNimble's built with a playground space.
     ````sql
     create api uber
     ````
-This command should create the api project in your local machine.
+This command should create the api project in your local machine. Add 2 security schemes by default 'token' and 'signature' and default IM services such as 'Signup', 'Login'.  
 * Let's create a service. Type in:  
     ````sql
-    create service * driver
+    create service * car
     ````
-This command will create 5 services for the model 'driver' corresponding to 'create', 'update', 'delete', 'get' and 'find'.
+This command will create 5 services for the model 'car' corresponding to 'create', 'update', 'delete', 'get' and 'find'. Ser
 * We are good to run the uber api. To do so, type in:
     ````sql
     push api uber
     ````
-* Try it out. Open up your browser and type in http://server-ip:8080/playground/uber/drivers/unknown, this request will call the service GET /uber/drivers. Or use curl or a GUI tool such as postman to send post and put requests 
+* Try it out. 
+By using the CLI default template, apis are secure by default, only IM services could be called without providing required authentication information (Token for example). 
+First, call the 'Signup' service, simulating a user signing up to your 'uber' web/mobile application. Here if a CURL example:
+    ````curl
+    curl -H "Content-Type: application/json" -X POST -d '{"user":"alien@uranus.space","password":"Alien!2025"}' http://server-ip:8080/playground/uber/security/signup
+    ````
+You should get a token back in response.
+Now, call the 'CreateCar' service using this token. Here is a CURL example:
+    ````curl
+    curl -H "Authorization: Token **TheToken**" -H "Content-Type: application/json" -X POST -d '{"name":"SpiralOrbit","scope":"SolarSystem"}' http://server-ip:8080/playground/uber/cars
+    ````
+* Using the default CLI api template, services already storing and reading data from the default database feature added to the current space.  
+
 * Access the uber api sources, make some changes to the code, run "push api uber" to try it again. The api sources are located under the CLI workspace, type in: 
     ````sql
     ws
