@@ -7,7 +7,7 @@
 	"spi": {
 		"class": "com.bluenimble.platform.plugins.database.orientdb.OrientDatabasePlugin",
 		"properties": {
-			"version": "1.0",
+			"version": "[version]",
 			"vendor": {
 				"name": "BlueNimble, Inc",
 				"links": [{

@@ -53,6 +53,7 @@ public interface ConfigKeys {
 	String Title			= "title";
 	String Description		= "description";
 	String Version			= "version";
+	String Vendor			= "vendor";
 	
 	String RootKeysFile		= "root.keys";
 	String RootKeysEncrypted= "rootKeysEncrypted";

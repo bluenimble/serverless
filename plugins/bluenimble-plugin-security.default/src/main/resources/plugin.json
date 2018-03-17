@@ -3,6 +3,15 @@
 	"title": "Security Schemes Implementation - Basic, Cookie, Token, Signature",
 	
 	"spi": {
-		"class": "com.bluenimble.platform.server.plugins.security.ApiSecurityPlugin"
+		"class": "com.bluenimble.platform.server.plugins.security.ApiSecurityPlugin",
+		"properties": {
+			"version": "[version]",
+			"vendor": {
+				"name": "BlueNimble, Inc",
+				"links": [{
+					"Read More": "https://www.bluenimble.com"
+				}]
+			}
+		}
 	}
 }	

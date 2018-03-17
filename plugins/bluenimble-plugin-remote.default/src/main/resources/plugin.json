@@ -5,7 +5,7 @@
 	"spi": {
 		"class": "com.bluenimble.platform.server.plugins.remote.RemotePlugin",
 		"properties": {
-			"version": "1.0",
+			"version": "[version]",
 			"vendor": {
 				"name": "BlueNimble, Inc",
 				"links": [{

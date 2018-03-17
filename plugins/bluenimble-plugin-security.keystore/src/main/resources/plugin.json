@@ -5,7 +5,7 @@
 	"spi": {
 		"class": "com.bluenimble.platform.plugins.keystores.KeyStorePlugin",
 		"properties": {
-			"version": "1.0",
+			"version": "[version]",
 			"vendor": {
 				"name": "BlueNimble, Inc",
 				"links": [{
@@ -19,8 +19,7 @@
 				"file": "space.keystore",
 				"flushRate": "10"
 			},
-			"closable": "false",
-			"async": "false"
+			"closable": "false"
 		}
 	}
 }	

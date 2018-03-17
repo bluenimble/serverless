@@ -205,6 +205,8 @@ public abstract class AbstractApiServer implements ApiServer {
 				oPlugin.set (ConfigKeys.Namespace, plugin.getName ());
 				oPlugin.set (ConfigKeys.Name, plugin.getTitle ());
 				oPlugin.set (ConfigKeys.Description, plugin.getDescription ());
+				oPlugin.set (ConfigKeys.Version, plugin.getVersion ());
+				oPlugin.set (ConfigKeys.Vendor, plugin.getVendor ());
 				aPlugins.add (oPlugin);
 			}
 		}

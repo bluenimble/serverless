@@ -5,7 +5,7 @@
 	"spi": {
 		"class": "com.bluenimble.platform.server.plugins.cache.memcached.MemCachedPlugin",
 		"properties": {
-			"version": "1.0",
+			"version": "[version]",
 			"vendor": {
 				"name": "BlueNimble, Inc",
 				"links": [{

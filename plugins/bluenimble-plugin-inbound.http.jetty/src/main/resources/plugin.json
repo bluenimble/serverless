@@ -6,7 +6,7 @@
 		"class": "com.bluenimble.platform.plugins.inbound.http.jetty.JettyPlugin",
 		"properties": {
 			
-			"version": "1.0",
+			"version": "[version]",
 			"vendor": {
 				"name": "BlueNimble, Inc",
 				"links": [{

@@ -5,7 +5,7 @@
 	"spi": {
 		"class": "com.bluenimble.platform.server.plugins.scripting.ScriptingPlugin",
 		"properties": {
-			"version": "1.0",
+			"version": "[version]",
 			"vendor": {
 				"name": "BlueNimble, Inc",
 				"links": [{
