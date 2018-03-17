@@ -83,13 +83,13 @@ By default, BlueNimble's built with a playground space.
     ````sql
     create api uber
     ````
-This command should create the api project in your local machine. Add 2 security schemes by default 'token' and 'signature' and default IM services such as 'Signup', 'Login'.  
+This command should create the api project in your local machine. Add 2 security schemes by default 'token' and 'signature' and 5 default IM services (Signup, Activate, Login, OAuth, ChangePassword).  
 * Let's create a service. Type in:  
     ````sql
     create service * car
     ````
-This command will create 5 services for the model 'car' corresponding to 'create', 'update', 'delete', 'get' and 'find'. Ser
-* We are good to run the uber api. To do so, type in:
+This command will create 5 services (endpoints) and their functions for the model 'Car' corresponding to 'create', 'update', 'delete', 'get' and 'find'. 
+* Now, we are good to run the uber api. To do so, type in:
     ````sql
     push api uber
     ````
@@ -103,9 +103,9 @@ You should get a token back in response.
 
 Now, call the 'CreateCar' service using this token. Here is a CURL example: 
 
-    ```
+    
     curl -H "Authorization: Token TheToken" -H "Content-Type: application/json" -X POST -d '{"name":"SpiralOrbit","scope":"SolarSystem"}' http://server-ip:8080/playground/uber/cars
-    ```
+    
     
 * Using the default CLI api template, services already storing and reading data from the default database feature added to the current space. Visit the documentation to change it or add a new one database. 
 
