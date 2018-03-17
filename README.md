@@ -102,10 +102,11 @@ First, call the 'Signup' service, simulating a user signing up to your 'uber' we
     ````
     
 You should get a token back in response.
+
 Now, call the 'CreateCar' service using this token. Here is a CURL example: 
 
     ````curl
-    curl -H "Authorization: Token **TheToken**" -H "Content-Type: application/json" -X POST -d '{"name":"SpiralOrbit","scope":"SolarSystem"}' http://server-ip:8080/playground/uber/cars
+    curl -H "Authorization: Token TheToken" -H "Content-Type: application/json" -X POST -d '{"name":"SpiralOrbit","scope":"SolarSystem"}' http://server-ip:8080/playground/uber/cars
     ````
     
 * Using the default CLI api template, services already storing and reading data from the default database feature added to the current space.  
