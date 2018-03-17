@@ -77,6 +77,8 @@ public class BlueNimble extends RunnableTool {
 		String QueryCount 		= "q.count";
 		String TemplateServices = "templates.services";
 		String TemplateApi 		= "templates.api";
+		String ApiSecurityEnabled 		
+								= "api.security.enabled";
 		String Paraphrase 		= "paraphrase";
 		String SslTrust 		= "ssl.trust";
 	}
@@ -519,7 +521,7 @@ public class BlueNimble extends RunnableTool {
 			oVars.set (DefaultVars.QueryCount, new JsonObject ().set ("where", new JsonObject ()).set ("select", new JsonArray ().set (null, "count(1)")));
 		}
 		if (!oVars.containsKey (DefaultVars.TemplateServices)) {
-			oVars.set (DefaultVars.TemplateServices, "blank/javascript");
+			oVars.set (DefaultVars.TemplateServices, "database/javascript");
 		}
 		if (!oVars.containsKey (DefaultVars.TemplateApi)) {
 			oVars.set (DefaultVars.TemplateApi, "database/javascript");
@@ -530,6 +532,9 @@ public class BlueNimble extends RunnableTool {
 			} catch (Exception e) {
 				printer ().error ("Can't read user paraphrase. Cause: " + e.getMessage ());
 			}
+		}
+		if (!oVars.containsKey (DefaultVars.ApiSecurityEnabled)) {
+			oVars.set (DefaultVars.ApiSecurityEnabled, "true");
 		}
 		
 		@SuppressWarnings("unchecked")

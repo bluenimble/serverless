@@ -18,6 +18,7 @@ package com.bluenimble.platform.plugins.dev.playground;
 
 import java.io.File;
 
+import com.bluenimble.platform.ArchiveUtils;
 import com.bluenimble.platform.plugins.impls.AbstractPlugin;
 import com.bluenimble.platform.server.ApiServer;
 import com.orientechnologies.orient.server.OServer;
@@ -47,9 +48,19 @@ public class PlaygroundPlugin extends AbstractPlugin {
 	}
 
 	private void database () throws Exception {
+		
+		System.setProperty ("ORIENTDB_HOME", home.getAbsolutePath ());
+		
+		File dbFile = new File (home, "playground.db");
+		if (dbFile.exists ()) {
+			File databases = new File (home, "databases");
+			ArchiveUtils.decompress (dbFile, databases, true);
+		}
+		
 		oServer = OServerMain.create ();
 		oServer.startup (new File (home, "orientdb-server-config.xml"));
 		oServer.activate ();
+		
 	}	
 	
 	public static void main (String [] args) throws Exception {

@@ -2,10 +2,10 @@
 
 	"name": "database.mongodb",
 	
-	"title": "Document Database Implementation - OrientDB",
+	"title": "Document Database Implementation - MongoDB",
 	
 	"spi": {
-		"class": "com.bluenimble.platform.plugins.database.orientdb.OrientDatabasePlugin",
+		"class": "com.bluenimble.platform.plugins.database.mongodb.MongoDatabasePlugin",
 		"properties": {
 			"version": "1.0",
 			"vendor": {

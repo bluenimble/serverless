@@ -520,13 +520,12 @@ public class FileSystemApiServer extends AbstractApiServer {
 		}		
 
 		// Copy space from base install
-		
-		File spacesInInstall = new File (installHome, ConfigKeys.Folders.Spaces);
-		if (!spacesInInstall.exists () || !spacesInInstall.isDirectory ()) {
-			return;
+		if (!installHome.equals (runtimeHome)) {
+			File spacesInInstall = new File (installHome, ConfigKeys.Folders.Spaces);
+			if (spacesInInstall.exists () && spacesInInstall.isDirectory ()) {
+				copySpacesToRuntime (spacesInInstall);
+			}
 		}
-		
-		copySpacesToRuntime (spacesInInstall);
 		
 		// if spaces folder found in config
 		String externalSpacesPath = Json.getString (descriptor, ConfigKeys.Spaces);

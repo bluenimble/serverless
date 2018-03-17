@@ -112,16 +112,21 @@ public class CreateApiHandler implements CommandHandler {
 		}
 		oApis.set (namespace, sApiFolder);
 		
-		boolean secure = true;
+		boolean secure = false;
+
+		String sSecure 	= (String)vars.get (BlueNimble.DefaultVars.ApiSecurityEnabled);
+		if (Lang.isNullOrEmpty (sSecure)) {
+			secure = false;
+		} else {
+			secure = Lang.TrueValues.contains (sSecure.trim ().toLowerCase ());
+		}
 		
 		try {
 			JsonObject apiSpec = Json.load (new File (apiFolder, "api.json"));
 			
 			JsonObject codeGen = Json.getObject (apiSpec, "_codegen_");
-			
-			secure = Json.getBoolean (codeGen, "secure", true);
-			
 			if (codeGen != null) {
+				secure = Json.getBoolean (codeGen, "secure", true);
 				apiSpec.remove ("_codegen_");
 				Json.store (apiSpec, new File (apiFolder, "api.json"));
 			}

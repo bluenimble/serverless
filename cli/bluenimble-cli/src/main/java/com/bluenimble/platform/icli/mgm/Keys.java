@@ -20,6 +20,7 @@ import java.io.Serializable;
 
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.security.KeyPair;
 
 public class Keys implements Serializable {
 
@@ -30,11 +31,8 @@ public class Keys implements Serializable {
 		String Domain 		= "domain";
 		String Issuer 		= "issuer";
 		String WhenIssued 	= "whenIssued";
-		String ExpiresOn 	= "expiresOn";
 		String Endpoint 	= "endpoint";
 		String Space 		= "space";
-		String AccessKey 	= "accessKey";
-		String SecretKey 	= "secretKey";
 		String User 		= "user";
 			String Id 		= "id";
 			String Stamp 	= "stamp";
@@ -66,7 +64,7 @@ public class Keys implements Serializable {
 	}
 
 	public String expiresOn () {
-		return Json.getString (source, Spec.ExpiresOn);
+		return Json.getString (source, KeyPair.Fields.ExpiryDate);
 	}
 
 	public String user () {
@@ -87,10 +85,10 @@ public class Keys implements Serializable {
 		return Json.getString (source, Spec.Space);
 	}
 	public String accessKey () {
-		return Json.getString (source, Spec.AccessKey);
+		return Json.getString (source, KeyPair.Fields.AccessKey);
 	}
 	public String secretKey () {
-		return Json.getString (source, Spec.SecretKey);
+		return Json.getString (source, KeyPair.Fields.SecretKey);
 	}
 	
 	public JsonObject json () {

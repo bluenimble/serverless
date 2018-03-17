@@ -21,6 +21,7 @@
 				"provider": "database.orientdb",
 				"spec": {
 					"host": "localhost",
+					"database": "playground",
 					"auth": {
 						"user": "root", "password": "root"
 					}

@@ -26,6 +26,7 @@ import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.ApiServiceExecutionException;
+import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.impls.ApiByteArrayOutput;
 import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
 import com.bluenimble.platform.api.security.ApiConsumer;
@@ -40,6 +41,7 @@ public class DownloadKeysSpi extends AbstractApiServiceSpi {
 	interface Output {
 		String Name 	= "name";
 		String Endpoint = "endpoint";
+		String Domain 	= "domain";
 		String KeysExt 	= "keys";
 	}
 	
@@ -58,9 +60,12 @@ public class DownloadKeysSpi extends AbstractApiServiceSpi {
 		
 		String paraphrase = (String)request.get (Spec.Paraphrase);
 		
+		ApiSpace xSpace = null;
+		
 		KeyPair kp;
 		try {
-			kp = api.space ().space (space).keystore ().get (accessKey, true);
+			xSpace = api.space ().space (space);
+			kp = xSpace.keystore ().get (accessKey, true);
 		} catch (Exception e) {
 			throw new ApiServiceExecutionException ("can't access space keystore").status (ApiResponse.FORBIDDEN);
 		}
@@ -71,10 +76,15 @@ public class DownloadKeysSpi extends AbstractApiServiceSpi {
 		
 		try {
 			JsonObject oKeys = new JsonObject ();
-			oKeys.set (Output.Name, kp.accessKey ());
+			oKeys.set (Output.Name, xSpace.getName ());
 			oKeys.set (Spec.Space, space);
 			oKeys.set (Output.Endpoint, request.getScheme () + "://" + request.getEndpoint () + Lang.SLASH + 
 										api.space ().getNamespace () + Lang.SLASH + api.getNamespace ());
+			oKeys.set (Output.Domain, request.getScheme () + "://" + request.getEndpoint () + Lang.SLASH + 
+					xSpace.getNamespace ());
+			if (kp.expiryDate () != null) {
+				oKeys.set (KeyPair.Fields.ExpiryDate, Lang.toUTC (kp.expiryDate ()));
+			}
 			oKeys.set (KeyPair.Fields.AccessKey, kp.accessKey ());
 			oKeys.set (KeyPair.Fields.SecretKey, kp.secretKey ());
 			

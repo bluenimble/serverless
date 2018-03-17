@@ -44,7 +44,7 @@ public class BlueNimble {
 		
 		File installHome = new File (installHomePath);
 		
-		File runtimeHome = new File (System.getProperty ("user.home"), "bluenimble");
+		File runtimeHome = null;
 		if (args != null && args.length > 0 && args [0] != null) {
 			File customHome = new File (args [0]);
 			if (!customHome.exists ()) {
@@ -53,6 +53,10 @@ public class BlueNimble {
 			}
 			runtimeHome = customHome;
 		} 
+		
+		if (runtimeHome == null) {
+			runtimeHome = installHome;
+		}
 		
 		File tenantHome = null;
 		
