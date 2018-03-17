@@ -97,9 +97,7 @@ This command will create 5 services for the model 'car' corresponding to 'create
 By using the CLI default template, apis are secure by default, only IM services could be called without providing required authentication information (Token for example). 
 First, call the 'Signup' service, simulating a user signing up to your 'uber' web/mobile application. Here if a CURL example:
 
-    ````curl
     curl -H "Content-Type: application/json" -X POST -d '{"user":"alien@uranus.space","password":"Alien!2025"}' http://server-ip:8080/playground/uber/security/signup
-    ````
     
 You should get a token back in response.
 
@@ -109,7 +107,7 @@ Now, call the 'CreateCar' service using this token. Here is a CURL example:
     curl -H "Authorization: Token TheToken" -H "Content-Type: application/json" -X POST -d '{"name":"SpiralOrbit","scope":"SolarSystem"}' http://server-ip:8080/playground/uber/cars
     ````
     
-* Using the default CLI api template, services already storing and reading data from the default database feature added to the current space.  
+* Using the default CLI api template, services already storing and reading data from the default database feature added to the current space. Visit the documentation to change it or add a new one database. 
 
 * Access the uber api sources, make some changes to the code, run "push api uber" to try it again. The api sources are located under the CLI workspace, type in: 
     ````sql
@@ -120,6 +118,8 @@ This command will print out where your api code is stored. You can change the wo
     ws pathToNewFolder
     
 From now on, any api you create, will be stored in this folder. 
+
+Normaly, creating a secure api, generate 20 model-services (105 endpoints in total) and pushing the api to run, could be done is 10 minutes. Then, you can visit functions code if required. for 90% of the apps, 80% is CRUD operations with single variations, which means you'll be touching max. to 20 functions instead to 105.    
 
 ## Terminology
 
