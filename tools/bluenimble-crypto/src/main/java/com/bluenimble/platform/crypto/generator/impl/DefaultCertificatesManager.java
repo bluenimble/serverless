@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.openssl.PEMWriter;
+import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 
 import com.bluenimble.platform.crypto.generator.CertificateExportException;
 import com.bluenimble.platform.crypto.generator.CertificatesManager;
@@ -254,9 +254,9 @@ public class DefaultCertificatesManager implements CertificatesManager {
 			} else if (exportFormat.equals(ExportFormat.PKI_PATH)) { // .pkipath
 				os.write (encode (certs, PKIPATH_ENCODING));
 			} else if (exportFormat.equals(ExportFormat.PEM)) { // .pem
-				PEMWriter pw = null;
+				JcaPEMWriter pw = null;
 				try {
-					pw = new PEMWriter (new OutputStreamWriter(os));
+					pw = new JcaPEMWriter (new OutputStreamWriter(os));
 					if (exportAll) {
 						char [] password = getStringProperty (properties, KEY_PASSWORD, DUMMY_PASS).toCharArray ();
 						pw.writeObject (keyStore.getKey (alias, password));
@@ -271,10 +271,10 @@ public class DefaultCertificatesManager implements CertificatesManager {
 					pw.close ();
 				}
 			} else if (exportFormat.equals (ExportFormat.PKCS10_CSR)) { // .csr
-				PEMWriter pw = null;
+				JcaPEMWriter pw = null;
 				try {
 					char [] password = getStringProperty (properties, KEY_PASSWORD, DUMMY_PASS).toCharArray ();
-					pw = new PEMWriter (new OutputStreamWriter(os));
+					pw = new JcaPEMWriter (new OutputStreamWriter(os));
 					pw.writeObject (X509CertUtil.generatePKCS10CSR (certs [0], (PrivateKey)keyStore.getKey (alias, password)));
 					pw.flush();
 				} finally {

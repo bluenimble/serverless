@@ -16,14 +16,11 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.bluenimble.serverless</groupId>
 	<artifactId>bluenimble-crypto</artifactId>
+	
 	<version>1.2.0-SNAPSHOT</version><!--bn.version-->
 	<packaging>jar</packaging>
 	<name>bluenimble-crypto</name>
-	<parent>
-		<groupId>com.bluenimble.platform</groupId>
-		<artifactId>bluenimble-tools</artifactId>
-		<version>1.2.0-SNAPSHOT</version><!--bn.version-->
-	</parent>
+	
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<resources>
@@ -48,8 +45,30 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>model</artifactId>
+			<artifactId>bluenimble-jvm-sdk</artifactId>
 			<version>1.2.0-SNAPSHOT</version><!--bn.version-->
+		</dependency>
+		<dependency>
+		    <groupId>org.bouncycastle</groupId>
+		    <artifactId>bcpg-jdk15on</artifactId>
+		    <version>1.59</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.bouncycastle</groupId>
+		    <artifactId>bcpkix-jdk15on</artifactId>
+		    <version>1.59</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.bouncycastle</groupId>
+		    <artifactId>bcmail-jdk16</artifactId>
+		    <version>1.46</version>
+		</dependency>
+		<dependency>
+		    <groupId>${project.groupId}</groupId>
+		    <artifactId>portecle</artifactId>
+		    <version>1.0</version>
+		    <scope>system</scope>
+		    <systemPath>${project.basedir}/src/main/resources/libs/portecle.jar</systemPath>
 		</dependency>
 	</dependencies>
 </project>

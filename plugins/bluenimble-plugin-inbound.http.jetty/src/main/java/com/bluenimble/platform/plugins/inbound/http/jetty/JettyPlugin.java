@@ -82,6 +82,8 @@ public class JettyPlugin extends AbstractPlugin {
 		String IdleTimeout 			= "idleTimeout";
 		String Keystore 			= "keystore";
 		String Password 			= "password";
+		String StorePassword 		= "storePassword";
+		String StoreType 			= "storeType";
 		interface ciphers 			{
 			String Include = "include";
 			String Exclude = "exclude";
@@ -177,10 +179,12 @@ public class JettyPlugin extends AbstractPlugin {
         	
         	HttpConfiguration https = new HttpConfiguration ();
 			https.addCustomizer (new SecureRequestCustomizer ());
+			
 			SslContextFactory sslContextFactory = new SslContextFactory();
 			sslContextFactory.setKeyStorePath (new File (ssl.getString (Ssl.Keystore)).getAbsolutePath ());
 			sslContextFactory.setKeyStorePassword (Json.getString (ssl, Ssl.Password));
-			sslContextFactory.setKeyManagerPassword (Json.getString (ssl, Ssl.Password));
+			sslContextFactory.setKeyManagerPassword (Json.getString (ssl, Ssl.StorePassword, Json.getString (ssl, Ssl.Password)));
+			sslContextFactory.setKeyStoreType (Json.getString (ssl, Ssl.StoreType, "JKS"));
 			
 			String [] aCiphers = null;
 			
