@@ -17,7 +17,7 @@ Using BlueNimble, Developers focus on coding application business logic, without
 * Download either [bluenimble-1.1.0-bin.zip](https://github.com/bluenimble/serverless/releases/download/v1.1.0/bluenimble-1.1.0-bin.zip) or [bluenimble-1.1.0-bin.tar.gz](https://github.com/bluenimble/serverless/releases/download/v1.1.0/bluenimble-1.1.0-bin.tar.gz) and decompress in a folder of your choice
 * If you're a Mac or Linux user, set the right .sh file mode:
     ````
-    cd ~/bluenimble-1.0.0 && sudo chmod 755 *.sh
+    cd ~/bluenimble-1.1.0 && sudo chmod 755 *.sh
     ````
 #### Start BlueNimble 
 * Mac or Linux users
@@ -32,7 +32,7 @@ Using BlueNimble, Developers focus on coding application business logic, without
 * Download either [bluenimble-cli-1.1.0-bin.zip](https://github.com/bluenimble/serverless/releases/download/v1.1.0/bluenimble-cli-1.1.0-bin.zip) or [bluenimble-cli-1.1.0-bin.tar.gz](https://github.com/bluenimble/serverless/releases/download/v1.1.0/bluenimble-cli-1.1.0-bin.tar.gz) and decompress in a folder of your choice
 * If you're a Mac or Linux user, set the right .sh file mode:
     ````
-    cd ~/blueNimble-cli-1.0.0 && chmod 755 *.sh
+    cd ~/blueNimble-cli-1.1.0 && chmod 755 *.sh
     ````
 The CLI could be installed in any other machine, not necessarily where the server is installed 
 
@@ -147,17 +147,17 @@ Even if developers can use any external library in their functions code. We reco
 
 Here is the list of the out-of-the-box features:
 
-- Database: For document databases. Mongodb, Couchdb and Orientdb supported out-of-the-box. You can add other vendors by implementing the **Database Feature** plugin. 
+- Database: For document databases. Mongodb, Couchdb and Orientdb are supported out-of-the-box. You can add other vendors by implementing the **Database Feature** plugin. 
 
 - Datasource: Includes most known relational databases, cassandra, salesforce. Hive and Hbase could be added by adding a new vendor to the plugin.
 
 - Storage: Supports FileSystem - S3 and other blob storage services could be used through a posix compliant interface.
 
-- Messenger: Supports Mail and Mobile Push Notifications. Other vendors such as STOMP, APMQ could be added by implementing the Messenger feature plugin.
+- Messenging: Supports Mail and Mobile Push Notifications and STOMP. Other vendors such as APMQ and Kafka could be added by implementing the Messenging plugin.
 
 - Indexer: Only ElasticSearch is supported. You can implement your own Indexer using feature plugin.
 
-- Remoting: Supports only HTTP to integrate with http-aware services. You can implement your own Remoting using feature plugin.
+- Remoting: Supports only the HTTP protocol to integrate with REST/SOAP services. To support additional protocols, such as COAP, You can extend or implement a new Remoting plugin.
 
 ## Documentation
 Visit the [Developer Guide](https://www.bluenimble.com/devcommunity.html), [CLI Guide](https://www.bluenimble.com/icli.html) and [SDK Reference Guide](https://www.bluenimble.com/docs/apiref/js/index.html) for more details.
