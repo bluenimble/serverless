@@ -79,7 +79,7 @@ public interface ApiSpace extends Traceable {
 		String Blocked			= "blocked";
 	}
 	
-	KeyPair				getRootKeys 			() throws ApiAccessDeniedException; 
+	KeyPair				getRootKeys 			() 										throws ApiAccessDeniedException; 
 	
 	String 				getNamespace 			();
 	String 				getName 				();
@@ -88,45 +88,47 @@ public interface ApiSpace extends Traceable {
 	boolean 			isStarted 				();
 	boolean 			isBlocked 				();
 
-	ApiSpace 			create 					(JsonObject oSpace) 																					throws ApiManagementException;
+	ApiSpace 			create 					(JsonObject oSpace) 					throws ApiManagementException;
+	void 				drop 					(String namespace) 						throws ApiManagementException;
 
-	Api 				install 				(String spaceFolder, String apiFile) 																	throws ApiManagementException;
-	Api 				install 				(ApiStreamSource payload) 																				throws ApiManagementException;
+	Api 				install 				(String spaceFolder, String apiFile) 	throws ApiManagementException;
+	Api 				install 				(ApiStreamSource payload) 				throws ApiManagementException;
 
-	void 				uninstall 				(String api) 																							throws ApiManagementException;
+	void 				uninstall 				(String api) 							throws ApiManagementException;
 	//void 				update 					(String apiNs, JsonObject descriptor) 																	throws ApiManagementException;
 	
-	void				stop					(String apiNs) 																							throws ApiManagementException;
-	void				stop					(long worker) 																							throws ApiManagementException;
-	void				start					(String apiNs) 																							throws ApiManagementException;
+	void				stop					(String apiNs) 							throws ApiManagementException;
+	void				stop					(long worker) 							throws ApiManagementException;
+	void				start					(String apiNs) 							throws ApiManagementException;
 
-	void				save					() 																										throws ApiManagementException;
+	void				save					() 										throws ApiManagementException;
 	
-	void				restart					(String spaceNs) 																						throws ApiManagementException;
-	void				refresh					(JsonObject descriptor) 																				throws ApiManagementException;
-	void				alter					(String spaceNs, JsonObject change) 																	throws ApiManagementException;
+	void				restart					(String spaceNs) 						throws ApiManagementException;
+	void				refresh					(JsonObject descriptor) 				throws ApiManagementException;
+	void				alter					(String spaceNs, JsonObject change) 	throws ApiManagementException;
 
-	void				pause					(String apiNs) 																							throws ApiManagementException;
-	void				resume					(String apiNs) 																							throws ApiManagementException;
+	void				pause					(String apiNs) 							throws ApiManagementException;
+	void				resume					(String apiNs) 							throws ApiManagementException;
 
 	void				list					(Selector selector);
 	
-	ApiSpace 			space 					(String space) 																							throws ApiAccessDeniedException;
+	ApiSpace 			space 					(String space) 							throws ApiAccessDeniedException;
 	Collection<ApiSpace> 
-						spaces 					()																										throws ApiAccessDeniedException;
+						spaces 					()										throws ApiAccessDeniedException;
 	
-	void				addFeature				(String name, String feature, String provider, JsonObject spec)											throws ApiManagementException;
-	void				deleteFeature			(String name, String feature)																			throws ApiManagementException;
+	void				addFeature				(String name, String feature, String provider, JsonObject spec)											
+																						throws ApiManagementException;
+	void				deleteFeature			(String name, String feature)			throws ApiManagementException;
 	
-	void				addSecrets				(String name, JsonObject spec)																			throws ApiManagementException;
-	JsonObject 			getSecrets				(String name)																							throws ApiManagementException;
-	void 				deleteSecrets			(String name)																							throws ApiManagementException;
+	void				addSecrets				(String name, JsonObject spec)			throws ApiManagementException;
+	JsonObject 			getSecrets				(String name)							throws ApiManagementException;
+	void 				deleteSecrets			(String name)							throws ApiManagementException;
 	
 	JsonObject			getFeatures				();
 	
 	Object				getRuntime				(String name);
 
-	JsonObject			instance				(DescribeOption... opts) throws ApiAccessDeniedException;
+	JsonObject			instance				(DescribeOption... opts) 				throws ApiAccessDeniedException;
 	
 	Api 				api 					(String api);
 
@@ -134,11 +136,13 @@ public interface ApiSpace extends Traceable {
 	
 	ApiRequest 			request 				(ApiRequest parentRequest, ApiConsumer consumer, Endpoint endpoint);
 	
-	String				sign					(ApiRequest request, String utcTimestamp, String accessKey, String secretKey, boolean writeToRequest) 	throws ApiRequestSignerException;
+	String				sign					(ApiRequest request, String utcTimestamp, String accessKey, String secretKey, boolean writeToRequest) 	
+																						throws ApiRequestSignerException;
 	
-	<T> T				async 					(Callable<T> callable, boolean waitForResult) 															throws ApiAsyncExecutionException;
+	<T> T				async 					(Callable<T> callable, boolean waitForResult) 															
+																						throws ApiAsyncExecutionException;
 	
-	void				async 					(Runnable runnable) 																					throws ApiAsyncExecutionException;
+	void				async 					(Runnable runnable) 					throws ApiAsyncExecutionException;
 	
 	void 				addRecyclable 			(String key, Recyclable recyclable);
 

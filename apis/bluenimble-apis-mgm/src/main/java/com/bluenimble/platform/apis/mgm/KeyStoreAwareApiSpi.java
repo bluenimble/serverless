@@ -31,8 +31,8 @@ import com.bluenimble.platform.api.impls.spis.AbstractApiSpi;
 import com.bluenimble.platform.api.security.ApiAuthenticationException;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.security.ApiConsumer.Type;
+import com.bluenimble.platform.apis.mgm.utils.MgmUtils;
 import com.bluenimble.platform.json.JsonArray;
-import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.security.KeyPair;
 import com.bluenimble.platform.security.SpaceKeyStoreException;
 
@@ -55,6 +55,8 @@ public class KeyStoreAwareApiSpi extends AbstractApiSpi {
 	@Override
 	public void findConsumer (Api api, ApiService service, ApiRequest request, ApiConsumer consumer) throws ApiAuthenticationException {
 		
+		String accessKey	= (String)consumer.get (ApiConsumer.Fields.AccessKey);
+		
 		if ("container".equals (request.getChannel ())) {
 			consumer.override (
 				(ApiConsumer)request.get (ApiRequest.Consumer)
@@ -62,7 +64,12 @@ public class KeyStoreAwareApiSpi extends AbstractApiSpi {
             return;
         }
 		
-        if (!this.isSecure (service) ) {
+        if (!MgmUtils.isSecure (service) ) {
+        	if (root.accessKey ().equals (accessKey)) {
+    			consumer.set (ApiConsumer.Fields.SecretKey, root.secretKey ());
+    			consumer.set (ApiConsumer.Fields.ExpiryDate, root.expiryDate ());
+    			consumer.set (CommonSpec.Role, Role.SUPER.name ());
+        	}
 			return;
 		}
 		
@@ -72,14 +79,13 @@ public class KeyStoreAwareApiSpi extends AbstractApiSpi {
 		
 		JsonArray roles = Json.getArray (service.getSecurity (), ApiService.Spec.Security.Roles);
 
-		String accessKey	= (String)consumer.get (ApiConsumer.Fields.AccessKey);
-		
 		if (root.accessKey ().equals (accessKey)) {
 			if (roles == null || roles.isEmpty () || !roles.contains (Role.SUPER.name ().toLowerCase ())) {
 				throw new ApiAuthenticationException ("insuffisant permissions");
 			}
 			consumer.set (ApiConsumer.Fields.SecretKey, root.secretKey ());
 			consumer.set (ApiConsumer.Fields.ExpiryDate, root.expiryDate ());
+			consumer.set (CommonSpec.Role, Role.SUPER.name ());
 		} else {
 			
 			int indexOfDot = accessKey.indexOf (Lang.DOT);
@@ -132,13 +138,6 @@ public class KeyStoreAwareApiSpi extends AbstractApiSpi {
 			}
 		}
 		
-	}
-	
-	private boolean isSecure (ApiService service) {
-		JsonObject security = service.getSecurity ();
-        return 	security == null || 
-        		!security.containsKey (ApiService.Spec.Security.Enabled) || 
-        		security.get (ApiService.Spec.Security.Enabled) == "true";
 	}
 
 }

@@ -22,17 +22,32 @@ import java.util.List;
 import java.util.Map;
 
 public interface SpaceKeyStore extends Serializable {
+	
+	interface ListFilter {
+		enum Operator {
+			eq,
+			neq,
+			like,
+			exp,
+			nexp,
+			alexp
+		}
+		String 			name 	();
+		Object 			value 	();
+		Operator 		operator ();
+	}
 
 	KeyPair 		get 	(Object id, boolean notIfExpired)
 																throws SpaceKeyStoreException;
-	boolean 			exists 	(Object id)						throws SpaceKeyStoreException;
+	boolean 		exists 	(Object id)							throws SpaceKeyStoreException;
 	
 	List<KeyPair> 	create 	(int pack, Date expiryDate, Map<String, Object> properties)		
 																throws SpaceKeyStoreException;
 
-	void 				put 	(KeyPair kp) 				throws SpaceKeyStoreException;
-	void 				delete 	(Object id) 					throws SpaceKeyStoreException;
+	void 			put 	(KeyPair kp) 						throws SpaceKeyStoreException;
+	void 			delete 	(Object id) 						throws SpaceKeyStoreException;
 	
-	List<KeyPair> 	list 	(int offset, int length)		throws SpaceKeyStoreException;
+	List<KeyPair> 	list 	(int offset, int length, ListFilter... filters)			
+																throws SpaceKeyStoreException;
 	
 }

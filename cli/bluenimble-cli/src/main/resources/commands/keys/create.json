@@ -5,20 +5,15 @@
 			"description": "create new keys",
 
 			"args": [{
-				"name": "pack", "desc": "number of key pairs to create", "type": "Integer"
-			}, {
-				"name": "role", "desc": "role of the user who will be using these keys. ADMIN or DEVELOPER"
-			}, {
-				"name": "expiryDate", "desc": "when these key pairs will expire", "required": "false"
+				"name": "keys spec", "desc": "josn variable defining the keys. Example 'create keys specVar'. Use 'json create' command to create the specVar"
 			}],
 			
 			"request": {
 				"method": "post",
-				"service": "[ keys.endpoint.cloud | keys.endpoint.default ]/keys",
-				"params": {
-					"pack": "[ arg.0 | '1' ]",
-					"role": "[ arg.1 | 'Developer' ]",
-					"expiryDate": "[arg.2]"
+				"service": "[ keys.endpoint ]/keys",
+				"contentType": "application/json",
+				"body": {
+					"payload": "[arg.0]"
 				}
 			}
 		}

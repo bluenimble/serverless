@@ -111,7 +111,7 @@ public class JsonApiOutput implements ApiOutput {
 
 	@Override
 	public void pipe (final OutputStream out, long position, long count) throws IOException {
-		data.write (new AbstractEmitter () {
+		data ().write (new AbstractEmitter () {
 			@Override
 			public JsonEmitter write (String chunk) {
 				try {

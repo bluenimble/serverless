@@ -36,6 +36,7 @@ public interface Tool extends Serializable {
 	int 				FAILURE   		= 0;
 	int 				SUCCESS 		= 1;
 	int 				UNTERMINATED 	= 2;
+	int 				MULTIPLE 		= 3;
 	
 	void 				startup (String [] args) throws ToolStartupException;
 	void 				shutdown ();

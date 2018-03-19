@@ -479,7 +479,7 @@ public class ApiImpl implements Api {
 		
 		Map<String, ApiMediaProcessor> mediaProcessors = space.getServer ().getMediaProcessors ();
 		
-		// don't apply matching, check if it's in supported first
+		// don't apply matching, check if it's in the supported list first
 		if (!Json.isNullOrEmpty (service.getMedia ())) {
 			JsonObject oMedia = Json.getObject (service.getMedia (), requestedMedia);
 			boolean anySelected = false;

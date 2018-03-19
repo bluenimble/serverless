@@ -29,6 +29,7 @@ import com.bluenimble.platform.api.ApiServiceExecutionException;
 import com.bluenimble.platform.api.impls.ApiByteArrayOutput;
 import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
 import com.bluenimble.platform.api.security.ApiConsumer;
+import com.bluenimble.platform.apis.mgm.CommonSpec;
 import com.bluenimble.platform.encoding.Base64;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.security.KeyPair;
@@ -58,11 +59,12 @@ public class DownloadRootKeysSpi extends AbstractApiServiceSpi {
 			KeyPair kp = api.space ().getRootKeys ();
 			
 			JsonObject oKeys = new JsonObject ();
-			oKeys.set (Output.Name, kp.accessKey ());
+			oKeys.set (Output.Name, Json.getString (request.getNode (), ApiRequest.Fields.Node.Id) + " " + Json.getString (request.getNode (), ApiRequest.Fields.Node.Version));
 			oKeys.set (Output.Endpoint, request.getScheme () + "://" + request.getEndpoint () + Lang.SLASH + 
 										api.space ().getNamespace () + Lang.SLASH + api.getNamespace ());
 			oKeys.set (KeyPair.Fields.AccessKey, kp.accessKey ());
 			oKeys.set (KeyPair.Fields.SecretKey, kp.secretKey ());
+			oKeys.set (CommonSpec.Role, "SUPER");
 			
 			ByteArrayOutputStream out = new ByteArrayOutputStream ();
 			

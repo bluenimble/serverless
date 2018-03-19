@@ -38,10 +38,7 @@ import java.util.TimeZone;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import javax.crypto.KeyGenerator;
-
 import com.bluenimble.platform.api.ApiResponse;
-import com.bluenimble.platform.encoding.Base64;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.scripting.ScriptingEngineException;
@@ -142,10 +139,13 @@ public class Lang {
 		FalseValues.add ("0"); FalseValues.add ("n"); FalseValues.add ("off"); FalseValues.add ("no"); FalseValues.add ("false");
 	}
 	
-	private static final String HMACSHA1 = "HMACSHA1";
+	//private static final String HMACSHA1 = "HMACSHA1";
 
 	private static final String RandDigits = 
         	"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
+	
+	private static final String RandDigitsX = 
+			RandDigits + "-+_/";
 	
 	private static final String RandNumbers = "123456789";
 	
@@ -732,25 +732,11 @@ public class Lang {
 	}
 
 	public static String [] keys () throws Exception {
-		return keys (180, 240); // 20   40
+		return keys (30, 40);
 	}
+	
 	public static String [] keys (int akl, int skl) throws Exception {
-		
-		KeyGenerator generator = KeyGenerator.getInstance (HMACSHA1);
-
-		generator.init (akl);
-		byte[] accessKey = generator.generateKey ().getEncoded ();
-
-		generator.init (skl);
-		byte[] secretKey = generator.generateKey ().getEncoded ();
-
-		String [] keys = new String [] {hash (accessKey, Encodings.UTF8).toUpperCase (), hash (secretKey, Encodings.UTF8)};
-		
-		if (keys [0].indexOf (Lang.DOT) >= 0) {
-			keys [0] = Lang.replace (keys [0], Lang.DOT, Lang.PLUS);
-		}
-		
-		return keys;
+		return new String [] { UUID (RandDigits, akl).toUpperCase (), UUID (RandDigitsX, akl) };
 	}
 
 	public static void setDebugMode (boolean debugMode) {
@@ -765,9 +751,11 @@ public class Lang {
 		return TrueValues.contains (dm);
 	}
 	
+	/*
 	private static String hash (byte [] key, String encoding) throws Exception {
 		return new String (Base64.encodeBase64 (key), encoding).trim ();
 	}
+	*/
 	
     public static byte[] decodeHex(final char[] data) throws Exception {
 

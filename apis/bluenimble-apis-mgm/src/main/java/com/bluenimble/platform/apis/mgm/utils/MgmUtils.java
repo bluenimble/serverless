@@ -24,9 +24,11 @@ import java.util.Set;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiAccessDeniedException;
+import com.bluenimble.platform.api.ApiService;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.DescribeOption;
 import com.bluenimble.platform.api.security.ApiConsumer;
+import com.bluenimble.platform.json.JsonObject;
 
 public class MgmUtils {
 
@@ -126,6 +128,13 @@ public class MgmUtils {
 		
 		return array;
 		
+	}
+	
+	public static boolean isSecure (ApiService service) {
+		JsonObject security = service.getSecurity ();
+        return 	security == null || 
+        		!security.containsKey (ApiService.Spec.Security.Enabled) || 
+        		security.get (ApiService.Spec.Security.Enabled) == "true";
 	}
 	
 }

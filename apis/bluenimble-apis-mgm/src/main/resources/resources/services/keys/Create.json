@@ -4,14 +4,18 @@
 	
 	"spec": {
 		"fields": {
-			"role": 		{ "required": "false" },
-			"pack": 		{ "type": "Integer", "required": "false" },
-			"expiryDate":	{ "type": "Date", "required": "false", "format": "yyyy-MM-dd" }
+			"payload": {
+				"type": "Object", "required": "false",
+				"fields": {
+					"space":		{ "required": "false" },
+					"expiryDate":	{ "type": "Date", "required": "false", "format": "yyyy-MM-dd" }
+				}
+			}
 		}
 	},
 	
 	"security": {
-		"roles": ["admin"]
+		"roles": ["admin", "super"]
 	},
 	
 	"spi": {

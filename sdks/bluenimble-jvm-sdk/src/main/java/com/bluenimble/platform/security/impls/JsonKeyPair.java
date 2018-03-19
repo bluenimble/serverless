@@ -84,7 +84,7 @@ public class JsonKeyPair implements KeyPair {
 	}
 	
 	public static JsonKeyPair create () throws Exception {
-		String [] keys = Lang.keys (240, 240);
+		String [] keys = Lang.keys (40, 40);
 		return new JsonKeyPair ((JsonObject) new JsonObject ().set (Fields.AccessKey, keys [0]).set (Fields.SecretKey, keys [1]));
 	}
 	

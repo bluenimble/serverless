@@ -21,6 +21,7 @@ import java.util.Map;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.cli.I18nProvider;
 import com.bluenimble.platform.cli.Tool;
+import com.bluenimble.platform.cli.ToolContext;
 import com.bluenimble.platform.cli.command.CommandExecutionException;
 import com.bluenimble.platform.cli.command.CommandOption;
 import com.bluenimble.platform.cli.command.CommandResult;
@@ -36,12 +37,19 @@ public class DebugCommand extends AbstractCommand {
 	@Override
 	public CommandResult execute (Tool tool, Map<String, CommandOption> options)
 			throws CommandExecutionException {
+
+		boolean debug = true;
 		
+		String cmd = (String)tool.currentContext ().get (ToolContext.CommandLine);
+		if (!Lang.isNullOrEmpty (cmd)) {
+			debug = !cmd.equalsIgnoreCase ("off");
+		}
+
 		AbstractTool aTool = (AbstractTool)tool;
 		
-		aTool.setTestMode (true);
+		aTool.setTestMode (debug);
 		
-		Lang.setDebugMode (true);
+		Lang.setDebugMode (debug);
 		
 		return null;
 	}

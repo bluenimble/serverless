@@ -185,7 +185,9 @@ public abstract class AbstractApiServer implements ApiServer {
 		}
 		
 		if (opts.containsKey (DescribeOption.Option.keys)) {
-			describe.set (DescribeOption.Option.keys.name (), keys.toJson ());
+			JsonObject okeys = keys.toJson ().duplicate ();
+			okeys.remove (KeyPair.Fields.SecretKey);
+			describe.set (DescribeOption.Option.keys.name (), okeys);
 		}
 		
 		if (instanceDescriber != null && opts.containsKey (DescribeOption.Option.hardware)) {

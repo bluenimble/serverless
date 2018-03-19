@@ -1,19 +1,28 @@
 {
 	    "verb": "get",
-	"endpoint": "/keys/:key",
+	"endpoint": "/keys/:accessKey",
 	
 	"spec": {
 		"fields": {
-			"key": { }
+			"accessKey": { },
+			"paraphrase": { "value": "serverless" }
+		}
+	},
+	
+	"media": {
+		"*": {
+			"base": "application/octet-stream"
 		}
 	},
 	
 	"security": {
-		"roles": ["admin"]
+		/* should set to true or remove this property as it's by default disabled */
+		"enabled": "false", 
+		"roles": ["developer", "admin", "super"]
 	},
 	
 	"spi": {
-		"class": "com.bluenimble.platform.apis.mgm.spis.keys.GetKeySpi"
+		"class": "com.bluenimble.platform.apis.mgm.spis.keys.GetKeysSpi"
 	} 
 	
 }

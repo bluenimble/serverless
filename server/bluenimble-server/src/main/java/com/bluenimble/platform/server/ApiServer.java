@@ -115,6 +115,7 @@ public interface ApiServer extends Traceable {
 	void 					stop 					();
 
 	ApiSpace		  		create 					(JsonObject oSpace) throws ApiManagementException;
+	void		  			drop 					(String namespace) throws ApiManagementException;
 
 	Collection<ApiSpace>	spaces 					();
 	ApiSpace		  		space 					(String space);

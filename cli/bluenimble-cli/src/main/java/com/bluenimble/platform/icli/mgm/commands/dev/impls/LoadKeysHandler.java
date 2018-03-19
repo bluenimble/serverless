@@ -16,15 +16,18 @@
  */
 package com.bluenimble.platform.icli.mgm.commands.dev.impls;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
 
 import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.cli.Tool;
+import com.bluenimble.platform.cli.ToolContext;
 import com.bluenimble.platform.cli.command.CommandExecutionException;
 import com.bluenimble.platform.cli.command.CommandHandler;
 import com.bluenimble.platform.cli.command.CommandResult;
@@ -43,26 +46,37 @@ public class LoadKeysHandler implements CommandHandler {
 			throw new CommandExecutionException ("keys file path required. ex. load keys instance-uat.keys");
 		}
 		
+		@SuppressWarnings("unchecked")
+		Map<String, Object> vars = (Map<String, Object>)tool.getContext (Tool.ROOT_CTX).get (ToolContext.VARS);
+		
+		String name = null;
+		File keysFile = null;
+				
 		String path = args [0];
-		
-		File keysFile = new File (path);
-		if (!keysFile.exists () || !keysFile.isFile ()) {
-			throw new CommandExecutionException ("invalid file path > " + path);
-		}
-		
-		File target = null;
-		
-		String name = args.length > 1 ? args [1] : null;
-		if (!Lang.isNullOrEmpty (name)) {
-			target = new File (BlueNimble.keysFolder (), name + CliSpec.KeysExt);
+		if (vars.containsKey (path)) {
+			// load from var
+			name = args [0];
+			if (Lang.isNullOrEmpty ((String)vars.get (name))) {
+				throw new CommandExecutionException ("variable " + name + " is empty");
+			}
 		} else {
-			target = new File (BlueNimble.keysFolder (), keysFile.getName ());
+			keysFile = new File (path);
+			if (!keysFile.exists () || !keysFile.isFile ()) {
+				throw new CommandExecutionException ("invalid file path > " + path);
+			}
+			name = args.length > 1 ? args [1] : (keysFile.getName ().substring (0, keysFile.getName ().indexOf (Lang.DOT)));
 		}
+		
+		File target = new File (BlueNimble.keysFolder (), name + CliSpec.KeysExt);
 		
 		InputStream in = null;
 		OutputStream out = null;
 		try {
-			in 	= 	new FileInputStream (keysFile);
+			if (keysFile != null) {
+				in 	= 	new FileInputStream (keysFile);
+			} else {
+				in = new ByteArrayInputStream (((String)vars.get (name)).getBytes ());
+			}
 			out = 	new FileOutputStream (target);
 			IOUtils.copy (in, out);
 		} catch (Exception e) {
@@ -72,7 +86,7 @@ public class LoadKeysHandler implements CommandHandler {
 			IOUtils.closeQuietly (out);
 		}
 		
-		return new DefaultCommandResult (CommandResult.OK, "keys " + keysFile.getName () + " loaded");
+		return new DefaultCommandResult (CommandResult.OK, "keys " + name + " loaded and sat to be current");
 	}
 
 

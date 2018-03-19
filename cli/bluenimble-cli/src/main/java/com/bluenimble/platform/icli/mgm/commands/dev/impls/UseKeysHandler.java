@@ -34,15 +34,15 @@ public class UseKeysHandler implements CommandHandler {
 			throw new CommandExecutionException ("keys name required. ex. use keys your-app-prod");
 		}
 		
-		String secrets = args [0];
+		String alias = args [0];
 		
 		try {
-			BlueNimble.useKeys (secrets);
+			BlueNimble.useKeys (alias);
 		} catch (Exception e) {
 			throw new CommandExecutionException (e.getMessage (), e);
 		}
 		
-		return new DefaultCommandResult (CommandResult.OK, null);
+		return new DefaultCommandResult (CommandResult.OK, "keys " + alias + (alias.equals (BlueNimble.keys ().alias ()) ? "is" : "isn't") + " current");
 	}
 
 

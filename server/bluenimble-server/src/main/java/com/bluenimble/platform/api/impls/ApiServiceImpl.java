@@ -65,7 +65,7 @@ public class ApiServiceImpl implements ApiService {
 		this.resource 	= resource;
 		
 		this.source 	= source;
-		
+
 		this.api 		= api;
 		
 		setStatus (Json.getString (this.source, Spec.Status));

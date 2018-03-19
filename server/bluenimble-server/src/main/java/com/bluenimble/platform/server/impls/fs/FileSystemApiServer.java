@@ -37,6 +37,7 @@ import com.bluenimble.platform.api.ApiSpace.Spec;
 import com.bluenimble.platform.api.ApiStatus;
 import com.bluenimble.platform.api.impls.ApiFileStreamSource;
 import com.bluenimble.platform.api.impls.ApiSpaceImpl;
+import com.bluenimble.platform.api.impls.ApiSpaceImpl.Spaces;
 import com.bluenimble.platform.api.security.ApiRequestSigner;
 import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.api.tracing.impls.NoTracing;
@@ -349,6 +350,31 @@ public class FileSystemApiServer extends AbstractApiServer {
 		}
 	}
 
+	@Override
+	public void drop (String spaceNs) throws ApiManagementException {
+		
+		if (Spaces.Sys.equals (spaceNs)) {
+			throw new ApiManagementException ("access denied");
+		}
+		
+		ApiSpace space = space (spaceNs);
+		if (space == null) {
+			throw new ApiManagementException ("space " + spaceNs + " not found");
+		}
+		
+		ApiSpaceImpl spaceImpl = (ApiSpaceImpl)space;
+		
+		// stop space
+		spaceImpl.stop ();
+		
+		try {
+			FileUtils.delete (spaceImpl.home ());
+		} catch (IOException e) {
+			throw new ApiManagementException (e.getMessage (), e);
+		}
+		
+	}
+	
 	@Override
 	public ApiSpace create (JsonObject oSpace) throws ApiManagementException {
 		return create (oSpace, true);

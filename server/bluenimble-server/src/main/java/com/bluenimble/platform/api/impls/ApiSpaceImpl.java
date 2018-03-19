@@ -531,6 +531,14 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 	}
 
 	@Override
+	public void drop (String namespace) throws ApiManagementException {
+		if (!Spaces.Sys.equals (getNamespace ())) {
+			throw new ApiManagementException ("access denied");
+		}
+		server.drop (namespace);
+	}
+
+	@Override
 	public void list (Selector selector) {
 		Iterator<Api> ip = apis.values ().iterator ();
 		while (ip.hasNext ()) {
@@ -774,7 +782,9 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 			JsonArray aKeys = new JsonArray ();
 			if (keys != null) {
 				for (KeyPair kp : keys) {
-					aKeys.add (kp.toJson ());
+					JsonObject okp = kp.toJson ().duplicate ();
+					okp.remove (KeyPair.Fields.SecretKey);
+					aKeys.add (okp);
 				}
 			}
 			describe.set (DescribeOption.Option.keys.name (), aKeys);

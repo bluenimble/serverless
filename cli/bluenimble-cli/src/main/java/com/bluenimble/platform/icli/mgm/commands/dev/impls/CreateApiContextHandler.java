@@ -18,24 +18,14 @@ package com.bluenimble.platform.icli.mgm.commands.dev.impls;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
-import java.util.regex.Pattern;
 
 import com.bluenimble.platform.FileUtils;
-import com.bluenimble.platform.Json;
-import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.cli.Tool;
-import com.bluenimble.platform.cli.ToolContext;
 import com.bluenimble.platform.cli.command.CommandExecutionException;
 import com.bluenimble.platform.cli.command.CommandHandler;
 import com.bluenimble.platform.cli.command.CommandResult;
-import com.bluenimble.platform.cli.command.CommandHandler.AbstractArg;
 import com.bluenimble.platform.cli.command.impls.DefaultCommandResult;
 import com.bluenimble.platform.icli.mgm.BlueNimble;
-import com.bluenimble.platform.icli.mgm.CliSpec;
-import com.bluenimble.platform.icli.mgm.CliSpec.Templates;
-import com.bluenimble.platform.icli.mgm.utils.CodeGenUtils;
-import com.bluenimble.platform.json.JsonObject;
 
 public class CreateApiContextHandler implements CommandHandler {
 

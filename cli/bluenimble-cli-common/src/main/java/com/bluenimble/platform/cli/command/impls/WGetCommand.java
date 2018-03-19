@@ -18,6 +18,7 @@ package com.bluenimble.platform.cli.command.impls;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -50,9 +51,10 @@ public class WGetCommand extends AbstractCommand {
 		CommandOption varOpt = options.get ("v");
 		CommandOption fileOpt = options.get ("f");
 		
+		InputStream in = null;
+		Writer writer = null;
+		
 		try {
-			
-			Writer writer = null;
 			
 			if (varOpt != null) {
 				writer = new StringWriter ();
@@ -62,15 +64,19 @@ public class WGetCommand extends AbstractCommand {
 				writer = new PrintWriter (System.out);
 			}
 			
-			IOUtils.copy (new URL (sUrl).openStream (), writer);
+			in = new URL (sUrl).openStream ();
+			IOUtils.copy (in, writer);
 
 			if (varOpt != null) {
-				Map<String, Object> vars = (Map<String, Object>)tool.currentContext ().get (ToolContext.VARS);
+				Map<String, Object> vars = (Map<String, Object>)tool.getContext (Tool.ROOT_CTX).get (ToolContext.VARS);
 				vars.put ((String)varOpt.getArg (0), writer.toString ());
 			}
 		
 		} catch (Throwable th) {
 			throw new CommandExecutionException (th.getMessage (), th);
+		} finally {
+			IOUtils.closeQuietly (writer);
+			IOUtils.closeQuietly (in);
 		}
 		
 		return new DefaultCommandResult (CommandResult.OK, "Command Executed with success");

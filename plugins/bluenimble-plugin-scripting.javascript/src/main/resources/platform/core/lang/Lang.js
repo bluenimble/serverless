@@ -150,8 +150,6 @@ var Lang = {
 	
 	/**	
 	  Create a key pair
-
-	  @returns {boolean} true if it's an object
 	*/
 	keys: function () {
 		return JC_Lang.keys ();

@@ -18,9 +18,11 @@ package com.bluenimble.platform.apis.mgm.spis.keys;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiAccessDeniedException;
@@ -35,7 +37,6 @@ import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.apis.mgm.CommonSpec;
 import com.bluenimble.platform.apis.mgm.Role;
 import com.bluenimble.platform.apis.mgm.utils.MgmUtils;
-import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.security.KeyPair;
 import com.bluenimble.platform.security.SpaceKeyStoreException;
@@ -44,13 +45,17 @@ public class CreateKeysSpi extends AbstractApiServiceSpi {
 
 	private static final long serialVersionUID = -3682312790255625219L;
 
-	interface Output {
-		String Keys = "keys";
+	interface Spec {
+		String Space = "space";
 	}
 	
 	@Override
 	public ApiOutput execute (Api api, ApiConsumer consumer, ApiRequest request,
 			ApiResponse response) throws ApiServiceExecutionException {
+		
+		JsonObject payload = (JsonObject)request.get (ApiRequest.Payload);
+		
+		Role cRole = Role.valueOf ((String)consumer.get (CommonSpec.Role));
 		
 		Role role = Role.DEVELOPER;
 		
@@ -63,43 +68,69 @@ public class CreateKeysSpi extends AbstractApiServiceSpi {
 			}
 		}
 		
-		Integer pack = (Integer)request.get (CommonSpec.Pack);
-		if (pack == null) {
-			pack = 1;
+		if (Role.SUPER.equals (cRole) && role.equals (Role.DEVELOPER)) {
+			throw new ApiServiceExecutionException ("super users can't create developer keys").status (ApiResponse.FORBIDDEN);
 		}
 		
-		Date expiryDate = (Date)request.get (CommonSpec.ExpiryDate);
+		if (Role.ADMIN.equals (cRole) && role.equals (Role.ADMIN)) {
+			throw new ApiServiceExecutionException ("admin users can't create admin keys").status (ApiResponse.FORBIDDEN);
+		}
+		
+		ApiSpace space;
+
+		if (Role.SUPER.equals (cRole)) {
+			String spaceNs = Json.getString (payload, Spec.Space);
+			if (Lang.isNullOrEmpty (spaceNs)) {
+				throw new ApiServiceExecutionException ("no space found in payload").status (ApiResponse.BAD_REQUEST);
+			}
+			try {
+				space = api.space ().space (spaceNs);
+			} catch (ApiAccessDeniedException e) {
+				throw new ApiServiceExecutionException (e.getMessage (), e).status (ApiResponse.FORBIDDEN);
+			}
+		} else {
+			try {
+				space = MgmUtils.space (consumer, api);
+			} catch (ApiAccessDeniedException e) {
+				throw new ApiServiceExecutionException (e.getMessage (), e).status (ApiResponse.FORBIDDEN);
+			}
+		}
+		
+		if (space == null) {
+			throw new ApiServiceExecutionException ("target space where to create the keys not found").status (ApiResponse.BAD_REQUEST);
+		} 
+		
+		Date expiryDate = null;
+		if (!Json.isNullOrEmpty (payload)) {
+			expiryDate = (Date)payload.get (KeyPair.Fields.ExpiryDate);
+		}
 
 		Map<String, Object> properties = new HashMap<String, Object> ();
 		properties.put (CommonSpec.Role, role.name ());
-
-		ApiSpace consumerSpace;
-		try {
-			consumerSpace = MgmUtils.space (consumer, api);
-		} catch (ApiAccessDeniedException e) {
-			throw new ApiServiceExecutionException (e.getMessage (), e).status (ApiResponse.FORBIDDEN);
-		}
 		
+		if (!Json.isNullOrEmpty (payload)) {
+			Iterator<String> props = payload.keys ();
+			while (props.hasNext ()) {
+				String p = props.next ();
+				if (p.equals (KeyPair.Fields.ExpiryDate) || p.equals (CommonSpec.Role)) {
+					continue;
+				}
+				properties.put (p, payload.get (p));
+			}
+		}
+
 		List<KeyPair> list = null;
 		try {
-			list = consumerSpace.keystore ().create (pack, expiryDate, properties);
+			list = space.keystore ().create (1, expiryDate, properties);
 		} catch (SpaceKeyStoreException e) {
 			throw new ApiServiceExecutionException (e.getMessage (), e).status (ApiResponse.BAD_REQUEST);
 		}
 		
-		JsonObject result = new JsonObject ();
-		JsonArray aKeys = new JsonArray ();
-		result.set (Output.Keys, aKeys);
-		
 		if (list == null) {
-			return new JsonApiOutput (result);
-		}
-		
-		for (KeyPair skp : list) {
-			aKeys.add (skp.toJson ());
+			return new JsonApiOutput (null);
 		}
 
-		return new JsonApiOutput (result);
+		return new JsonApiOutput (list.get (0).toJson ());
 	}
 
 }

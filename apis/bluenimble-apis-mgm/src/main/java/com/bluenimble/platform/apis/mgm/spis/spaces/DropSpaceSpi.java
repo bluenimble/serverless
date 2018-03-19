@@ -14,55 +14,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.apis.mgm.spis.keys;
+package com.bluenimble.platform.apis.mgm.spis.spaces;
 
 import com.bluenimble.platform.api.Api;
-import com.bluenimble.platform.api.ApiAccessDeniedException;
+import com.bluenimble.platform.api.ApiManagementException;
 import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.ApiServiceExecutionException;
-import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.impls.JsonApiOutput;
 import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
 import com.bluenimble.platform.api.security.ApiConsumer;
-import com.bluenimble.platform.apis.mgm.utils.MgmUtils;
+import com.bluenimble.platform.apis.mgm.CommonOutput;
 import com.bluenimble.platform.json.JsonObject;
-import com.bluenimble.platform.security.KeyPair;
 
-public class GetKeySpi extends AbstractApiServiceSpi {
+public class DropSpaceSpi extends AbstractApiServiceSpi {
 
 	private static final long serialVersionUID = -3682312790255625219L;
 	
 	interface Spec {
-		String Key = "key";
+		String Space = "space";
 	}
-
+	
 	@Override
 	public ApiOutput execute (Api api, ApiConsumer consumer, ApiRequest request,
 			ApiResponse response) throws ApiServiceExecutionException {
-		
-		ApiSpace consumerSpace;
+
+		// drop space
 		try {
-			consumerSpace = MgmUtils.space (consumer, api);
-		} catch (ApiAccessDeniedException e) {
-			throw new ApiServiceExecutionException (e.getMessage (), e).status (ApiResponse.NOT_FOUND);
-		}
-		
-		KeyPair skp = null;
-		
-		try {
-			skp = consumerSpace.keystore ().get (request.get (Spec.Key), false);
-		} catch (Exception e) {
+			api.space ().drop ((String)request.get (Spec.Space));
+		} catch (ApiManagementException e) {
 			throw new ApiServiceExecutionException (e.getMessage (), e);
 		}
-		
-		if (skp == null) {
-			return new JsonApiOutput (JsonObject.Blank);
-		}
-		
-		return new JsonApiOutput (skp.toJson ());
-		
+		return new JsonApiOutput ((JsonObject)new JsonObject ().set (CommonOutput.Dropped, true));
 	}
 
 }

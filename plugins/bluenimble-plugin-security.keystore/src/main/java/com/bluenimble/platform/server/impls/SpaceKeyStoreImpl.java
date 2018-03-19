@@ -17,6 +17,7 @@
 package com.bluenimble.platform.server.impls;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -75,25 +76,30 @@ public class SpaceKeyStoreImpl implements SpaceKeyStore {
 	}
 
 	@Override
-	public List<KeyPair> list (int offset, int length) {
+	public List<KeyPair> list (int offset, int length, ListFilter... filters) {
 		if (keys.isEmpty ()) {
 			return null;
 		}
-		List<KeyPair> list = new ArrayList<KeyPair>(keys.values ());
 		
-		int toIndex = 0;
+		List<KeyPair> list = new ArrayList<KeyPair>();
 		
-		if (length < 0) {
-			toIndex = list.size () - 1;
-		} else {
-			toIndex = offset + length - 1;
-		}
-		
-		if (toIndex >= (list.size () - 1)) {
-			return list;
-		}
-		
-		return list.subList (offset, toIndex);
+		int counter = 0;
+		Collection<KeyPair> kps = keys.values ();
+		for (KeyPair kp : kps) {
+			if (counter < offset) {
+				continue;
+			}
+			counter++;
+			
+			if (check (kp, filters)) {
+				list.add (kp);
+			}
+			
+			if (list.size () == length) {
+				break;
+			}
+		}		
+		return list;
 	}
 
 	@Override
@@ -172,6 +178,90 @@ public class SpaceKeyStoreImpl implements SpaceKeyStore {
 			throw new SpaceKeyStoreException (ex.getMessage (), ex);
 		}
 		return keys;
+	}
+	
+	private boolean check (KeyPair kp, ListFilter... filters) {
+		if (filters == null || filters.length == 0) {
+			return true;
+		}
+		
+		Date today = new Date ();
+		
+		boolean include = true;
+		
+		for (ListFilter f : filters) {
+			String name 	= f.name ();
+			Object value 	= f.value ();
+			switch (f.operator ()) {
+				case eq:
+					if (KeyPair.Fields.AccessKey.equals (name)) {
+						include = kp.accessKey ().equals (value);
+					} else {
+						if (value == null) {
+							include = kp.property (name) == null;
+						} else {
+							include = value.equals (kp.property (name));
+						}
+					}
+					break;
+	
+				case neq:
+					if (KeyPair.Fields.AccessKey.equals (name)) {
+						include = !kp.accessKey ().equals (value);
+					} else {
+						if (value == null) {
+							include = kp.property (name) != null;
+						} else {
+							include = !value.equals (kp.property (name));
+						}
+					}
+					break;
+	
+				case like:
+					if (KeyPair.Fields.AccessKey.equals (name)) {
+						include = kp.accessKey ().indexOf (String.valueOf (value)) > -1;
+					} else {
+						if (value == null) {
+							include = false;
+						} else {
+							include = String.valueOf (value).indexOf (String.valueOf (kp.property (name))) > -1;
+						}
+					}
+					break;
+	
+				case exp:
+					include = kp.expiryDate ().getTime () < today.getTime ();
+					break;
+	
+				case nexp:
+					include = kp.expiryDate ().getTime () > today.getTime ();
+					break;
+	
+				case alexp:
+					if (value == null) {
+						value = "0";
+					}
+					int days = 0;
+					try {
+						days = Integer.valueOf (String.valueOf (value));
+					} catch (NumberFormatException nfex) {
+						days = 0;
+					}
+					include = kp.expiryDate ().getTime () >= (today.getTime () + (days * 24 * 60 * 60 * 1000));
+					break;
+	
+				default:
+					break;
+				
+			}
+			
+			if (!include) {
+				return false;
+			}
+		}
+		
+		return include;
+		
 	}
 
 }

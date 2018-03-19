@@ -1,0 +1,19 @@
+{
+	    "verb": "delete",
+	"endpoint": "/spaces/:space",
+	
+	"spec": {
+		"fields": {
+			"space": { "min": "1", "max": "50", "vType": "Regex", "format": "^[a-zA-Z0-9_-]*$" }
+		}
+	},
+	
+	"security": {
+		"roles": ["super"]
+	},
+	
+	"spi": {
+		"class": "com.bluenimble.platform.apis.mgm.spis.spaces.DropSpaceSpi"
+	} 
+	
+}

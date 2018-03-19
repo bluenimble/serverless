@@ -55,20 +55,22 @@ public abstract class AbstractTool implements Tool {
 	
 	private static final long serialVersionUID = 641095159517307685L;
 	
-	private static final String Token		= "a35T@,#;_%zID=!1";
+	private static final String Token					= "a35T@,#;_%zID=!1";
 	
-	public static final String COMMAND_NOT_FOUND 	= "Error: command not found";
-	private static final String DEFAULT_DELIMETER 	= "\n";
+	public static final String COMMAND_NOT_FOUND 		= "Error: command not found";
+	private static final String DEFAULT_DELIMETER 		= "\n";
 	
-	private static final String ExpStart 	= "${";
-	private static final String ExpEnd 		= "}";
+	private static final String ExpStart 				= "${";
+	private static final String ExpEnd 					= "}";
 	
-	private static final String OUT_TOKEN = ">>";
+	private static final String OUT_TOKEN 				= ">>";
+	private static final String COMMAND_CHAINING_TOKEN 	= "&&";
 	
-	private static final String FilePrefix = "file:";
 	
-	public static final String CMD_OUT 		= "cmd.out";
-	public static final String CMD_OUT_FILE = "cmd.out.file";
+	private static final String FilePrefix 				= "file:";
+	
+	public static final String CMD_OUT 					= "cmd.out";
+	public static final String CMD_OUT_FILE 			= "cmd.out.file";
 	
 	private static final ToolContext ROOT_CONTEXT = new ToolContextImpl (ROOT_CTX, "\n");
 	
@@ -189,7 +191,7 @@ public abstract class AbstractTool implements Tool {
 	public int processCommand (String cmdLine) throws IOException {
 		
 		if (!isAllowed ()) {
-			writeln ("not allowed to write commands. this is maybe due to license expiry.");
+			writeln ("not allowed to write commands.");
 			return FAILURE;
 		}
 		
@@ -223,6 +225,15 @@ public abstract class AbstractTool implements Tool {
 		String out = null;
 		
 		cmdLine = cmdLine.trim ();
+		
+		// multiple commands
+		if (cmdLine.indexOf (COMMAND_CHAINING_TOKEN) > 0) {
+			String [] aCommands = Lang.split (cmdLine, COMMAND_CHAINING_TOKEN, true);
+			for (String cmd : aCommands) {
+				processCommand (cmd);
+			}
+			return MULTIPLE; 
+		}
 		
 		@SuppressWarnings("unchecked")
 		final Map<String, Object> vars = (Map<String, Object>)getContext (Tool.ROOT_CTX).get (ToolContext.VARS);
