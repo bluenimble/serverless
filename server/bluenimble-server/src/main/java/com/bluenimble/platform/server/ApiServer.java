@@ -21,11 +21,11 @@ import java.util.Map;
 
 import com.bluenimble.platform.Traceable;
 import com.bluenimble.platform.api.ApiManagementException;
-import com.bluenimble.platform.api.ApiMediaProcessor;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.DescribeOption;
+import com.bluenimble.platform.api.media.ApiMediaProcessor;
 import com.bluenimble.platform.api.security.ApiConsumerResolver;
 import com.bluenimble.platform.api.security.ApiRequestSigner;
 import com.bluenimble.platform.api.validation.ApiServiceValidator;

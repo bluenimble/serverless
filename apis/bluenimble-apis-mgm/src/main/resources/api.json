@@ -7,6 +7,12 @@
 			"signature": {}
 		}
 	},
+	
+	"media": {
+		"application/yaml": {
+			"base": "application/json", "format": "yaml"
+		}
+	},
 
 	"spi": {
 		"class": "com.bluenimble.platform.apis.mgm.KeyStoreAwareApiSpi"

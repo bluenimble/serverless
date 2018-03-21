@@ -21,12 +21,12 @@ import com.bluenimble.platform.Lang;
 
 public abstract class AbstractEmitter implements JsonEmitter {
 	
-	private boolean			pretty;
+	private boolean		pretty;
 	
-	private String tab 		= Lang.TAB;
-	private String space 	= Lang.SPACE;
+	private String 		tab 	= Lang.TAB;
+	private String 		space 	= Lang.SPACE;
 	
-	protected int indent;
+	protected int 		indent;
 	
 	@Override
 	public void onStartObject (JsonObject o, boolean root) {
@@ -98,12 +98,17 @@ public abstract class AbstractEmitter implements JsonEmitter {
 		if (value == null) {
 			write (Lang.NULL);
 		} else {
-			write (Lang.QUOT).write (Json.escape (String.valueOf (value))).write (Lang.QUOT);
+			write (Lang.QUOT);
+			write (Json.escape (String.valueOf (value)));
+			write (Lang.QUOT);
 		}
 	}
 
 	protected void writeName (String name) {
-		write (Lang.QUOT).write (name).write (Lang.QUOT).write (Lang.COLON);
+		write (Lang.QUOT);
+		write (name);
+		write (Lang.QUOT);
+		write (Lang.COLON);
 	}
 
 	protected void onEndLn () {

@@ -16,8 +16,10 @@
  */
 package com.bluenimble.platform.api.impls.media;
 
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
+import com.bluenimble.platform.Encodings;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.Lang.VariableResolver;
@@ -25,30 +27,78 @@ import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiContentTypes;
 import com.bluenimble.platform.api.ApiHeaders;
 import com.bluenimble.platform.api.ApiMediaException;
-import com.bluenimble.platform.api.ApiMediaProcessor;
 import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResource;
 import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.ApiService;
 import com.bluenimble.platform.api.impls.media.engines.TemplateEngine;
+import com.bluenimble.platform.api.impls.media.writers.impls.JsonWriter;
+import com.bluenimble.platform.api.impls.media.writers.impls.TextWriter;
+import com.bluenimble.platform.api.impls.media.writers.impls.YamlWriter;
+import com.bluenimble.platform.api.media.ApiMediaProcessor;
+import com.bluenimble.platform.api.media.DataWriter;
 import com.bluenimble.platform.api.security.ApiConsumer;
-import com.bluenimble.platform.json.AbstractEmitter;
-import com.bluenimble.platform.json.JsonEmitter;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.server.plugins.media.MediaPlugin;
 import com.bluenimble.platform.server.plugins.media.utils.DefaultVariableResolver;
 import com.bluenimble.platform.server.plugins.media.utils.MediaRoutingUtils;
 import com.bluenimble.platform.server.plugins.media.utils.WriteResponseUtils;
 
-public class JsonMediaProcessor implements ApiMediaProcessor {
+/**
+ * 
+	"media": {
+		"text/html": {
+			"success": {
+				"*": {
+					"resource": "templates/html/links-all.html", 
+					"headers": {
+						"location": "/myservices"
+					}
+				},
+				"val-1": {
+					"resource": "templates/html/links-1.html",  
+					"headers": {
+						"xLocation": "http://awebsite.com"
+					}
+				},
+				"val-2": {
+					"resource": "templates/html/links-2.html",  
+					"headers": {
+						"xLocation": "http://awebsite.com"
+					}
+				}
+			},
+			"error": {
+				"*": {
+					"resource": "templates/html/links-error.html", 
+					"headers": {
+						"location": "/error?uuid=${error}"
+					}
+				}
+			}
+		}
+	}
+ * 
+ * 
+ *
+ */
+public class PlainMediaProcessor implements ApiMediaProcessor {
 
 	private static final long serialVersionUID = -3490327410756493328L;
 	
-	protected MediaPlugin plugin;
+	private Map<String, DataWriter> writers = new HashMap<String, DataWriter> ();
 	
-	public JsonMediaProcessor (MediaPlugin plugin) {
-		this.plugin = plugin;
+	protected MediaPlugin 	plugin;
+	protected String 		contentType;
+	
+	public PlainMediaProcessor (MediaPlugin plugin, String contentType) {
+		this.plugin 		= plugin;
+		this.contentType 	= contentType;
+		
+		addWriter (ApiContentTypes.Text, new TextWriter ());
+		addWriter (ApiContentTypes.Json, new JsonWriter ());
+		addWriter (ApiContentTypes.Yaml, new YamlWriter ());
 	}
 	
 	@Override
@@ -57,30 +107,23 @@ public class JsonMediaProcessor implements ApiMediaProcessor {
 
 		String contentType = (String)request.get (ApiRequest.SelectedMedia);
 		if (Lang.isNullOrEmpty (contentType) || Lang.STAR.equals  (contentType)) {
-			contentType = ApiContentTypes.Json;
+			contentType = this.contentType;
 		}
-
-		String 		charset = null;
-		JsonObject 	mediaDef = null;
+		
+		String 		charset 	= Encodings.UTF8;
+		JsonObject 	mediaDef 	= MediaRoutingUtils.pickMedia (api, service, contentType);
 		
 		try {
-			
-			JsonObject mediaSet = service == null ? null : service.getMedia ();
-			if (mediaSet != null && !mediaSet.isEmpty ()) {
-				mediaDef = Json.getObject (mediaSet, contentType);
-			}
-			if (mediaDef == null) {
-				mediaDef = Json.getObject (mediaSet, Lang.STAR);
-			}
-			
 			String rContentType = contentType;
 			
 			if (output != null) {
-				charset = (String)output.get (ApiOutput.Defaults.Charset);
-				if (!Lang.isNullOrEmpty (charset)) {
-					rContentType += "; charset=" + charset;
+				String oCharset = (String)output.get (ApiOutput.Defaults.Charset);
+				if (!Lang.isNullOrEmpty (oCharset)) {
+					charset = oCharset;
 				}
 			}
+			
+			rContentType += "; charset=" + charset;
 			
 			VariableResolver vr = new DefaultVariableResolver (request, output != null ? output.data () : null, output != null ? output.meta () : null);
 			
@@ -115,37 +158,19 @@ public class JsonMediaProcessor implements ApiMediaProcessor {
 				} 
 			}
 			
-			if (WriteResponseUtils.writeError (response, api.tracer (), contentType)) {
+			if (WriteResponseUtils.writeError (response, api.tracer (), rContentType)) {
 				response.close ();
 				return;
 			}
 			
-			response.set (ApiHeaders.ContentType, contentType);
+			response.set (ApiHeaders.ContentType, rContentType);
 			
-			if (output == null) {
-				response.write (Lang.EMTPY_OBJECT);
-				response.close ();
-				return;
-			} 
+			DataWriter dataWriter = writers.get (contentType);
+			if (dataWriter == null) {
+				dataWriter = writers.get (this.contentType);
+			}
 			
-			JsonObject json = output.data ();
-			if (json == null) {
-				response.write (Lang.EMTPY_OBJECT);
-				response.close ();
-				return;
-			} 
-			
-			json.write (new AbstractEmitter () {
-				@Override
-				public JsonEmitter write (String chunk) {
-					try {
-						response.write (chunk);
-					} catch (IOException e) {
-						throw new RuntimeException (e.getMessage (), e);
-					}
-					return this;
-				}
-			});
+			dataWriter.write (output, response);
 			
 			response.close ();
 
@@ -153,6 +178,16 @@ public class JsonMediaProcessor implements ApiMediaProcessor {
 			throw new ApiMediaException (e.getMessage (), e);
 		}
 		
+	}
+
+	@Override
+	public void addWriter (String name, DataWriter writer) {
+		writers.put (name, writer);
+	}
+	
+	@Override
+	public void removeWriter (String name) {
+		writers.remove (name);
 	}
 
 }

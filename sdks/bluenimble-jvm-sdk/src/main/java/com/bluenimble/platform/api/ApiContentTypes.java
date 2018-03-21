@@ -20,6 +20,7 @@ public interface ApiContentTypes {
 
 	String 				Text		= "text/plain";
 	String 				Json		= "application/json";
+	String 				Yaml		= "application/yaml";
 	String 				Xml			= "application/xml";
 	String 				Html		= "text/html";
 

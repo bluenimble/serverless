@@ -23,14 +23,13 @@ import java.io.InputStream;
 import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiContentTypes;
-import com.bluenimble.platform.api.ApiMediaProcessor;
-import com.bluenimble.platform.api.impls.media.JsonMediaProcessor;
+import com.bluenimble.platform.api.impls.media.PlainMediaProcessor;
 import com.bluenimble.platform.api.impls.media.StreamMediaProcessor;
-import com.bluenimble.platform.api.impls.media.TextMediaProcessor;
 import com.bluenimble.platform.api.impls.media.engines.TemplateEngine;
 import com.bluenimble.platform.api.impls.media.engines.TemplateEnginesRegistry;
 import com.bluenimble.platform.api.impls.media.engines.handlebars.HandlebarsTemplateEngine;
 import com.bluenimble.platform.api.impls.media.engines.javascript.JavascriptEngine;
+import com.bluenimble.platform.api.media.ApiMediaProcessor;
 import com.bluenimble.platform.api.media.MediaTypeUtils;
 import com.bluenimble.platform.plugins.impls.AbstractPlugin;
 import com.bluenimble.platform.server.ApiServer;
@@ -61,11 +60,12 @@ public class MediaPlugin extends AbstractPlugin {
 			IOUtils.closeQuietly (mimes);
 		}
 		
-		TextMediaProcessor text = new TextMediaProcessor (this);
+		PlainMediaProcessor text = new PlainMediaProcessor (this, ApiContentTypes.Text);
 		
 		server.addMediaProcessor (ApiContentTypes.Text, text);
 		server.addMediaProcessor (ApiContentTypes.Html, text);
-		server.addMediaProcessor (ApiContentTypes.Json, new JsonMediaProcessor (this));
+		server.addMediaProcessor (ApiContentTypes.Json, new PlainMediaProcessor (this, ApiContentTypes.Json));
+		server.addMediaProcessor (ApiContentTypes.Yaml, new PlainMediaProcessor (this, ApiContentTypes.Yaml));
 		server.addMediaProcessor (ApiContentTypes.Stream, new StreamMediaProcessor ());
 		
 	}

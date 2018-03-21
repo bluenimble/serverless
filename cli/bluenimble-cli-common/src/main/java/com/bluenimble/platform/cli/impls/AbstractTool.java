@@ -187,6 +187,7 @@ public abstract class AbstractTool implements Tool {
 		}
 	}
 	
+	@SuppressWarnings({ "unchecked" })
 	@Override
 	public int processCommand (String cmdLine) throws IOException {
 		
@@ -235,7 +236,6 @@ public abstract class AbstractTool implements Tool {
 			return MULTIPLE; 
 		}
 		
-		@SuppressWarnings("unchecked")
 		final Map<String, Object> vars = (Map<String, Object>)getContext (Tool.ROOT_CTX).get (ToolContext.VARS);
 
 		Calendar now = Calendar.getInstance ();
@@ -370,7 +370,11 @@ public abstract class AbstractTool implements Tool {
 								if (result.getContent () instanceof InputStream) {
 									is = (InputStream)result.getContent ();
 								} else {
-									is = new ByteArrayInputStream (result.getContent ().toString ().getBytes ());
+									Object content = result.getContent ();
+									if (content instanceof YamlObject) {
+										content = ((YamlObject)content).toJson ();
+									}
+									is = new ByteArrayInputStream (content.toString ().getBytes ());
 								}
 								OutputStream os = null;
 								try {
@@ -385,13 +389,24 @@ public abstract class AbstractTool implements Tool {
 									vars.remove (CMD_OUT);
 								}
 							} else {
-								vars.put (out, result.getContent ());
+								Object content = result.getContent ();
+								if (content instanceof YamlObject) {
+									content = ((YamlObject)content).toJson ();
+								}
+								vars.put (out, content);
 							}
 						} else if (result.getContent () != null) {
 							if (result.getContent () instanceof JsonObject) {
 								printer ().success (Lang.BLANK);
 								if (printer ().isOn ()) {
 									((JsonObject)result.getContent ()).write (new FriendlyJsonEmitter (this));
+									writeln (Lang.BLANK);
+								}
+							} else if (result.getContent () instanceof YamlObject) {
+								printer ().success (Lang.BLANK);
+								if (printer ().isOn ()) {
+									YamlObject yaml = (YamlObject)result.getContent ();
+									yaml.print (this, 4);
 									writeln (Lang.BLANK);
 								}
 							} else if (result.getContent () instanceof InputStream) {

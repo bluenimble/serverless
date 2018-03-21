@@ -21,6 +21,7 @@ public class StringEmitter extends AbstractEmitter {
 	private StringBuilder 	buff;
 	
 	public StringEmitter (StringBuilder buff) {
+		super ();
 		this.buff = buff;
 	}
 

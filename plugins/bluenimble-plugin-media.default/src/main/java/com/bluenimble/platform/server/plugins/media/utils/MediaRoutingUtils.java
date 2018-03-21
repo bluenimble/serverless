@@ -22,10 +22,12 @@ import java.util.List;
 
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
+import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiHeaders;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.ApiResponse.Status;
+import com.bluenimble.platform.api.ApiService;
 import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
@@ -115,6 +117,24 @@ public class MediaRoutingUtils {
 
 		return media;
 		
+	}
+	
+	public static JsonObject pickMedia (Api api, ApiService service, String contentType) {
+		JsonObject 	mediaDef = null;
+		JsonObject mediaSet = service == null ? null : service.getMedia ();
+		if (mediaSet != null && !mediaSet.isEmpty ()) {
+			mediaDef = Json.getObject (mediaSet, contentType);
+		}
+		if (mediaDef == null) {
+			mediaDef = Json.getObject (mediaSet, Lang.STAR);
+		}
+		if (mediaDef == null) {
+			mediaDef = Json.getObject (api.getMedia (), contentType);
+		}
+		if (mediaDef == null) {
+			mediaDef = Json.getObject (api.getMedia (), Lang.STAR);
+		}
+		return mediaDef;
 	}
 	
 }

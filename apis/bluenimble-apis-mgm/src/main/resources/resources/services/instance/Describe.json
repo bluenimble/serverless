@@ -21,6 +21,9 @@
 					"resource": "app/index.html"
 				}
 			}
+		},
+		"application/yaml": {
+			"base": "application/json", "format": "yaml"
 		}
 	},
 	

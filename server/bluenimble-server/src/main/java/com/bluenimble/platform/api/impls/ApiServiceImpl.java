@@ -118,7 +118,13 @@ public class ApiServiceImpl implements ApiService {
 
 	@Override
 	public JsonObject getMedia () {
-		return Json.getObject (source, Spec.Media.class.getSimpleName ().toLowerCase ());
+		JsonObject media = Json.getObject (source, Spec.Media.class.getSimpleName ().toLowerCase ());
+		if (media == null) {
+			media = api.getMedia ();
+		} else if (media.isEmpty ()) {
+			return null;
+		}
+		return media;
 	}
 
 	@Override

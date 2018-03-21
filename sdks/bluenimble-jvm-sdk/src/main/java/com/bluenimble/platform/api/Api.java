@@ -17,6 +17,7 @@
 package com.bluenimble.platform.api;
 
 import com.bluenimble.platform.Traceable;
+import com.bluenimble.platform.api.media.ApiMediaProcessor;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.validation.ApiServiceValidatorException;
 import com.bluenimble.platform.json.JsonObject;
@@ -36,6 +37,11 @@ public interface Api extends Traceable {
 		String Features			= "features";
 		String Tracer			= "tracer";
 		String Markers			= "markers";
+		
+		interface Media	{
+			String Default		= "default";
+		}
+
 		interface Security		{
 			String Schemes		= "schemes";
 			String Auth			= "auth";
@@ -63,6 +69,8 @@ public interface Api extends Traceable {
 	JsonObject 			getRuntime 				();
 
 	JsonObject 			getFeatures 			();
+	
+	JsonObject 			getMedia 				();
 	
 	JsonObject 			getSecurity 			();
 	

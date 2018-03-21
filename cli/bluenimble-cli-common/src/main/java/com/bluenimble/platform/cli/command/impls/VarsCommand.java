@@ -16,7 +16,6 @@
  */
 package com.bluenimble.platform.cli.command.impls;
 
-import java.util.Iterator;
 import java.util.Map;
 
 import com.bluenimble.platform.Lang;
@@ -26,6 +25,7 @@ import com.bluenimble.platform.cli.ToolContext;
 import com.bluenimble.platform.cli.command.CommandExecutionException;
 import com.bluenimble.platform.cli.command.CommandOption;
 import com.bluenimble.platform.cli.command.CommandResult;
+import com.bluenimble.platform.cli.impls.YamlObject;
 import com.bluenimble.platform.json.JsonObject;
 
 public class VarsCommand extends AbstractCommand {
@@ -60,18 +60,7 @@ public class VarsCommand extends AbstractCommand {
 			}
 		} else {
 			if (vars != null && !vars.isEmpty ()) {
-				StringBuilder sb = new StringBuilder ();
-				
-				Iterator<String> names = vars.keySet ().iterator ();
-				while (names.hasNext ()) {
-					String name = names.next ();
-					sb.append (name).append (Lang.EQUALS).append (vars.get (name)).append (Lang.ENDLN);
-				}
-				
-				result = sb.toString ();
-				
-				sb.setLength (0);
-				
+				result = new YamlObject (vars);
 			}
 		}
 

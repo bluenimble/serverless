@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.yaml.snakeyaml.Yaml;
+
 import com.bluenimble.platform.ArchiveUtils;
 import com.bluenimble.platform.FileUtils;
 import com.bluenimble.platform.IOUtils;
@@ -47,6 +49,7 @@ import com.bluenimble.platform.cli.command.CommandResult;
 import com.bluenimble.platform.cli.command.impls.DefaultCommandResult;
 import com.bluenimble.platform.cli.command.parser.converters.StreamPointer;
 import com.bluenimble.platform.cli.impls.AbstractTool;
+import com.bluenimble.platform.cli.impls.YamlObject;
 import com.bluenimble.platform.http.HttpEndpoint;
 import com.bluenimble.platform.http.HttpHeader;
 import com.bluenimble.platform.http.HttpMessageBody;
@@ -100,6 +103,7 @@ public class RemoteUtils {
 	private static final Set<String> Printable = new HashSet<String> ();
 	static {
 		Printable.add (ApiContentTypes.Json);
+		Printable.add (ApiContentTypes.Yaml);
 		Printable.add (ApiContentTypes.Text);
 		Printable.add (ApiContentTypes.Html);
 		Printable.add (ApiContentTypes.Xml);
@@ -153,13 +157,16 @@ public class RemoteUtils {
 				contentType = ApiContentTypes.Text;
 			}
 			
-			OutputStream out = System.out;
+			int indexOfSemi = contentType.indexOf (Lang.SEMICOLON);
 			
-			if (contentType.startsWith (ApiContentTypes.Json)) {
-				out = new ByteArrayOutputStream ();
+			if (indexOfSemi > 0) {
+				contentType = contentType.substring (0, indexOfSemi).trim ();
 			}
 			
+			OutputStream out = System.out;
+			
 			if (Printable.contains (contentType) && !isOutFile) {
+				out = new ByteArrayOutputStream ();
 				response.getBody ().dump (out, "UTF-8", null);
 			}
 			
@@ -172,13 +179,36 @@ public class RemoteUtils {
 				}
 				
 				if (trace != null && Lang.isDebugMode ()) {
-					vars.put ("BN.Error", trace);
+					vars.put ("Remote.Error", trace);
 				}
 				
 				if (response.getStatus () == 200) {
 					return new DefaultCommandResult (CommandResult.OK, result);
 				} else {
 					return new DefaultCommandResult (CommandResult.KO, result);
+				}
+			} else if (contentType.startsWith (ApiContentTypes.Yaml)) {
+				Yaml yaml = new Yaml ();
+				
+				String ys = new String (((ByteArrayOutputStream)out).toByteArray ());
+					   ys = Lang.replace (ys, Lang.TAB, "  ");	
+					   
+				@SuppressWarnings("unchecked")
+				Map<String, Object> map = yaml.loadAs (ys, Map.class);
+				Object trace = null;
+				if (response.getStatus () != 200) {
+					trace = map.get ("trace");
+					map.remove ("trace");
+				}
+				
+				if (trace != null && Lang.isDebugMode ()) {
+					vars.put ("Remote.Error", trace);
+				}
+				
+				if (response.getStatus () == 200) {
+					return new DefaultCommandResult (CommandResult.OK, new YamlObject (map));
+				} else {
+					return new DefaultCommandResult (CommandResult.KO, new YamlObject (map));
 				}
 			} else if (isOutFile) {
 				if (response.getStatus () == 200) {
@@ -300,10 +330,14 @@ public class RemoteUtils {
 
 		// add default Accept header application/json
 		if (oHeaders == null || !oHeaders.containsKey (ApiHeaders.Accept)) {
+			String accept = (String)vars.get (DefaultVars.RemoteHeadersAccept);
+			if (Lang.isNullOrEmpty (accept)) {
+				accept = ApiContentTypes.Json;
+			}
 			headers.add (
 				new HttpHeaderImpl (
 					ApiHeaders.Accept, 
-					ApiContentTypes.Json
+					accept
 				)
 			);
 		}

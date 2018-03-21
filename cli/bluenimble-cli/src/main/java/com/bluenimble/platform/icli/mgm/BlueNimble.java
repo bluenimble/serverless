@@ -30,6 +30,7 @@ import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
+import com.bluenimble.platform.api.ApiContentTypes;
 import com.bluenimble.platform.cli.InstallI18nException;
 import com.bluenimble.platform.cli.Tool;
 import com.bluenimble.platform.cli.ToolClient;
@@ -81,6 +82,8 @@ public class BlueNimble extends RunnableTool {
 								= "api.security.enabled";
 		String Paraphrase 		= "paraphrase";
 		String SslTrust 		= "ssl.trust";
+		String RemoteHeadersAccept 		
+								= "remote.headers.accept";
 	}
 	
 	public static File 			Home;
@@ -495,7 +498,11 @@ public class BlueNimble extends RunnableTool {
 		if (oVars == null) {
 			return;
 		}
-		oVars.set (name, value);
+		if (value == null) {
+			oVars.remove (name);
+		} else {
+			oVars.set (name, value);
+		}
 		saveConfig ();	
 	}
 
@@ -535,6 +542,9 @@ public class BlueNimble extends RunnableTool {
 		}
 		if (!oVars.containsKey (DefaultVars.ApiSecurityEnabled)) {
 			oVars.set (DefaultVars.ApiSecurityEnabled, "true");
+		}
+		if (!oVars.containsKey (DefaultVars.RemoteHeadersAccept)) {
+			oVars.set (DefaultVars.RemoteHeadersAccept, ApiContentTypes.Json);
 		}
 		
 		@SuppressWarnings("unchecked")

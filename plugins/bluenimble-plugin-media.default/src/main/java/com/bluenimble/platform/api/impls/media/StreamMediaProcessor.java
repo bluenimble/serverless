@@ -30,10 +30,11 @@ import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiContentTypes;
 import com.bluenimble.platform.api.ApiHeaders;
 import com.bluenimble.platform.api.ApiMediaException;
-import com.bluenimble.platform.api.ApiMediaProcessor;
 import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiRequest.Scope;
+import com.bluenimble.platform.api.media.ApiMediaProcessor;
+import com.bluenimble.platform.api.media.DataWriter;
 import com.bluenimble.platform.api.ApiResource;
 import com.bluenimble.platform.api.ApiResourcesManagerException;
 import com.bluenimble.platform.api.ApiResponse;
@@ -111,15 +112,7 @@ public class StreamMediaProcessor implements ApiMediaProcessor {
 			return;
 		}
 		
-		JsonObject mediaDef = null;
-		
-		JsonObject mediaSet = service == null ? null : service.getMedia ();
-		if (mediaSet != null && !mediaSet.isEmpty ()) {
-			mediaDef = Json.getObject (mediaSet, contentType);
-		}
-		if (mediaDef == null) {
-			mediaDef = Json.getObject (mediaSet, Lang.STAR);
-		}
+		JsonObject 	mediaDef = MediaRoutingUtils.pickMedia (api, service, contentType);
 		
 		response.set (ApiHeaders.ContentType, contentType);
 		
@@ -363,15 +356,14 @@ public class StreamMediaProcessor implements ApiMediaProcessor {
 			}, (Chunk [])chunks.toArray ());
         }
     }
-	
-	/*
-	private void logInfo(Api api, Object o) {
-		api.logger().log(Level.Info, o);
-		if (logger.isInfoEnabled()) {
-			logger.info(o);
-		}
+
+	@Override
+	public void addWriter (String name, DataWriter writer) {
 	}
-	*/
+	
+	@Override
+	public void removeWriter (String name) {
+	}
 
 	private Date date (ApiRequest request, String header) {
         String sDate = (String)request.get (header, Scope.Header); 

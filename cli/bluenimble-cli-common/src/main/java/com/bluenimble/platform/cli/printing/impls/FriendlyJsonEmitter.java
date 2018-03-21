@@ -16,9 +16,6 @@
  */
 package com.bluenimble.platform.cli.printing.impls;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.cli.Tool;
@@ -29,28 +26,6 @@ import com.bluenimble.platform.json.JsonObject;
 import com.diogonunes.jcdp.color.api.Ansi.FColor;
 
 public class FriendlyJsonEmitter extends AbstractEmitter {
-	
-	private static final String Status 		= "status";
-	
-	private static final Set<String> YellowStatus = new HashSet<String> ();
-	static {
-		YellowStatus.add ("runnable");
-		YellowStatus.add ("stopped");
-		YellowStatus.add ("paused");
-	}
-	
-	private static final Set<String> GreenStatus = new HashSet<String> ();
-	static {
-		GreenStatus.add ("running");
-		GreenStatus.add ("available");
-	}
-	
-	private static final Set<String> RedStatus = new HashSet<String> ();
-	static {
-		RedStatus.add ("timed_waiting");
-		RedStatus.add ("blocked");
-		RedStatus.add ("failed");
-	}
 	
 	private FontPrinter fontPrinter;
 	private Tool tool;
@@ -76,17 +51,19 @@ public class FriendlyJsonEmitter extends AbstractEmitter {
 		}
 		
 		String color = FColor.CYAN.name ();
-		if (Status.equals (name)) {
+		if (Markers.Status.equals (name)) {
 			String status = value.toString ().toLowerCase ();
-			if (RedStatus.contains (status)) {
+			if (Markers.Red.contains (status)) {
 				color = FColor.RED.name ();
-			} else if (GreenStatus.contains (status)) {
+			} else if (Markers.Green.contains (status)) {
 				color = FColor.GREEN.name ();
-			} else if (YellowStatus.contains (status)) {
+			} else if (Markers.Yellow.contains (status)) {
 				color = FColor.YELLOW.name ();
 			} 
 		}
-		tool.printer ().text (-1, Lang.QUOT + Json.escape (String.valueOf (value)) + Lang.QUOT, color, null);
+		tool.write (Lang.QUOT);
+		tool.printer ().text (-1, Json.escape (String.valueOf (value)), color, null);
+		tool.write (Lang.QUOT);
 	}
 
 	@Override

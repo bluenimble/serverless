@@ -43,6 +43,7 @@ public interface ApiService extends Serializable {
 			String Resource		= "resource";
 			String Engine		= "engine";
 			String Base			= "base";
+			String Format		= "format";
 		}
 
 		String Status		= "status";

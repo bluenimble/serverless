@@ -46,9 +46,21 @@ public class UnSetCommand extends AbstractCommand {
 		
 		final Map<String, Object> vars = (Map<String, Object>)tool.getContext (Tool.ROOT_CTX).get (ToolContext.VARS);
 		
-		vars.remove (cmd.trim ());
+		String varName = cmd.trim ();
 		
-		tool.printer ().content (cmd, "variable removed");
+		if (varName.equals (Tool.ParaPhraseVar)) {
+			throw new CommandExecutionException ("can't remove paraphrase");
+		}
+		
+		vars.remove (varName);
+		
+		try {
+			tool.saveVariable (varName, varName.equals (Tool.ParaPhraseVar) ? tool.getParaphrase (false) : null);
+		} catch (Exception e) {
+			throw new CommandExecutionException (e.getMessage (), e);
+		}
+		
+		tool.printer ().content (cmd, "variable " + varName + " removed");
 		
 		return null;
 	}

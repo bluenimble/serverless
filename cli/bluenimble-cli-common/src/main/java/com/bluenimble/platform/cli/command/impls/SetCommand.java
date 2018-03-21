@@ -25,6 +25,7 @@ import com.bluenimble.platform.cli.ToolContext;
 import com.bluenimble.platform.cli.command.CommandExecutionException;
 import com.bluenimble.platform.cli.command.CommandOption;
 import com.bluenimble.platform.cli.command.CommandResult;
+import com.bluenimble.platform.cli.impls.YamlObject;
 
 public class SetCommand extends AbstractCommand {
 
@@ -63,6 +64,10 @@ public class SetCommand extends AbstractCommand {
 			if (varName.equals (Tool.ParaPhraseVar)) {
 				tool.setParaphrase ((String)value, true);
 				tool.printer ().content ("Security", "Paraphase Updated");
+			}
+			
+			if (value instanceof YamlObject) {
+				value = ((YamlObject)value).toJson ();
 			}
 			
 			vars.put (varName, varName.equals (Tool.ParaPhraseVar) ? tool.getParaphrase (false) : value);

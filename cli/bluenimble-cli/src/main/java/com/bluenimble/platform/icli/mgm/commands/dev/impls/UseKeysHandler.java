@@ -42,7 +42,7 @@ public class UseKeysHandler implements CommandHandler {
 			throw new CommandExecutionException (e.getMessage (), e);
 		}
 		
-		return new DefaultCommandResult (CommandResult.OK, "keys " + alias + (alias.equals (BlueNimble.keys ().alias ()) ? "is" : "isn't") + " current");
+		return new DefaultCommandResult (CommandResult.OK, "keys " + alias + (alias.equals (BlueNimble.keys ().alias ()) ? " is" : " isn't") + " current");
 	}
 
 

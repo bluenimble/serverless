@@ -14,15 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.api;
+package com.bluenimble.platform.api.media;
 
 import java.io.Serializable;
 
+import com.bluenimble.platform.api.Api;
+import com.bluenimble.platform.api.ApiMediaException;
+import com.bluenimble.platform.api.ApiOutput;
+import com.bluenimble.platform.api.ApiRequest;
+import com.bluenimble.platform.api.ApiResponse;
+import com.bluenimble.platform.api.ApiService;
 import com.bluenimble.platform.api.security.ApiConsumer;
 
 public interface ApiMediaProcessor extends Serializable {
 
-	void process (Api api, ApiService service, ApiConsumer consumer, ApiOutput output, ApiRequest request, ApiResponse response) 
-			throws ApiMediaException;
+	void process 		(Api api, ApiService service, ApiConsumer consumer, ApiOutput output, ApiRequest request, ApiResponse response) 
+							throws ApiMediaException;
+	
+	void addWriter 		(String name, DataWriter writer);
+	void removeWriter 	(String name);
 	
 }

@@ -33,7 +33,6 @@ import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiContentTypes;
 import com.bluenimble.platform.api.ApiContext;
 import com.bluenimble.platform.api.ApiHeaders;
-import com.bluenimble.platform.api.ApiMediaProcessor;
 import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiRequest.Scope;
@@ -49,6 +48,7 @@ import com.bluenimble.platform.api.ApiStatus;
 import com.bluenimble.platform.api.ApiVerb;
 import com.bluenimble.platform.api.DescribeOption;
 import com.bluenimble.platform.api.impls.spis.DefaultApiSpi;
+import com.bluenimble.platform.api.media.ApiMediaProcessor;
 import com.bluenimble.platform.api.media.MediaTypeUtils;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.tracing.Tracer;
@@ -416,6 +416,11 @@ public class ApiImpl implements Api {
 	}
 
 	@Override
+	public JsonObject getMedia () {
+		return Json.getObject (descriptor, Spec.Media.class.getSimpleName ().toLowerCase ());
+	}
+
+	@Override
 	public JsonObject getSecurity () {
 		return Json.getObject (descriptor, Spec.Security.class.getSimpleName ().toLowerCase ());
 	}
@@ -467,10 +472,12 @@ public class ApiImpl implements Api {
 	@Override
 	public ApiMediaProcessor lockupMediaProcessor (ApiRequest request, ApiService service) {
 		
+		String defaultContentType = Json.getString (getMedia (), Api.Spec.Media.Default, ApiContentTypes.Json);
+		
 		String requestedMedia = (String)request.get (ApiHeaders.Accept, Scope.Header);
 		
 		if (Lang.isNullOrEmpty (requestedMedia)) {
-			requestedMedia = ApiContentTypes.Json;
+			requestedMedia = defaultContentType;
 		}
 		
 		if (!Lang.isNullOrEmpty (requestedMedia)) {
@@ -486,7 +493,7 @@ public class ApiImpl implements Api {
 			if (Json.isNullOrEmpty (oMedia)) {
 				oMedia = Json.getObject (service.getMedia (), Lang.STAR);
 				anySelected = oMedia != null;
-			}
+			} 
 			if (!Json.isNullOrEmpty (oMedia)) {
 				String baseMedia = Json.getString (oMedia, ApiService.Spec.Media.Base);
 				request.set (ApiRequest.SelectedMedia, anySelected ? Lang.STAR : requestedMedia, ApiRequest.Scope.Parameter);
@@ -525,7 +532,7 @@ public class ApiImpl implements Api {
 		
 		requestedMedia = MediaTypeUtils.bestMatch (supported, requestedMedia);
 		if (requestedMedia == null) {
-			requestedMedia = ApiContentTypes.Json;
+			requestedMedia = defaultContentType;
 		}
 		
 		request.set (ApiRequest.SelectedMedia, requestedMedia, ApiRequest.Scope.Parameter);
