@@ -32,8 +32,8 @@
  *					}
  *				}
  *   
- *	@author		{user}
- *	@created	{date}
+ *	@author		${user}
+ *	@created	${date}
  * 
  **/
 

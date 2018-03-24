@@ -1,10 +1,10 @@
 return {
 	
 	/**
-	 * The only required function that you should implement, if no mock data provided in your Get{Model}.json
+	 * The only required function that you should implement, if no mock data provided in your Get${Model}.json
 	 * 
-	 * The execute function will be triggered when an application or device makes a call to {verb} [bluenimble-space].[bluenimble-instance].bluenimble.com/{api}/{models}/:{model} 
-	 * which is defined in your service specification file Get{Model}.json 
+	 * The execute function will be triggered when an application or device makes a call to ${verb} [bluenimble-space].[bluenimble-instance].bluenimble.com/${api}/${models}/:${model} 
+	 * which is defined in your service specification file Get${Model}.json 
 	 * 
 	 * Arguments:
 	 *  Api 		 the api where this service is running  
@@ -19,8 +19,8 @@ return {
 	 *				 you can also write data to the response but this is rarely will happen as the platform takes care of this.	
 	 *
 	 *
-	 *	@author		{user}
-	 *	@created	{date}
+	 *	@author		${user}
+	 *	@created	${date}
 	 * 
 	 **/
 	execute: function (api, consumer, request, response) {

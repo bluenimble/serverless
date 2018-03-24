@@ -87,20 +87,7 @@ public class BuildUtils {
 		String Return	= "return";
 	}
 	
-	public static JsonObject yml2json (File file) throws IOException {
-		Yaml yaml = new Yaml ();
-		
-		InputStream is = null;
-	    try {
-			is = new FileInputStream (file);
-	    	return new JsonObject (yaml.load (is), true);
-	    } finally {
-	    	IOUtils.closeQuietly (is);
-	    }
-	    
-	}
-	
-	public JsonArray generate (File apiFolder) throws Exception {
+	public static JsonArray generate (File apiFolder) throws Exception {
 		
 		JsonArray dsList = new JsonArray ();
 		

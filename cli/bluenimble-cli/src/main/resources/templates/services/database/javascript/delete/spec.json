@@ -32,16 +32,16 @@
  *					}
  *				}
  *   
- *	@author		{user}
- *	@created	{date}
+ *	@author		${user}
+ *	@created	${date}
  * 
  **/
 
 {
 	
 	    "verb": "delete",
-	"endpoint": "/{models}/:{model}",
-		"name": "Delete {Model}",
+	"endpoint": "/${models}/:${model}",
+		"name": "Delete ${Model}",
 	
 	"spec": {
 		"fields": {
@@ -50,7 +50,7 @@
 	},
 	
 	"runtime": {
-		"script": "functions/{models}/Delete{Model}.js"
+		"script": "functions/${models}/Delete${Model}.js"
 	},
 	
 	"spi": {

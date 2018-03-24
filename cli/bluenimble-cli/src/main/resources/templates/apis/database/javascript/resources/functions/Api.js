@@ -15,8 +15,8 @@ return {
 	 *  ApiConsumer  the user, application, or device calling this api. It could be a ApiConsumer.Type.Token, ApiConsumer.Type.Cookie, ApiConsumer.Type.Signature, 
 	 *				 ApiConsumer.Type.Basic or ApiConsumer.Type.Unknown
 	 *
-	 *	@author		{user}
-	 *	@created	{date}
+	 *	@author		${user}
+	 *	@created	${date}
 	 * 
 	 **/
 	findConsumer: function (api, service, request, consumer) {

@@ -1,10 +1,10 @@
 return {
 	
 	/**
-	 * The only required function that you should implement, if no mock data provided in your {Model}.json
+	 * The only required function that you should implement, if no mock data provided in your ${Model}.json
 	 * 
-	 * The execute function will be triggered when an application or device makes a call to {verb} [bluenimble-space].[bluenimble-instance].bluenimble.com/{api}/{path}/{model} 
-	 * which is defined in your service specification file Delete{Model}.json 
+	 * The execute function will be triggered when an application or device makes a call to ${verb} [bluenimble-space].[bluenimble-instance].bluenimble.com/${api}/${path}/${model} 
+	 * which is defined in your service specification file ${Model}.json 
 	 * 
 	 * Arguments:
 	 *  Api 		 the api where this service is running  

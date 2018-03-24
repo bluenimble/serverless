@@ -34,16 +34,16 @@
  *  <spi>   	Which scripting language and implementation to use. (Required)
  *				for javascript developers it's always "class": "scripting.javascript:ApiSpi"
  *   
- *	@author		{user}
- *	@created	{date}
+ *	@author		${user}
+ *	@created	${date}
  * 
  **/
 
 {
-	"namespace": 	"{namespace}",
+	"namespace": 	"${namespace}",
 	
-	"name": 		"{namespace} api",
-	"description": 	"{namespace} description",
+	"name": 		"${namespace} api",
+	"description": 	"${namespace} description",
 	
 	"runtime": {
 		"script": "functions/Api.js"
@@ -51,11 +51,6 @@
 
 	"spi": {
 		"class": "scripting.javascript:ApiSpi"
-	},
-	
-	
-	"_codegen_": {
-		"secure": "false"
 	}	
 	
 }

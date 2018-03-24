@@ -84,6 +84,12 @@ public class BlueNimble extends RunnableTool {
 		String SslTrust 		= "ssl.trust";
 		String RemoteHeadersAccept 		
 								= "remote.headers.accept";
+		String SpecLanguage 	= "spec.lang";
+	}
+	
+	public interface SpecLangs {
+		String Json = "json";
+		String Yaml = "yaml";
 	}
 	
 	public static File 			Home;
@@ -532,6 +538,9 @@ public class BlueNimble extends RunnableTool {
 		}
 		if (!oVars.containsKey (DefaultVars.TemplateApi)) {
 			oVars.set (DefaultVars.TemplateApi, "database/javascript");
+		}
+		if (!oVars.containsKey (DefaultVars.SpecLanguage)) {
+			oVars.set (DefaultVars.SpecLanguage, SpecLangs.Json);
 		}
 		if (oVars.containsKey (DefaultVars.Paraphrase)) {
 			try {

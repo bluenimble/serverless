@@ -16,10 +16,17 @@
  */
 package com.bluenimble.platform.icli.mgm.commands.mgm;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileReader;
-import java.io.Reader;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.SequenceInputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -35,12 +42,15 @@ import com.bluenimble.platform.cli.command.CommandResult;
 import com.bluenimble.platform.cli.command.impls.AbstractCommand;
 import com.bluenimble.platform.icli.mgm.BlueNimble;
 import com.bluenimble.platform.icli.mgm.Keys;
-import com.bluenimble.platform.icli.mgm.utils.BuildUtils;
 import com.bluenimble.platform.icli.mgm.utils.JsTool;
 
 public class MacroSourceCommand extends AbstractCommand {
 
 	private static final long serialVersionUID = 3523915768661531476L;
+
+	private static final String JavaClass 	= "JavaClass";
+
+	private static final String Native 		= "var native = function (className) { return JavaClass (className.split ('/').join ('.')).static; };";
 
     private static final ScriptEngine Engine = new ScriptEngineManager ().getEngineByName ("JavaScript");
 
@@ -55,7 +65,7 @@ public class MacroSourceCommand extends AbstractCommand {
 	@Override
 	public CommandResult execute (final Tool tool, Map<String, CommandOption> options) throws CommandExecutionException {
 
-		Reader reader = null;
+		InputStream input = null;
 		
 		SimpleBindings bindings = new SimpleBindings ();
 		
@@ -70,9 +80,18 @@ public class MacroSourceCommand extends AbstractCommand {
 		
 		bindings.put ("Tool", new JsTool (tool));
 		
-		bindings.put ("Vars", tool.getContext (Tool.ROOT_CTX).get (ToolContext.VARS));
+		bindings.put (JavaClass, new Function<String, Class<?>> () {
+			@Override
+			public Class<?> apply (String type) {
+				try {
+					return MacroSourceCommand.class.getClassLoader ().loadClass (type);
+				} catch (ClassNotFoundException cnfe) {
+					throw new RuntimeException(cnfe);
+				}
+			}
+		});
 		
-		bindings.put ("BuildTool", new BuildUtils ());
+		bindings.put ("Vars", tool.getContext (Tool.ROOT_CTX).get (ToolContext.VARS));
 		
 		Keys keys = BlueNimble.keys ();
 		if (keys != null) {
@@ -80,12 +99,19 @@ public class MacroSourceCommand extends AbstractCommand {
 		}
 		
 		try {
-			reader = new FileReader (script);
-			Engine.eval (new FileReader (script), bindings);
+			
+			input = new FileInputStream (script);
+			
+			List<InputStream> blocks = new ArrayList<InputStream> ();
+			blocks.add (new ByteArrayInputStream (Native.getBytes ()));
+			blocks.add (input);
+			
+			Engine.eval (new InputStreamReader (new SequenceInputStream (Collections.enumeration (blocks))), bindings);
+			
 		} catch (Exception e) {
 			throw new CommandExecutionException (e.getMessage (), e);
 		} finally {
-			IOUtils.closeQuietly (reader);
+			IOUtils.closeQuietly (input);
 		}
         
 		return null;

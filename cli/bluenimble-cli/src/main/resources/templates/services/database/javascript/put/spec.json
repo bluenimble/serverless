@@ -32,26 +32,26 @@
  *					}
  *				}
  *   
- *	@author		{user}
- *	@created	{date}
+ *	@author		${user}
+ *	@created	${date}
  * 
  **/
 
 {
 	
 	    "verb": "put",
-	"endpoint": "/{models}/:{model}",
-		"name": "Update {Model}",
+	"endpoint": "/${models}/:${model}",
+		"name": "Update ${Model}",
 	
 	"spec": {
 		"fields": {
-			"{model}": {  },
+			"${model}": {  },
 			"payload": { "type": "Map" }
 		}
 	},
 	
 	"runtime": {
-		"script": "functions/{models}/Update{Model}.js"
+		"script": "functions/${models}/Update${Model}.js"
 	},
 	
 	"spi": {

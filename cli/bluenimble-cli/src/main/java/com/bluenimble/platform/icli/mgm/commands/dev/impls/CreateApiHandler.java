@@ -33,7 +33,9 @@ import com.bluenimble.platform.icli.mgm.BlueNimble;
 import com.bluenimble.platform.icli.mgm.CliSpec;
 import com.bluenimble.platform.icli.mgm.CliSpec.Templates;
 import com.bluenimble.platform.icli.mgm.utils.CodeGenUtils;
+import com.bluenimble.platform.icli.mgm.utils.SpecUtils;
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.json.printers.YamlStringPrinter;
 
 public class CreateApiHandler implements CommandHandler {
 
@@ -102,7 +104,12 @@ public class CreateApiHandler implements CommandHandler {
 			throw new CommandExecutionException (ex.getMessage (), ex);
 		}
 		
-		CodeGenUtils.writeAll (apiFolder, (JsonObject)new JsonObject ().set (Namespace, namespace));
+		String specLang 	= (String)vars.get (BlueNimble.DefaultVars.SpecLanguage);
+		if (Lang.isNullOrEmpty (specLang)) {
+			specLang = BlueNimble.SpecLangs.Json;
+		}
+		
+		CodeGenUtils.writeAll (apiFolder, (JsonObject)new JsonObject ().set (Namespace, namespace), specLang);
 		
 		BlueNimble.Config.set (CliSpec.Config.CurrentApi, namespace);
 		JsonObject oApis = Json.getObject (BlueNimble.Config, CliSpec.Config.Apis);
@@ -122,17 +129,21 @@ public class CreateApiHandler implements CommandHandler {
 		}
 		
 		try {
-			JsonObject apiSpec = Json.load (new File (apiFolder, "api.json"));
+			JsonObject apiSpec = SpecUtils.read (apiFolder);
 			
 			JsonObject codeGen = Json.getObject (apiSpec, "_codegen_");
 			if (codeGen != null) {
 				secure = Json.getBoolean (codeGen, "secure", true);
 				apiSpec.remove ("_codegen_");
-				Json.store (apiSpec, new File (apiFolder, "api.json"));
+				SpecUtils.write (apiFolder, apiSpec);
 			}
 			
 			BlueNimble.saveConfig ();
-			tool.printer ().content ("Api '" + namespace + "' created! path: $ws/ " + sApiFolder, apiSpec.toString (2));
+			
+			tool.printer ().content (
+				"Api '" + namespace + "' created! path: $ws/ " + sApiFolder, 
+				BlueNimble.SpecLangs.Json.equals (specLang) ? apiSpec.toString (2) : new YamlStringPrinter (2).print (apiSpec).toString ()
+			);
 		} catch (Exception e) {
 			throw new CommandExecutionException (e.getMessage (), e);
 		}

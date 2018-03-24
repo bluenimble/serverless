@@ -32,19 +32,19 @@
  *					}
  *				}
  *   
- *	@author		{user}
- *	@created	{date}
+ *	@author		${user}
+ *	@created	${date}
  * 
  **/
 
 {
 	
 	    "verb": "get",
-	"endpoint": "/{models}/:{model}",
-		"name": "Get {Model}",
+	"endpoint": "/${models}/:${model}",
+		"name": "Get ${Model}",
 	
 	"runtime": {
-		"script": "functions/{models}/Get{Model}.js"
+		"script": "functions/${models}/Get${Model}.js"
 	},
 	
 	"spi": {

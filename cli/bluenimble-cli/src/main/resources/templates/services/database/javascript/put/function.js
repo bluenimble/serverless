@@ -1,10 +1,10 @@
 return {
 	
 	/**
-	 * The only required function that you should implement, if no mock data provided in your Update{Model}.json
+	 * The only required function that you should implement, if no mock data provided in your Update${Model}.json
 	 * 
-	 * The execute function will be triggered when an application or device makes a call to {verb} [bluenimble-space].[bluenimble-instance].bluenimble.com/{api}/{models}/:{model}
-	 * which is defined in your service specification file Update{Model}.json 
+	 * The execute function will be triggered when an application or device makes a call to ${verb} [bluenimble-space].[bluenimble-instance].bluenimble.com/${api}/${models}/:${model}
+	 * which is defined in your service specification file Update${Model}.json 
 	 * 
 	 * Arguments:
 	 *  Api 		 the api where this service is running  
@@ -19,22 +19,22 @@ return {
 	 *				 you can also write data to the response but this is rarely will happen as the platform takes care of this.	
 	 *
 	 *
-	 *	@author		{user}
-	 *	@created	{date}
+	 *	@author		${user}
+	 *	@created	${date}
 	 * 
 	 **/
 	execute: function (api, consumer, request, response) {
 		
 		// get the {Model} record and check if it exists
-		var {model} = api.database (request).get ('{Models}', request.get ('{model}'));
+		var ${model} = api.database (request).get ('${Models}', request.get ('${model}'));
 		
-		if (!{model}) {
+		if (!${model}) {
 			response.setStatus (404);
 			return;
 		}
 		
-		// update a {Model} by id (:{model})
-		return {model}.load ( request.get (ApiRequest.Payload) )
+		// update a ${Model} by id (:${model})
+		return ${model}.load ( request.get (ApiRequest.Payload) )
 					// set who updated this record
 					.ref    ('updatedBy', 'Users', consumer.id)
 					.save 	()

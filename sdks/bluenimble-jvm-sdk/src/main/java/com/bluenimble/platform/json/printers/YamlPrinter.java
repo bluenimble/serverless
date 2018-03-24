@@ -37,12 +37,13 @@ public class YamlPrinter {
 		this.initialIndent = initialIndent;
 	}
 	
-	public void print (JsonObject source) throws IOException {
+	public YamlPrinter print (JsonObject source) throws IOException {
 		if (Json.isNullOrEmpty (source)) {
-			return;
+			return this;
 		}
 		source.shrink ();
 		printObject (source, initialIndent, false);
+		return this;
 	}
 	
 	private void printObject (JsonObject object, int indent, boolean startEndln) throws IOException {

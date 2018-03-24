@@ -5,15 +5,18 @@
 */
 
 // native imports 
-var System 			= Java.type ('java.lang.System');
-var File 			= Java.type ('java.io.File');
-var Pattern 		= Java.type ('java.util.regex.Pattern');
-var Lang 			= Java.type ('com.bluenimble.platform.Lang');
-var FileUtils 		= Java.type ('com.bluenimble.platform.FileUtils');
-var Json 			= Java.type ('com.bluenimble.platform.Json');
-var JsonObject 		= Java.type ('com.bluenimble.platform.json.JsonObject');
-var JsonArray 		= Java.type ('com.bluenimble.platform.json.JsonArray');
-var Api 			= Java.type ('com.bluenimble.platform.api.Api');
+var System 			= native ('java.lang.System');
+var File 			= native ('java.io.File');
+var Pattern 		= native ('java.util.regex.Pattern');
+var Api 			= native ('com.bluenimble.platform.api.Api');
+var Lang 			= native ('com.bluenimble.platform.Lang');
+var FileUtils 		= native ('com.bluenimble.platform.FileUtils');
+var Json 			= native ('com.bluenimble.platform.Json');
+var JsonObject 		= native ('com.bluenimble.platform.json.JsonObject');
+var JsonArray 		= native ('com.bluenimble.platform.json.JsonArray');
+
+var BuildUtils 		= native ('com.bluenimble.platform.icli.mgm.utils.BuildUtils');
+var SpecUtils 		= native ('com.bluenimble.platform.icli.mgm.utils.SpecUtils');
 								  
 function extract (service, file, script) {
 	var markers = FileUtils.readStartsWith (script, '//@', true);
@@ -88,7 +91,9 @@ function validate (apiFolder, folderOrFile) {
 		return;
 	}
 	// load service spec, find script and extract issues
-	Tool.note ('\t Validating service spec ' + ' ' + folderOrFile.getName ());
+	var serviceName = folderOrFile.getName ();
+	serviceName = serviceName.substring (0, serviceName.lastIndexOf ('.'));
+	Tool.note ('\t Validating service spec ' + ' ' + serviceName);
 	var service;
 	try {
 		service = Json.load (folderOrFile);
@@ -116,6 +121,7 @@ function validate (apiFolder, folderOrFile) {
 	
 }
 
+// Start Of Script
 var startTime = System.currentTimeMillis ();
 
 // check if valid command args
@@ -151,6 +157,9 @@ if (!Vars ['build.release.nocopy'] || Vars ['build.release.nocopy'] != 'true') {
 	FileUtils.delete (apiFolder);
 	// copy
 	FileUtils.copy (new File (Config.workspace + '/' + apiNs), buildFolder, true);
+	
+	// convert yaml to json
+	SpecUtils.y2j (apiFolder, true);
 }
 
 // read api spec and set installDate, version, user id and stamp
@@ -195,7 +204,7 @@ if (Vars ['api.release.notes']) {
 }
 
 //generate datasources 
-var dsList = BuildTool.generate (apiFolder);
+var dsList = BuildUtils.generate (apiFolder);
 if (dsList) {
 	var runtime = Json.getObject (apiSpec, 'runtime');
 	if (!runtime) {

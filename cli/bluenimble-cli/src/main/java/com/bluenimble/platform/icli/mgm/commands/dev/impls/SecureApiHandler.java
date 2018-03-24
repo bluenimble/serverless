@@ -26,13 +26,15 @@ import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.cli.Tool;
+import com.bluenimble.platform.cli.ToolContext;
 import com.bluenimble.platform.cli.command.CommandExecutionException;
 import com.bluenimble.platform.cli.command.CommandHandler;
 import com.bluenimble.platform.cli.command.CommandResult;
 import com.bluenimble.platform.cli.command.impls.DefaultCommandResult;
-import com.bluenimble.platform.icli.mgm.CliSpec;
 import com.bluenimble.platform.icli.mgm.BlueNimble;
+import com.bluenimble.platform.icli.mgm.CliSpec;
 import com.bluenimble.platform.icli.mgm.utils.CodeGenUtils;
+import com.bluenimble.platform.icli.mgm.utils.SpecUtils;
 import com.bluenimble.platform.json.JsonObject;
 
 public class SecureApiHandler implements CommandHandler {
@@ -74,11 +76,6 @@ public class SecureApiHandler implements CommandHandler {
 			throw new CommandExecutionException ("invalid api folder '" + apiPath + "'");
 		}
 		
-		File fApi = new File (apiFolder, "api.json");
-		if (!fApi.exists () || fApi.isDirectory ()) {
-			throw new CommandExecutionException ("api spec file api.json not accessible");
-		}
-		
 		// schemes
 		String [] schemes = getSchemes  (args);
 		
@@ -113,12 +110,7 @@ public class SecureApiHandler implements CommandHandler {
 		JsonObject tplSchemes = (JsonObject)Json.find (oTplApi, "security", "schemes");
 		
 		// read api spec
-		JsonObject oApi = null;
-		try {
-			oApi = Json.load (fApi);
-		} catch (Exception ex) {
-			throw new CommandExecutionException ("can't read api spec file api.json");
-		}
+		JsonObject oApi = SpecUtils.read (apiFolder);
 		
 		// add security schemes
 		JsonObject oSecurity = Json.getObject (oApi, Api.Spec.Security.class.getSimpleName ().toLowerCase ());
@@ -138,11 +130,7 @@ public class SecureApiHandler implements CommandHandler {
 			}
 		}
 		
-		try {
-			Json.store (oApi, fApi);
-		} catch (Exception ex) {
-			throw new CommandExecutionException ("can't save api spec file api.json. Due to " + ex.getMessage (), ex);
-		}
+		SpecUtils.write (apiFolder, oApi);
 		
 		// tool.printer ().content ("Api '" + api + "' updated spec", oApi.toString (2));
 		
@@ -167,7 +155,7 @@ public class SecureApiHandler implements CommandHandler {
 				tokens.put ("api", api);
 				tokens.put ("Api", api.substring (0, 1).toUpperCase () + api.substring (1));
 				
-				CodeGenUtils.writeFile (signupTplFile, apiSignupTplFile, tokens);
+				CodeGenUtils.writeFile (signupTplFile, apiSignupTplFile, tokens, null);
 				tool.printer ().important (
 					"An activation email html file was created! 'templates/emails/" + apiSignupTplFile.getName () + "' It's used by the Signup service" +
 					"\nMake sure that the email feature is added to your space in order to send emails.\nUse command 'add feature' to add an smtp server config"
@@ -190,9 +178,17 @@ public class SecureApiHandler implements CommandHandler {
 			}
 		}
 		if (oauth) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> vars = (Map<String, Object>)tool.getContext (Tool.ROOT_CTX).get (ToolContext.VARS);
+
+			String specLang 	= (String)vars.get (BlueNimble.DefaultVars.SpecLanguage);
+			if (Lang.isNullOrEmpty (specLang)) {
+				specLang = BlueNimble.SpecLangs.Json;
+			}
+			
 			try {
 				addService (tool, api, apiFolder, "oAuth");
-				tool.printer ().important ("Make sure that your clientId and sercretId are set in your oauth providers.\nSee service spec file resources/services/security/OAuth.json");
+				tool.printer ().important ("Make sure that your clientId and sercretId are set in your oauth providers.\nSee service spec file resources/services/security/OAuth." + specLang);
 			} catch (Exception ex) {
 				throw new CommandExecutionException ("An error occured when generating code for oAuth service. Cause: " + ex.getMessage (), ex);
 			}
@@ -207,9 +203,9 @@ public class SecureApiHandler implements CommandHandler {
 		if (!secSpecsFolder.exists ()) {
 			secSpecsFolder.mkdirs ();
 		}
-		File secScriptsFolder = new File (apiFolder, "resources/scripts/security");
-		if (!secScriptsFolder.exists ()) {
-			secScriptsFolder.mkdirs ();
+		File secFunctionsFolder = new File (apiFolder, "resources/functions/security");
+		if (!secFunctionsFolder.exists ()) {
+			secFunctionsFolder.mkdirs ();
 		}
 		
 		Map<String, String> tokens = new HashMap<String, String> ();
@@ -218,15 +214,23 @@ public class SecureApiHandler implements CommandHandler {
 		tokens.put ("service", service);
 		tokens.put ("Service", service.substring (0, 1).toUpperCase () + service.substring (1));
 		
+		@SuppressWarnings("unchecked")
+		Map<String, Object> vars = (Map<String, Object>)tool.getContext (Tool.ROOT_CTX).get (ToolContext.VARS);
+
+		String specLang 	= (String)vars.get (BlueNimble.DefaultVars.SpecLanguage);
+		if (Lang.isNullOrEmpty (specLang)) {
+			specLang = BlueNimble.SpecLangs.Json;
+		}
+		
 		tool.printer ().node (0, "'" + tokens.get ("Service") + "' Service"); 
 		File specFile = new File (BlueNimble.Home, "templates/security/services/" + service + "/spec.json");
-		CodeGenUtils.writeFile (specFile, new File (secSpecsFolder, tokens.get ("Service") + ".json"), tokens);
-		tool.printer ().node (1, "  spec file created 'services/security/" + tokens.get ("Service") + ".json'"); 
+		CodeGenUtils.writeFile (specFile, new File (secSpecsFolder, tokens.get ("Service") + "." + specLang), tokens, specLang);
+		tool.printer ().node (1, "  spec file created 'services/security/" + tokens.get ("Service") + "." + specLang + "'"); 
 		
-		File scriptFile = new File (BlueNimble.Home, "templates/security/services/" + service + "/script.js");
+		File scriptFile = new File (BlueNimble.Home, "templates/security/services/" + service + "/function.js");
 		if (scriptFile.exists ()) {
-			CodeGenUtils.writeFile (scriptFile, new File (secScriptsFolder, tokens.get ("Service") + ".js"), tokens);
-			tool.printer ().node (1, "script file created 'scripts/security/" + tokens.get ("Service") + ".js'"); 
+			CodeGenUtils.writeFile (scriptFile, new File (secFunctionsFolder, tokens.get ("Service") + ".js"), tokens, null);
+			tool.printer ().node (1, "script file created 'functions/security/" + tokens.get ("Service") + ".js'"); 
 		}
 	}
 
