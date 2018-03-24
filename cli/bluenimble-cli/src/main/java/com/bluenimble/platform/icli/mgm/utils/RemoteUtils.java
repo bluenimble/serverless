@@ -77,6 +77,7 @@ import com.bluenimble.platform.icli.mgm.BlueNimble.DefaultVars;
 import com.bluenimble.platform.icli.mgm.Keys;
 import com.bluenimble.platform.icli.mgm.commands.mgm.RemoteCommand.Spec;
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.json.printers.YamlStringPrinter;
 import com.bluenimble.platform.templating.VariableResolver;
 import com.bluenimble.platform.templating.impls.DefaultExpressionCompiler;
 
@@ -527,6 +528,15 @@ public class RemoteUtils {
 			}
 		});
 		
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static void main (String [] args) throws Exception {
+		Yaml yaml = new Yaml ();
+		
+		String ys = IOUtils.toString (new FileInputStream (new File ("/tmp/yml/space.yml")));
+			   
+		System.out.println (new YamlStringPrinter ().print (new JsonObject (yaml.loadAs (ys, Map.class), true)).toString ());
 	}
 	
 }

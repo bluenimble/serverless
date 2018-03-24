@@ -11,6 +11,7 @@ import com.bluenimble.platform.json.JsonObject;
 public class YamlPrinter {
 	
 	public enum DataType {
+		Object,
 		Key,
 		Value,
 		Colon,
@@ -19,6 +20,8 @@ public class YamlPrinter {
 		Pipe,
 		EndLn
 	}
+	
+	private static final String Object 	= "---";
 	
 	private static final String Colon 	= ": ";
 	private static final String Dash 	= "- ";
@@ -42,7 +45,8 @@ public class YamlPrinter {
 			return this;
 		}
 		source.shrink ();
-		printObject (source, initialIndent, false);
+		print (Object, initialIndent, DataType.Object);
+		printObject (source, initialIndent, true);
 		return this;
 	}
 	
@@ -58,8 +62,9 @@ public class YamlPrinter {
 				endln ();
 				print (key, indent, DataType.Key);
 			} else {
-				print (key, initialIndent, DataType.Key);
+				print (key, 0, DataType.Key);
 			}
+			
 			counter++;
 			print (Colon, DataType.Colon);
 			Object value = object.get (key);

@@ -28,6 +28,10 @@ public class YamlObject {
 			
 			protected void print (String text, DataType type) throws IOException {
 				
+				if (type.equals (DataType.Object)) {
+					return;
+				}
+				
 				if (type.equals (DataType.Key)) {
 					key = text;
 				}
@@ -40,7 +44,7 @@ public class YamlObject {
 				String color = FColor.CYAN.name ();
 				
 				if (Markers.Status.equals (key)) {
-					String status = key.toString ().toLowerCase ();
+					String status = text.toString ().toLowerCase ();
 					if (Markers.Red.contains (status)) {
 						color = FColor.RED.name ();
 					} else if (Markers.Green.contains (status)) {
