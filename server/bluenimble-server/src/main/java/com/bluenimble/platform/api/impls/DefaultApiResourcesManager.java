@@ -39,7 +39,7 @@ public class DefaultApiResourcesManager implements ApiResourcesManager {
 	static {
 		Reserved.add (ConfigKeys.Folders.Services);
 		Reserved.add (ConfigKeys.Folders.Messages);
-		Reserved.add (ConfigKeys.Folders.Secrets);
+		Reserved.add (ConfigKeys.Folders.Keys);
 		Reserved.add (ConfigKeys.Folders.Logs);
 	}
 	

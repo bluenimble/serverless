@@ -30,10 +30,12 @@ public interface Tracer extends Serializable {
 		Debug
 	}
 
-	void onInstall 	(Traceable traceable);
-	void onShutdown (Traceable traceable);
+	void 	onInstall 	(Traceable traceable);
+	void 	onShutdown 	(Traceable traceable);
 	
-	void log 		(Level level, Object o, Throwable th);
-	void log 		(Level level, Object o, Object... args);
+	void 	log 		(Level level, Object o, Throwable th);
+	void 	log 		(Level level, Object o, Object... args);
+	
+	boolean isEnabled 	(Level level);
 	
 }

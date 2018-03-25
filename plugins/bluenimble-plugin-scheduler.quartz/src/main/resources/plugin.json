@@ -18,5 +18,10 @@
 				"org.quartz.threadPool.threadCount": "[ vars.plugins.scheduler.threadPool | '10' ]"
 			}
 		}
+	},
+	
+	"systemProperties": {
+		"org.slf4j.simpleLogger.defaultLogLevel": "ERROR"
 	}
+			
 }	

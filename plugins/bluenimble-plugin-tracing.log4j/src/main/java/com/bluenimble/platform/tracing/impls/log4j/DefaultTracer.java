@@ -167,4 +167,22 @@ public class DefaultTracer implements Tracer {
 		this.name = name;
 	}
 
+	@Override
+	public boolean isEnabled (Level level) {
+		switch (level) {
+			case Fatal:
+				return log.isFatalEnabled ();
+			case Error:
+				return log.isErrorEnabled ();
+			case Warning:
+				return log.isWarnEnabled ();
+			case Info:
+				return log.isInfoEnabled ();
+			case Debug:
+				return log.isDebugEnabled ();
+			default:
+				return false;
+		}
+	}
+
 }

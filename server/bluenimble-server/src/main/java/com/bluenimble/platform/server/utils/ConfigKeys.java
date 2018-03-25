@@ -25,7 +25,7 @@ public interface ConfigKeys {
 		String Resources	= "resources";
 			String Services		= "services";
 			String Messages		= "messages";
-			String Secrets		= "secrets";
+			String Keys			= "keys";
 			
 		String Logs			= "logs";
 		String Backup 		= "backup";
@@ -54,6 +54,7 @@ public interface ConfigKeys {
 	String Description		= "description";
 	String Version			= "version";
 	String Vendor			= "vendor";
+	String SystemProperties	= "systemProperties";
 	
 	String RootKeysFile		= "root.keys";
 	String RootKeysEncrypted= "rootKeysEncrypted";

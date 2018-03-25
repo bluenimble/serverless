@@ -194,6 +194,16 @@ public class DefaultPluginsRegistry implements PluginsRegistry, ClassLoaderRegis
 				throw new PluginRegistryException ("Invalid plugin name " + pluginName);
 			}
 			
+			// set system properties
+			JsonObject sysprops = Json.getObject (descriptor, ConfigKeys.SystemProperties);
+			if (!Json.isNullOrEmpty (sysprops)) {
+				Iterator<String> props = sysprops.keys ();
+				while (props.hasNext ()) {
+					String p = props.next ();
+					System.setProperty (p, sysprops.getString (p));
+				}
+			}
+			
 			// load native libraries
 			boolean nativeLibsRegistered = registerLibrary (home);
 			

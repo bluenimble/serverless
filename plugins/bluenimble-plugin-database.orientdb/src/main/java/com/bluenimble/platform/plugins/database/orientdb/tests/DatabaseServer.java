@@ -58,6 +58,10 @@ public class DatabaseServer {
 			public void log (Level level, Object o, Object... args) {
 				System.out.println (level + " > " + o);
 			}
+			@Override
+			public boolean isEnabled (Level level) {
+				return true;
+			}
 			
 		});
 	}

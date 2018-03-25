@@ -109,6 +109,8 @@ public class JettyPlugin extends AbstractPlugin {
 	@Override
 	public void init (final ApiServer server) throws Exception {
 		
+		Log.setLog (new JettyLogger (this));
+		
 		// load favicon
 		InputStream favicon = null;
 		try {

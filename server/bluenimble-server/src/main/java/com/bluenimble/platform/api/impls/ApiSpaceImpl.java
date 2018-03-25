@@ -772,7 +772,7 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 		
 		descriptor = descriptor.duplicate ();
 		
-		if (opts.containsKey (DescribeOption.Option.keys)) {
+		if (opts.containsKey (DescribeOption.Option.keys) && keystore != null) {
 			List<KeyPair> keys = null;
 			try {
 				keys = keystore.list (0, 100);
@@ -977,7 +977,7 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 		
 		tracer.log (Tracer.Level.Info, "Loading {0} keystore", getNamespace ());
 		
-		keystore = server.getKeyStoreManager ().read (this);
+		keystore = server.getKeyStoreManager () == null ? null : server.getKeyStoreManager ().read (this);
 
 		tracer.log (Tracer.Level.Info, "Starting Space {0} Executor", getNamespace ());
 		

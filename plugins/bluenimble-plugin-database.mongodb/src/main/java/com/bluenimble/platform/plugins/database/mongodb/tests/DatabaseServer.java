@@ -68,6 +68,10 @@ public class DatabaseServer {
 			public void log (Level level, Object o, Object... args) {
 				System.out.println (level + " > " + MessageFormat.format (o.toString (), args));
 			}
+			@Override
+			public boolean isEnabled (Level level) {
+				return true;
+			}
 			
 		});
 	}

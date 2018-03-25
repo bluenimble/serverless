@@ -1,6 +1,6 @@
 {
 
-	"id": "[vars.id | 'bn']",
+	"id": "[vars.id | 'bnb']",
 	"type": "[vars.type | 'standard']",
 	"name": "BlueNimble Serverless",
 	"version": "[version]",

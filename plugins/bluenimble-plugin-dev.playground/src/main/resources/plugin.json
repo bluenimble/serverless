@@ -14,5 +14,11 @@
 			},
 			"async": "true"
 		}
+	},
+	
+	"systemProperties": {
+		"log.console.level": "SEVERE",
+		"orientdb.installCustomFormatter=false": "false"
 	}
+	
 }	

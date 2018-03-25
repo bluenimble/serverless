@@ -13,5 +13,10 @@
 				}]
 			}
 		}
+	},
+	
+	"systemProperties": {
+		"org.slf4j.simpleLogger.defaultLogLevel": "ERROR"
 	}
+	
 }	

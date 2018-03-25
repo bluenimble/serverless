@@ -26,4 +26,9 @@ public class NoTracing implements Tracer {
 		
 	}
 
+	@Override
+	public boolean isEnabled (Level level) {
+		return false;
+	}
+
 }
