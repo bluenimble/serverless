@@ -70,7 +70,7 @@ Type in http://server-ip:8080 (server-ip is where you installed bluenimble) or l
 By default, BlueNimble is built with a playground space. 
 * From the install page, click the green button associated with the playground space to download the security keys.
 * In order to install playground.keys into the CLI, type in:  
-![BlueNimble Server Install Page](https://github.com/bluenimble/serverless/blob/master/assets/images/2-icli.png)
+![BlueNimble Server Install Page](https://github.com/bluenimble/serverless/blob/master/assets/images/2-icli-s.png)
 
 #### Create your first api
 * Let's create an uber api. To do so, type in:  
