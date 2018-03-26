@@ -18,9 +18,11 @@ package com.bluenimble.platform.apis.mgm.spis.keys;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
@@ -49,6 +51,11 @@ public class CreateKeysSpi extends AbstractApiServiceSpi {
 		String Space = "space";
 	}
 	
+	private static final Set<String> Exclude = new HashSet<String> ();
+	static {
+		Exclude.add (Spec.Space); Exclude.add (KeyPair.Fields.ExpiryDate); Exclude.add (CommonSpec.Role);
+	}
+	
 	@Override
 	public ApiOutput execute (Api api, ApiConsumer consumer, ApiRequest request,
 			ApiResponse response) throws ApiServiceExecutionException {
@@ -59,7 +66,7 @@ public class CreateKeysSpi extends AbstractApiServiceSpi {
 		
 		Role role = Role.DEVELOPER;
 		
-		String sRole = (String)request.get (CommonSpec.Role);
+		String sRole = Json.getString (payload, CommonSpec.Role);
 		if (!Lang.isNullOrEmpty (sRole)) {
 			try {
 				role = Role.valueOf (sRole.trim ().toUpperCase ());
@@ -112,7 +119,7 @@ public class CreateKeysSpi extends AbstractApiServiceSpi {
 			Iterator<String> props = payload.keys ();
 			while (props.hasNext ()) {
 				String p = props.next ();
-				if (p.equals (KeyPair.Fields.ExpiryDate) || p.equals (CommonSpec.Role)) {
+				if (Exclude.contains (p)) {
 					continue;
 				}
 				properties.put (p, payload.get (p));

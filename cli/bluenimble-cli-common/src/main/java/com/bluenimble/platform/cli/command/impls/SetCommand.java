@@ -70,9 +70,11 @@ public class SetCommand extends AbstractCommand {
 				value = ((YamlObject)value).toJson ();
 			}
 			
-			vars.put (varName, varName.equals (Tool.ParaPhraseVar) ? tool.getParaphrase (false) : value);
+			value = varName.equals (Tool.ParaPhraseVar) ? tool.getParaphrase (false) : value;
 			
-			tool.saveVariable (varName, varName.equals (Tool.ParaPhraseVar) ? tool.getParaphrase (false) : value);
+			vars.put (varName, value);
+			
+			tool.saveVariable (varName, value);
 			
 		} catch (Exception e) {
 			throw new CommandExecutionException (e.getMessage (), e);

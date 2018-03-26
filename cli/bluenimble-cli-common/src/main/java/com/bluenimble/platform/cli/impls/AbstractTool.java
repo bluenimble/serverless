@@ -432,6 +432,13 @@ public abstract class AbstractTool implements Tool {
 							printer ().error (Lang.BLANK);
 							((JsonObject)result.getContent ()).write (new FriendlyJsonEmitter (this));
 							writeln (Lang.BLANK);
+						} else if (result.getContent () instanceof YamlObject) {
+							printer ().error (Lang.BLANK);
+							if (printer ().isOn ()) {
+								YamlObject yaml = (YamlObject)result.getContent ();
+								yaml.print (this, 4);
+								writeln (Lang.BLANK);
+							}
 						} else {
 							printer.error (String.valueOf (result.getContent ()));
 							writeln (Lang.BLANK);
@@ -539,7 +546,7 @@ public abstract class AbstractTool implements Tool {
 	
 	private String encrypt (String paraphrase) throws Exception {
 		byte [] encrypted = Crypto.encrypt (paraphrase.getBytes (), Token, Algorithm.AES);
-		return Base64.encodeBase64String (encrypted);		
+		return Base64.encodeBase64String (encrypted).trim ();		
 	}
 
 	private String decrypt (String paraphrase) throws Exception {

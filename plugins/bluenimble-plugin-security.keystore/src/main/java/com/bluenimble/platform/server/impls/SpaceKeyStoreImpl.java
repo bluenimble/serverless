@@ -64,14 +64,15 @@ public class SpaceKeyStoreImpl implements SpaceKeyStore {
 		if (!notIfExpired) {
 			return skp;
 		}
-		
+
 		// check expiry
 		if (skp.expiryDate () == null) {
 			return skp;
 		}
-		if (skp.expiryDate ().before (new Date ())) {
+		if (skp.expiryDate ().after (new Date ())) {
 			return skp;
 		}
+		
 		return null;
 	}
 

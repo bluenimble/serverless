@@ -580,7 +580,6 @@ public class BlueNimble extends RunnableTool {
 			updateKeys (KeysMap.get (k), paraphrase);
 		}
 		
-		
 	}
 
 	private void updateKeys (Keys keys, String paraphrase) throws Exception {

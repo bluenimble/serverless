@@ -269,6 +269,7 @@ public class RemoteUtils {
 			}
 			
 		} catch (Exception e) {
+			System.out.println (e);
 			throw new CommandExecutionException (e.getMessage (), e);
 		} finally {
 			if (streams != null) {

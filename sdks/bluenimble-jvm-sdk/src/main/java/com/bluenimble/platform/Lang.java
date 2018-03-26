@@ -736,7 +736,7 @@ public class Lang {
 	}
 	
 	public static String [] keys (int akl, int skl) throws Exception {
-		return new String [] { UUID (RandDigits, akl).toUpperCase (), UUID (RandDigitsX, akl) };
+		return new String [] { UUID (RandDigits, akl).toUpperCase (), UUID (RandDigitsX, skl) };
 	}
 
 	public static void setDebugMode (boolean debugMode) {

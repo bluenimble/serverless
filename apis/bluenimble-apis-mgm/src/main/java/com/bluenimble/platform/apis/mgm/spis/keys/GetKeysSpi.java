@@ -167,7 +167,7 @@ public class GetKeysSpi extends AbstractApiServiceSpi {
 		
 		int indexOfDot = accessKey.indexOf (Lang.DOT);
 		if (indexOfDot <= 0) {
-			throw new ApiServiceExecutionException ("invalid accessKey. Using super privileges, you should prefix the accessKey by the space.").status (ApiResponse.BAD_REQUEST);
+			throw new ApiServiceExecutionException ("invalid accessKey. Using super privileges, you should prefix the accessKey by the space NS.").status (ApiResponse.BAD_REQUEST);
 		}
 		String space 	= accessKey.substring (0, indexOfDot);
 		accessKey 		= accessKey.substring (indexOfDot + 1);
@@ -177,8 +177,20 @@ public class GetKeysSpi extends AbstractApiServiceSpi {
 			throw new ApiServiceExecutionException ("access denied").status (ApiResponse.FORBIDDEN);
 		}
 		
+		KeyPair skp = null;
+		
 		try {
-			return toOutput (keysSpace.keystore ().get (accessKey, true), paraphrase, keysSpace, api, request);
+			skp = keysSpace.keystore ().get (accessKey, true);
+		} catch (Exception e) {
+			throw new ApiServiceExecutionException (e.getMessage (), e);
+		}
+		
+		if (skp == null) {
+			throw new ApiServiceExecutionException ("keys " + accessKey + " not found").status (ApiResponse.NOT_FOUND);
+		}
+		
+		try {
+			return toOutput (skp, paraphrase, keysSpace, api, request);
 		} catch (Exception e) {
 			throw new ApiServiceExecutionException (e.getMessage (), e);
 		}
