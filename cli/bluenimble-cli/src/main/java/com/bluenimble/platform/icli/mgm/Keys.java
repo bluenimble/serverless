@@ -26,7 +26,7 @@ public class Keys implements Serializable {
 
 	private static final long serialVersionUID = 7849960629954968022L;
 	
-	interface Spec {
+	public interface Spec {
 		String Name 		= "name";
 		String Domain 		= "domain";
 		String Issuer 		= "issuer";

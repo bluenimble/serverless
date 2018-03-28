@@ -46,6 +46,7 @@ import com.bluenimble.platform.icli.mgm.boot.Spec;
 import com.bluenimble.platform.icli.mgm.commands.dev.ApiCommand;
 import com.bluenimble.platform.icli.mgm.commands.dev.CreateCommand;
 import com.bluenimble.platform.icli.mgm.commands.dev.FeaturesCommand;
+import com.bluenimble.platform.icli.mgm.commands.dev.HttpCommand;
 import com.bluenimble.platform.icli.mgm.commands.dev.KeysCommand;
 import com.bluenimble.platform.icli.mgm.commands.dev.LoadCommand;
 import com.bluenimble.platform.icli.mgm.commands.dev.SecureCommand;
@@ -121,6 +122,8 @@ public class BlueNimble extends RunnableTool {
 		addCommand (new UseCommand ());
 		
 		addCommand (new FeaturesCommand ());
+		
+		addCommand (new HttpCommand ());
 
 		Home = home;
 		
@@ -548,6 +551,9 @@ public class BlueNimble extends RunnableTool {
 			} catch (Exception e) {
 				printer ().error ("Can't read user paraphrase. Cause: " + e.getMessage ());
 			}
+		}
+		if (!oVars.containsKey (DefaultVars.SslTrust)) {
+			oVars.set (DefaultVars.SslTrust, "true");
 		}
 		if (!oVars.containsKey (DefaultVars.ApiSecurityEnabled)) {
 			oVars.set (DefaultVars.ApiSecurityEnabled, "true");

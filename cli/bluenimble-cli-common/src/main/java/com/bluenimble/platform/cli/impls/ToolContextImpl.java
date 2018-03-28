@@ -19,6 +19,7 @@ package com.bluenimble.platform.cli.impls;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.TreeMap;
 
 import com.bluenimble.platform.cli.ToolContext;
 
@@ -33,7 +34,7 @@ public class ToolContextImpl implements ToolContext {
 	public ToolContextImpl (String name, String delimiter) {
 		this.name = name;
 		this.delimiter = delimiter;
-		put (VARS, new HashMap<String, Object> ());
+		put (VARS, new TreeMap<String, Object> ());
 		
 	}
 

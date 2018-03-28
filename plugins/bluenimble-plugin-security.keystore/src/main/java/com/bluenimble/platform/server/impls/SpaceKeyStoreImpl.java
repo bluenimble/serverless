@@ -125,6 +125,7 @@ public class SpaceKeyStoreImpl implements SpaceKeyStore {
 		if (pack < 1) {
 			return null;
 		}
+		
 		List<KeyPair> keys = null;
 		try {
 			keys = new ArrayList<KeyPair> ();
@@ -164,12 +165,17 @@ public class SpaceKeyStoreImpl implements SpaceKeyStore {
 						out	.set (KeyPair.Fields.AccessKey, accessKey ())
 							.set (KeyPair.Fields.SecretKey, secretKey ());
 						if (expiryDate () != null) {
-							out.set (KeyPair.Fields.ExpiryDate, expiryDate ());
+							out.set (KeyPair.Fields.ExpiryDate, Lang.toUTC (expiryDate ()));
 						}
 						if (properties != null) {
 							out.set (KeyPair.Fields.Properties, properties);
 						}
 						return out;
+					}
+					
+					@Override
+					public String toString () {
+						return toJson ().toString ();
 					}
 				};
 				put (skp);

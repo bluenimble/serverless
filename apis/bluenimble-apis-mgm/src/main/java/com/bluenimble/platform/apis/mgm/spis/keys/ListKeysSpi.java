@@ -16,6 +16,7 @@
  */
 package com.bluenimble.platform.apis.mgm.spis.keys;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.bluenimble.platform.Lang;
@@ -29,6 +30,8 @@ import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.impls.JsonApiOutput;
 import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
 import com.bluenimble.platform.api.security.ApiConsumer;
+import com.bluenimble.platform.apis.mgm.CommonSpec;
+import com.bluenimble.platform.apis.mgm.Role;
 import com.bluenimble.platform.apis.mgm.utils.MgmUtils;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
@@ -49,19 +52,23 @@ public class ListKeysSpi extends AbstractApiServiceSpi {
 		String Keys = "keys";
 	}
 	
+	private static final String Token = "__";
+	
 	interface Operators {
-		String Equals 			= "__eq__";
-		String NotEquals 		= "__neq__";
-		String Like 			= "__like__";
-		String Expired 			= "__exp__";
-		String NotExpired 		= "__nexp__";
-		String AlmostExpired 	= "__alexp__";
+		String Equals 			= Token + "eq" + Token;
+		String NotEquals 		= Token + "neq" + Token;
+		String Like 			= Token + "like" + Token;
+		String Expired 			= Token + "exp" + Token;
+		String NotExpired 		= Token + "nexp" + Token;
+		String AlmostExpired 	= Token + "alexp" + Token;
 	}
 	
 	@Override
 	public ApiOutput execute (Api api, ApiConsumer consumer, ApiRequest request,
 			ApiResponse response) throws ApiServiceExecutionException {
 		
+        Role 	cRole = Role.valueOf ((String)consumer.get (CommonSpec.Role));
+
 		int 	offset 		= (Integer)request.get (Spec.Offset);
 		int 	length 		= (Integer)request.get (Spec.Length);
 		String 	sFilters 	= (String)request.get (Spec.Filters);
@@ -69,16 +76,16 @@ public class ListKeysSpi extends AbstractApiServiceSpi {
 		SpaceKeyStore.ListFilter [] filters = null;
 		if (!Lang.isNullOrEmpty (sFilters)) {
 			String [] aFilters = Lang.split (sFilters, Lang.COMMA, true);
-			filters = new SpaceKeyStore.ListFilter [aFilters.length];
+			filters = new SpaceKeyStore.ListFilter [aFilters.length + 1];
 			for (int i = 0; i < aFilters.length; i++) {
 				String f = aFilters [i];
 				
-				int idexOfStartUnderscore = f.indexOf ("__");
+				int idexOfStartUnderscore = f.indexOf (Token);
 				if (idexOfStartUnderscore < -1) {
 					continue;
 				}
 				
-				int idexOfEndUnderscore = f.indexOf ("__", idexOfStartUnderscore + 2);
+				int idexOfEndUnderscore = f.indexOf (Token, idexOfStartUnderscore + 2);
 				if (idexOfEndUnderscore < -1) {
 					continue;
 				}
@@ -109,36 +116,87 @@ public class ListKeysSpi extends AbstractApiServiceSpi {
 					
 				};
 			}
-		}
-		
-		ApiSpace consumerSpace;
-		try {
-			consumerSpace = MgmUtils.space (consumer, api);
-		} catch (ApiAccessDeniedException e) {
-			throw new ApiServiceExecutionException (e.getMessage (), e).status (ApiResponse.NOT_FOUND);
+		} else {
+			 filters = new SpaceKeyStore.ListFilter [1];
 		}
 		
 		JsonObject result = new JsonObject ();
 		JsonArray aKeys = new JsonArray ();
 		result.set (Output.Keys, aKeys);
 		
+		if (Role.SUPER.equals (cRole)) {
+			
+			filters [filters.length - 1] = new SpaceKeyStore.ListFilter () {
+				@Override
+				public String name () {
+					return CommonSpec.Role;
+				}
+
+				@Override
+				public Object value () {
+					return Role.ADMIN.name ();
+				}
+
+				@Override
+				public Operator operator () {
+					return Operator.eq;
+				}
+			};
+			
+			try {
+				Collection<ApiSpace> spaces = api.space ().spaces ();
+				for (ApiSpace space : spaces) {
+					addSpaceKeys (space, offset, length, filters, aKeys);
+				}
+			} catch (ApiAccessDeniedException e) {
+				throw new ApiServiceExecutionException (e.getMessage (), e).status (ApiResponse.NOT_FOUND);
+			}
+		} else {
+			filters [filters.length - 1] = new SpaceKeyStore.ListFilter () {
+				@Override
+				public String name () {
+					return CommonSpec.Role;
+				}
+
+				@Override
+				public Object value () {
+					return Role.DEVELOPER.name ();
+				}
+
+				@Override
+				public Operator operator () {
+					return Operator.eq;
+				}
+			};
+			
+			ApiSpace consumerSpace;
+			try {
+				consumerSpace = MgmUtils.space (consumer, api);
+			} catch (ApiAccessDeniedException e) {
+				throw new ApiServiceExecutionException (e.getMessage (), e).status (ApiResponse.NOT_FOUND);
+			}
+			addSpaceKeys (consumerSpace, offset, length, filters, aKeys);
+		}
+		
+		return new JsonApiOutput (result);
+	}
+	
+	private void addSpaceKeys (ApiSpace space, int offset, int length, SpaceKeyStore.ListFilter [] filters, JsonArray aKeys) throws ApiServiceExecutionException {
 		List<KeyPair> list = null;
 		
 		try {
-			list = consumerSpace.keystore ().list (offset, length, filters);
+			list = space.keystore ().list (offset, length, filters);
 		} catch (Exception e) {
 			throw new ApiServiceExecutionException (e.getMessage (), e);
 		}
-		
 		if (list == null || list.isEmpty ()) {
-			return new JsonApiOutput (result);
+			return;
 		} 
 
 		for (KeyPair keys : list) {
 			aKeys.add (keys.toJson ());
 		}
-
-		return new JsonApiOutput (result);
+		
 	}
 
 }

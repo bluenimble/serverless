@@ -73,6 +73,7 @@ public class RemoteCommand extends PrefixedCommand {
 			String Value 		= "value";
 			String Expression	= "#value";
 			String Index		= "index";
+			String Sign			= "sign";
 			interface Parameter {
 			}
 			interface Header {

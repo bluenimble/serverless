@@ -4,8 +4,8 @@
 	
 	"spec": {
 		"fields": {
-			"offset": { "value": "0" },
-			"length": { "value": "100" }
+			"offset": { "type": "Integer", "value": "0", "min": "0" },
+			"length": { "type": "Integer", "value": "100", "min": "1" }
  		}
 	},
 	

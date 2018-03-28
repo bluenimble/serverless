@@ -16,11 +16,9 @@
  */
 package com.bluenimble.platform.icli.mgm.utils;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -36,6 +34,7 @@ import java.util.Set;
 import org.yaml.snakeyaml.Yaml;
 
 import com.bluenimble.platform.ArchiveUtils;
+import com.bluenimble.platform.Encodings;
 import com.bluenimble.platform.FileUtils;
 import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Json;
@@ -77,7 +76,7 @@ import com.bluenimble.platform.icli.mgm.BlueNimble.DefaultVars;
 import com.bluenimble.platform.icli.mgm.Keys;
 import com.bluenimble.platform.icli.mgm.commands.mgm.RemoteCommand.Spec;
 import com.bluenimble.platform.json.JsonObject;
-import com.bluenimble.platform.json.printers.YamlStringPrinter;
+import com.bluenimble.platform.security.KeyPair;
 import com.bluenimble.platform.templating.VariableResolver;
 import com.bluenimble.platform.templating.impls.DefaultExpressionCompiler;
 
@@ -85,6 +84,11 @@ public class RemoteUtils {
 	
 	private static final DefaultExpressionCompiler Compiler = new DefaultExpressionCompiler ();
 
+	private static final String EmptyPayload 	= "__EP__";
+	
+	private static final String RemoteResponseHeaders 	= "remote.response.headers";
+	private static final String RemoteResponseError 	= "remote.response.error";
+	
 	interface ResponseActions {
 		String Store 	= "store";
 		String Unzip 	= "unzip";
@@ -125,12 +129,14 @@ public class RemoteUtils {
 			tool.printer ().content ("Remote Command", source.toString ());
 		}
 		
-		Keys keys = BlueNimble.keys ();
-		if (keys == null) {
-			throw new CommandExecutionException ("Security Keys not found!\nUse 'use keys yourKeys' command\nOr import a valid keys file into the the iCli\n  -> " + BlueNimble.keysFolder ().getAbsolutePath ());
-		}
+		JsonObject oKeys = null;
 		
-		JsonObject jSecrets = keys.json ();
+		Keys keys = BlueNimble.keys ();
+		if (keys != null) {
+			oKeys = keys.json ();
+		} else {
+			oKeys = new JsonObject ();
+		}
 		
 		@SuppressWarnings("unchecked")
 		Map<String, Object> vars = (Map<String, Object>)tool.getContext (Tool.ROOT_CTX).get (ToolContext.VARS);
@@ -149,7 +155,7 @@ public class RemoteUtils {
 		HttpResponse response = null;
 		
 		try {
-			HttpRequest request = request (keys, Json.getObject (source, Spec.request.class.getSimpleName ()), tool, BlueNimble.Config, options, streams);
+			HttpRequest request = request (oKeys, Json.getObject (source, Spec.request.class.getSimpleName ()), tool, BlueNimble.Config, options, streams);
 			
 			response = Http.send (request);
 			
@@ -168,22 +174,31 @@ public class RemoteUtils {
 			
 			if (Printable.contains (contentType) && !isOutFile) {
 				out = new ByteArrayOutputStream ();
-				response.getBody ().dump (out, "UTF-8", null);
+				response.getBody ().dump (out, Encodings.UTF8, null);
+			}
+			
+			List<HttpHeader> rHeaders = response.getHeaders ();
+			if (rHeaders != null && !rHeaders.isEmpty ()) {
+				JsonObject oHeaders = new JsonObject ();
+				for (HttpHeader h : rHeaders) {
+					oHeaders.set (h.getName (), Lang.join (h.getValues (), Lang.COMMA));
+				}
+				vars.put (RemoteResponseHeaders, oHeaders);
 			}
 			
 			if (contentType.startsWith (ApiContentTypes.Json)) {
 				JsonObject result = new JsonObject (new String (((ByteArrayOutputStream)out).toByteArray ()));
 				String trace = null;
-				if (response.getStatus () != 200) {
+				if (response.getStatus () >= 400) {
 					trace = result.getString ("trace");
 					result.remove ("trace");
 				}
 				
 				if (trace != null && Lang.isDebugMode ()) {
-					vars.put ("Remote.Error", trace);
+					vars.put (RemoteResponseError, trace);
 				}
 				
-				if (response.getStatus () == 200) {
+				if (response.getStatus () < 400) {
 					return new DefaultCommandResult (CommandResult.OK, result);
 				} else {
 					return new DefaultCommandResult (CommandResult.KO, result);
@@ -197,79 +212,44 @@ public class RemoteUtils {
 				@SuppressWarnings("unchecked")
 				Map<String, Object> map = yaml.loadAs (ys, Map.class);
 				Object trace = null;
-				if (response.getStatus () != 200) {
+				if (response.getStatus () >= 400) {
 					trace = map.get ("trace");
 					map.remove ("trace");
 				}
 				
 				if (trace != null && Lang.isDebugMode ()) {
-					vars.put ("Remote.Error", trace);
+					vars.put (RemoteResponseError, trace);
 				}
 				
-				if (response.getStatus () == 200) {
+				if (response.getStatus () < 400) {
 					return new DefaultCommandResult (CommandResult.OK, new YamlObject (map));
 				} else {
 					return new DefaultCommandResult (CommandResult.KO, new YamlObject (map));
 				}
-			} else if (isOutFile) {
-				if (response.getStatus () == 200) {
-					return new DefaultCommandResult (CommandResult.OK, response.getBody ().get (0).toInputStream ());
+			} else if (contentType.startsWith (ApiContentTypes.Text) || contentType.startsWith (ApiContentTypes.Html)) {
+				String content = new String (((ByteArrayOutputStream)out).toByteArray ());
+				if (response.getStatus () < 400) {
+					return new DefaultCommandResult (CommandResult.OK, content);
 				} else {
-					response.getBody ().dump (out, "UTF-8", null);
+					return new DefaultCommandResult (CommandResult.KO, content);
 				}
-			}
-			
-			JsonObject oResponse = Json.getObject (source, Spec.response.class.getSimpleName ());
-
-			if (!Printable.contains (contentType) && response.getStatus () == 200 && oResponse != null) {
-				Iterator<String> actions = oResponse.keys ();
-				while (actions.hasNext ()) {
-					String action = actions.next ();
-					JsonObject oAction = Json.getObject (oResponse, action);
-					if (action.toLowerCase ().equals (ResponseActions.Unzip)) {
-						File dest = BlueNimble.Workspace;
-						String folder = (String)eval (Json.getString (oAction, Spec.response.Unzip.Folder), vars, BlueNimble.Config, options, jSecrets);
-						ArchiveUtils.decompress (response.getBody ().get (0).toInputStream (), new File (dest, folder));
-					} else if (action.toLowerCase ().equals (ResponseActions.Replace)) {
-						File file = new File (Lang.resolve (Json.getString (oAction, Spec.response.Replace.File), new Lang.VariableResolver () {
-							@Override
-							public String resolve (String ns, String prop) {
-								if ("cfg".equals (ns)) {
-									return BlueNimble.Config.getString (prop);
-								}
-								return String.valueOf (options.get (prop));
-							}
-						}));
-						InputStream is = null;
-						OutputStream os = null;
-						try {
-							is = new FileInputStream (file);
-							String content = IOUtils.toString (is);
-							is.close ();
-							is = null;
-							
-							content = Lang.replace (
-								content, 
-								Json.getString (oAction, Spec.response.Replace.Token), 
-								(String)eval (Json.getString (oAction, Spec.response.Replace.By), vars, BlueNimble.Config, options, jSecrets)
-							);
-							
-							os = new FileOutputStream (file);
-							
-							IOUtils.copy (new ByteArrayInputStream (content.getBytes ()), os);
-							
-						} catch (IOException ex) {
-							throw new CommandExecutionException (ex.getMessage (), ex);
-						} finally {
-							IOUtils.closeQuietly (is);
-							IOUtils.closeQuietly (os);
-						}
+			} else {
+				if (response.getStatus () < 400) {
+					if (isOutFile) {
+						return new DefaultCommandResult (CommandResult.OK, response.getBody ().get (0).toInputStream ());
+					} else {
+						ByteArrayOutputStream baos = new ByteArrayOutputStream ();
+						response.getBody ().dump (baos, Encodings.UTF8, null);
+						return new DefaultCommandResult (CommandResult.OK, new String (((ByteArrayOutputStream)baos).toByteArray ()));
 					}
+				} else {
+					ByteArrayOutputStream baos = new ByteArrayOutputStream ();
+					response.getBody ().dump (baos, Encodings.UTF8, null);
+					return new DefaultCommandResult (CommandResult.KO, new String (((ByteArrayOutputStream)baos).toByteArray ()));
 				}
 			}
 			
 		} catch (Exception e) {
-			System.out.println (e);
 			throw new CommandExecutionException (e.getMessage (), e);
 		} finally {
 			if (streams != null) {
@@ -290,27 +270,14 @@ public class RemoteUtils {
 				}
 			}
 		}
-		
-		if (response.getStatus () != 200) {
-			return null;
-		}
-		
-		return new DefaultCommandResult (CommandResult.OK, Json.getString (source, Spec.OkMessage));
 	}
 	
-	private static HttpRequest request (Keys keys, JsonObject spec, Tool tool, JsonObject config, Map<String, String> options, List<Object> streams) throws Exception {
+	@SuppressWarnings("unchecked")
+	private static HttpRequest request (JsonObject oKeys, JsonObject spec, Tool tool, JsonObject config, Map<String, String> options, List<Object> streams) throws Exception {
 		
-		JsonObject jKeys = keys.json ();
-		
-		@SuppressWarnings("unchecked")
 		Map<String, Object> vars = (Map<String, Object>)tool.getContext (Tool.ROOT_CTX).get (ToolContext.VARS);
 		
-		String space 	= keys.space 	();
-		
-		String accessKey = keys.accessKey ();
-		String secretKey = keys.secretKey ();
-		
-		String service = (String)eval (Json.getString (spec, Spec.request.Service), vars, config, options, jKeys);
+		String service = (String)eval (Json.getString (spec, Spec.request.Service), vars, config, options, oKeys);
 		
 		HttpRequest request = 
 				HttpRequests.get (Json.getString (spec, Spec.request.Method, HttpMethods.GET).toUpperCase ())
@@ -351,7 +318,7 @@ public class RemoteUtils {
 				headers.add (
 					new HttpHeaderImpl (
 						hName, 
-						String.valueOf (eval (Json.getString (oHeaders, hName), vars, config, options, jKeys))
+						String.valueOf (eval (Json.getString (oHeaders, hName), vars, config, options, oKeys))
 					)
 				);
 			}
@@ -373,7 +340,7 @@ public class RemoteUtils {
 				parameters.add (
 					new HttpParameterImpl (
 						pName, 
-						String.valueOf (eval (Json.getString (oParameters, pName), vars, config, options, jKeys))
+						String.valueOf (eval (Json.getString (oParameters, pName), vars, config, options, oKeys))
 					)
 				);
 			}
@@ -389,21 +356,31 @@ public class RemoteUtils {
 			while (bNames.hasNext ()) {
 				String bName = bNames.next ();
 				
-				Object value = eval (Json.getString (oBody, bName), vars, config, options, jKeys);
+				Object value = eval (Json.getString (oBody, bName), vars, config, options, oKeys);
 				if (value == null) {
 					continue;
 				}
+
 				if (ContentTypes.Json.equals (contentType)) {
-					@SuppressWarnings("unchecked")
-					Object ov = ((Map<String, Object>)tool.getContext (Tool.ROOT_CTX).get (ToolContext.VARS)).get (String.valueOf (value));
-					if (ov == null) {
-						throw new Exception ("variable " + value + " not found");
+					
+					Object ov = null;
+					
+					String varName = String.valueOf (value);
+					
+					if (EmptyPayload.equals (varName)) {
+						ov = JsonObject.Blank;
+					} else {
+						ov = ((Map<String, Object>)tool.getContext (Tool.ROOT_CTX).get (ToolContext.VARS)).get (varName);
+						if (ov == null) {
+							throw new Exception ("variable " + value + " not found");
+						}
+						if (!(ov instanceof JsonObject)) {
+							throw new Exception (value + " isn't a valid json object");
+						}
 					}
-					if (!(ov instanceof JsonObject)) {
-						throw new Exception (value + " not valid json object");
-					}
+					
 					body.add (
-						new StringHttpMessageBodyPart (((JsonObject)ov).toString ())
+						new StringHttpMessageBodyPart (ov.toString ())
 					);
 					continue;
 				}
@@ -475,17 +452,26 @@ public class RemoteUtils {
 		}
 		
 		// sign request
-		AccessSecretKeysBasedHttpRequestSigner signer = 
-				new AccessSecretKeysBasedHttpRequestSigner ("m>h>p>d>k>t", "Bearer", space == null ? accessKey : space + Lang.DOT + accessKey, secretKey);
-		
-		String timestamp = Lang.utc ();
-		
-		headers.add (new HttpHeaderImpl (ApiHeaders.Timestamp, timestamp));
-		
-		signer.getData ().put ('t', timestamp);
-		
-		signer.sign (request);
+		boolean sign = Json.getBoolean (spec, Spec.request.Sign, true);
+		if (sign) {
+			
+			String space 		= Json.getString (oKeys, Keys.Spec.Space);
+			
+			String accessKey 	= Json.getString (oKeys, KeyPair.Fields.AccessKey);
+			String secretKey 	= Json.getString (oKeys, KeyPair.Fields.SecretKey);
+			
+			AccessSecretKeysBasedHttpRequestSigner signer = 
+					new AccessSecretKeysBasedHttpRequestSigner ("m>h>p>d>k>t", "Bearer", space == null ? accessKey : space + Lang.DOT + accessKey, secretKey);
+			
+			String timestamp = Lang.utc ();
+			
+			headers.add (new HttpHeaderImpl (ApiHeaders.Timestamp, timestamp));
+			
+			signer.getData ().put ('t', timestamp);
+			
+			signer.sign (request);
 
+		}
 		if (Lang.isDebugMode ()) {
 			tool.printer ().content ("Http Request", request.toString ());
 		}
@@ -529,15 +515,6 @@ public class RemoteUtils {
 			}
 		});
 		
-	}
-	
-	@SuppressWarnings("unchecked")
-	public static void main (String [] args) throws Exception {
-		Yaml yaml = new Yaml ();
-		
-		String ys = IOUtils.toString (new FileInputStream (new File ("/tmp/yml/space.yml")));
-			   
-		System.out.println (new YamlStringPrinter ().print (new JsonObject (yaml.loadAs (ys, Map.class), true)).toString ());
 	}
 	
 }

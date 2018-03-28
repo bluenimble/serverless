@@ -13,7 +13,6 @@
 				}]
 			},
 			"listener": {
-				"pool": "10",
 				"delay": "5",
 				"period": "300",
 				"file": "space.keystore",

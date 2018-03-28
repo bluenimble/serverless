@@ -410,6 +410,7 @@ public abstract class AbstractTool implements Tool {
 									writeln (Lang.BLANK);
 								}
 							} else if (result.getContent () instanceof InputStream) {
+								System.out.println ("result.getContent () instanceof InputStream");
 								OutputStream os = null;
 								try {
 									os = new FileOutputStream (new File (out));

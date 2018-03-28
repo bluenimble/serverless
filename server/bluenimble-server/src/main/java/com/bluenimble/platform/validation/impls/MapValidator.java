@@ -81,7 +81,7 @@ public class MapValidator extends AbstractTypeValidator {
 			updateRequest = true;
 		}
 		
-		if (object.isEmpty ()) {
+		if (object.isEmpty () && Json.getBoolean (spec, Spec.Required, true)) {
 			return ValidationUtils.feedback (
 				null, spec, null, 
 				validator.getMessage (api, request.getLang (), RequiredMessage, label)

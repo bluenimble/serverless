@@ -66,8 +66,8 @@ public class GetKeysSpi extends AbstractApiServiceSpi {
         if (!MgmUtils.isSecure (request.getService ()) ) {
 			return getNotSecure (api, request, accessKey, paraphrase);
 		}
-		
-		String role 		= (String)consumer.get (CommonSpec.Role);
+        
+        Role cRole = Role.valueOf ((String)consumer.get (CommonSpec.Role));
 		
 		String cAccessKey 	= (String)consumer.get (ApiConsumer.Fields.AccessKey);
 		
@@ -76,7 +76,7 @@ public class GetKeysSpi extends AbstractApiServiceSpi {
 		
 		// if consumer is super
 		try {
-			if (Role.SUPER.name ().equals (role.toUpperCase ())) {
+			if (Role.SUPER.equals (cRole)) {
 				// If super is calling this service, accessKey should be prefixed by space namespace
 				int indexOfDot = accessKey.indexOf (Lang.DOT);
 				if (indexOfDot <= 0) {
@@ -109,13 +109,13 @@ public class GetKeysSpi extends AbstractApiServiceSpi {
 			}
 		}
 		
-		String keysRole = (String)kp.property (CommonSpec.Role);
+		Role keysRole = Role.valueOf ((String)kp.property (CommonSpec.Role));
 		
-		if (Role.DEVELOPER.name ().equals (role.toUpperCase ())) {
+		if (Role.DEVELOPER.equals (cRole)) {
 			throw new ApiServiceExecutionException ("access denied").status (ApiResponse.FORBIDDEN);
 		}
 		
-		if (Role.ADMIN.name ().equals (role.toUpperCase ()) && Role.ADMIN.name ().equals (keysRole.toUpperCase ())) {
+		if (Role.ADMIN.equals (cRole) && Role.ADMIN.equals (keysRole)) {
 			throw new ApiServiceExecutionException ("access denied. only super keys can read ADMIN keys").status (ApiResponse.FORBIDDEN);
 		}
 		

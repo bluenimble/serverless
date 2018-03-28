@@ -43,7 +43,6 @@ public class KeyStorePlugin extends AbstractPlugin {
 	public void init (ApiServer server) throws Exception {
 		server.setKeyStoreManager (
 			new FileSystemKeyStoreManager (
-				Json.getInteger (listener, Spec.Pool, 10),
 				Json.getLong 	(listener, Spec.Delay, 5),
 				Json.getLong 	(listener, Spec.Period, 300),
 				Json.getString 	(listener, Spec.File, DefaultKeystoreFile),

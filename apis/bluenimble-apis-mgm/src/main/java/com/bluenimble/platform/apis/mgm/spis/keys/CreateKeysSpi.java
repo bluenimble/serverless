@@ -64,7 +64,7 @@ public class CreateKeysSpi extends AbstractApiServiceSpi {
 		
 		Role cRole = Role.valueOf ((String)consumer.get (CommonSpec.Role));
 		
-		Role role = Role.DEVELOPER;
+		Role role = Role.SUPER.equals (cRole) ? Role.ADMIN : Role.DEVELOPER;
 		
 		String sRole = Json.getString (payload, CommonSpec.Role);
 		if (!Lang.isNullOrEmpty (sRole)) {
@@ -104,18 +104,16 @@ public class CreateKeysSpi extends AbstractApiServiceSpi {
 		}
 		
 		if (space == null) {
-			throw new ApiServiceExecutionException ("target space where to create the keys not found").status (ApiResponse.BAD_REQUEST);
+			throw new ApiServiceExecutionException ("target space where to create the keys isn't found").status (ApiResponse.BAD_REQUEST);
 		} 
+		
+		Map<String, Object> properties = new HashMap<String, Object> ();
+		properties.put (CommonSpec.Role, role.name ());
 		
 		Date expiryDate = null;
 		if (!Json.isNullOrEmpty (payload)) {
 			expiryDate = (Date)payload.get (KeyPair.Fields.ExpiryDate);
-		}
 
-		Map<String, Object> properties = new HashMap<String, Object> ();
-		properties.put (CommonSpec.Role, role.name ());
-		
-		if (!Json.isNullOrEmpty (payload)) {
 			Iterator<String> props = payload.keys ();
 			while (props.hasNext ()) {
 				String p = props.next ();

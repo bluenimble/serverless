@@ -31,15 +31,18 @@ public abstract class AbstractTypeValidator implements TypeValidator {
 	public static final String RequiredMessage	= "Required";
 	
 	protected JsonObject isRequired (DefaultApiServiceValidator validator, Api api, String lang, String label, JsonObject spec, Object value) {
+		
 		boolean required = Json.getBoolean (spec, Spec.Required, true);
-		if (required) {
-			if (value == null) {
-				return ValidationUtils.feedback (null, spec, RequiredFacet, validator.getMessage (api, lang, RequiredMessage, label));
-			} else 
-			if (value instanceof String && Lang.isNullOrEmpty ((String)value)) {
-				return ValidationUtils.feedback (null, spec, RequiredFacet, validator.getMessage (api, lang, RequiredMessage, label));
-			}
+		
+		if (!required) {
+			return null;
 		}
+		
+		boolean valueIsEmpty = (value == null) || (value instanceof String && Lang.isNullOrEmpty ((String)value));
+		if (valueIsEmpty) {
+			return ValidationUtils.feedback (null, spec, RequiredFacet, validator.getMessage (api, lang, RequiredMessage, label));
+		}
+		
 		return null;
 	}
 	

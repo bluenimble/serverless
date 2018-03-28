@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -61,13 +60,9 @@ public class FileSystemKeyStoreManager implements KeyStoreManager {
 	private long						period;
 	private ScheduledExecutorService 	listener;
 	
-	private int							pool;
-	private ExecutorService 			executor;
-	
 	private int							flushRate;
 
-	public FileSystemKeyStoreManager (int pool, long delay, long period, String keyStoreFile, int flushRate) {
-		this.pool 			= pool;
+	public FileSystemKeyStoreManager (long delay, long period, String keyStoreFile, int flushRate) {
 		this.delay 			= delay;
 		this.period 		= period;
 		this.keyStoreFile 	= keyStoreFile;
@@ -249,7 +244,7 @@ public class FileSystemKeyStoreManager implements KeyStoreManager {
 				out	.set (KeyPair.Fields.AccessKey, accessKey ())
 					.set (KeyPair.Fields.SecretKey, secretKey ());
 				if (expiryDate () != null) {
-					out.set (KeyPair.Fields.ExpiryDate, Lang.toString (expiryDate (), Lang.DEFAULT_DATE_FORMAT));
+					out.set (KeyPair.Fields.ExpiryDate, Lang.toUTC (expiryDate ()));
 				}
 				if (!props.isEmpty ()) {
 					out.set (KeyPair.Fields.Properties, props);
@@ -276,24 +271,17 @@ public class FileSystemKeyStoreManager implements KeyStoreManager {
 	@Override
 	public void start () {
 		listener = Executors.newScheduledThreadPool (1);
-		executor = Executors.newFixedThreadPool (pool);
 		listener.scheduleAtFixedRate (new Runnable () {
 			@Override
 			public void run () {
 				ApiSpace space = null;
 				while ((space = updates.poll ()) != null) {
-					ApiSpace fSpace = space;
-					executor.submit (new Runnable () {
-						@Override
-						public void run () {
-							fSpace.tracer ().log (Tracer.Level.Info, "update space {0} keys", fSpace.getNamespace ());
-							try {
-								write (fSpace);
-							} catch (Exception e) {
-								fSpace.tracer ().log (Tracer.Level.Error, Lang.BLANK, e);
-							}
-						}
-					});
+					space.tracer ().log (Tracer.Level.Info, "update space {0} keys", space.getNamespace ());
+					try {
+						write (space);
+					} catch (Exception e) {
+						space.tracer ().log (Tracer.Level.Error, Lang.BLANK, e);
+					}
 				}
 			}
 		}, delay, period, TimeUnit.SECONDS);
@@ -301,9 +289,6 @@ public class FileSystemKeyStoreManager implements KeyStoreManager {
 
 	@Override
 	public void stop () {
-		if (executor != null) {
-			executor.shutdown ();
-		}
 		if (listener != null) {
 			listener.shutdown ();
 		}

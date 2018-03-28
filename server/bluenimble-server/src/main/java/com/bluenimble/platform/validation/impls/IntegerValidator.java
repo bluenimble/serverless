@@ -80,7 +80,7 @@ public class IntegerValidator extends AbstractTypeValidator {
 		
 		JsonObject feedback = null;
 		
-		int min = Json.getInteger (spec, Spec.Min, 1);
+		int min = Json.getInteger (spec, Spec.Min, Integer.MIN_VALUE);
 		if (iValue < min) {
 			feedback = ValidationUtils.feedback (
 				feedback, spec, Spec.Min, 

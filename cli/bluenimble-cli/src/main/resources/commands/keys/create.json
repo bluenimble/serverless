@@ -5,7 +5,8 @@
 			"description": "create new keys",
 
 			"args": [{
-				"name": "keys spec", "desc": "josn variable defining the keys. Example 'create keys specVar'. Use 'json create' command to create the specVar"
+				"name": "keys spec", "desc": "json variable defining the keys. Example 'create keys KeysSpecVar'. Use 'json create' command to create the specVar",
+				"required": "false"
 			}],
 			
 			"request": {
@@ -13,7 +14,7 @@
 				"service": "[ keys.endpoint ]/keys",
 				"contentType": "application/json",
 				"body": {
-					"payload": "[arg.0]"
+					"payload": "[ arg.0 | '__EP__' ]"
 				}
 			}
 		}
