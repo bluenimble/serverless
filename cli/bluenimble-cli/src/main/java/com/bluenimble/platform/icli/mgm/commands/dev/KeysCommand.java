@@ -27,6 +27,8 @@ import com.bluenimble.platform.cli.command.CommandOption;
 import com.bluenimble.platform.cli.command.CommandResult;
 import com.bluenimble.platform.cli.command.impls.AbstractCommand;
 import com.bluenimble.platform.cli.command.impls.DefaultCommandResult;
+import com.bluenimble.platform.cli.printing.Printer.Colors;
+import com.bluenimble.platform.cli.printing.Printer.PrintSpec;
 import com.bluenimble.platform.icli.mgm.BlueNimble;
 import com.bluenimble.platform.icli.mgm.Keys;
 
@@ -62,12 +64,12 @@ public class KeysCommand extends AbstractCommand {
 			while (secIter.hasNext ()) {
 				String sname = secIter.next ();
 				Keys s = secrets.get (sname);
-				String prefix = Lang.BLANK;
-				if (BlueNimble.keys () != null && sname.equals (BlueNimble.keys ().alias ())) {
-					prefix = "(C) "; 
-				}
+				
+				boolean current = BlueNimble.keys () != null && sname.equals (BlueNimble.keys ().alias ());
+				
 				tool.printer ().content (
-					prefix + sname, 
+					//  __PS__YELLOW:(C) _|_keyAlias	
+					current ? PrintSpec.Start + Colors.Yellow + PrintSpec.TextSep + "(C) " + PrintSpec.Split + sname : sname, 
 					(Lang.isNullOrEmpty (s.name ()) ? Lang.BLANK :       "      Name | " + s.name () + Lang.ENDLN) + 
 					(Lang.isNullOrEmpty (s.domain ()) ? Lang.BLANK :     "  Endpoint | " + s.domain () + Lang.ENDLN) + 
 					(Lang.isNullOrEmpty (s.issuer ()) ? Lang.BLANK :     "    Issuer | " + s.issuer () + Lang.ENDLN) +

@@ -2,6 +2,9 @@
 <Configuration status="INFO">
 
     <Appenders>
+    	<Console name="STDOUT" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{ISO8601} %-5p [%X{namespace}] - %msg%n" />
+	    </Console>
 		<RollingFile name="All">
 			<FileName>${sys:bluenimble.runtime}/logs/bluenimble.log</FileName>
 			<FilePattern>${sys:bluenimble.runtime}/logs/bluenimble.%d{yyyy-MM-dd-hh-mm}.log.zip
@@ -29,9 +32,11 @@
     
     <Loggers>
 		<Logger name="All" level="info" additivity="false">
+			<AppenderRef ref="STDOUT"/>
 			<AppenderRef ref="All"/>
 	    </Logger>
         <Logger name="Requests" level="debug" additivity="false">
+			<AppenderRef ref="STDOUT"/>
         	<AppenderRef ref="Requests"/>
 	    </Logger>
 	    <Root level="error">

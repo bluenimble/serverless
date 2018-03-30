@@ -466,31 +466,28 @@ public abstract class AbstractApiServer implements ApiServer {
 				Throwable e = aaee.getCause ();
 		   		if (e.getClass ().equals (CancellationException.class)) {
 					tracer.log (Tracer.Level.Error, 
-						"\tCallback-OnError: ThreadGroup [{0}], Thread [{1}], Cancellation Error: {2}", 
-						e, 
-						Thread.currentThread ().getThreadGroup ().getName (), 
-						Thread.currentThread ().getName (),
-						e.getMessage ()
+						"\tCallback-OnError: ThreadGroup [" + Thread.currentThread ().getThreadGroup ().getName () + 
+						"], Thread [" + Thread.currentThread ().getName () + 
+						"], Cancellation Error: " + e.getMessage (), 
+						e
 					);
 					sendError (response, ApiResponse.INSUFFICIENT_SPACE_ON_RESOURCE, "Cancellation Error | " + e.getMessage ());
 					request.destroy ();
 		   		} else if (e.getClass ().equals (TimeoutException.class)) {
 					tracer.log (Tracer.Level.Error, 
-						"\tCallback-OnError: ThreadGroup [{0}], Thread [{1}], Timeout Error: {2}", 
-						e, 
-						Thread.currentThread ().getThreadGroup ().getName (), 
-						Thread.currentThread ().getName (),
-						e.getMessage ()
+						"\tCallback-OnError: ThreadGroup [" + Thread.currentThread ().getThreadGroup ().getName () + 
+						"], Thread [" + Thread.currentThread ().getName () + 
+						"], Timeout Error: " + e.getMessage (), 
+						e
 					);
 					sendError (response, ApiResponse.REQUEST_TIMEOUT, "Timeout Error | " + e.getMessage ());
 					request.destroy ();
 		   		} else {
 					tracer.log (Tracer.Level.Error, 
-						"\tCallback-OnError: ThreadGroup [{0}], Thread [{1}], Error: {2}", 
-						e, 
-						Thread.currentThread ().getThreadGroup ().getName (), 
-						Thread.currentThread ().getName (),
-						e.getMessage ()
+						"\tCallback-OnError: ThreadGroup [" + Thread.currentThread ().getThreadGroup ().getName () + 
+						"], Thread [" + Thread.currentThread ().getName () + 
+						"], Generic Error: " + e.getMessage (), 
+						e
 					);
 					sendError (response, ApiResponse.BAD_REQUEST, e.getClass ().getSimpleName () + " | " + e.getMessage ());
 					request.destroy ();

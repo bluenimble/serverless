@@ -62,7 +62,7 @@ public class FriendlyJsonEmitter extends AbstractEmitter {
 			} 
 		}
 		tool.write (Lang.QUOT);
-		tool.printer ().text (-1, Json.escape (String.valueOf (value)), color, null);
+		tool.printer ().text (-100, Json.escape (String.valueOf (value)), color, null);
 		tool.write (Lang.QUOT);
 	}
 

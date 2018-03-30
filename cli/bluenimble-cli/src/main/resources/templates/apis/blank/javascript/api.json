@@ -49,6 +49,10 @@
 		"script": "functions/Api.js"
 	},
 
+	"tracer": {
+		"class": "!tracing.log4j:default"
+	},
+	
 	"spi": {
 		"class": "scripting.javascript:ApiSpi"
 	}	

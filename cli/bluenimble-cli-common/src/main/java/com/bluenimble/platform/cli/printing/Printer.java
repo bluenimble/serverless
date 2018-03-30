@@ -22,6 +22,28 @@ import com.bluenimble.platform.cli.printing.impls.FontPrinter;
 
 public interface Printer extends Serializable {
 
+	interface Colors {
+		String Yellow 	= "YELLOW";
+		String Red 		= "RED";
+		String Black 	= "BLACK";
+		String Blue 	= "BLUE";
+		String Green 	= "GREEN";
+		String Magenta 	= "MAGENTA";
+		String Cyan 	= "CYAN";
+		String White 	= "WHITE";
+	}
+	
+	interface PrintSpec {
+		String Start 	= "__PS__";
+		String Split 	= "_|_";
+		String TextSep 	= ":";
+		String ColorSep = "/";
+		interface Style {
+			String Background = "B";
+			String Foreground = "F";
+		}
+	}
+	
 	enum Label {
 		Success,
 		Info,
@@ -55,6 +77,8 @@ public interface Printer extends Serializable {
 	
 	void text 		(int margin, String text, String fColor, String bColor);
 	void textLn 	(int margin, String text, String fColor, String bColor);
+	
+	void fprint		(String spec);
 
 	void margin 	(int extra);
 	

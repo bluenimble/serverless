@@ -43,11 +43,10 @@ public class PrettyPrinter extends AbstractPrinter {
 	
 	private static final long serialVersionUID = -1755386137628965295L;
 	
-	private static final String Circle 	= "o";
+	//private static final String Circle 	= "o";
 	private static final String Tab 	= "    ";
 	
 	private Tool 	tool;
-	private int 	margin = 4;
 	
 	private FontPrinter fontPrinter;
 	
@@ -141,8 +140,10 @@ public class PrettyPrinter extends AbstractPrinter {
 		tool.writeln (Lang.ENDLN);
 		if (!Lang.isNullOrEmpty (title)) {
 			margin ();
-			tool.write (Circle).write (Lang.SPACE).writeln (title);
-			line (0, title.length () + 4);
+			//tool/*.write (Circle).write (Lang.SPACE)*/.writeln (title);
+			fprint (title);
+			tool.writeln (Lang.BLANK);
+			line (0, title.length () + 2);
 		}
 		text (2, text, false, null, null, true);
 	}
@@ -152,10 +153,13 @@ public class PrettyPrinter extends AbstractPrinter {
 		if (!on) {
 			return;
 		}
-		if (extra < 0) {
+		
+		int totalMargin = margin + extra;
+		
+		if (totalMargin <= 0) {
 			return;
 		}
-		for (int i = 0; i < margin + extra; i++) { tool.write (Lang.SPACE); }
+		for (int i = 0; i < totalMargin; i++) { tool.write (Lang.SPACE); }
 	}
 
 	@Override
@@ -174,7 +178,7 @@ public class PrettyPrinter extends AbstractPrinter {
 		text (margin, text, false, fColor, bColor, true);
 	}
 	
-	@Override
+	@Override	
 	public void text (int margin, String text, String fColor, String bColor) {
 		if (!on) {
 			return;

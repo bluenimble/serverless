@@ -56,7 +56,7 @@ public class YamlObject {
 				
 				key = null;
 
-				tool.printer ().text (-1, text, color, null);
+				tool.printer ().text (-100, text, color, null);
 			}
 		}.print (source);
 	}

@@ -29,26 +29,10 @@ public class Log4JTracerPlugin extends AbstractPlugin {
 		String Default 		= "default";
 	}
 	
-	private boolean asyncLogging;
-
 	@Override
 	public void init (ApiServer server) throws Exception {
-		if (asyncLogging) {
-			System.setProperty ("log4j2.contextSelector", "org.apache.logging.log4j.core.async.AsyncLoggerContextSelector");
-		}
-		
 		PackageClassLoader pcl = (PackageClassLoader)Log4JTracerPlugin.class.getClassLoader ();
-		
 		pcl.addSynonym (Synonyms.Default, DefaultTracer.class.getName ());
-		
-	}
-
-	public boolean isAsyncLogging () {
-		return asyncLogging;
-	}
-
-	public void setAsyncLogging (boolean asyncLogging) {
-		this.asyncLogging = asyncLogging;
 	}
 
 }

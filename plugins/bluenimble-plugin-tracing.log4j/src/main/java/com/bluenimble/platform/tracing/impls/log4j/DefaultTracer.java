@@ -100,27 +100,27 @@ public class DefaultTracer implements Tracer {
 			switch (level) {
 				case Fatal:
 					if (log.isFatalEnabled ()) {
-						log.fatal (MessageFormat.format (o.toString (), args));
+						log.fatal (format (o, args));
 					}
 					break;
 				case Error:
 					if (log.isErrorEnabled ()) {
-						log.error (MessageFormat.format (o.toString (), args));
+						log.error (format (o, args));
 					}
 					break;
 				case Warning:
 					if (log.isWarnEnabled ()) {
-						log.warn (MessageFormat.format (o.toString (), args));
+						log.warn (format (o, args));
 					}
 					break;
 				case Info:
 					if (log.isInfoEnabled ()) {
-						log.info (MessageFormat.format (o.toString (), args));
+						log.info (format (o, args));
 					}
 					break;
 				case Debug:
 					if (log.isDebugEnabled ()) {
-						log.debug (MessageFormat.format (o.toString (), args));
+						log.debug (format (o, args));
 					}
 					break;
 		
@@ -183,6 +183,16 @@ public class DefaultTracer implements Tracer {
 			default:
 				return false;
 		}
+	}
+	
+	private Object format (Object message, Object... args) {
+		if (message == null) {
+			return null;
+		}
+		if (args == null || args.length == 0) {
+			return message;
+		}
+		return MessageFormat.format (String.valueOf (message), args);
 	}
 
 }

@@ -1,12 +1,17 @@
 {
 	"namespace": "sys",
-	"name": "BlueNimble Management Space",
+	"name": "BlueNimble SysAdmin Space",
+	
 	"features": {
 		"scripting": {
 			"default": {
 				"provider": "bnb-javascript"
 			}
 		}
+	},
+	
+	"tracer": {
+		"class": "!tracing.log4j:default"
 	},
 	
 	"runtime": {

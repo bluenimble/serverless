@@ -35,8 +35,6 @@ public class BlueNimble {
 	
 	public static void main (String [] args) throws Exception {
 		
-		long startTime = System.currentTimeMillis ();
-		
 		String installHomePath = System.getProperty (InstallHome);
 		if (Lang.isNullOrEmpty (installHomePath)) {
 			installHomePath = System.getProperty ("user.dir");
@@ -83,8 +81,6 @@ public class BlueNimble {
 		Object server = constructor.newInstance (installHome, runtimeHome, tenantHome);
 		
 		serverClass.getMethod ("start", new Class [] {}).invoke (server, new Object [] {});
-		
-		System.out.println ("Started in " + (System.currentTimeMillis () - startTime) + " milliseconds");
 		
 	}
 	private static URL [] toUrls (File lib) throws MalformedURLException {

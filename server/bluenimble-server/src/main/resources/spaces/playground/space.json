@@ -48,6 +48,10 @@
 				}
 			}
 		}
+	},
+	
+	"tracer": {
+		"class": "!tracing.log4j:default"
 	},	
 	
 	"runtime": {

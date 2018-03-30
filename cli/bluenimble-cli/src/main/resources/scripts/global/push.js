@@ -164,6 +164,9 @@ if (!Vars ['build.release.nocopy'] || Vars ['build.release.nocopy'] != 'true') {
 
 // read api spec and set installDate, version, user id and stamp
 var apiSpecFile = new File (apiFolder, 'api.json');
+if (!apiSpecFile.exists ()) {
+	throw 'api ' + apiNs + ' not found';
+}
 
 var apiSpec = Json.load (apiSpecFile);
 

@@ -73,11 +73,19 @@ public class BeanUtils {
 		
 		if (indexOfColon > 0) {
 			String loaderName 	= clazz.substring (0, indexOfColon);
-			clazz 		= clazz.substring (indexOfColon + 1);
+			clazz 				= clazz.substring (indexOfColon + 1);
+			
+			boolean required = !loaderName.startsWith (Lang.XMARK);
+			if (!required) {
+				loaderName = loaderName.substring (1);
+			}
+			
 			if (registry != null) { 
 				ClassLoader rLoader		= registry.find (loaderName);
 				if (rLoader != null) {
 					loader = rLoader;
+				} else if (!required) {
+					return null;
 				}
 			}
 		}
@@ -88,6 +96,7 @@ public class BeanUtils {
 			if (pcl.hasSynonym (clazz)) {
 				clazz = pcl.synonym (clazz);
 			}
+			// check if there is a singleton object registered for this name
 			bean = ((PackageClassLoader)loader).lookupObject (clazz);
 		}
 		
@@ -109,7 +118,7 @@ public class BeanUtils {
 	@SuppressWarnings("unchecked")
 	public static void apply (Object bean, JsonObject definition, ClassLoaderRegistry registry) throws Exception {
 		JsonObject properties = Json.getObject (definition, Properties);
-		if (properties == null) {
+		if (Json.isNullOrEmpty (properties)) {
 			return;
 		}
 		Class beanClass = bean.getClass ();

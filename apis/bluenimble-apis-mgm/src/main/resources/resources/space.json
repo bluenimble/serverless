@@ -14,6 +14,10 @@
 		}
 	},
 	
+	"tracer": {
+		"class": "!tracing.log4j:default"
+	},
+	
 	"runtime": {
 		"timeout": "10000"
 	}

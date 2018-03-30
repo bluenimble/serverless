@@ -495,12 +495,12 @@ public abstract class AbstractTool implements Tool {
 
 	public void prompt () {
 		writeln (Lang.BLANK);
-		printer.text (-1, getName (), FColor.CYAN.name (), null);
+		printer.text (-100, getName (), FColor.CYAN.name (), null);
 		write (Lang.COLON);
 		if (currentContext == null) {
-			printer.text (-1, Lang.DOT, FColor.GREEN.name (), null);
+			printer.text (-100, Lang.DOT, FColor.GREEN.name (), null);
 		} else {
-			printer.text (-1, currentContext.getName (), FColor.GREEN.name (), null);
+			printer.text (-100, currentContext.getName (), FColor.GREEN.name (), null);
 		}
 		write (Lang.GREATER);
 	}

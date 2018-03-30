@@ -17,7 +17,7 @@
 	},
 	
 	"tracer": {
-		"class": "tracing.log4j:default"
+		"class": "!tracing.log4j:default"
 	}
 
 }
