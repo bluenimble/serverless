@@ -110,6 +110,8 @@ public class FileSystemApiServer extends AbstractApiServer {
 	@Override
 	public void start () throws ServerStartupException {
 		
+		long startTime = System.currentTimeMillis ();
+		
 		// check under tenant
 		File keysFile = null;
 		
@@ -221,7 +223,7 @@ public class FileSystemApiServer extends AbstractApiServer {
 			keyStoreManager.start ();
 		}
 		
-		tracer.log (Tracer.Level.Info, "Instance started @ {0}", new Date ());
+		tracer.log (Tracer.Level.Info, "Instance started @ {0} - in {1} Millis", new Date (), String.valueOf (System.currentTimeMillis () - startTime));
 		tracer.log (Tracer.Level.Info, "With Root Keys   {0}  [{1}]", 
 			keys.accessKey (), 
 			keys.expiryDate () == null ? "Never Expires" : Lang.toString (keys.expiryDate (), Lang.DEFAULT_DATE_FORMAT)

@@ -58,7 +58,7 @@ public class ScriptingPlugin extends AbstractPlugin {
 	
 	private static final NashornScriptEngineFactory  	Manager 			= new NashornScriptEngineFactory ();
 	
-	private static final ScriptEngine 					MasterEngine 		= Manager.getScriptEngine (ScriptingPlugin.class.getClassLoader ());
+	private ScriptEngine masterEngine;
 	
 	private ScriptingEngine shared;
 	
@@ -66,6 +66,12 @@ public class ScriptingPlugin extends AbstractPlugin {
 	
 	@Override
 	public void init (final ApiServer server) throws Exception {
+		
+		if (Lang.isNullOrEmpty (vmArgs)) {
+			masterEngine = Manager.getScriptEngine (ScriptingPlugin.class.getClassLoader ());
+		} else {
+			masterEngine = Manager.getScriptEngine (Lang.split (vmArgs, Lang.SPACE, true), ScriptingPlugin.class.getClassLoader ());
+		}
 		
 		Feature aFeature = ScriptingEngine.class.getAnnotation (Feature.class);
 		if (aFeature == null || Lang.isNullOrEmpty (aFeature.name ())) {
@@ -89,7 +95,7 @@ public class ScriptingPlugin extends AbstractPlugin {
 			bindings.put (Vars.Core, new File (platform, Vars.Core).getAbsolutePath ());
 			bindings.put (Vars.Tools, new File (platform, Vars.Tools).getAbsolutePath ());
 			
-			shared = new DefaultScriptingEngine (this, (ScriptObjectMirror)MasterEngine.eval (pReader, bindings), server.getMapProvider ());
+			shared = new DefaultScriptingEngine (this, (ScriptObjectMirror)masterEngine.eval (pReader, bindings), server.getMapProvider ());
 			
 		} finally {
 			IOUtils.closeQuietly (pReader);
@@ -126,7 +132,7 @@ public class ScriptingPlugin extends AbstractPlugin {
 		if (Lang.isNullOrEmpty (vmArgs)) {
 			return Manager.getScriptEngine ();
 		} else {
-			return Manager.getScriptEngine (vmArgs);
+			return Manager.getScriptEngine (Lang.split (vmArgs, Lang.SPACE, true));
 		}
 	}
 	
