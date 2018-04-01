@@ -155,8 +155,13 @@ if (!Vars ['build.release.nocopy'] || Vars ['build.release.nocopy'] != 'true') {
 	// delete api if exists
 	var apiFolder = new File (buildFolder, apiNs);
 	FileUtils.delete (apiFolder);
+	
 	// copy
-	FileUtils.copy (new File (Config.workspace + '/' + apiNs), buildFolder, true);
+	var apiSrcPath = Config.apis [apiNs];
+	if (!apiSrcPath) {
+		apiSrcPath = apiNs;
+	}
+	FileUtils.copy (new File (Config.workspace + '/' + apiSrcPath), buildFolder, true);
 	
 	// convert yaml to json
 	SpecUtils.y2j (apiFolder, true);
