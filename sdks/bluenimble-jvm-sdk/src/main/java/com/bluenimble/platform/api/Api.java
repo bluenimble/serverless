@@ -32,7 +32,6 @@ public interface Api extends Traceable {
 		String Description 		= "description";
 		String Release			= "release";
 		String Status			= "status";
-		String Runtime			= "runtime";
 		String Custom			= "custom";
 		String Features			= "features";
 		String Tracer			= "tracer";
@@ -49,6 +48,10 @@ public interface Api extends Traceable {
 		}
 		interface Tracking		{
 			String Tracker		= "tracker";
+		}
+		interface Runtime		{
+			String Async		= "async";
+			String Function		= "function";
 		}
 	}
 	

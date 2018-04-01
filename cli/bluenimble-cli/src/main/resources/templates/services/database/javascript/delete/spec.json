@@ -50,7 +50,7 @@
 	},
 	
 	"runtime": {
-		"script": "functions/${models}/Delete${Model}.js"
+		"function": "functions/${models}/Delete${Model}.js"
 	},
 	
 	"spi": {

@@ -31,7 +31,7 @@ var Task = function (api, fn, options) {
 	  Start task execution
 	*/
 	this.start = function () {
-		api.proxy.space ().async (new this.Callable (), false);
+		api.proxy.space ().executor ().execute (new this.Callable (), JC_CodeExec_Mode.Sync);
 	};	
 	
 };

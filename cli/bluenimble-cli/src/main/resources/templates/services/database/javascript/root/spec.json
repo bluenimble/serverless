@@ -43,7 +43,7 @@
 	"endpoint": "/",
 	
 	"runtime": {
-		"script": "functions/Root.js"
+		"function": "functions/Root.js"
 	},
 	
 	"spi": {

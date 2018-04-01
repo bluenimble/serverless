@@ -36,6 +36,7 @@ import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.scripting.ScriptContext;
 import com.bluenimble.platform.scripting.ScriptingEngine;
 import com.bluenimble.platform.scripting.ScriptingEngine.Supported;
+import com.bluenimble.platform.server.plugins.scripting.utils.ApiUtils;
 import com.bluenimble.platform.scripting.ScriptingEngineException;
 
 public class ScriptableApiSpi implements ApiSpi {
@@ -43,8 +44,6 @@ public class ScriptableApiSpi implements ApiSpi {
 	private static final long serialVersionUID = 1507561751507700274L;
 	
 	interface Paths {
-		String Script 		= "script";
-		
 		String Scripting 	= "scripting";
 			String Api 			= "api";
 			String Spi 			= "spi";
@@ -67,9 +66,9 @@ public class ScriptableApiSpi implements ApiSpi {
 	
 	@Override
 	public void onStart (Api api, ApiContext context) throws ApiManagementException {
-		String script = Json.getString (api.getRuntime (), Paths.Script);
+		String script = Json.getString (api.getRuntime (), Api.Spec.Runtime.Function);
 		if (Lang.isNullOrEmpty (script)) {
-			throw new ApiManagementException ("script not found in " + Api.Spec.Runtime);
+			throw new ApiManagementException ("function not defined in " + ApiUtils.RuntimeKey);
 		}
 		String [] path = Lang.split (script, Lang.SLASH);
 		
@@ -81,7 +80,7 @@ public class ScriptableApiSpi implements ApiSpi {
 		}
 		
 		if (rScript == null) {
-			throw new ApiManagementException ("script '" + Lang.join (path, Lang.SLASH) + "' not found");
+			throw new ApiManagementException ("function '" + Lang.join (path, Lang.SLASH) + "' not found");
 		}
 		
 		ScriptingEngine engine = api.space ().feature (ScriptingEngine.class, ApiSpace.Features.Default, context);
@@ -95,7 +94,7 @@ public class ScriptableApiSpi implements ApiSpi {
 		}
 		
 		if (jsSpi == null) {
-			throw new ApiManagementException ("script returned an undefined object");
+			throw new ApiManagementException ("function returned an undefined object");
 		}
 
 		// create the api object
@@ -172,7 +171,7 @@ public class ScriptableApiSpi implements ApiSpi {
 		try {
 			engine.invoke (spi, Functions.OnRequest, jsApi, request, response);
 		} catch (ScriptingEngineException ex) {
-			ex.setScript (Json.getString (api.getRuntime (), Paths.Script));
+			ex.setScript (Json.getString (api.getRuntime (), Api.Spec.Runtime.Function));
 			throw new ApiServiceExecutionException (ex.getMessage (), ex);
 		}		
 	}
@@ -199,7 +198,7 @@ public class ScriptableApiSpi implements ApiSpi {
 		try {
 			engine.invoke (spi, Functions.OnService, jsApi, service, request, response);
 		} catch (ScriptingEngineException ex) {
-			ex.setScript (Json.getString (api.getRuntime (), Paths.Script));
+			ex.setScript (Json.getString (api.getRuntime (), Api.Spec.Runtime.Function));
 			throw new ApiServiceExecutionException (ex.getMessage (), ex);
 		}		
 	}
@@ -234,7 +233,7 @@ public class ScriptableApiSpi implements ApiSpi {
 			engine.invoke (spi, Functions.OnExecute, jsApi, consumer, service, request, response);
 			
 		} catch (ScriptingEngineException ex) {
-			ex.setScript (Json.getString (api.getRuntime (), Paths.Script));
+			ex.setScript (Json.getString (api.getRuntime (), Api.Spec.Runtime.Function));
 			throw new ApiServiceExecutionException (ex.getMessage (), ex);
 		}	
 	}
@@ -264,7 +263,7 @@ public class ScriptableApiSpi implements ApiSpi {
 			engine.invoke (spi, Functions.AfterExecute, jsApi, consumer, service, request, response);
 			
 		} catch (ScriptingEngineException ex) {
-			ex.setScript (Json.getString (api.getRuntime (), Paths.Script));
+			ex.setScript (Json.getString (api.getRuntime (), Api.Spec.Runtime.Function));
 			throw new ApiServiceExecutionException (ex.getMessage (), ex);
 		}	
 	}
@@ -290,7 +289,7 @@ public class ScriptableApiSpi implements ApiSpi {
 		try {
 			engine.invoke (spi, Functions.FindConsumer, jsApi, service, request, consumer);
 		} catch (ScriptingEngineException ex) {
-			ex.setScript (Json.getString (api.getRuntime (), Paths.Script));
+			ex.setScript (Json.getString (api.getRuntime (), Api.Spec.Runtime.Function));
 			throw new ApiAuthenticationException (ex.getMessage (), ex);
 		}		
 	}

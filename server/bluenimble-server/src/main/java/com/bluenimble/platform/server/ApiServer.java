@@ -24,6 +24,7 @@ import com.bluenimble.platform.api.ApiManagementException;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.ApiSpace;
+import com.bluenimble.platform.api.CodeExecutor;
 import com.bluenimble.platform.api.DescribeOption;
 import com.bluenimble.platform.api.media.ApiMediaProcessor;
 import com.bluenimble.platform.api.security.ApiConsumerResolver;
@@ -120,7 +121,7 @@ public interface ApiServer extends Traceable {
 	Collection<ApiSpace>	spaces 					();
 	ApiSpace		  		space 					(String space);
 
-	void  					execute 				(ApiRequest request, ApiResponse response, boolean async);
+	void  					execute 				(ApiRequest request, ApiResponse response, CodeExecutor.Mode mode);
 	
 	void					addFeature				(ServerFeature feature);
 	Object					getFeature				(ApiSpace space, Class<?> type, String provider);

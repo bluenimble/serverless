@@ -31,14 +31,15 @@ import com.bluenimble.platform.api.ApiServiceExecutionException;
 import com.bluenimble.platform.api.ApiServiceSpi;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.impls.JsonApiOutput;
-import com.bluenimble.platform.api.tracing.Tracer.Level;
 import com.bluenimble.platform.api.security.ApiConsumer;
+import com.bluenimble.platform.api.tracing.Tracer.Level;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.scripting.ScriptContext;
 import com.bluenimble.platform.scripting.ScriptingEngine;
 import com.bluenimble.platform.scripting.ScriptingEngine.Supported;
 import com.bluenimble.platform.scripting.ScriptingEngineException;
+import com.bluenimble.platform.server.plugins.scripting.utils.ApiUtils;
 import com.bluenimble.platform.server.plugins.scripting.utils.Converters;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
@@ -55,8 +56,6 @@ public class ScriptableApiServiceSpi implements ApiServiceSpi {
 	private static final String ApiOutputClass 	= "ApiOutput";
 	
 	interface Paths {
-		String Script 		= "script";
-		
 		String Scripting 	= "scripting";
 			String Api 			= "api";
 			String Spi 			= "spi";
@@ -82,9 +81,9 @@ public class ScriptableApiServiceSpi implements ApiServiceSpi {
 		
 		JsonObject runtime = service.getRuntime ();
 
-		String script = Json.getString (runtime, Paths.Script);
+		String script = Json.getString (runtime, Api.Spec.Runtime.Function);
 		if (Lang.isNullOrEmpty (script)) {
-			throw new ApiManagementException ("script not found in " + Api.Spec.Runtime);
+			throw new ApiManagementException ("script not found in " + ApiUtils.RuntimeKey);
 		}
 		String [] path = Lang.split (script, Lang.SLASH);
 		
@@ -96,7 +95,7 @@ public class ScriptableApiServiceSpi implements ApiServiceSpi {
 		}
 		
 		if (rScript == null) {
-			throw new ApiManagementException ("script '" + Lang.join (path, Lang.SLASH) + "' not found");
+			throw new ApiManagementException ("function '" + Lang.join (path, Lang.SLASH) + "' not found");
 		}
 		
 		ScriptingEngine engine = api.space ().feature (ScriptingEngine.class, ApiSpace.Features.Default, context);
@@ -197,7 +196,7 @@ public class ScriptableApiServiceSpi implements ApiServiceSpi {
 		try {
 			result = engine.invoke (spi, Functions.Execute, jsApi, consumer, request, response);
 		} catch (ScriptingEngineException ex) {
-			ex.setScript (Json.getString (request.getService ().getRuntime (), Paths.Script));
+			ex.setScript (Json.getString (request.getService ().getRuntime (), Api.Spec.Runtime.Function));
 			throw new ApiServiceExecutionException (ex.getMessage (), ex);
 		}		
 		

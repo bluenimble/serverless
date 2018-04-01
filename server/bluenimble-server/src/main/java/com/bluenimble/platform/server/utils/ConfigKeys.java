@@ -60,6 +60,8 @@ public interface ConfigKeys {
 	String RootKeysEncrypted= "rootKeysEncrypted";
 	String VariablesFile	= "variables.json";
 
+	String Executor			= "executor";
+	
 	String Tracer			= "tracer";
 	
 	String ApiExt 			= ".api";

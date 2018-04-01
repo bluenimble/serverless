@@ -51,6 +51,7 @@ import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.ApiRequest;
+import com.bluenimble.platform.api.CodeExecutor;
 import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
@@ -277,7 +278,7 @@ public class JettyPlugin extends AbstractPlugin {
 	        			request.getNode ().set (ApiRequest.Fields.Node.Id, server.id ());
 	        			request.getNode ().set (ApiRequest.Fields.Node.Type, server.type ());
 	        			request.getNode ().set (ApiRequest.Fields.Node.Version, server.version ());
-	        			server.execute (request, new HttpApiResponse (request.getNode (), request.getId (), resp), true);
+	        			server.execute (request, new HttpApiResponse (request.getNode (), request.getId (), resp), CodeExecutor.Mode.Async);
 	        		} catch (Exception e) {
 	        			throw new ServletException (e.getMessage (), e);
 	        		}

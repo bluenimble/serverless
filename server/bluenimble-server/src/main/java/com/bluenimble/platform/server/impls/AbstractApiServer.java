@@ -31,7 +31,6 @@ import com.bluenimble.platform.Feature;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
-import com.bluenimble.platform.api.ApiAsyncExecutionException;
 import com.bluenimble.platform.api.ApiContentTypes;
 import com.bluenimble.platform.api.ApiHeaders;
 import com.bluenimble.platform.api.ApiRequest;
@@ -40,6 +39,8 @@ import com.bluenimble.platform.api.ApiResponse.Status;
 import com.bluenimble.platform.api.ApiServiceExecutionException;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.ApiStatus;
+import com.bluenimble.platform.api.CodeExecutor;
+import com.bluenimble.platform.api.CodeExecutorException;
 import com.bluenimble.platform.api.DescribeOption;
 import com.bluenimble.platform.api.impls.AbstractApiRequest;
 import com.bluenimble.platform.api.impls.ContainerApiRequest;
@@ -377,7 +378,7 @@ public abstract class AbstractApiServer implements ApiServer {
 	}	
 	
 	@Override
-	public void execute (final ApiRequest request, final ApiResponse response, boolean async) {
+	public void execute (final ApiRequest request, final ApiResponse response, CodeExecutor.Mode mode) {
 		
 		if (keys.expiryDate () != null && keys.expiryDate ().before (new Date ())) {
 			sendError (response, ApiResponse.FORBIDDEN, "node keys expired");
@@ -446,55 +447,47 @@ public abstract class AbstractApiServer implements ApiServer {
 			return;
 		} 
 			
-		if (async) {
-			try {
-				final Api 		fApi = api;
-				space.async (new Callable<Void> () {
-					@Override
-					public Void call () {
+		final Api 		fApi = api;
+		try {
+			space.executor ().execute (new Callable<Void> () {
+				@Override
+				public Void call () {
+					if (Thread.currentThread () instanceof SpaceThread) {
 						final SpaceThread currentThread = (SpaceThread)Thread.currentThread ();
 				        currentThread.setRequest (request);
-				        try {
-							interceptor.intercept (fApi, request, response);	
-				        } finally {
-				        	currentThread.setRequest (null);
-				        }
-				        return null;
 					}
-				}, true);
-			} catch (ApiAsyncExecutionException aaee) {
-				Throwable e = aaee.getCause ();
-		   		if (e.getClass ().equals (CancellationException.class)) {
-					tracer.log (Tracer.Level.Error, 
-						"\tCallback-OnError: ThreadGroup [" + Thread.currentThread ().getThreadGroup ().getName () + 
-						"], Thread [" + Thread.currentThread ().getName () + 
-						"], Cancellation Error: " + e.getMessage (), 
-						e
-					);
-					sendError (response, ApiResponse.INSUFFICIENT_SPACE_ON_RESOURCE, "Cancellation Error | " + e.getMessage ());
-					request.destroy ();
-		   		} else if (e.getClass ().equals (TimeoutException.class)) {
-					tracer.log (Tracer.Level.Error, 
-						"\tCallback-OnError: ThreadGroup [" + Thread.currentThread ().getThreadGroup ().getName () + 
-						"], Thread [" + Thread.currentThread ().getName () + 
-						"], Timeout Error: " + e.getMessage (), 
-						e
-					);
-					sendError (response, ApiResponse.REQUEST_TIMEOUT, "Timeout Error | " + e.getMessage ());
-					request.destroy ();
-		   		} else {
-					tracer.log (Tracer.Level.Error, 
-						"\tCallback-OnError: ThreadGroup [" + Thread.currentThread ().getThreadGroup ().getName () + 
-						"], Thread [" + Thread.currentThread ().getName () + 
-						"], Generic Error: " + e.getMessage (), 
-						e
-					);
-					sendError (response, ApiResponse.BAD_REQUEST, e.getClass ().getSimpleName () + " | " + e.getMessage ());
-					request.destroy ();
-	    		} 
-			}
-		} else {
-			interceptor.intercept (api, request, response);
+			        try {
+						interceptor.intercept (fApi, request, response);	
+			        } finally {
+						if (Thread.currentThread () instanceof SpaceThread) {
+				        	((SpaceThread)Thread.currentThread ()).setRequest (null);
+						}
+			        }
+			        return null;
+				}
+			}, mode);
+		} catch (CodeExecutorException aaee) {
+			Throwable e = aaee.getCause ();
+			
+			String error = "Generic";
+			ApiResponse.Status status = ApiResponse.BAD_REQUEST;
+			
+	   		if (e.getClass ().equals (CancellationException.class)) {
+	   			status = ApiResponse.INSUFFICIENT_SPACE_ON_RESOURCE;
+	   			error = "Cancellation";
+	   		} else if (e.getClass ().equals (TimeoutException.class)) {
+	   			status = ApiResponse.REQUEST_TIMEOUT;
+	   			error = "Timeout";
+	   		} 
+			
+	   		tracer.log (Tracer.Level.Error, 
+				"\tCallback-OnError: ThreadGroup [" + Thread.currentThread ().getThreadGroup ().getName () + 
+				"], Thread [" + Thread.currentThread ().getName () + 
+				"], " + error + " Error: " + e.getMessage (), 
+				e
+			);
+	   		sendError (response, status, error + " Error | " + e.getMessage ());
+			request.destroy ();
 		}
 		
 	}

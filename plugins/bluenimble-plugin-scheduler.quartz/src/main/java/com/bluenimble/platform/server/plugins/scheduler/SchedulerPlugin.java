@@ -42,6 +42,7 @@ import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.ApiVerb;
+import com.bluenimble.platform.api.CodeExecutor;
 import com.bluenimble.platform.api.impls.scheduler.SchedulerApiRequest;
 import com.bluenimble.platform.api.impls.scheduler.SchedulerApiResponse;
 import com.bluenimble.platform.json.JsonObject;
@@ -279,7 +280,7 @@ public class SchedulerPlugin extends AbstractPlugin {
 					return Lang.split (sService, Lang.SLASH);
 				}
 			});
-			server.execute (request, new SchedulerApiResponse (request.getId ()), false);
+			server.execute (request, new SchedulerApiResponse (request.getId ()), CodeExecutor.Mode.Sync);
 			
 		}
 		

@@ -48,7 +48,7 @@
 	},
 	
 	"runtime": {
-		"script": "functions/${path}/${Model}.js"
+		"function": "functions/${path}/${Model}.js"
 	},
 	
 	"spi": {

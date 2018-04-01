@@ -18,7 +18,6 @@ package com.bluenimble.platform.apis.mgm.spis.spaces;
 
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiAccessDeniedException;
-import com.bluenimble.platform.api.ApiManagementException;
 import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResponse;
@@ -49,13 +48,10 @@ public class StopWorkerSpi extends AbstractApiServiceSpi {
 		} catch (ApiAccessDeniedException e) {
 			throw new ApiServiceExecutionException (e.getMessage (), e).status (ApiResponse.NOT_FOUND);
 		}
-		try {
-			space.stop ((Long)request.get (Spec.Worker));
-		} catch (ApiManagementException e) {
-			throw new ApiServiceExecutionException (e.getMessage (), e);
-		}
 		
-		return new JsonApiOutput ((JsonObject)new JsonObject ().set (CommonOutput.Stopped, true));
+		boolean interrupted = space.executor () == null ? false : space.executor ().interrupt ((Long)request.get (Spec.Worker));
+		
+		return new JsonApiOutput ((JsonObject)new JsonObject ().set (CommonOutput.Stopped, interrupted));
 		
 	}
 

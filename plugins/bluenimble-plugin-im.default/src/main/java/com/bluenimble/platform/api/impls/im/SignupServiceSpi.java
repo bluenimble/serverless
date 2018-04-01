@@ -30,6 +30,7 @@ import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.ApiServiceExecutionException;
 import com.bluenimble.platform.api.ApiSpace;
+import com.bluenimble.platform.api.CodeExecutor;
 import com.bluenimble.platform.api.impls.JsonApiOutput;
 import com.bluenimble.platform.api.impls.SimpleApiServiceSpi;
 import com.bluenimble.platform.api.impls.im.LoginServiceSpi.ActivationCodeTypes;
@@ -194,8 +195,10 @@ public class SignupServiceSpi extends SimpleApiServiceSpi {
 			final JsonObject emailTemplateData = account.toJson (null);
 			
 			try {
+				
 				final String fEmail = email;
-				api.space ().async (new Callable<Void> () {
+				
+				api.space ().executor ().execute (new Callable<Void> () {
 					@Override
 					public Void call () {
 						try {
@@ -213,7 +216,7 @@ public class SignupServiceSpi extends SimpleApiServiceSpi {
 						}
 				        return null;
 					}
-				}, false);
+				}, CodeExecutor.Mode.Async);
 			
 			} catch (Exception ex) {
 				throw new ApiServiceExecutionException (ex.getMessage (), ex);

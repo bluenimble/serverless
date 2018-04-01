@@ -55,7 +55,7 @@
 	},
 	
 	"runtime": {
-		"script": "functions/${models}/Update${Model}.js"
+		"function": "functions/${models}/Update${Model}.js"
 	},
 	
 	"spi": {

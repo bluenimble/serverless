@@ -31,6 +31,8 @@ var JC_IOUtils 				= Java.type ('com.bluenimble.platform.IOUtils');
 
 var JC_FeaturesUtils 		= Java.type ('com.bluenimble.platform.server.plugins.scripting.utils.FeaturesUtils');
 
+var JC_CodeExec_Mode 		= Java.type ('com.bluenimble.platform.api.CodeExecutor.Mode');
+
 var JC_Tracer_Level 		= Java.type ('com.bluenimble.platform.api.tracing.Tracer.Level');
 
 var JC_ApiConsumer_Fields 	= Java.type ('com.bluenimble.platform.api.security.ApiConsumer.Fields');

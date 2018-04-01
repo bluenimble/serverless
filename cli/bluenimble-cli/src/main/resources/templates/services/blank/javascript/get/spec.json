@@ -48,7 +48,7 @@
 	},
 	
 	"runtime": {
-		"script": "functions/${models}/Get${Model}.js"
+		"function": "functions/${models}/Get${Model}.js"
 	},
 	
 	"spi": {

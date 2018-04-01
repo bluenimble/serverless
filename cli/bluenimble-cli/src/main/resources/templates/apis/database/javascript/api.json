@@ -46,7 +46,7 @@
 	"description": 	"${namespace} description",
 	
 	"runtime": {
-		"script": "functions/Api.js"
+		"function": "functions/Api.js"
 	},
 
 	"tracer": {

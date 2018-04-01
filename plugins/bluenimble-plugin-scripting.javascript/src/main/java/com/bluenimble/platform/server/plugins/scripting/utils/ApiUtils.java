@@ -25,12 +25,14 @@ import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiRequest.Scope;
 import com.bluenimble.platform.api.ApiServiceExecutionException;
-import com.bluenimble.platform.api.ApiVerb;
 import com.bluenimble.platform.api.ApiSpace.Endpoint;
+import com.bluenimble.platform.api.ApiVerb;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.json.JsonObject;
 
 public class ApiUtils {
+	
+	public static final String RuntimeKey = Api.Spec.Runtime.class.getSimpleName ().toLowerCase ();
 	
 	interface Spec {
 		String Space 		= "space";

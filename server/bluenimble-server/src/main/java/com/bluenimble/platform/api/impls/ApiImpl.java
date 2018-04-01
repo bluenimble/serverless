@@ -46,6 +46,7 @@ import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.ApiSpi;
 import com.bluenimble.platform.api.ApiStatus;
 import com.bluenimble.platform.api.ApiVerb;
+import com.bluenimble.platform.api.CodeExecutor;
 import com.bluenimble.platform.api.DescribeOption;
 import com.bluenimble.platform.api.impls.spis.DefaultApiSpi;
 import com.bluenimble.platform.api.media.ApiMediaProcessor;
@@ -70,6 +71,7 @@ public class ApiImpl implements Api {
 	private static final long serialVersionUID = -6354828571701974927L;
 
 	private static final String DataSources			= "datasources";
+	private static final String RuntimeKey			= Spec.Runtime.class.getSimpleName ().toLowerCase ();
 	
 	interface Describe {
 		String Services 		= "services";	
@@ -206,9 +208,9 @@ public class ApiImpl implements Api {
 			spi = DefaultApiSpi;
 		}
 		
-		space.server.tracer ().log (Tracer.Level.Info, "\t  Namespace: {0}", getNamespace ());
-		space.server.tracer ().log (Tracer.Level.Info, "\t       Name: {0}", getName ());
-		space.server.tracer ().log (Tracer.Level.Info, "\tDescription: {0}", getDescription ());
+		space.tracer ().log (Tracer.Level.Info, "\t  Namespace: {0}", getNamespace ());
+		space.tracer ().log (Tracer.Level.Info, "\t       Name: {0}", getName ());
+		space.tracer ().log (Tracer.Level.Info, "\tDescription: {0}", getDescription ());
 		
 		// init tracer
 		JsonObject oTracer = Json.getObject (descriptor, ConfigKeys.Tracer);
@@ -284,12 +286,12 @@ public class ApiImpl implements Api {
 						return false;
 					}
 				});
-				tracer.log (Tracer.Level.Info, sb);
+				space.tracer ().log (Tracer.Level.Info, sb);
 				sb.setLength (0);
 			}
 		}
 		
-		tracer.log (Tracer.Level.Info, "\tapi {0} {1}", getNamespace (), status);
+		space.tracer ().log (Tracer.Level.Info, "\tapi {0} {1}", getNamespace (), status);
 
 	}
 
@@ -301,7 +303,7 @@ public class ApiImpl implements Api {
 		try {
 			servicesManager.onStop (context);
 		} catch (Exception ex) {
-			tracer.log (Tracer.Level.Error, "ServiceManager.stop casued an error", ex);
+			space.tracer ().log (Tracer.Level.Error, "ServiceManager.stop casued an error", ex);
 		}
 	
 		// call spi onStop
@@ -309,7 +311,7 @@ public class ApiImpl implements Api {
 			try {
 				spi.onStop (this, context);
 			} catch (Exception ex) {
-				tracer.log (Tracer.Level.Error, "ApiSpi.onStop casued an error", ex);
+				space.tracer ().log (Tracer.Level.Error, "ApiSpi.onStop casued an error", ex);
 			} 
 		}
 		
@@ -329,14 +331,14 @@ public class ApiImpl implements Api {
 			try {
 				classLoader.clear ();
 			} catch (IOException e) {
-				tracer.log (Tracer.Level.Error, Lang.BLANK, e);
+				space.tracer ().log (Tracer.Level.Error, Lang.BLANK, e);
 			}
 		}
 
 		// update/save status
 		setStatus (ApiStatus.Stopped, saveStatus);
 
-		tracer.log (Tracer.Level.Info, "\tapi {0} {1}", getNamespace (), status);
+		space.tracer ().log (Tracer.Level.Info, "\tapi {0} {1}", getNamespace (), status);
 		
 		tracer.onShutdown (this);
 		
@@ -402,7 +404,7 @@ public class ApiImpl implements Api {
 
 	@Override
 	public JsonObject getRuntime () {
-		return Json.getObject (descriptor, Spec.Runtime);
+		return Json.getObject (descriptor, RuntimeKey);
 	}
 
 	@Override
@@ -550,7 +552,7 @@ public class ApiImpl implements Api {
 	public ApiOutput call (ApiRequest request) throws ApiServiceExecutionException {
 		ContainerApiResponse	response 	= new ContainerApiResponse (request.getId ());
 		
-		space.getServer ().execute (request, response, false);
+		space.getServer ().execute (request, response, CodeExecutor.Mode.Sync);
 		
 		if (response.getException () != null) {
 			throw response.getException ();

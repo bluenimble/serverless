@@ -54,7 +54,7 @@
 	},
 	
 	"runtime": {
-		"script": "functions/{models}/Create${Model}.js"
+		"function": "functions/{models}/Create${Model}.js"
 	},
 	
 	"spi": {

@@ -19,19 +19,12 @@ package com.bluenimble.platform.api.impls;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.Thread.State;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import com.bluenimble.platform.ArchiveUtils;
 import com.bluenimble.platform.Feature;
@@ -42,15 +35,14 @@ import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.Recyclable;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiAccessDeniedException;
-import com.bluenimble.platform.api.ApiAsyncExecutionException;
 import com.bluenimble.platform.api.ApiContext;
 import com.bluenimble.platform.api.ApiManagementException;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiRequest.Scope;
-import com.bluenimble.platform.api.ApiService;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.ApiStatus;
 import com.bluenimble.platform.api.ApiStreamSource;
+import com.bluenimble.platform.api.CodeExecutor;
 import com.bluenimble.platform.api.DescribeOption;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.security.ApiRequestSignerException;
@@ -76,6 +68,8 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 
 	private static final long serialVersionUID = 7811697228373510259L;
 	
+	private static final String RuntimeKey = ApiSpace.Spec.Runtime.class.getSimpleName ();
+	
 	public interface Spaces {
 		String Sys 	= "sys";	 
 	}
@@ -88,7 +82,6 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 			String Status	= "status";
 			interface request {
 				String Spi		= "spi";
-				String Script 	= "script";
 			}
 			String Service	= "service";
 		}
@@ -99,9 +92,7 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 		String Scheduled 	= "scheduled";	
 	}
 	
-	private static final String StateAvailable = "available";
-	
-	FileSystemApiServer 	server;
+	FileSystemApiServer 			server;
 	
 	protected Map<String, Api> 		apis = new ConcurrentHashMap<String, Api> ();
 
@@ -109,15 +100,14 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 	
 	private ScriptingEngine 		scriptingEngine;
 	
-	private ThreadGroup 			group;
-	private ThreadPoolExecutor 		executor;
+	private CodeExecutor 			executor;
 	
 	StatusManager 					statusManager;
 	
 	protected File 					home;
 
 	private Tracer 					tracer 		= NoTracing.Instance;
-
+	
 	public ApiSpaceImpl (FileSystemApiServer server, JsonObject descriptor, File home) throws Exception {
 		this.server 		= server;
 		this.descriptor 	= descriptor;
@@ -599,7 +589,7 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 	
 	@Override
 	public Object getRuntime (String name) {
-		JsonObject runtime = Json.getObject (descriptor, ApiSpace.Spec.runtime.class.getSimpleName ());
+		JsonObject runtime = Json.getObject (descriptor, RuntimeKey);
 		if (runtime == null) {
 			return null;
 		}
@@ -695,16 +685,6 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 	}
 
 	@Override
-	public void stop (long worker) throws ApiManagementException {
-		Thread [] threads = listThreads ();
-		for (Thread t : threads) {
-			if (worker == t.getId ()) {
-				t.interrupt ();
-			}
-		}
-	}
-
-	@Override
 	public void restart (String spaceNs) throws ApiManagementException {
 		try {
 			((ApiSpaceImpl)space (spaceNs)).restart ();
@@ -713,32 +693,6 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 		}
 	}
 
-	@Override
-	public <T> T async (Callable<T> callable, boolean waitForResult) throws ApiAsyncExecutionException {
-		JsonObject quotas = Json.getObject (getDescriptor (), ApiSpace.Spec.runtime.class.getSimpleName ());
-		
-		long timeout = Json.getLong (quotas, ApiSpace.Spec.runtime.Timeout, 10000);
-		
-		Future<T> future = executor.submit (callable);
-		
-		if (waitForResult) {
-			try {
-				return future.get (timeout, TimeUnit.MILLISECONDS);
-	   		} catch (TimeoutException e) {
-	   			future.cancel (true);
-	            throw new ApiAsyncExecutionException (e.getMessage (), e);
-			} catch (Exception e) {
-	            throw new ApiAsyncExecutionException (e.getMessage (), e);
-			} 
-		}
-		return null;
-	}
-	
-	@Override
-	public void async (Runnable runnable) throws ApiAsyncExecutionException {
-		executor.submit (runnable);
-	}
-	
 	@Override
 	public Tracer tracer () {
 		if (tracer == null) {
@@ -799,7 +753,7 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 		}
 		
 		if (opts.containsKey (DescribeOption.Option.runtime)) {
-			describe.set (DescribeOption.Option.runtime.name (), descriptor.get (Spec.runtime.class.getSimpleName ()));
+			describe.set (DescribeOption.Option.runtime.name (), descriptor.get (RuntimeKey));
 		}
 		
 		if (opts.containsKey (DescribeOption.Option.apis)) {
@@ -815,55 +769,8 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 			});
 		}
 		
-		if (opts.containsKey (DescribeOption.Option.workers)) {
-			JsonArray aThreads = new JsonArray ();
-			describe.set (DescribeOption.Option.workers.name (), aThreads);
-			
-			Thread [] threads = listThreads ();
-			
-			if (threads == null) {
-				return describe;
-			}
-
-			for (Thread t : threads) {
-				if (t == null) {
-					continue;
-				}
-				
-				String status = t.getState ().name ();
-				if (State.WAITING.equals (t.getState ())) {
-					status = StateAvailable;
-				}
-				
-				JsonObject oth = (JsonObject)new JsonObject ().set (Describe.Worker.Id, t.getId ()).set (Describe.Worker.Name, t.getName ()).set (Describe.Worker.Status, status);
-				if (t instanceof SpaceThread) {
-					SpaceThread st = (SpaceThread)t;
-					ApiRequest request = st.getRequest ();
-					if (request != null) {
-						JsonObject oRequest = new JsonObject ();
-						oRequest.set (ApiRequest.Fields.Id, request.getId ());
-						oRequest.set (ApiRequest.Fields.Verb, request.getVerb ().name ());
-						oRequest.set (ApiRequest.Fields.Endpoint, request.getEndpoint ());
-						oRequest.set (ApiRequest.Fields.Timestamp, Lang.toUTC (request.getTimestamp ()));
-						
-						oth.set (Describe.Worker.request.class.getSimpleName (), oRequest);
-						
-						if (request.getService () != null) {
-							JsonObject oService = new JsonObject ();
-							String script = Json.getString (request.getService ().getRuntime (), Describe.Worker.request.Script);
-							oService.set (Describe.Worker.request.Script, script);
-							if (script == null) {
-								oService.set (Describe.Worker.request.Script, request.getService ().getSpi ().getClass ().getSimpleName ());
-							}
-							oService.set (ApiService.Spec.Endpoint, request.getService ().getEndpoint ());
-							
-							oth.set (Describe.Worker.Service, oService);
-						}
-						
-					}
-				}
-				aThreads.add (oth);
-			}
+		if (opts.containsKey (DescribeOption.Option.workers) && executor != null) {
+			describe.set (DescribeOption.Option.workers.name (), executor.describe ());
 		}
 
 		return describe;		
@@ -981,18 +888,15 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 
 		tracer.log (Tracer.Level.Info, "Starting Space {0} Executor", getNamespace ());
 		
-		group = new ThreadGroup (getNamespace ());
+		// init tracer
+		JsonObject oExecutor = Json.getObject (descriptor, ConfigKeys.Executor);
+		if (!Json.isNullOrEmpty (oExecutor)) {
+			executor = (CodeExecutor)BeanUtils.create (ApiSpaceImpl.class.getClassLoader (), oExecutor, getServer ().getPluginsRegistry ());
+		}
 		
-		group.setMaxPriority (Thread.MAX_PRIORITY);
-
-		executor = new ThreadPoolExecutor (
-			server.weight (), server.weight (),
-			0L, TimeUnit.MILLISECONDS,
-			new ArrayBlockingQueue<Runnable> (server.weight () * 2), 
-			new SpaceThreadFactory (group)
-		);
-		
-		// executor.setRejectedExecutionHandler (new WaitPolicy ());
+		if (executor == null) {
+			executor = DefaultCodeExecutor.Instance;
+		}
 		
 		return true;
 	}
@@ -1005,11 +909,6 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 		tracer.log (Tracer.Level.Info, "Shutting down Space {0} Executor", getNamespace ());
 		
 		executor.shutdown ();
-	    try {
-			executor.awaitTermination (10, TimeUnit.SECONDS);
-		} catch (InterruptedException e) {
-			tracer.log (Tracer.Level.Error, Lang.BLANK, e);
-		}
 	    
 	    tracer.onShutdown (this);
 	    
@@ -1028,15 +927,6 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 	
 	private String contextRecyclableKey (String feature, String name) {
 		return this.getNamespace () + Lang.DOT + feature + Lang.DOT + name;
-	}
-
-	private Thread [] listThreads () {
-		if (group == null) {
-			return null;
-		}
-		Thread [] threads = new Thread [group.activeCount ()];
-		group.enumerate (threads, false);
-		return threads;
 	}
 
 	public SpaceKeyStore keystore () {
@@ -1114,6 +1004,11 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 				addFeature (name, fname, Json.getString (newFeature, ApiSpace.Features.Provider), Json.getObject (newFeature, ApiSpace.Features.Spec));
 			}
 		}
+	}
+
+	@Override
+	public CodeExecutor executor () {
+		return executor;
 	}
 
 }

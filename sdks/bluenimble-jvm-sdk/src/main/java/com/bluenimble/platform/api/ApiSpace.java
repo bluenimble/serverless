@@ -18,7 +18,6 @@ package com.bluenimble.platform.api;
 
 import java.util.Collection;
 import java.util.Set;
-import java.util.concurrent.Callable;
 
 import com.bluenimble.platform.Recyclable;
 import com.bluenimble.platform.Traceable;
@@ -72,8 +71,8 @@ public interface ApiSpace extends Traceable {
 			String Age 			= "age"; 
 		}
 		
-		interface runtime {
-			String Timeout 		= "timeout"; 
+		interface Runtime {
+			
 		}
 		
 		String Blocked			= "blocked";
@@ -95,10 +94,8 @@ public interface ApiSpace extends Traceable {
 	Api 				install 				(ApiStreamSource payload) 				throws ApiManagementException;
 
 	void 				uninstall 				(String api) 							throws ApiManagementException;
-	//void 				update 					(String apiNs, JsonObject descriptor) 																	throws ApiManagementException;
 	
 	void				stop					(String apiNs) 							throws ApiManagementException;
-	void				stop					(long worker) 							throws ApiManagementException;
 	void				start					(String apiNs) 							throws ApiManagementException;
 
 	void				save					() 										throws ApiManagementException;
@@ -139,11 +136,8 @@ public interface ApiSpace extends Traceable {
 	String				sign					(ApiRequest request, String utcTimestamp, String accessKey, String secretKey, boolean writeToRequest) 	
 																						throws ApiRequestSignerException;
 	
-	<T> T				async 					(Callable<T> callable, boolean waitForResult) 															
-																						throws ApiAsyncExecutionException;
-	
-	void				async 					(Runnable runnable) 					throws ApiAsyncExecutionException;
-	
+	CodeExecutor		executor 				();
+
 	void 				addRecyclable 			(String key, Recyclable recyclable);
 
 	Recyclable 			getRecyclable 			(String key);

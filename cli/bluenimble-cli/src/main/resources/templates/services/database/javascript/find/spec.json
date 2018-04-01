@@ -57,7 +57,7 @@
 	},
 	
 	"runtime": {
-		"script": "functions/${models}/Find${Models}.js"
+		"function": "functions/${models}/Find${Models}.js"
 	},
 	
 	"spi": {
