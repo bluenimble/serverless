@@ -53,11 +53,6 @@ public interface Plugin extends Traceable {
 	
 	void	onEvent 		(ApiServer.Event event, Object target) throws PluginRegistryException;
 	
-	PluginOperation
-			operation		(String name);
-	
-	void 	register		(PluginOperation operation);
-	
 	JsonObject
 			getVendor		();
 	

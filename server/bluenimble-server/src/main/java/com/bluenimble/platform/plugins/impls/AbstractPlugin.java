@@ -17,13 +17,10 @@
 package com.bluenimble.platform.plugins.impls;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.Plugin;
-import com.bluenimble.platform.plugins.PluginOperation;
 import com.bluenimble.platform.plugins.PluginRegistryException;
 import com.bluenimble.platform.server.ApiServer.Event;
 
@@ -48,10 +45,6 @@ public abstract class AbstractPlugin implements Plugin {
 	
 	protected	Tracer		tracer;
 	
-	protected 	JsonObject 	tracingSpec;
-	
-	private Map<String, PluginOperation> operations;
-
 	@Override
 	public JsonObject getVendor () {
 		return vendor;
@@ -120,22 +113,6 @@ public abstract class AbstractPlugin implements Plugin {
 		return initOnInstall;
 	}
 	
-	@Override
-	public PluginOperation operation (String name) {
-		if (operations == null || operations.isEmpty ()) {
-			return null;
-		}
-		return null;
-	}
-	
-	@Override
-	public void register (PluginOperation operation) {
-		if (operations == null) {
-			operations = new HashMap<String, PluginOperation> ();
-		}
-		operations.put (operation.name (), operation);
-	}
-
 	public void setVendor (JsonObject vendor) {
 		this.vendor = vendor;
 	}

@@ -33,6 +33,12 @@ public class DefaultTracer implements Tracer {
 
 	private static final long serialVersionUID = -1330865353010110633L;
 	
+	interface Fields {
+		String Namespace 	= "namespace";
+		String Api 			= "api";
+		String Request 		= "request";
+	} 
+	
 	interface Loggers {
 		String All 		= "All";
 		String Requests = "Requests";
@@ -50,8 +56,8 @@ public class DefaultTracer implements Tracer {
 	@Override
 	public void log (Level level, Object o, Throwable th) {
 		
-		// add namespace to the context
-		ThreadContext.put ("namespace", namespace);
+		// add runtime fields
+		addFields ();
 		
 		try {
 			switch (level) {
@@ -82,15 +88,8 @@ public class DefaultTracer implements Tracer {
 	@Override
 	public void log (Level level, Object o, Object... args) {
 		
-		// add namespace to the context
-		ThreadContext.put ("namespace", namespace);
-		
-		if (Thread.currentThread () instanceof SpaceThread) {
-			ApiRequest request = ((SpaceThread)Thread.currentThread ()).getRequest ();
-			if (request != null) {
-				ThreadContext.put ("request", request.getId ());
-			}
-		}
+		// add runtime fields
+		addFields ();
 		
 		try {
 			if (o == null) {
@@ -182,6 +181,19 @@ public class DefaultTracer implements Tracer {
 				return log.isDebugEnabled ();
 			default:
 				return false;
+		}
+	}
+	
+	private void addFields () {
+		// add namespace, reques and api to the context
+		ThreadContext.put (Fields.Namespace, namespace);
+		
+		if (Thread.currentThread () instanceof SpaceThread) {
+			ApiRequest request = ((SpaceThread)Thread.currentThread ()).getRequest ();
+			if (request != null) {
+				ThreadContext.put (Fields.Api, request.getApi ());
+				ThreadContext.put (Fields.Request, request.getId ());
+			}
 		}
 	}
 	
