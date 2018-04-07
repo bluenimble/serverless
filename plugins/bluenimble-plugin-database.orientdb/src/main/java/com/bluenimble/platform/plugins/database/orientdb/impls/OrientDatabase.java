@@ -298,10 +298,10 @@ public class OrientDatabase implements Database {
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<DatabaseObject> find (String name, Query query, Visitor visitor) throws DatabaseException {
+	public List<DatabaseObject> find (String type, Query query, Visitor visitor) throws DatabaseException {
 		List<ODocument> result;
 		try {
-			result = (List<ODocument>)_query (name, Query.Construct.select, query, false);
+			result = (List<ODocument>)_query (type, Query.Construct.select, query, false);
 		} catch (Exception e) {
 			throw new DatabaseException (e.getMessage (), e);
 		}
@@ -309,7 +309,7 @@ public class OrientDatabase implements Database {
 			return null;
 		}
 		
-		return toList (name, result, visitor);
+		return toList (type, result, visitor);
 	}
 
 	@Override
@@ -375,11 +375,11 @@ public class OrientDatabase implements Database {
 	}
 
 	@Override
-	public int delete (Query query) throws DatabaseException {
+	public int delete (String type, Query query) throws DatabaseException {
 		if (query == null) {
 			return 0;
 		}
-		Object result = _query (null, Query.Construct.delete, query, false);
+		Object result = _query (type, Query.Construct.delete, query, false);
 		if (result == null) {
 			return 0;
 		}

@@ -16,6 +16,7 @@
  */
 package com.bluenimble.platform.remote.impls.http;
 
+import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.SocketTimeoutException;
@@ -509,9 +510,8 @@ public class HttpRemote implements Remote {
 		
 	}
 	
-	public static void main (String [] args) {
-		new HttpRemote (null).get ((JsonObject)new JsonObject ().set (Spec.Endpoint, "https://www.bluenimble.com:10000")
-				.set (Spec.Sign, new JsonObject ().set (Spec.SignKey, "key").set (Spec.SignSecret, "secret")), new Callback () {
+	public static void main (String [] args) throws Exception {
+		new HttpRemote (Json.load (new File ("/tmp/broker-http-post-master.json"))).post (Json.load (new File ("/tmp/broker-http-post-data.json")), new Callback () {
 			@Override
 			public void onSuccess (int code, Object data) {
 				System.err.println ("Success\n\t" + code + " : " + data);

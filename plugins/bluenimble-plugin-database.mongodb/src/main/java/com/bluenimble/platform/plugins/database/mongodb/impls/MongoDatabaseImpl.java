@@ -328,11 +328,11 @@ $jsonSchema: {
 	}
 
 	@Override
-	public int delete (Query query) throws DatabaseException {
+	public int delete (String type, Query query) throws DatabaseException {
 		if (query == null) {
 			return 0;
 		}
-		Object result = _query (null, Query.Construct.delete, query);
+		Object result = _query (type, Query.Construct.delete, query);
 		if (result == null) {
 			return 0;
 		}

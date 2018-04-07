@@ -132,9 +132,10 @@ var Database = function (api, proxy) {
 			throw "missing query argument";
 		}
 		
-		query [JC_Database_Fields.Entity] = entity;
-		
-		return proxy.delete (new JC_JsonQuery (JC_Converters.convert (query), bindings));
+		return proxy.delete (
+			entity,
+			new JC_JsonQuery (JC_Converters.convert (query), bindings ? JC_Converters.convert (bindings) : null)
+		);
 	};
 
 	/**	

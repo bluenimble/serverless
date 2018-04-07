@@ -102,10 +102,12 @@ public interface Database extends Recyclable {
 	DatabaseObject			get 		(String entity, Object id) 								throws DatabaseException;
 	
 	int 					delete 		(String entity, Object id) 								throws DatabaseException;
-	int 					delete 		(Query query) 											throws DatabaseException;
+	int 					delete 		(String entity, Query query) 							throws DatabaseException;
 
-	void 					add 		(DatabaseObject parent, String collection, DatabaseObject child) 		throws DatabaseException;
-	void 					remove 		(DatabaseObject parent, String collection, DatabaseObject child) 		throws DatabaseException;
+	void 					add 		(DatabaseObject parent, String collection, DatabaseObject child) 		
+																								throws DatabaseException;
+	void 					remove 		(DatabaseObject parent, String collection, DatabaseObject child) 		
+																								throws DatabaseException;
 	
 	JsonObject 				bulk 		(JsonObject data) 										throws DatabaseException;
 
