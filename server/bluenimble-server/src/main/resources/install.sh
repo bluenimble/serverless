@@ -46,25 +46,31 @@ sudo rpm -qa | grep -qw java-1.8.0-openjdk || sudo yum -y install java-1.8.0-ope
 VERSION=$1
 
 if [ -z "$VERSION" ] ; then
+	echo "enter a version to install!"
+	echo "   Example: ./install.sh 1.2.0"
+	echo "Check https://github.com/bluenimble/serverless/releases for available versions"
     exit 1
 fi
 
 echo "Download and install BlueNimble"
-# download, extract and setup the SPA
 wget --no-cache https://github.com/bluenimble/serverless/releases/download/v${VERSION}/bluenimble-${VERSION}-bin.tar.gz && \
   sudo tar -xvzf bluenimble-${VERSION}-bin.tar.gz -C /opt/bluenimble && \
   rm -f bluenimble-${VERSION}-bin.tar.gz
 
-sudo mv /opt/bluenimble/bluenimble-${VERSION} /opt/bluenimble/platform 
+echo "Delete playground plugin and space"
+sudo mv /opt/bluenimble/bluenimble-${VERSION} /opt/bluenimble/platform
 
+sudo rm -fr /opt/bluenimble/plugins/bluenimble-plugin-dev.playground-${VERSION}
+sudo rm -fr /opt/bluenimble/spaces/playground
+
+echo "Create BlueNimble auto-start Service"
 sudo chmod 755 /opt/bluenimble/platform/bnb.sh
 sudo chmod 755 /opt/bluenimble/platform/bnb.stop.sh
 
-echo "Create BlueNimble SPA auto-start Service"
 sudo cp /opt/bluenimble/platform/bnb.service /etc/systemd/system/bnb.service
 sudo chmod 664 /etc/systemd/system/bnb.service
 sudo systemctl enable /etc/systemd/system/bnb.service
 sudo systemctl daemon-reload
 
-echo "Start BlueNimble Server Service"
+echo "Start BlueNimble Service"
 sudo systemctl start bnb.service
