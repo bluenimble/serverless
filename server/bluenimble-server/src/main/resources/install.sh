@@ -9,12 +9,7 @@ echo       "Copyright (c) BlueNimble, Inc. (https://www.bluenimble.com)"
 echo       ""
 echo       "Install BlueNimble"
 
-if [ ! -f "root.keys" ]; then
-	echo "[ERROR] root.keys not found"
-	exit 1
-fi
-
-if [ ! -d "/opt/bluenimble/platform" ]; then
+if [ -d "/opt/bluenimble/platform" ]; then
 	echo "[WARNING] BlueNimble is already installed in this host"
 	exit 0
 fi
@@ -35,11 +30,9 @@ sudo sysctl -w net.ipv4.tcp_max_tw_buckets=1440000
 sudo sysctl -w net.ipv4.tcp_fin_timeout=15
 sudo sysctl -w net.ipv4.tcp_window_scaling=1
 
-echo       "  Create /opt/bluenimble/platform and /data/bluenimble/runtime folders"
+echo       "  Create /opt/bluenimble folder"
 
-sudo mkdir -p /opt/bluenimble/platform
-sudo mkdir -p /data/bluenimble/tenant
-sudo mkdir -p /data/bluenimble/runtime
+sudo mkdir -p /opt/bluenimble
 
 echo "Update yum"
 # update linux software repo
@@ -50,15 +43,22 @@ sudo rpm -qa | grep -qw wget || sudo yum install -y wget
 sudo rpm -qa | grep -qw nfs-utils || sudo yum install -y nfs-utils
 sudo rpm -qa | grep -qw java-1.8.0-openjdk || sudo yum -y install java-1.8.0-openjdk
 
+VERSION=$1
+
+if [ -z "$VERSION" ] ; then
+    exit 1
+fi
+
 echo "Download and install BlueNimble"
 # download, extract and setup the SPA
-wget --no-cache http://downloads.bluenimble.com/platform/bluenimble-server.tar.gz && \
-  sudo tar -xvzf bluenimble-server.tar.gz -C /opt/bluenimble/platform && \
-  rm -f bluenimble-server.tar.gz
+wget --no-cache https://github.com/bluenimble/serverless/releases/download/v${VERSION}/bluenimble-${VERSION}-bin.tar.gz && \
+  sudo tar -xvzf bluenimble-${VERSION}-bin.tar.gz -C /opt/bluenimble && \
+  rm -f bluenimble-${VERSION}-bin.tar.gz
+
+sudo mv /opt/bluenimble/bluenimble-${VERSION} /opt/bluenimble/platform 
 
 sudo chmod 755 /opt/bluenimble/platform/bnb.sh
 sudo chmod 755 /opt/bluenimble/platform/bnb.stop.sh
-sudo chmod 755 /opt/bluenimble/platform/upgrade.sh
 
 echo "Create BlueNimble SPA auto-start Service"
 sudo cp /opt/bluenimble/platform/bnb.service /etc/systemd/system/bnb.service

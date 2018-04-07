@@ -75,7 +75,7 @@ var Tracer = function (proxy) {
 		var level = JC_Tracer_Level.Info;
 		try {
 			level = JC_Tracer_Level.valueOf (args [0]);
-		} catch () {}
+		} catch (e) {}
 		args [0] = level;
 		this._log (args);
 	};
