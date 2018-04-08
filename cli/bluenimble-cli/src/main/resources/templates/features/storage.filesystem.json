@@ -1,10 +1,9 @@
 {
-	"name": "s3",
+	
 	"feature": "storage",
-	"provider": "s3",
+	
 	"spec": {
-		"accessKey": 	"your aws s3 access key",
-		"secretKey": 	"your aws s3 secret key",
-		"bucket":		"your aws s3 bucket"
+		"mount": "yourMount"
 	}
+	
 }

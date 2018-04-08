@@ -1,0 +1,9 @@
+{
+	
+	"feature": "remote",
+	
+	"spec": {
+		"endpoint": "yourEndpoint"
+	}
+	
+}

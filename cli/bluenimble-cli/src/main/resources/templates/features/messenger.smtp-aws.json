@@ -1,7 +1,7 @@
 {
-	"name": "email",
+	
 	"feature": "messenger",
-	"provider": "bnb-smtp",
+
 	"spec": {
 		"server": {
 			"mail.smtp.host": "email-smtp.us-west-2.amazonaws.com",
@@ -16,4 +16,5 @@
 			"password": "your aws smtp password"
 		}
 	}
+	
 }

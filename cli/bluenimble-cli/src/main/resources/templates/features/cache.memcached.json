@@ -1,6 +1,7 @@
 {
-	"name": "a name/id developers will use to work with this feature. Default to 'default'",
-	
+
+	"feature": "cache",
+
 	"spec": {
 		"cluster": "hosts where memcached/redis is running. Ex. host1:port1,host2:port2,...",
 		
@@ -9,4 +10,5 @@
 			"password": "password"
 		}
 	}
+	
 }

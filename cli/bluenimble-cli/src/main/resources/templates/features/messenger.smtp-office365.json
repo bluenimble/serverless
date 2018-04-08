@@ -1,7 +1,7 @@
 {
-	"name": "email",
+	
 	"feature": "messenger",
-	"provider": "bnb-smtp",
+
 	"spec": {
 		"server": {
 			"mail.smtp.host": "smtp.office365.com",
@@ -14,4 +14,5 @@
 			"password": "your office365 password"
 		}
 	}
+	
 }

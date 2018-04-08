@@ -1,5 +1,5 @@
 {
-	"name": "messenger.smtp.bnb",
+	"name": "messenger.smtp",
 	"title": "Messenger Implementation - SMTP",
 	
 	"spi": {

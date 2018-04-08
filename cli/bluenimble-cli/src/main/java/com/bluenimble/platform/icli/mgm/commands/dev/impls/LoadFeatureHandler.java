@@ -28,6 +28,7 @@ import com.bluenimble.platform.cli.command.CommandExecutionException;
 import com.bluenimble.platform.cli.command.CommandHandler;
 import com.bluenimble.platform.cli.command.CommandResult;
 import com.bluenimble.platform.cli.command.impls.DefaultCommandResult;
+import com.bluenimble.platform.icli.mgm.BlueNimble;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.templating.VariableResolver;
 import com.bluenimble.platform.templating.impls.DefaultExpressionCompiler;
@@ -35,6 +36,15 @@ import com.bluenimble.platform.templating.impls.DefaultExpressionCompiler;
 public class LoadFeatureHandler implements CommandHandler {
 
 	private static final long serialVersionUID = 7185236990672693349L;
+	
+	private static final String VarsSep 	= "__";
+	
+	private static final String Templates 	= "templates/features";
+	
+	private static final String Name 		= "name";
+	private static final String Provider 	= "provider";
+	private static final String Default 	= "default";
+
 	
 	private static final DefaultExpressionCompiler ExpressionCompiler = new DefaultExpressionCompiler ();
 	
@@ -47,15 +57,17 @@ public class LoadFeatureHandler implements CommandHandler {
 		
 		String path = args [0];
 		
-		File templateFile = new File (path + ".json");
+		File features = new File (BlueNimble.Home, Templates);
 		
-		String name = templateFile.getName ();
+		File templateFile = new File (features, path + ".json");
 		
 		if (!templateFile.exists () || !templateFile.isFile ()) {
 			throw new CommandExecutionException ("invalid file path > " + path);
 		}
 		
-		String key = name.substring (0, name.lastIndexOf (Lang.DOT));
+		String name = templateFile.getName ();
+		
+		String fKey = name.substring (0, name.lastIndexOf (Lang.DOT));
 		
 		JsonObject oFeature;
 		try {
@@ -64,17 +76,21 @@ public class LoadFeatureHandler implements CommandHandler {
 			throw new CommandExecutionException (e.getMessage (), e);
 		}
 		
-		String provider 	= key;
+		String provider 	= fKey;
 		String [] variables	= null;
 		
-		int indexOfDash = key.indexOf (Lang.DASH);
+		int indexOfDash = fKey.indexOf (Lang.DASH);
 		if (indexOfDash > 0) {
-			provider 	= key.substring (0, indexOfDash);
-			variables 	= Lang.split (key.substring (indexOfDash + 1), "__", true);
+			provider 	= fKey.substring (0, indexOfDash);
+			variables 	= Lang.split (fKey.substring (indexOfDash + 1), VarsSep, true);
 		}
 		
-		oFeature.set ("name", "default");
-		oFeature.set ("provider", provider);
+		if (!oFeature.containsKey (Name)) {
+			oFeature.set (Name, Default);
+		}
+		if (!oFeature.containsKey (Provider)) {
+			oFeature.set (Provider, provider);
+		}
 		
 		final Map<String, String> mVariables = new HashMap<String, String> ();
 		
@@ -99,7 +115,7 @@ public class LoadFeatureHandler implements CommandHandler {
 		
 		@SuppressWarnings("unchecked")
 		Map<String, Object> vars = (Map<String, Object>)tool.currentContext ().get (ToolContext.VARS);
-		vars.put (key, oFeature);
+		vars.put (fKey, oFeature);
 		
 		return new DefaultCommandResult (CommandResult.OK, oFeature);
 	}
