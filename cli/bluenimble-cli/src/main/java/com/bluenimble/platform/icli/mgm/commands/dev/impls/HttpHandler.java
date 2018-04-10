@@ -27,7 +27,7 @@ import com.bluenimble.platform.cli.command.CommandExecutionException;
 import com.bluenimble.platform.cli.command.CommandHandler;
 import com.bluenimble.platform.cli.command.CommandResult;
 import com.bluenimble.platform.icli.mgm.commands.mgm.RemoteCommand.Spec;
-import com.bluenimble.platform.icli.mgm.utils.RemoteUtils;
+import com.bluenimble.platform.icli.mgm.remote.RemoteUtils;
 import com.bluenimble.platform.json.JsonObject;
 
 public class HttpHandler implements CommandHandler {

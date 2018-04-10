@@ -29,7 +29,7 @@ import com.bluenimble.platform.cli.command.CommandResult;
 import com.bluenimble.platform.cli.command.CommandHandler.AbstractArg;
 import com.bluenimble.platform.cli.command.CommandHandler.Arg;
 import com.bluenimble.platform.cli.command.impls.PrefixedCommand;
-import com.bluenimble.platform.icli.mgm.utils.RemoteUtils;
+import com.bluenimble.platform.icli.mgm.remote.RemoteUtils;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 

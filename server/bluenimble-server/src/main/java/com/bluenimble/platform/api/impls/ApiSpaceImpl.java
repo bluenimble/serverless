@@ -840,11 +840,13 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 		}
 		return apis.keySet ().iterator ();
 	}
-	
-	public void shutdown () {
-		tracer.log (Tracer.Level.Info, "Shutting down Space {0}", getNamespace ());
+
+	public void stop () {
+		if (!isStarted ()) {
+			return;
+		}
 		
-		stop ();
+		tracer.log (Tracer.Level.Info, "Stopping down Space {0}", getNamespace ());
 		
 		if (!apis.isEmpty ()) {
 			Iterator<Api> ip = apis.values ().iterator ();
@@ -854,6 +856,11 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 				ip.remove ();
 			}
 		}	
+		
+		executor.shutdown ();
+	    
+	    tracer.onShutdown (this);
+	    
 	}
 	
 	public boolean restart () throws Exception {
@@ -862,7 +869,6 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 	}
 
 	public boolean start () throws Exception {
-		
 		if (isStarted () || isBlocked ()) {
 			return false;
 		}
@@ -879,39 +885,30 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 		}
 		
 		tracer.log (Tracer.Level.Info, "Init {0} StatusManager", getNamespace ());
-		
-		statusManager = new DefaultStatusManager (this);
+		// init tracer
+		JsonObject oStatusManager = Json.getObject (descriptor, ConfigKeys.StatusManager);
+		if (!Json.isNullOrEmpty (oStatusManager)) {
+			statusManager = (StatusManager)BeanUtils.create (ApiSpaceImpl.class.getClassLoader (), oStatusManager, getServer ().getPluginsRegistry ());
+		}
+		if (statusManager == null) {
+			statusManager = new DefaultStatusManager (this);
+		} 
 		
 		tracer.log (Tracer.Level.Info, "Loading {0} keystore", getNamespace ());
 		
 		keystore = server.getKeyStoreManager () == null ? null : server.getKeyStoreManager ().read (this);
 
-		tracer.log (Tracer.Level.Info, "Starting Space {0} Executor", getNamespace ());
-		
 		// init tracer
 		JsonObject oExecutor = Json.getObject (descriptor, ConfigKeys.Executor);
 		if (!Json.isNullOrEmpty (oExecutor)) {
+			tracer.log (Tracer.Level.Info, "Starting Space {0} Executor", getNamespace ());
 			executor = (CodeExecutor)BeanUtils.create (ApiSpaceImpl.class.getClassLoader (), oExecutor, getServer ().getPluginsRegistry ());
 		}
-		
 		if (executor == null) {
 			executor = DefaultCodeExecutor.Instance;
 		}
 		
 		return true;
-	}
-
-	public void stop () {
-		if (!isStarted ()) {
-			return;
-		}
-		
-		tracer.log (Tracer.Level.Info, "Shutting down Space {0} Executor", getNamespace ());
-		
-		executor.shutdown ();
-	    
-	    tracer.onShutdown (this);
-	    
 	}
 
 	public ApiServer getServer () {

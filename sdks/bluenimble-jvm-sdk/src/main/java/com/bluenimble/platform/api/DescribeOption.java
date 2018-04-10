@@ -62,7 +62,8 @@ public class DescribeOption implements Serializable {
 		tracking,
 		runtime,
 		custom,
-		all
+		all,
+		failed
 	}
 	
 	private Option 	option;

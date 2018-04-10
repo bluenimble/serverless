@@ -30,10 +30,6 @@ import com.bluenimble.platform.security.SpaceKeyStore;
 
 public interface ApiSpace extends Traceable {
 	
-	interface FeatureProviders {
-		String Platform = "platform";
-	}
-	
 	interface Features {
 		String Default 		= "default";
 		String Provider 	= "provider";

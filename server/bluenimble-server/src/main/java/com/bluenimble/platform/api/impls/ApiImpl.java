@@ -655,7 +655,7 @@ public class ApiImpl implements Api {
 					
 					fServices.add (sDesc);
 				}
-				if (ApiStatus.Failed.equals (service.status ())) {
+				if (ApiStatus.Failed.equals (service.status ()) && opts.containsKey (DescribeOption.Option.failed)) {
 					failedServices.put (
 						service.getVerb ().name () + Lang.SPACE + Json.getString (service.toJson (), ApiService.Spec.Endpoint), 
 						service.getFailure ()

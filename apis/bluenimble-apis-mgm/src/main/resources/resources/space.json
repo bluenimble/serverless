@@ -9,7 +9,7 @@
 	"features": {
 		"scripting": {
 			"default": {
-				"provider": "bnb-javascript"
+				"provider": "scripting.javascript"
 			}
 		}
 	},

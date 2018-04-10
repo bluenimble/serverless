@@ -10,8 +10,17 @@ echo       ""
 echo       "Install BlueNimble"
 
 if [ -d "/opt/bluenimble/platform" ]; then
-	echo "[WARNING] BlueNimble is already installed in this host"
-	exit 0
+	echo "[ERROR] BlueNimble is already installed in this host"
+	exit 1
+fi
+
+VERSION=$1
+
+if [ -z "$VERSION" ] ; then
+	echo "enter a version to install!"
+	echo "   Example: ./install.sh 1.2.0"
+	echo "Check https://github.com/bluenimble/serverless/releases for available versions"
+    exit 1
 fi
 
 # change machine limits
@@ -43,15 +52,6 @@ sudo rpm -qa | grep -qw wget || sudo yum install -y wget
 sudo rpm -qa | grep -qw nfs-utils || sudo yum install -y nfs-utils
 sudo rpm -qa | grep -qw java-1.8.0-openjdk || sudo yum -y install java-1.8.0-openjdk
 
-VERSION=$1
-
-if [ -z "$VERSION" ] ; then
-	echo "enter a version to install!"
-	echo "   Example: ./install.sh 1.2.0"
-	echo "Check https://github.com/bluenimble/serverless/releases for available versions"
-    exit 1
-fi
-
 echo "Download and install BlueNimble"
 wget --no-cache https://github.com/bluenimble/serverless/releases/download/v${VERSION}/bluenimble-${VERSION}-bin.tar.gz && \
   sudo tar -xvzf bluenimble-${VERSION}-bin.tar.gz -C /opt/bluenimble && \
@@ -64,8 +64,8 @@ sudo rm -fr /opt/bluenimble/plugins/bluenimble-plugin-dev.playground-${VERSION}
 sudo rm -fr /opt/bluenimble/spaces/playground
 
 echo "Create BlueNimble auto-start Service"
-sudo chmod 755 /opt/bluenimble/platform/bnb.sh
-sudo chmod 755 /opt/bluenimble/platform/bnb.stop.sh
+sudo chmod u+x /opt/bluenimble/platform/bnb.sh
+sudo chmod u+x /opt/bluenimble/platform/bnb.stop.sh
 
 sudo cp /opt/bluenimble/platform/bnb.service /etc/systemd/system/bnb.service
 sudo chmod 664 /etc/systemd/system/bnb.service

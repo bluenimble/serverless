@@ -312,11 +312,11 @@ public class FileSystemApiServer extends AbstractApiServer {
 		});
 		
 		if (apis == null || apis.length == 0) {
-			tracer.log (Tracer.Level.Info, "\tno apis found in space [{0}]", spaceHome.getName ());
+			tracer.log (Tracer.Level.Info, "\tno apis found in Space {0}", spaceHome.getName ());
 			return;
 		}
 		
-		tracer.log (Tracer.Level.Info, "\tfound ({0}) Api(s) in [{1}]", apis.length, spaceHome.getName ());
+		tracer.log (Tracer.Level.Info, "\tfound {0} Api(s) in Space {1}", apis.length, spaceHome.getName ());
 
 		for (File aFile : apis) {
 			Api api = null;
@@ -436,7 +436,7 @@ public class FileSystemApiServer extends AbstractApiServer {
 		
 		if (spaces != null) {
 			for (ApiSpace space : spaces) {
-				((ApiSpaceImpl)space).shutdown ();
+				((ApiSpaceImpl)space).stop ();
 			}
 		}
 

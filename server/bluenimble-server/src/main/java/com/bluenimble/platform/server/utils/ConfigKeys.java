@@ -63,6 +63,7 @@ public interface ConfigKeys {
 	String Executor			= "executor";
 	
 	String Tracer			= "tracer";
+	String StatusManager	= "statusManager";
 	
 	String ApiExt 			= ".api";
 	String PluginExt 		= ".xpl";

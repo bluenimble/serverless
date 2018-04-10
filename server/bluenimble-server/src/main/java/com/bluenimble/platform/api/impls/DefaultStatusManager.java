@@ -56,6 +56,7 @@ public class DefaultStatusManager implements StatusManager {
 	
 	private long						delay 	= 0;
 	private long						period 	= 20;
+	
 	private ScheduledExecutorService 	listener;
 	
 	private File 						statusFile;
@@ -70,7 +71,7 @@ public class DefaultStatusManager implements StatusManager {
 		
 		File statusFile = new File (space.home, ConfigKeys.StatusFile);
 		
-		if (!statusFile.exists ()) {
+		if (!statusFile.exists () && space.server.tenant () != null) {
 			statusFile = new File (space.server.tenant (), space.getNamespace () + Lang.SLASH + ConfigKeys.StatusFile);
 		}
 		

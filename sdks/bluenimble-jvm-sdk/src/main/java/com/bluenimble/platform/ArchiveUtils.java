@@ -127,30 +127,23 @@ public class ArchiveUtils {
 			File [] files = folder.listFiles ();
 			if (files != null && files.length > 0) {
 				for (File f : files) {
-					boolean add = true;
-					if (visitor != null) {
-						add = visitor.onAdd (f);
-					}
-					if (add) {
-						addEntry (null, f, zip);
-					}
+					addEntry (null, f, zip, visitor);
 				}
 			}
 		} else {
-			boolean add = true;
-			if (visitor != null) {
-				add = visitor.onAdd (folder);
-			}
-			if (add) {
-				addEntry (null, folder, zip);
-			}
+			addEntry (null, folder, zip, visitor);
 		}
 		
 		IOUtils.closeQuietly (zip);
 		
 	}
 	
-	private static void addEntry (String parent, File file, ZipOutputStream zip) throws IOException {
+	private static void addEntry (String parent, File file, ZipOutputStream zip, CompressVisitor visitor) throws IOException {
+		
+		boolean add = visitor != null ? visitor.onAdd (file) : true;
+		if (!add) {
+			return;
+		}
 		
 		String name = file.getName () +	(file.isDirectory () ? Lang.SLASH : Lang.BLANK);
 		if (parent != null) {
@@ -168,7 +161,7 @@ public class ArchiveUtils {
 				zip.putNextEntry (entry);
 			} else {
 				for (File f : files) {
-					addEntry (name, f, zip);
+					addEntry (name, f, zip, visitor);
 				}
 			}
 		} else {
@@ -191,7 +184,16 @@ public class ArchiveUtils {
 	}
 	
 	public static void main (String[] args) throws IOException {
-		compress (new File ("/temp/odwek"), new File ("/temp/file.dar"), true);
+		
+		compress (new File ("/bluenimble/workspace/alpha"), new File ("/tmp/myapi.api"), true, new ArchiveUtils.CompressVisitor () {
+			
+			@Override
+			public boolean onAdd (File file) {
+				return !file.getName ().startsWith (Lang.DOT);
+			}
+			
+		});
+		
 	}
 	
 }

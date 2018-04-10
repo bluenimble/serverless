@@ -14,27 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.icli.mgm.utils;
+package com.bluenimble.platform.icli.mgm.remote;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import org.yaml.snakeyaml.Yaml;
 
 import com.bluenimble.platform.ArchiveUtils;
-import com.bluenimble.platform.Encodings;
 import com.bluenimble.platform.FileUtils;
 import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Json;
@@ -45,10 +38,7 @@ import com.bluenimble.platform.cli.Tool;
 import com.bluenimble.platform.cli.ToolContext;
 import com.bluenimble.platform.cli.command.CommandExecutionException;
 import com.bluenimble.platform.cli.command.CommandResult;
-import com.bluenimble.platform.cli.command.impls.DefaultCommandResult;
 import com.bluenimble.platform.cli.command.parser.converters.StreamPointer;
-import com.bluenimble.platform.cli.impls.AbstractTool;
-import com.bluenimble.platform.cli.impls.YamlObject;
 import com.bluenimble.platform.http.HttpEndpoint;
 import com.bluenimble.platform.http.HttpHeader;
 import com.bluenimble.platform.http.HttpMessageBody;
@@ -75,6 +65,11 @@ import com.bluenimble.platform.icli.mgm.BlueNimble;
 import com.bluenimble.platform.icli.mgm.BlueNimble.DefaultVars;
 import com.bluenimble.platform.icli.mgm.Keys;
 import com.bluenimble.platform.icli.mgm.commands.mgm.RemoteCommand.Spec;
+import com.bluenimble.platform.icli.mgm.remote.impls.JsonResponseReader;
+import com.bluenimble.platform.icli.mgm.remote.impls.StreamResponseReader;
+import com.bluenimble.platform.icli.mgm.remote.impls.TextResponseReader;
+import com.bluenimble.platform.icli.mgm.remote.impls.XmlResponseReader;
+import com.bluenimble.platform.icli.mgm.remote.impls.YamlResponseReader;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.security.KeyPair;
 import com.bluenimble.platform.templating.VariableResolver;
@@ -86,8 +81,8 @@ public class RemoteUtils {
 
 	private static final String EmptyPayload 	= "__EP__";
 	
-	private static final String RemoteResponseHeaders 	= "remote.response.headers";
-	private static final String RemoteResponseError 	= "remote.response.error";
+	public static final String RemoteResponseHeaders 	= "remote.response.headers";
+	public static final String RemoteResponseError 	= "remote.response.error";
 	
 	interface ResponseActions {
 		String Store 	= "store";
@@ -105,13 +100,14 @@ public class RemoteUtils {
 		HttpRequests.put (HttpMethods.PATCH, 	PatchRequest.class);
 	}
 	
-	private static final Set<String> Printable = new HashSet<String> ();
+	private static final Map<String, ResponseReader> Readers = new HashMap<String, ResponseReader> ();
 	static {
-		Printable.add (ApiContentTypes.Json);
-		Printable.add (ApiContentTypes.Yaml);
-		Printable.add (ApiContentTypes.Text);
-		Printable.add (ApiContentTypes.Html);
-		Printable.add (ApiContentTypes.Xml);
+		Readers.put (ApiContentTypes.Json, 		new JsonResponseReader ());
+		Readers.put (ApiContentTypes.Yaml, 		new YamlResponseReader ());
+		Readers.put (ApiContentTypes.Text, 		new TextResponseReader ());
+		Readers.put (ApiContentTypes.Html, 		new TextResponseReader ());
+		Readers.put (ApiContentTypes.Xml, 		new XmlResponseReader ());
+		Readers.put (ApiContentTypes.Stream, 	new StreamResponseReader ());
 	}
 	
 	private static DefaultHttpClient Http; 
@@ -148,8 +144,6 @@ public class RemoteUtils {
 			Http.setTrustAll (Lang.TrueValues.contains (String.valueOf (oTrustAll)));
 		}
 		
-		boolean isOutFile = AbstractTool.CMD_OUT_FILE.equals (vars.get (AbstractTool.CMD_OUT));
-		
 		List<Object> streams = new ArrayList<Object> ();
 		
 		HttpResponse response = null;
@@ -161,7 +155,7 @@ public class RemoteUtils {
 			
 			String contentType = response.getContentType ();
 			if (contentType == null) {
-				contentType = ApiContentTypes.Text;
+				contentType = ApiContentTypes.Stream;
 			}
 			
 			int indexOfSemi = contentType.indexOf (Lang.SEMICOLON);
@@ -170,11 +164,9 @@ public class RemoteUtils {
 				contentType = contentType.substring (0, indexOfSemi).trim ();
 			}
 			
-			OutputStream out = System.out;
-			
-			if (Printable.contains (contentType) && !isOutFile) {
-				out = new ByteArrayOutputStream ();
-				response.getBody ().dump (out, Encodings.UTF8, null);
+			ResponseReader reader = Readers.get (contentType);
+			if (reader == null) {
+				reader = Readers.get (ApiContentTypes.Stream);
 			}
 			
 			List<HttpHeader> rHeaders = response.getHeaders ();
@@ -186,68 +178,7 @@ public class RemoteUtils {
 				vars.put (RemoteResponseHeaders, oHeaders);
 			}
 			
-			if (contentType.startsWith (ApiContentTypes.Json)) {
-				JsonObject result = new JsonObject (new String (((ByteArrayOutputStream)out).toByteArray ()));
-				String trace = null;
-				if (response.getStatus () >= 400) {
-					trace = result.getString ("trace");
-					result.remove ("trace");
-				}
-				
-				if (trace != null && Lang.isDebugMode ()) {
-					vars.put (RemoteResponseError, trace);
-				}
-				
-				if (response.getStatus () < 400) {
-					return new DefaultCommandResult (CommandResult.OK, result);
-				} else {
-					return new DefaultCommandResult (CommandResult.KO, result);
-				}
-			} else if (contentType.startsWith (ApiContentTypes.Yaml)) {
-				Yaml yaml = new Yaml ();
-				
-				String ys = new String (((ByteArrayOutputStream)out).toByteArray ());
-					   ys = Lang.replace (ys, Lang.TAB, "  ");	
-					   
-				@SuppressWarnings("unchecked")
-				Map<String, Object> map = yaml.loadAs (ys, Map.class);
-				Object trace = null;
-				if (response.getStatus () >= 400) {
-					trace = map.get ("trace");
-					map.remove ("trace");
-				}
-				
-				if (trace != null && Lang.isDebugMode ()) {
-					vars.put (RemoteResponseError, trace);
-				}
-				
-				if (response.getStatus () < 400) {
-					return new DefaultCommandResult (CommandResult.OK, new YamlObject (map));
-				} else {
-					return new DefaultCommandResult (CommandResult.KO, new YamlObject (map));
-				}
-			} else if (contentType.startsWith (ApiContentTypes.Text) || contentType.startsWith (ApiContentTypes.Html)) {
-				String content = new String (((ByteArrayOutputStream)out).toByteArray ());
-				if (response.getStatus () < 400) {
-					return new DefaultCommandResult (CommandResult.OK, content);
-				} else {
-					return new DefaultCommandResult (CommandResult.KO, content);
-				}
-			} else {
-				if (response.getStatus () < 400) {
-					if (isOutFile) {
-						return new DefaultCommandResult (CommandResult.OK, response.getBody ().get (0).toInputStream ());
-					} else {
-						ByteArrayOutputStream baos = new ByteArrayOutputStream ();
-						response.getBody ().dump (baos, Encodings.UTF8, null);
-						return new DefaultCommandResult (CommandResult.OK, new String (((ByteArrayOutputStream)baos).toByteArray ()));
-					}
-				} else {
-					ByteArrayOutputStream baos = new ByteArrayOutputStream ();
-					response.getBody ().dump (baos, Encodings.UTF8, null);
-					return new DefaultCommandResult (CommandResult.KO, new String (((ByteArrayOutputStream)baos).toByteArray ()));
-				}
-			}
+			return reader.read (tool, contentType, response);
 			
 		} catch (Exception e) {
 			throw new CommandExecutionException (e.getMessage (), e);
@@ -415,10 +346,7 @@ public class RemoteUtils {
 						ArchiveUtils.compress (file, zipFile, true, new ArchiveUtils.CompressVisitor () {
 							@Override
 							public boolean onAdd (File file) {
-								if (file.getName ().startsWith (Lang.DOT)) {
-									return false;
-								}
-								return true;
+								return !file.getName ().startsWith (Lang.DOT);
 							}
 						});
 						

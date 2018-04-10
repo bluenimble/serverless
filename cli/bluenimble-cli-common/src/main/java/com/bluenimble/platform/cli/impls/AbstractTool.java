@@ -31,6 +31,7 @@ import java.util.Map;
 
 import com.bluenimble.platform.Crypto;
 import com.bluenimble.platform.Crypto.Algorithm;
+import com.bluenimble.platform.api.ApiStreamSource;
 import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.cli.I18nProvider;
@@ -291,165 +292,170 @@ public abstract class AbstractTool implements Tool {
 				cmd = getCommand (synCommandName);
 			}
 		}
-		if (cmd != null) {
-			if (!cmd.forContext (currentContext)) {
-				printer.error ("Command [" + commandName + "] not found in current context");
-			} else {
-				history.add (cmdLine);
-				if (!cmd.isSingleton (this)) {
-					try {
-						cmd = (Command)cmd.getClass ().newInstance ();
-					} catch (Throwable th) {
-						if (isTestMode ()) {
-							printer ().content (th.getMessage (), Lang.toString (th));
-						}
-						onException (cmd, th); return FAILURE;
-					}
+		
+		if (cmd == null) {
+			printer.error ("command '" + commandName + "' not found. Type in 'help' to list all available commands");
+			return FAILURE;
+		}
+		
+		if (!cmd.forContext (currentContext)) {
+			printer.error ("Command [" + commandName + "] not found in current context");
+			return FAILURE;
+		} 
+		
+		history.add (cmdLine);
+		
+		if (!cmd.isSingleton (this)) {
+			try {
+				cmd = (Command)cmd.getClass ().newInstance ();
+			} catch (Throwable th) {
+				if (isTestMode ()) {
+					printer ().content (th.getMessage (), Lang.toString (th));
 				}
-				
-				CommandResult result = null;
-				try {
-					final Map<String, CommandOption> options = commandParser.parse (cmd, params);
-					if (options != null && !options.isEmpty ()) {
-						Iterator<CommandOption> optIter = options.values ().iterator ();
-						while (optIter.hasNext ()) {
-							CommandOption option = optIter.next ();
-							if (option.isMasked () && 
-									option.acceptsArgs() != CommandOption.NO_ARG && 
-									option.getArgsCount () == 0) {
-								if (System.console () != null) {
-									char[] aArg = System.console ().readPassword ("\t- " + option.label () + "? ");
-									if ((aArg == null || aArg.length == 0)) {
-										printer.error ("'" + option.label () + "' requires at least one argument.");
-									}
-									option.addArg (new String (aArg));
-								} else {
-									printer.error ("'" + option.label () + "' requires at least one argument.");
-									return FAILURE;
-								}
+				onException (cmd, th); return FAILURE;
+			}
+		}
+		
+		CommandResult result = null;
+		try {
+			final Map<String, CommandOption> options = commandParser.parse (cmd, params);
+			if (options != null && !options.isEmpty ()) {
+				Iterator<CommandOption> optIter = options.values ().iterator ();
+				while (optIter.hasNext ()) {
+					CommandOption option = optIter.next ();
+					if (option.isMasked () && 
+							option.acceptsArgs() != CommandOption.NO_ARG && 
+							option.getArgsCount () == 0) {
+						if (System.console () != null) {
+							char[] aArg = System.console ().readPassword ("\t- " + option.label () + "? ");
+							if ((aArg == null || aArg.length == 0)) {
+								printer.error ("'" + option.label () + "' requires at least one argument.");
 							}
-						}
-					}
-					if (Lang.AMP.equals (out)) {
-						final Command tCmd = cmd;
-						new Thread () {
-	 						public void run () {
-	 							try {
-	 								tCmd.execute (AbstractTool.this, options);
-								} catch (CommandExecutionException th) {
-									if (isTestMode ()) {
-										th.printStackTrace (System.out);
-									}
-									try {
-										onException (tCmd, th); 
-									} catch (IOException ioex) {
-										// ignore
-									}
-								}
-	 						}
-	 					}.start (); 
-	 					printer.info ("command is running in background");
-					} else {
-	 					result = cmd.execute (this, options);
-					}
-				} catch (Throwable th) {
-					if (isTestMode ()) {
-						printer.content ("Error", Lang.toString (Lang.getRootCause (th)));
-					} else {
-						onException (cmd, th); 
-					}
-					return FAILURE;
-				}
-				
-				if (result != null) {
-					if (result.getType () == CommandResult.OK) {
-						if (out != null && !Lang.AMP.equals (out) && result.getContent () != null) {
-							if (out.startsWith (FilePrefix)) {
-								out = out.substring (FilePrefix.length ());
-								InputStream is = null;
-								if (result.getContent () instanceof InputStream) {
-									is = (InputStream)result.getContent ();
-								} else {
-									Object content = result.getContent ();
-									if (content instanceof YamlObject) {
-										content = ((YamlObject)content).toJson ();
-									}
-									is = new ByteArrayInputStream (content.toString ().getBytes ());
-								}
-								OutputStream os = null;
-								try {
-									os = new FileOutputStream (new File (out));
-									IOUtils.copy (is, os);
-								} catch (Exception e) {
-									onException (cmd, e); 
-									return FAILURE;
-								} finally {
-									IOUtils.closeQuietly (os);
-									IOUtils.closeQuietly (is);
-									vars.remove (CMD_OUT);
-								}
-							} else {
-								Object content = result.getContent ();
-								if (content instanceof YamlObject) {
-									content = ((YamlObject)content).toJson ();
-								}
-								vars.put (out, content);
-							}
-						} else if (result.getContent () != null) {
-							if (result.getContent () instanceof JsonObject) {
-								printer ().success (Lang.BLANK);
-								if (printer ().isOn ()) {
-									((JsonObject)result.getContent ()).write (new FriendlyJsonEmitter (this));
-									writeln (Lang.BLANK);
-								}
-							} else if (result.getContent () instanceof YamlObject) {
-								printer ().success (Lang.BLANK);
-								if (printer ().isOn ()) {
-									YamlObject yaml = (YamlObject)result.getContent ();
-									yaml.print (this, 4);
-									writeln (Lang.BLANK);
-								}
-							} else if (result.getContent () instanceof InputStream) {
-								System.out.println ("result.getContent () instanceof InputStream");
-								OutputStream os = null;
-								try {
-									os = new FileOutputStream (new File (out));
-									IOUtils.copy (new ByteArrayInputStream (result.getContent ().toString ().getBytes ()), os);
-								} catch (Exception e) {
-									onException (cmd, e); 
-									return FAILURE;
-								} finally {
-									IOUtils.closeQuietly (os);
-								}
-							} else {
-								printer ().success (String.valueOf (result.getContent ()));
-								if (printer ().isOn ()) {
-									writeln (Lang.BLANK);
-								}
-							}
-						}
-					} else if (result.getContent () != null) {
-						if (result.getContent () instanceof JsonObject) {
-							printer ().error (Lang.BLANK);
-							((JsonObject)result.getContent ()).write (new FriendlyJsonEmitter (this));
-							writeln (Lang.BLANK);
-						} else if (result.getContent () instanceof YamlObject) {
-							printer ().error (Lang.BLANK);
-							if (printer ().isOn ()) {
-								YamlObject yaml = (YamlObject)result.getContent ();
-								yaml.print (this, 4);
-								writeln (Lang.BLANK);
-							}
+							option.addArg (new String (aArg));
 						} else {
-							printer.error (String.valueOf (result.getContent ()));
-							writeln (Lang.BLANK);
+							printer.error ("'" + option.label () + "' requires at least one argument.");
+							return FAILURE;
 						}
 					}
 				}
 			}
-		} else {
-			printer.error ("command '" + commandName + "' not found. Type in 'help' to list all available commands");
+			if (Lang.AMP.equals (out)) {
+				final Command tCmd = cmd;
+				new Thread () {
+					public void run () {
+						try {
+							tCmd.execute (AbstractTool.this, options);
+					} catch (CommandExecutionException th) {
+						if (isTestMode ()) {
+							th.printStackTrace (System.out);
+						}
+						try {
+							onException (tCmd, th); 
+						} catch (IOException ioex) {
+							// ignore
+						}
+					}
+					}
+				}.start (); 
+				printer.info ("@ command is running in background ");
+				return SUCCESS;
+			} else {
+				result = cmd.execute (this, options);
+			}
+		} catch (Throwable th) {
+			if (isTestMode ()) {
+				printer.content ("Error", Lang.toString (Lang.getRootCause (th)));
+			} else {
+				onException (cmd, th); 
+			}
+			return FAILURE;
 		}
+		
+		if (result == null) {
+			return SUCCESS;
+		}
+		
+		Object content = result.getContent ();
+		
+		if (result.getContent () == null) {
+			return SUCCESS;
+		}
+		
+		if (result.getType () == CommandResult.OK) {
+			if (out != null) {
+				if (out.startsWith (FilePrefix)) {
+					out = out.substring (FilePrefix.length ());
+					InputStream is = null;
+					if (content instanceof ApiStreamSource) {
+						is = ((ApiStreamSource)content).stream ();
+					} else {
+						if (content instanceof YamlObject) {
+							content = ((YamlObject)content).toJson ();
+						}
+						is = new ByteArrayInputStream (content.toString ().getBytes ());
+					}
+					OutputStream os = null;
+					try {
+						os = new FileOutputStream (new File (out));
+						IOUtils.copy (is, os);
+					} catch (Exception e) {
+						onException (cmd, e); 
+						return FAILURE;
+					} finally {
+						IOUtils.closeQuietly (os);
+						IOUtils.closeQuietly (is);
+						vars.remove (CMD_OUT);
+					}
+				} else {
+					if (content instanceof YamlObject) {
+						content = ((YamlObject)content).toJson ();
+					}
+					vars.put (out, content);
+				}
+			} else {
+				if (content instanceof JsonObject) {
+					printer ().success (Lang.BLANK);
+					if (printer ().isOn ()) {
+						((JsonObject)content).write (new FriendlyJsonEmitter (this));
+						writeln (Lang.BLANK);
+					}
+				} else if (content instanceof YamlObject) {
+					printer ().success (Lang.BLANK);
+					if (printer ().isOn ()) {
+						YamlObject yaml = (YamlObject)content;
+						yaml.print (this, 4);
+						writeln (Lang.BLANK);
+					}
+				} else if (content instanceof ApiStreamSource) {
+					printer ().success (String.valueOf (IOUtils.toString (((ApiStreamSource)content).stream ())));
+					if (printer ().isOn ()) {
+						writeln (Lang.BLANK);
+					}
+				} else {
+					printer ().success (String.valueOf (content));
+					if (printer ().isOn ()) {
+						writeln (Lang.BLANK);
+					}
+				}
+			}
+		} else {
+			if (content instanceof JsonObject) {
+				printer ().error (Lang.BLANK);
+				((JsonObject)content).write (new FriendlyJsonEmitter (this));
+				writeln (Lang.BLANK);
+			} else if (content instanceof YamlObject) {
+				printer ().error (Lang.BLANK);
+				if (printer ().isOn ()) {
+					YamlObject yaml = (YamlObject)content;
+					yaml.print (this, 4);
+					writeln (Lang.BLANK);
+				}
+			} else {
+				printer.error (String.valueOf (content));
+				writeln (Lang.BLANK);
+			}
+		}
+		
 		return SUCCESS;
 	}
 	

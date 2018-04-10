@@ -26,6 +26,7 @@ import java.util.Map;
 
 import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Lang;
+import com.bluenimble.platform.api.ApiStreamSource;
 import com.bluenimble.platform.cli.Tool;
 import com.bluenimble.platform.cli.ToolContext;
 import com.bluenimble.platform.cli.command.CommandExecutionException;
@@ -55,8 +56,9 @@ public class LoadKeysHandler implements CommandHandler {
 		String path = args [0];
 		if (vars.containsKey (path)) {
 			// load from var
-			name = args [0];
-			if (Lang.isNullOrEmpty ((String)vars.get (name))) {
+			name = path;
+			Object o = vars.get (name);
+			if (o instanceof String && Lang.isNullOrEmpty ((String)o)) {
 				throw new CommandExecutionException ("variable " + name + " is empty");
 			}
 		} else {
@@ -75,7 +77,12 @@ public class LoadKeysHandler implements CommandHandler {
 			if (keysFile != null) {
 				in 	= 	new FileInputStream (keysFile);
 			} else {
-				in = new ByteArrayInputStream (((String)vars.get (name)).getBytes ());
+				Object v = vars.get (name);
+				if (v instanceof ApiStreamSource) {
+					in = ((ApiStreamSource)v).stream ();
+				} else {
+					in = new ByteArrayInputStream (String.valueOf (v).getBytes ());
+				}
 			}
 			out = 	new FileOutputStream (target);
 			IOUtils.copy (in, out);

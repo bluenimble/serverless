@@ -150,10 +150,11 @@ if (!buildFolder.exists ()) {
 	buildFolder.mkdir ();
 }
 
+var apiFolder = new File (buildFolder, apiNs);
+
 // ONLY If Requested
 if (!Vars ['build.release.nocopy'] || Vars ['build.release.nocopy'] != 'true') {
 	// delete api if exists
-	var apiFolder = new File (buildFolder, apiNs);
 	FileUtils.delete (apiFolder);
 	
 	// copy
@@ -162,6 +163,8 @@ if (!Vars ['build.release.nocopy'] || Vars ['build.release.nocopy'] != 'true') {
 		apiSrcPath = apiNs;
 	}
 	FileUtils.copy (new File (Config.workspace + '/' + apiSrcPath), buildFolder, true);
+	
+	apiFolder = new File (buildFolder, apiSrcPath);
 	
 	// convert yaml to json
 	SpecUtils.y2j (apiFolder, true);
