@@ -19,18 +19,42 @@ package com.bluenimble.platform.plugins.database.orientdb.tests;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseException;
 import com.bluenimble.platform.db.DatabaseObject;
-import com.bluenimble.platform.db.impls.DefaultDatabaseObjectSerializer;
+import com.bluenimble.platform.db.query.impls.JsonQuery;
+import com.bluenimble.platform.json.JsonArray;
+import com.bluenimble.platform.json.JsonObject;
 
-public class Get {
+public class FindUpdate {
 	
 	public static void main (String [] args) throws DatabaseException {
 		
 		Database db = new DatabaseServer ().get ();
 		
-		DatabaseObject employee = db.get ("Planets", "3e6b5afe-166d-46cd-b6a9-66ec0bb581d4");
-		if (employee != null) {
-			System.out.println (employee.toJson (new DefaultDatabaseObjectSerializer (2, 2)));
-		}		
+		final JsonArray records = new JsonArray ();
+		
+		JsonObject result = (JsonObject)new JsonObject ().set ("records", records);
+		
+		db.find ("Cities", new JsonQuery (new JsonObject ()), new Database.Visitor () {
+			@Override
+			public boolean onRecord (DatabaseObject dbo) {
+				try {
+					dbo.set ("org", "Labs");
+					dbo.save ();
+				} catch (Exception ex) {
+					throw new RuntimeException (ex.getMessage (), ex);
+				}
+				
+				records.add (dbo.toJson (null));
+				
+				return false;
+			}
+
+			@Override
+			public boolean optimize () {
+				return true;
+			}
+		});
+				
+		System.out.println (result);
 		
 	}
 	

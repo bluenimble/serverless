@@ -36,15 +36,7 @@ public class Find {
 		db.find ("Cities", new JsonQuery (new JsonObject ()), new Database.Visitor () {
 			@Override
 			public boolean onRecord (DatabaseObject dbo) {
-				try {
-					dbo.set ("org", "Labs");
-					dbo.save ();
-				} catch (Exception ex) {
-					throw new RuntimeException (ex.getMessage (), ex);
-				}
-				
 				records.add (dbo.toJson (null));
-				
 				return false;
 			}
 

@@ -30,8 +30,9 @@ public class FindOne {
 		Database db = new DatabaseServer ().get ();
 		
 		DatabaseObject city = db.findOne ("Cities", new JsonQuery (new JsonObject ()));
-				
-		System.out.println (city.toJson (new DefaultDatabaseObjectSerializer (2, 2)));
+		if (city != null) {
+			System.out.println (city.toJson (new DefaultDatabaseObjectSerializer (2, 2)));
+		}		
 		
 	}
 	

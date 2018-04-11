@@ -29,15 +29,15 @@ public class DatabaseServer {
 	
 	public DatabaseServer () {
 		pool = new OPartitionedDatabasePool (
-			"remote:cherry.database.uswest.bluenimble.tech:2424/dbv2", 
-			"admin", 
-			"dbv2",
+			"remote:host:port/database", 
+			"user", 
+			"password",
 			2, 
 			2
 		);
 			
 	}
-	
+
 	public Database get () {
 		return new OrientDatabase (pool.acquire (), new Tracer () {
 			private static final long serialVersionUID = 4922972723643535449L;
