@@ -19,8 +19,8 @@ var Tracer = function (proxy) {
 	*/
 	this.debug = function () {
 		var args 	= Array.prototype.slice.call (arguments);
-		a.unshift (JC_Tracer_Level.Debug);
-		this.log (args);
+		args.unshift (JC_Tracer_Level.Debug);
+		this._log (args);
 	};
 	/**	
 	  Write an info level message to the log file/pipe
@@ -29,8 +29,8 @@ var Tracer = function (proxy) {
 	*/
 	this.info = function () {
 		var args 	= Array.prototype.slice.call (arguments);
-		a.unshift (JC_Tracer_Level.Info);
-		this.log (args);
+		args.unshift (JC_Tracer_Level.Info);
+		this._log (args);
 	};
 	/**	
 	  Write a warning level message to the log file/pipe
@@ -39,8 +39,8 @@ var Tracer = function (proxy) {
 	*/
 	this.warn = function () {
 		var args 	= Array.prototype.slice.call (arguments);
-		a.unshift (JC_Tracer_Level.Warning);
-		this.log (args);
+		args.unshift (JC_Tracer_Level.Warning);
+		this._log (args);
 	};
 	/**	
 	  Write an error level message to the log file/pipe
@@ -49,8 +49,8 @@ var Tracer = function (proxy) {
 	*/
 	this.error = function () {
 		var args 	= Array.prototype.slice.call (arguments);
-		a.unshift (JC_Tracer_Level.Error);
-		this.log (args);
+		args.unshift (JC_Tracer_Level.Error);
+		this._log (args);
 	};
 	/**	
 	  Write a fatal level message to the log file/pipe
@@ -59,8 +59,8 @@ var Tracer = function (proxy) {
 	*/
 	this.fatal = function () {
 		var args 	= Array.prototype.slice.call (arguments);
-		a.unshift (JC_Tracer_Level.Fatal);
-		this.log (args);
+		args.unshift (JC_Tracer_Level.Fatal);
+		this._log (args);
 	};
 	
 	/**	
@@ -80,6 +80,7 @@ var Tracer = function (proxy) {
 		this._log (args);
 	};
 	
+	// private
 	this._log = function (args) {
 		if (args == null || args.length < 2) {
 			throw 'wrong number of arguments';

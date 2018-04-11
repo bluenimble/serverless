@@ -83,6 +83,11 @@ function extract (service, file, script) {
 }
 
 function validate (apiFolder, folderOrFile) {
+
+	if (folderOrFile.getName ().startsWith ('.')) {
+		return;
+	}
+
 	if (folderOrFile.isDirectory ()) {
 		var files = folderOrFile.listFiles ();
 		for (var i = 0; i < files.length; i++) {

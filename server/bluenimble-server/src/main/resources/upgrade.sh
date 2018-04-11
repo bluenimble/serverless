@@ -38,18 +38,11 @@ wget --no-cache https://github.com/bluenimble/serverless/releases/download/v${VE
   sudo tar -xvzf bluenimble-${VERSION}-bin.tar.gz -C /opt/bluenimble && \
   rm -f bluenimble-${VERSION}-bin.tar.gz
   
-echo       "Copying existing Spaces"  
-for f in $oldInstall/spaces
-do
-	if [ "$(basename $f)" != "sys" ] ; then
-  		echo "Copy Space $(basename $f)"
-		sudo cp $f /opt/bluenimble/platform/spaces
-	fi
-done
-
-chmod u+x bnb.sh
-chmod u+x bnb.stop.sh
-chmod u+x upgrade.sh
+sudo mv /opt/bluenimble/bluenimble-${VERSION} /opt/bluenimble/platform  
+  
+sudo chmod u+x /opt/bluenimble/platform/bnb.sh
+sudo chmod u+x /opt/bluenimble/platform/bnb.stop.sh
+sudo chmod u+x /opt/bluenimble/platform/upgrade.sh
 
 echo       "  Start BlueNimble Service"
 sudo systemctl start bnb.service

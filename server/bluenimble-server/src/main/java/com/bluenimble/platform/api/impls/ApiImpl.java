@@ -625,6 +625,8 @@ public class ApiImpl implements Api {
 		
 		final ValueHolder<Integer> apiMarkers = new ValueHolder<Integer> (0);
 		
+		ValueHolder<Integer> failed = new ValueHolder<Integer> (0);
+		
 		servicesManager.list (new Selector () {
 			@Override
 			public boolean select (ApiService service) {
@@ -655,11 +657,15 @@ public class ApiImpl implements Api {
 					
 					fServices.add (sDesc);
 				}
-				if (ApiStatus.Failed.equals (service.status ()) && opts.containsKey (DescribeOption.Option.failed)) {
-					failedServices.put (
-						service.getVerb ().name () + Lang.SPACE + Json.getString (service.toJson (), ApiService.Spec.Endpoint), 
-						service.getFailure ()
-					);
+				if (ApiStatus.Failed.equals (service.status ())) {
+					if (opts.containsKey (DescribeOption.Option.failed)) {
+						failedServices.put (
+							service.getVerb ().name () + Lang.SPACE + Json.getString (service.toJson (), ApiService.Spec.Endpoint), 
+							service.getFailure ()
+						);
+					} else {
+						failed.set (failed.get () + 1);
+					}
 				}
 				return false;
 			}
@@ -672,7 +678,11 @@ public class ApiImpl implements Api {
 		}
 		
 		if (failedServices.isEmpty ()) {
-			describe.remove (Describe.FailedServices);
+			if (failed.get () > 0) {
+				describe.set (Describe.FailedServices, failed.get ());
+			} else {
+				describe.remove (Describe.FailedServices);
+			}
 		}
 		
 		return describe;		
