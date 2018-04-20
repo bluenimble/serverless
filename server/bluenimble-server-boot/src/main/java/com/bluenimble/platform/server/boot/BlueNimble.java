@@ -44,12 +44,17 @@ public class BlueNimble {
 		
 		File runtimeHome = null;
 		if (args != null && args.length > 0 && args [0] != null) {
-			File customHome = new File (args [0]);
-			if (!customHome.exists ()) {
-				System.out.println ("BlueNimble Home " + customHome.getAbsolutePath () + " doesn't exist, It will be created ...");
-				customHome.mkdirs ();
+			
+			String runtimePath = args [0].trim ();
+			if (!Lang.DOT.equals (runtimePath)) {
+				File customHome = new File (runtimePath);
+				if (!customHome.exists ()) {
+					System.out.println ("BlueNimble Home " + customHome.getAbsolutePath () + " doesn't exist, It will be created ...");
+					customHome.mkdirs ();
+				}
+				
+				runtimeHome = customHome;
 			}
-			runtimeHome = customHome;
 		} 
 		
 		if (runtimeHome == null) {
