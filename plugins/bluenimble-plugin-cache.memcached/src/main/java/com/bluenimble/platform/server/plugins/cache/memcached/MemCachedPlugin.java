@@ -79,7 +79,7 @@ public class MemCachedPlugin extends AbstractPlugin {
 			}
 			@Override
 			public String provider () {
-				return MemCachedPlugin.this.getName ();
+				return MemCachedPlugin.this.getNamespace ();
 			}
 			@Override
 			public Plugin implementor () {
@@ -124,7 +124,7 @@ public class MemCachedPlugin extends AbstractPlugin {
 			
 			JsonObject feature = Json.getObject (msgFeature, key);
 			
-			if (!this.getName ().equalsIgnoreCase (Json.getString (feature, ApiSpace.Features.Provider))) {
+			if (!this.getNamespace ().equalsIgnoreCase (Json.getString (feature, ApiSpace.Features.Provider))) {
 				continue;
 			}
 			

@@ -156,6 +156,14 @@ public class OrientDatabase implements Database {
 
 	@Override
 	public DatabaseObject create (String name) throws DatabaseException {
+		if (Lang.isNullOrEmpty (name)) {
+			throw new DatabaseException ("Entity is null");
+		}
+		// Temporary
+		if (name.indexOf (Lang.DASH) >= 0 || name.indexOf (Lang.DOT) >= 0) {
+			throw new DatabaseException ("Temporary - Entity contains (dash) or (dot) character");
+		}
+		
 		return new DatabaseObjectImpl (this, name);
 	}
 

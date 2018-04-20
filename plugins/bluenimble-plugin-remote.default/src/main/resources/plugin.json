@@ -1,6 +1,6 @@
 {
-	"name": "remote.default",
-	"title": "Remoting Implementation - Http Only",
+	"namespace": "remote.default",
+	"name": "Remoting Implementation - Http Only",
 	
 	"spi": {
 		"class": "com.bluenimble.platform.server.plugins.remote.RemotePlugin",

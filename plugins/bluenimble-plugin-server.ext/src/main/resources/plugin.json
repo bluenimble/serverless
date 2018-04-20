@@ -1,6 +1,6 @@
 {
-	"name": "server.ext",
-	"title": "Instance Extensions - ApiRequest Visitor",
+	"namespace": "server.ext",
+	"name": "Instance Extensions - ApiRequest Visitor",
 	
 	"spi": {
 		"class": "com.bluenimble.platform.plugins.ext.ExtensionsPlugin",
@@ -15,26 +15,26 @@
 			"spec": {
 			
 				"static": { 
-					"/": "[ vars.plugins.ext.static.root | '/sys/mgm/instance/all' ]" 
+					"/": "[ this.spec.static.root | '/sys/mgm/instance/all' ]" 
 				},
 
 				"space": { 
-					"value": "[ vars.plugins.ext.space.value | '' ]", 
-					"placeholder": "[ vars.plugins.ext.space.placeholder | 'path' ]", 
-					"index": "[ vars.plugins.ext.space.index | '0' ]", 
-					"mapping": "[ vars.plugins.ext.space.mapping | '{}' ] >> json" 
+					"value": "[ this.spec.space.value | '' ]", 
+					"placeholder": "[ this.spec.space.placeholder | 'path' ]", 
+					"index": "[ this.spec.space.index | '0' ]", 
+					"mapping": "[ this.spec.space.mapping | '{}' ] >> json" 
 				},
 				"api": { 
-					"value": "[ vars.plugins.ext.api.value | '' ]",
-					"placeholder": "[ vars.plugins.ext.api.placeholder | 'path' ]", 
-					"index": "[ vars.plugins.ext.api.index | '1' ]", 
-					"mapping": "[ vars.plugins.ext.api.mapping | '{}' ] >> json"
+					"value": "[ this.spec.api.value | '' ]",
+					"placeholder": "[ this.spec.api.placeholder | 'path' ]", 
+					"index": "[ this.spec.api.index | '1' ]", 
+					"mapping": "[ this.spec.api.mapping | '{}' ] >> json"
 				},
 				"resource": { 
-					"value": "[ vars.plugins.ext.resource.value | '' ]",
-					"placeholder": "[ vars.plugins.ext.resource.placeholder | 'path' ]", 
-					"index": "[ vars.plugins.ext.resource.index | '2' ]", 
-					"mapping": "[ vars.plugins.ext.resource.mapping | '{}' ] >> json"
+					"value": "[ this.spec.resource.value | '' ]",
+					"placeholder": "[ this.spec.resource.placeholder | 'path' ]", 
+					"index": "[ this.spec.resource.index | '2' ]", 
+					"mapping": "[ this.spec.resource.mapping | '{}' ] >> json"
 				}
 				
 			}

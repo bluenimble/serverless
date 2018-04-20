@@ -1,6 +1,6 @@
 {
-	"name": "messenger.smtp",
-	"title": "Messenger Implementation - SMTP",
+	"namespace": "messenger.smtp",
+	"name": "Messenger Implementation - SMTP",
 	
 	"spi": {
 		"class": "com.bluenimble.platform.server.plugins.messenger.smtp.SmtpMessengerPlugin",

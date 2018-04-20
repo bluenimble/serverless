@@ -1,6 +1,6 @@
 {
-	"name": "storage.filesystem",
-	"title": "Storage Implementation - FileSystem POSIX",
+	"namespace": "storage.filesystem",
+	"name": "Storage Implementation - FileSystem POSIX",
 	
 	"spi": {
 		"class": "com.bluenimble.platform.server.plugins.storage.fs.FileSystemStoragePlugin",
@@ -12,7 +12,7 @@
 					"Read More": "https://www.bluenimble.com"
 				}]
 			},
-			"root": "[vars.plugins.storage.fs.root | '/data/bluenimble/runtime/plugins/storage/fs']"
+			"root": "[ this.root  | '' ]"
 		}
 	}
 }	

@@ -59,7 +59,6 @@ public class DatabaseApiRequestTracker implements ServerRequestTracker {
 		public void setReference (Object object) {
 			
 		}
-		
 	};
 	
 	private TrackingExecutor executor;

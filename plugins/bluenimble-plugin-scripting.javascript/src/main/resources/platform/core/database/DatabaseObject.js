@@ -113,14 +113,8 @@ var DatabaseObject = function (database, proxy) {
 			value = JC_Converters.convert (value);
 		} 
 		
-		/* if ref object
-		var refEntity = value [JC_Database_Fields.Entity];
-		if (refEntity) {
-			value.remove (JC_Database_Fields.Entity);
-			value = database.create (refEntity, value).proxy;
-		}
-		*/
 		proxy.set (key, value);
+	
 		return this;
 	};
 	

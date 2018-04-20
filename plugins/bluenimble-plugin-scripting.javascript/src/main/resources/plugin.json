@@ -1,6 +1,6 @@
 {
-	"name": "scripting.javascript",
-	"title": "Scripting Engine - Javascript - Nashorn",
+	"namespace": "scripting.javascript",
+	"name": "Scripting Engine - Javascript - Nashorn",
 	
 	"spi": {
 		"class": "com.bluenimble.platform.server.plugins.scripting.ScriptingPlugin",

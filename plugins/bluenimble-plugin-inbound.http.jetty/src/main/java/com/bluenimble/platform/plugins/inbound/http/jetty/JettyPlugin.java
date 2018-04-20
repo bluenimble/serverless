@@ -91,7 +91,6 @@ public class JettyPlugin extends AbstractPlugin {
 		}
 	}
 
-	private String 		name;
 	private int 		port 		= 80;
 	
 	private JsonObject 	pool 		= (JsonObject)new JsonObject ().set (Pool.Min, 20).set (Pool.Max, 200);
@@ -105,7 +104,7 @@ public class JettyPlugin extends AbstractPlugin {
 	
 	private JsonObject	ssl;
 
-	private Server httpServer;
+	private Server 		httpServer;
 	
 	@Override
 	public void init (final ApiServer server) throws Exception {
@@ -353,16 +352,6 @@ public class JettyPlugin extends AbstractPlugin {
 	}
 	public void setContext (String context) {
 		this.context = context;
-	}
-
-	@Override
-	public void setName (String name) {
-		this.name = name;
-	}
-
-	@Override
-	public String getName () {
-		return name;
 	}
 
 	public boolean isGzip () {

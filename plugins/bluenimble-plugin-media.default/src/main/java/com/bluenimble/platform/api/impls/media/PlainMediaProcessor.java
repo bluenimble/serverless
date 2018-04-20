@@ -87,14 +87,14 @@ public class PlainMediaProcessor implements ApiMediaProcessor {
 
 	private static final long serialVersionUID = -3490327410756493328L;
 	
+	public static final String Name = "plain";
+	
 	private Map<String, DataWriter> writers = new HashMap<String, DataWriter> ();
 	
 	protected MediaPlugin 	plugin;
-	protected String 		contentType;
 	
-	public PlainMediaProcessor (MediaPlugin plugin, String contentType) {
+	public PlainMediaProcessor (MediaPlugin plugin) {
 		this.plugin 		= plugin;
-		this.contentType 	= contentType;
 		
 		addWriter (ApiContentTypes.Text, new TextWriter ());
 		addWriter (ApiContentTypes.Json, new JsonWriter ());
@@ -106,8 +106,8 @@ public class PlainMediaProcessor implements ApiMediaProcessor {
 			throws ApiMediaException {
 
 		String contentType = (String)request.get (ApiRequest.SelectedMedia);
-		if (Lang.isNullOrEmpty (contentType) || Lang.STAR.equals  (contentType)) {
-			contentType = this.contentType;
+		if (Lang.isNullOrEmpty (contentType) || ApiMediaProcessor.Any.equals  (contentType)) {
+			contentType = Json.getString (api.getMedia (), Api.Spec.Media.Default, ApiContentTypes.Json);
 		}
 		
 		String 		charset 	= Encodings.UTF8;
@@ -167,9 +167,10 @@ public class PlainMediaProcessor implements ApiMediaProcessor {
 			
 			DataWriter dataWriter = writers.get (contentType);
 			if (dataWriter == null) {
-				dataWriter = writers.get (this.contentType);
+				String extendsContentType = Json.getString (mediaDef, ApiService.Spec.Media.Extends, ApiContentTypes.Json);
+				dataWriter = writers.get (extendsContentType);
 			}
-			
+
 			dataWriter.write (output, response);
 			
 			response.close ();

@@ -28,6 +28,7 @@ import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.ApiResponse.Status;
 import com.bluenimble.platform.api.ApiService;
+import com.bluenimble.platform.api.media.ApiMediaProcessor;
 import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
@@ -126,13 +127,13 @@ public class MediaRoutingUtils {
 			mediaDef = Json.getObject (mediaSet, contentType);
 		}
 		if (mediaDef == null) {
-			mediaDef = Json.getObject (mediaSet, Lang.STAR);
+			mediaDef = Json.getObject (mediaSet, ApiMediaProcessor.Any);
 		}
 		if (mediaDef == null) {
 			mediaDef = Json.getObject (api.getMedia (), contentType);
 		}
 		if (mediaDef == null) {
-			mediaDef = Json.getObject (api.getMedia (), Lang.STAR);
+			mediaDef = Json.getObject (api.getMedia (), ApiMediaProcessor.Any);
 		}
 		return mediaDef;
 	}

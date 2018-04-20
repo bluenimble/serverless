@@ -48,7 +48,7 @@ public class JavascriptEngine implements TemplateEngine {
 	
 	public JavascriptEngine (MediaPlugin plugin, Api api) {
 		this.api = api;
-		features = Json.getObject (api.getFeatures (), plugin.getName ());
+		features = Json.getObject (api.getFeatures (), plugin.getNamespace ());
 	}
 	
 	@Override

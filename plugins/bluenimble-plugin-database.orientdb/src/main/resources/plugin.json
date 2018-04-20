@@ -1,8 +1,7 @@
 {
 
-	"name": "database.orientdb",
-	
-	"title": "Document Database Implementation - OrientDB",
+	"namespace": "database.orientdb",
+	"name": "Document Database Implementation - OrientDB",
 	
 	"spi": {
 		"class": "com.bluenimble.platform.plugins.database.orientdb.OrientDatabasePlugin",

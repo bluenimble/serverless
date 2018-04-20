@@ -29,13 +29,12 @@ public class DatabaseServer {
 	
 	public DatabaseServer () {
 		pool = new OPartitionedDatabasePool (
-			"remote:host:port/database", 
-			"user", 
-			"password",
+				"remote:cherry.database.uswest.bluenimble.tech:2424/dbv2", 
+				"admin", 
+				"dbv2",
 			2, 
 			2
 		);
-			
 	}
 
 	public Database get () {

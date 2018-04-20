@@ -116,7 +116,7 @@ public class ElasticSearchPlugin extends AbstractPlugin {
 			
 			@Override
 			public String provider () {
-				return ElasticSearchPlugin.this.getName ();
+				return ElasticSearchPlugin.this.getNamespace ();
 			}
 			
 			@Override
@@ -192,7 +192,7 @@ public class ElasticSearchPlugin extends AbstractPlugin {
 			return null;
 		}
 		
-		if (!this.getName ().equalsIgnoreCase (Json.getString (indexerFeature, ApiSpace.Features.Provider))) {
+		if (!this.getNamespace ().equalsIgnoreCase (Json.getString (indexerFeature, ApiSpace.Features.Provider))) {
 			return null;
 		}
 		

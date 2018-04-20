@@ -1,6 +1,6 @@
 {
-	"name": "inbound.http.jetty",
-	"title": "In-bound Protocol- HTTP/HTTP2 - Jetty",
+	"namespace": "inbound.http.jetty",
+	"name": "In-bound Protocol- HTTP/HTTP2 - Jetty",
 	
 	"spi": {
 		"class": "com.bluenimble.platform.plugins.inbound.http.jetty.JettyPlugin",
@@ -16,18 +16,17 @@
 			
 			"async": "true",
 			
-			"port": "[ vars.plugins.http.port | '8080' ]",
-			"context": "/",
-			"idleTimeout": "30",
+			"port": "[ this.port | '8080' ]",
+			"idleTimeout": "[ this.idleTimeout | '30' ]",
 			
 			"pool": {
-				"idleTimeout": "300"
+				"idleTimeout": "[ this.pool.idleTimeout | '300' ]"
 			},
 			
 			"ssl": {
-				"port": "[ vars.plugins.https.port | '8443' ]",
-				"keystore": "[ vars.plugins.https.keystore | '' ]",
-				"password": "[ vars.plugins.https.password | '' ]"
+				"port": "[ this.ssl.port | '8443' ]",
+				"keystore": "[ this.ssl.keystore | '' ]",
+				"password": "[ this.ssl.password | '' ]"
 			}
 		}
 	}

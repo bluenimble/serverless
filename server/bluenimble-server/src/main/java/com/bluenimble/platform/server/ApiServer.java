@@ -26,7 +26,7 @@ import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.CodeExecutor;
 import com.bluenimble.platform.api.DescribeOption;
-import com.bluenimble.platform.api.media.ApiMediaProcessor;
+import com.bluenimble.platform.api.media.ApiMediaProcessorRegistry;
 import com.bluenimble.platform.api.security.ApiConsumerResolver;
 import com.bluenimble.platform.api.security.ApiRequestSigner;
 import com.bluenimble.platform.api.validation.ApiServiceValidator;
@@ -65,6 +65,13 @@ public interface ApiServer extends Traceable {
 	interface Maps {
 		String Spaces 		= "spaces";
 		String Recyclables 	= "recyclables";
+	}
+	
+	interface ResolverPrefix {
+		String Sys 			= "sys";
+		String Server 		= "server";
+		String Vars 		= "vars";
+		String This 		= "this";
 	}
 	
 	interface EventTarget {
@@ -126,9 +133,9 @@ public interface ApiServer extends Traceable {
 	void					addFeature				(ServerFeature feature);
 	Object					getFeature				(ApiSpace space, Class<?> type, String provider);
 
-	void					addMediaProcessor		(String contentType, ApiMediaProcessor media);
-	Map<String, ApiMediaProcessor>		
-							getMediaProcessors		();
+	ApiMediaProcessorRegistry		
+							getMediaProcessorRegistry	
+													();
 
 	void					registerSerializer		(ClusterSerializer serializer);
 	ClusterSerializer 
@@ -139,6 +146,6 @@ public interface ApiServer extends Traceable {
 
 	String 					message 				(String lang, String key, Object... args);
 	
-	JsonObject 				resolve 				(JsonObject descriptor);
+	JsonObject 				resolve 				(JsonObject descriptor, Map<String, String []> varsMapping);
 
 }

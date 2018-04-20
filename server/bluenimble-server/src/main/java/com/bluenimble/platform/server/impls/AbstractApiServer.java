@@ -46,7 +46,7 @@ import com.bluenimble.platform.api.impls.AbstractApiRequest;
 import com.bluenimble.platform.api.impls.ContainerApiRequest;
 import com.bluenimble.platform.api.impls.ContainerApiResponse;
 import com.bluenimble.platform.api.impls.SpaceThread;
-import com.bluenimble.platform.api.media.ApiMediaProcessor;
+import com.bluenimble.platform.api.media.ApiMediaProcessorRegistry;
 import com.bluenimble.platform.api.security.ApiConsumerResolver;
 import com.bluenimble.platform.api.security.ApiConsumerResolverAnnotation;
 import com.bluenimble.platform.api.security.ApiRequestSigner;
@@ -116,7 +116,10 @@ public abstract class AbstractApiServer implements ApiServer {
 	
 	protected KeyStoreManager				keyStoreManager;
 	
-	private Map<String, ServerRequestTracker> 	requestTrackers	= new ConcurrentHashMap<String, ServerRequestTracker> ();
+	protected ApiMediaProcessorRegistry		mediaProcessorRegistry;
+	
+	private Map<String, ServerRequestTracker> 	
+											requestTrackers		= new ConcurrentHashMap<String, ServerRequestTracker> ();
 
 	private Map<String, ClusterSerializer> 		
 											serializers 		= new ConcurrentHashMap<String, ClusterSerializer> ();
@@ -128,9 +131,6 @@ public abstract class AbstractApiServer implements ApiServer {
 	private Map<String, ApiConsumerResolver> 	
 											consumerResolvers 	= new ConcurrentHashMap<String, ApiConsumerResolver> ();
 
-	private Map<String, ApiMediaProcessor>
-											mediaProcessors 	= new ConcurrentHashMap<String, ApiMediaProcessor> ();
-	
 	private Map<String, ApiSpace> 			spaces 				= new ConcurrentHashMap<String, ApiSpace> ();
 	
 	protected JsonObject 					messages 			= new JsonObject ();
@@ -205,8 +205,8 @@ public abstract class AbstractApiServer implements ApiServer {
 				String pName = pNames.next ();
 				Plugin plugin = pluginsRegistry.lockup (pName);
 				JsonObject oPlugin = new JsonObject ();
-				oPlugin.set (ConfigKeys.Namespace, plugin.getName ());
-				oPlugin.set (ConfigKeys.Name, plugin.getTitle ());
+				oPlugin.set (ConfigKeys.Namespace, plugin.getNamespace ());
+				oPlugin.set (ConfigKeys.Name, plugin.getName ());
 				oPlugin.set (ConfigKeys.Description, plugin.getDescription ());
 				oPlugin.set (ConfigKeys.Version, plugin.getVersion ());
 				oPlugin.set (ConfigKeys.Vendor, plugin.getVendor ());
@@ -512,16 +512,8 @@ public abstract class AbstractApiServer implements ApiServer {
 	}
 	
 	@Override
-	public void addMediaProcessor (String contentType, ApiMediaProcessor mediaProcessor) {
-		mediaProcessors.put (contentType, mediaProcessor);
-	}
-
-	@Override
-	public Map<String, ApiMediaProcessor> getMediaProcessors () {
-		if (mediaProcessors == null) {
-			return null;
-		}
-		return mediaProcessors;
+	public ApiMediaProcessorRegistry getMediaProcessorRegistry () {
+		return mediaProcessorRegistry;
 	}
 
 	@Override

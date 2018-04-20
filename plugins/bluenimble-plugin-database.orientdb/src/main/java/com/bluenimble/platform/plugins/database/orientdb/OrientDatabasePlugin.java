@@ -47,6 +47,9 @@ public class OrientDatabasePlugin extends AbstractPlugin {
 		String Port 	= "port";
 		String Database = "database";
 		
+		String MaxPartitionSize = "maxPartitionSize";
+		String MaxPoolSize 		= "maxPoolSize";
+		
 		String Auth 	= "auth";
 			String User 	= "user";
 			String Password = "password";
@@ -59,12 +62,8 @@ public class OrientDatabasePlugin extends AbstractPlugin {
 	
 	private String				feature;
 	
-	private int 				weight;
-	
 	@Override
 	public void init (final ApiServer server) throws Exception {
-		
-		weight = server.weight ();
 		
 		Feature aFeature = Database.class.getAnnotation (Feature.class);
 		if (aFeature == null || Lang.isNullOrEmpty (aFeature.name ())) {
@@ -90,7 +89,7 @@ public class OrientDatabasePlugin extends AbstractPlugin {
 			}
 			@Override
 			public String provider () {
-				return OrientDatabasePlugin.this.getName ();
+				return OrientDatabasePlugin.this.getNamespace ();
 			}
 		});
 		
@@ -140,7 +139,7 @@ public class OrientDatabasePlugin extends AbstractPlugin {
 			String key = keys.next ();
 			JsonObject source = Json.getObject (dbFeature, key);
 			
-			if (!this.getName ().equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
+			if (!this.getNamespace ().equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
 				continue;
 			}
 			
@@ -193,8 +192,8 @@ public class OrientDatabasePlugin extends AbstractPlugin {
 			createUrl (spec), 
 			Json.getString (auth, Spec.User), 
 			Json.getString (auth, Spec.Password),
-			weight, 
-			weight
+			Json.getInteger (spec, Spec.MaxPartitionSize, 10), 
+			Json.getInteger (spec, Spec.MaxPoolSize, 10)
 		);
 		
 		space.addRecyclable (factoryKey, new RecyclablePool (pool));

@@ -44,6 +44,7 @@ import com.bluenimble.platform.reflect.ClassLoaderRegistry;
 import com.bluenimble.platform.server.ApiServer;
 import com.bluenimble.platform.server.ApiServer.Event;
 import com.bluenimble.platform.server.utils.ConfigKeys;
+import com.bluenimble.platform.server.utils.ConfigKeys.Folders;
 import com.bluenimble.platform.server.utils.InstallUtils;
 
 public class DefaultPluginsRegistry implements PluginsRegistry, ClassLoaderRegistry {
@@ -133,7 +134,7 @@ public class DefaultPluginsRegistry implements PluginsRegistry, ClassLoaderRegis
 				if (plugin.isInitOnInstall ()) {
 					continue;
 				}
-				server.tracer ().log (Tracer.Level.Info, "\t Initialize {0}", plugin.getName ());
+				server.tracer ().log (Tracer.Level.Info, "\t Initialize {0}", plugin.getNamespace ());
 				
 				if (plugin.isAsync ()) {
 					new Thread () {
@@ -182,17 +183,20 @@ public class DefaultPluginsRegistry implements PluginsRegistry, ClassLoaderRegis
 				home = file;
 			}
 			
-			JsonObject descriptor = server.resolve (Json.load (new File (home, ConfigKeys.Descriptor.Plugin)));
+			JsonObject descriptor = Json.load (new File (home, ConfigKeys.Descriptor.Plugin));
 			
-			String pluginName = Json.getString (descriptor, ConfigKeys.Name);
-			if (Lang.isNullOrEmpty (pluginName)) {
+			String pluginNs = Json.getString (descriptor, ConfigKeys.Namespace);
+			if (Lang.isNullOrEmpty (pluginNs)) {
 				throw new PluginRegistryException (
-					"Plugin name not found in descriptor " + home.getAbsolutePath () + "\n" + descriptor
+					"Plugin namespace not found in descriptor " + home.getAbsolutePath () + "\n" + descriptor
 				);
 			}
-			if (!InstallUtils.isValidPluginNs (pluginName)) {
-				throw new PluginRegistryException ("Invalid plugin name " + pluginName);
+			if (!InstallUtils.isValidPluginNs (pluginNs)) {
+				throw new PluginRegistryException ("Invalid plugin namespace " + pluginNs);
 			}
+			
+			// resolve vars
+			descriptor = server.resolve (descriptor, InstallUtils.varsMapping (ApiServer.ResolverPrefix.This, Folders.Plugins, pluginNs ));
 			
 			// set system properties
 			JsonObject sysprops = Json.getObject (descriptor, ConfigKeys.SystemProperties);
@@ -208,14 +212,14 @@ public class DefaultPluginsRegistry implements PluginsRegistry, ClassLoaderRegis
 			boolean nativeLibsRegistered = registerLibrary (home);
 			
 			if (!nativeLibsRegistered) {
-				throw new PluginRegistryException ("native libraries required by plugin [" + pluginName + "] not found in [Plugin Home]/" + ConfigKeys.Native + Lang.SLASH + OsFamily + Lang.SLASH + OsArc);
+				throw new PluginRegistryException ("native libraries required by plugin [" + pluginNs + "] not found in [Plugin Home]/" + ConfigKeys.Native + Lang.SLASH + OsFamily + Lang.SLASH + OsArc);
 			}
 			
 			// create plugin
-			Plugin plugin = create (pluginName, file, home, timestamp, descriptor);
+			Plugin plugin = create (pluginNs, file, home, timestamp, descriptor);
 			
 			plugins.put (
-				pluginName, 
+				pluginNs, 
 				plugin
 			);
 			
@@ -249,9 +253,9 @@ public class DefaultPluginsRegistry implements PluginsRegistry, ClassLoaderRegis
 		
 	}
 
-	private Plugin create (String pluginName, File pluginFile, File pluginHome, long timestamp, JsonObject descriptor) throws Exception {
+	private Plugin create (String pluginNs, File pluginFile, File pluginHome, long timestamp, JsonObject descriptor) throws Exception {
 		PluginClassLoader pcl = new PluginClassLoader (
-			pluginName, 
+			pluginNs, 
 			InstallUtils.toUrls (pluginHome, Json.getArray (descriptor, ConfigKeys.Classpath))
 		);
 			
@@ -265,15 +269,15 @@ public class DefaultPluginsRegistry implements PluginsRegistry, ClassLoaderRegis
 			pcl.setPlugin (plugin);
 		}
 		
-		plugin.setName (pluginName);
+		plugin.setNamespace (pluginNs);
 		plugin.setHome (pluginHome);
 		
-		plugin.setTitle (Json.getString (descriptor, ConfigKeys.Title));
+		plugin.setName (Json.getString (descriptor, ConfigKeys.Name));
 		plugin.setDescription (Json.getString (descriptor, ConfigKeys.Description));
 		
-		System.setProperty (PluginsHomePrefix + plugin.getName () + PluginsHomePostfix, pluginHome.getAbsolutePath ());
+		System.setProperty (PluginsHomePrefix + plugin.getNamespace () + PluginsHomePostfix, pluginHome.getAbsolutePath ());
 		
-		classLoaders.put (pluginName, pcl);
+		classLoaders.put (pluginNs, pcl);
 		
 		// init tracer
 		Tracer plTracer = null;
@@ -340,16 +344,16 @@ public class DefaultPluginsRegistry implements PluginsRegistry, ClassLoaderRegis
 
 		if (plugin.isClosable ()) {
 			try {
-				find (plugin.getName ()).clear ();
+				find (plugin.getNamespace ()).clear ();
 			} catch (IOException e) {
 				server.tracer ().log (Tracer.Level.Error, Lang.BLANK, e);
 			}
 		}
 		
-		server.tracer ().log (Tracer.Level.Info, "\tPlugin {0} destroyed", plugin.getName ());
+		server.tracer ().log (Tracer.Level.Info, "\tPlugin {0} destroyed", plugin.getNamespace ());
 		
 		if (!keepBinaries) {
-			Plugin ph = plugins.get (plugin.getName ());
+			Plugin ph = plugins.get (plugin.getNamespace ());
 			
 			try {
 				FileUtils.delete (ph.getHome ());
@@ -357,7 +361,7 @@ public class DefaultPluginsRegistry implements PluginsRegistry, ClassLoaderRegis
 				throw new PluginRegistryException (e.getMessage (), e);
 			}
 
-			server.tracer ().log (Tracer.Level.Info, "\tPlugin {0} binaries deleted", plugin.getName ());
+			server.tracer ().log (Tracer.Level.Info, "\tPlugin {0} binaries deleted", plugin.getNamespace ());
 		}
 		
 	}

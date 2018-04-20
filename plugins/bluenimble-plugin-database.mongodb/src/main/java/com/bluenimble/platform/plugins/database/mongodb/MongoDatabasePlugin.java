@@ -115,7 +115,7 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 			}
 			@Override
 			public String provider () {
-				return MongoDatabasePlugin.this.getName ();
+				return MongoDatabasePlugin.this.getNamespace ();
 			}
 		});
 		
@@ -166,7 +166,7 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 			String key = keys.next ();
 			JsonObject source = Json.getObject (dbFeature, key);
 			
-			if (!MongoDatabasePlugin.this.getName ().equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
+			if (!MongoDatabasePlugin.this.getNamespace ().equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
 				continue;
 			}
 			

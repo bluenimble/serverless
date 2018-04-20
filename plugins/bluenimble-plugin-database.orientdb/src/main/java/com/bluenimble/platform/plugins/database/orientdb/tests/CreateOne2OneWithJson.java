@@ -19,18 +19,24 @@ package com.bluenimble.platform.plugins.database.orientdb.tests;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseException;
 import com.bluenimble.platform.db.DatabaseObject;
-import com.bluenimble.platform.db.impls.DefaultDatabaseObjectSerializer;
+import com.bluenimble.platform.json.JsonObject;
 
-public class Get {
+public class CreateOne2OneWithJson {
 	
 	public static void main (String [] args) throws DatabaseException {
 		
 		Database db = new DatabaseServer ().get ();
 		
-		DatabaseObject employee = db.get ("Employees", "e16c87ee-8151-438d-a5e2-9d2a22ed6ab1");
-		if (employee != null) {
-			System.out.println (employee.toJson (new DefaultDatabaseObjectSerializer (2, 2)));
-		}		
+		// create driver
+		DatabaseObject driver = db.create ("Drivers");
+		driver.set ("name", "One2One-New-Json");
+		driver.set ("salary", 50.50);
+		
+		driver.set ("car", new JsonObject ().set (Database.Fields.Entity, "Cars").set (Database.Fields.Id, "ef8dd593-948f-4c22-a467-c110348e6636"));
+		
+		driver.save ();
+		
+		System.out.println (driver.toJson (null));
 		
 	}
 	

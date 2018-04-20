@@ -1,6 +1,6 @@
 {
-	"name": "media.default",
-	"title": "Media Processor Implementation - text, json, html, stream with templating engine",
+	"namespace": "media.default",
+	"name": "Media Processor Implementation - text, json, html, stream with templating engine",
 	
 	"spi": {
 		"class": "com.bluenimble.platform.server.plugins.media.MediaPlugin",
@@ -16,7 +16,7 @@
 	},
 	
 	"systemProperties": {
-		"org.slf4j.simpleLogger.defaultLogLevel": "ERROR"
+		"org.slf4j.simpleLogger.defaultLogLevel": "[ this.defaultLogLevel | 'ERROR' ]"
 	}
 	
 }	

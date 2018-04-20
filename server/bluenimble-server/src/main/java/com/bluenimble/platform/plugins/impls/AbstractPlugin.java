@@ -28,8 +28,8 @@ public abstract class AbstractPlugin implements Plugin {
 
 	private static final long serialVersionUID = -2281312799410904624L;
 	
+	private 	String 		namespace;
 	private 	String 		name;
-	private 	String 		title;
 	private 	String 		description;
 	private 	String 		version;
 	
@@ -61,12 +61,8 @@ public abstract class AbstractPlugin implements Plugin {
 	}
 
 	@Override
-	public String getName () {
-		return name;
-	}
-	@Override
-	public void setName (String name) {
-		this.name = name;
+	public void setNamespace (String namespace) {
+		this.namespace = namespace;
 	}
 	
 	@Override
@@ -79,13 +75,13 @@ public abstract class AbstractPlugin implements Plugin {
 	}
 	
 	@Override
-	public String getTitle () {
-		return title;
+	public String getName () {
+		return name;
 	}
 	
 	@Override
-	public void setTitle (String title) {
-		this.title = title;
+	public void setName (String name) {
+		this.name = name;
 	}
 	
 	@Override
@@ -153,7 +149,7 @@ public abstract class AbstractPlugin implements Plugin {
 
 	@Override
 	public String getNamespace () {
-		return getName ();
+		return namespace;
 	}
 
 	@Override

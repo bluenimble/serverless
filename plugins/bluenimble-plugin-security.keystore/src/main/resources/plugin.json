@@ -1,6 +1,6 @@
 {
-	"name": "security.keystore",
-	"title": "Space KeyStore Manager Implementation - Filesystem based keypairs storage",
+	"namespace": "security.keystore",
+	"name": "Space KeyStore Manager Implementation - Filesystem based keypairs storage",
 	
 	"spi": {
 		"class": "com.bluenimble.platform.plugins.keystores.KeyStorePlugin",
@@ -12,13 +12,14 @@
 					"Read More": "https://www.bluenimble.com"
 				}]
 			},
+			"closable": "false",
+			
 			"listener": {
-				"delay": "5",
-				"period": "300",
-				"file": "space.keystore",
-				"flushRate": "10"
-			},
-			"closable": "false"
+				"delay": "[ this.listener.delay | '5' ]",
+				"period": "[ this.listener.period | '300' ]",
+				"file": "[ this.listener.file | 'space.keystore' ]",
+				"flushRate": "[ this.listener.flushRate | '10' ]"
+			}
 		}
 	}
 }	

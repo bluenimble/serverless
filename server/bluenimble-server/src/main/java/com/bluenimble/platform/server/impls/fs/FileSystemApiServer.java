@@ -38,6 +38,8 @@ import com.bluenimble.platform.api.ApiStatus;
 import com.bluenimble.platform.api.impls.ApiFileStreamSource;
 import com.bluenimble.platform.api.impls.ApiSpaceImpl;
 import com.bluenimble.platform.api.impls.ApiSpaceImpl.Spaces;
+import com.bluenimble.platform.api.impls.media.DefaultApiMediaProcessorRegistry;
+import com.bluenimble.platform.api.media.ApiMediaProcessorRegistry;
 import com.bluenimble.platform.api.security.ApiRequestSigner;
 import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.api.tracing.impls.NoTracing;
@@ -58,6 +60,7 @@ import com.bluenimble.platform.server.maps.MapProvider;
 import com.bluenimble.platform.server.maps.impls.DefaultMapProvider;
 import com.bluenimble.platform.server.security.impls.DefaultApiRequestSigner;
 import com.bluenimble.platform.server.utils.ConfigKeys;
+import com.bluenimble.platform.server.utils.ConfigKeys.Folders;
 import com.bluenimble.platform.server.utils.InstallUtils;
 import com.bluenimble.platform.templating.VariableResolver;
 import com.bluenimble.platform.templating.impls.DefaultExpressionCompiler;
@@ -79,7 +82,6 @@ public class FileSystemApiServer extends AbstractApiServer {
 	private static final DefaultExpressionCompiler ExpressionCompiler = new DefaultExpressionCompiler ();
 	
 	private JsonObject 			variables = null;
-	private VariableResolver 	variablesResolver;
 
 	public FileSystemApiServer (File installHome, File runtimeHome, File tenantHome) {
 		this.installHome 	= installHome;
@@ -128,7 +130,7 @@ public class FileSystemApiServer extends AbstractApiServer {
 			keysFile = new File (installHome, ConfigKeys.RootKeysFile);
 		}
 		
-		ClassLoader bluenimbleClassLoader = FileSystemApiServer.class.getClassLoader ();
+		ClassLoader serverClassLoader = FileSystemApiServer.class.getClassLoader ();
 		
 		try {
 			
@@ -160,7 +162,7 @@ public class FileSystemApiServer extends AbstractApiServer {
 				messages.putAll (Json.load (mFile));
 			}
 			
-			pluginsRegistry = (PluginsRegistry)BeanUtils.create (bluenimbleClassLoader, Json.getObject (descriptor, ConfigKeys.PluginsRegistry));
+			pluginsRegistry = (PluginsRegistry)BeanUtils.create (serverClassLoader, Json.getObject (descriptor, ConfigKeys.PluginsRegistry));
 			pluginsRegistry.init (
 				this, 
 				new File (installHome, ConfigKeys.Folders.Plugins)
@@ -169,7 +171,7 @@ public class FileSystemApiServer extends AbstractApiServer {
 			// init tracer
 			JsonObject oTracer = Json.getObject (descriptor, ConfigKeys.Tracer);
 			if (!Json.isNullOrEmpty (oTracer)) {
-				tracer = (Tracer)BeanUtils.create (bluenimbleClassLoader, oTracer, pluginsRegistry);
+				tracer = (Tracer)BeanUtils.create (serverClassLoader, oTracer, pluginsRegistry);
 			}
 			if (tracer != null) {
 				tracer.onInstall (this);
@@ -179,34 +181,39 @@ public class FileSystemApiServer extends AbstractApiServer {
 			
 			tracer.log (Tracer.Level.Info, "Instance Config:\n{0}", descriptor);
 			
-			mapProvider = (MapProvider)BeanUtils.create (bluenimbleClassLoader, Json.getObject (descriptor, ConfigKeys.MapProvider), pluginsRegistry);
+			mapProvider = (MapProvider)BeanUtils.create (serverClassLoader, Json.getObject (descriptor, ConfigKeys.MapProvider), pluginsRegistry);
 			if (mapProvider == null) {
 				mapProvider = new DefaultMapProvider ();
 			}			
 
-			ClusterPeerFactory clusterPeerFactory = (ClusterPeerFactory)BeanUtils.create (bluenimbleClassLoader, Json.getObject (descriptor, ConfigKeys.ClusterPeerFactory), pluginsRegistry);
+			ClusterPeerFactory clusterPeerFactory = (ClusterPeerFactory)BeanUtils.create (serverClassLoader, Json.getObject (descriptor, ConfigKeys.ClusterPeerFactory), pluginsRegistry);
 			if (clusterPeerFactory == null) {
 				clusterPeerFactory = new DefaultClusterPeerFactory ();
 			}			
 			peer = clusterPeerFactory.create ();
 
-			interceptor = (ApiInterceptor)BeanUtils.create (bluenimbleClassLoader, Json.getObject (descriptor, ConfigKeys.Interceptor), pluginsRegistry);
+			mediaProcessorRegistry = (ApiMediaProcessorRegistry)BeanUtils.create (serverClassLoader, Json.getObject (descriptor, ConfigKeys.MediaProcessorRegistry), pluginsRegistry);
+			if (mediaProcessorRegistry == null) {
+				mediaProcessorRegistry = new DefaultApiMediaProcessorRegistry ();
+			}			
+
+			interceptor = (ApiInterceptor)BeanUtils.create (serverClassLoader, Json.getObject (descriptor, ConfigKeys.Interceptor), pluginsRegistry);
 			if (interceptor == null) {
 				interceptor = new DefaultApiInterceptor ();
 			}			
 			interceptor.init (this);
 			
-			serviceValidator = (ApiServiceValidator)BeanUtils.create (bluenimbleClassLoader, Json.getObject (descriptor, ConfigKeys.ServiceValidator), pluginsRegistry);
+			serviceValidator = (ApiServiceValidator)BeanUtils.create (serverClassLoader, Json.getObject (descriptor, ConfigKeys.ServiceValidator), pluginsRegistry);
 			if (serviceValidator == null) {
 				serviceValidator = new DefaultApiServiceValidator ();
 			}
 			
-			requestSigner = (ApiRequestSigner)BeanUtils.create (bluenimbleClassLoader, Json.getObject (descriptor, ConfigKeys.RequestSigner), pluginsRegistry);
+			requestSigner = (ApiRequestSigner)BeanUtils.create (serverClassLoader, Json.getObject (descriptor, ConfigKeys.RequestSigner), pluginsRegistry);
 			if (requestSigner == null) {
 				requestSigner = new DefaultApiRequestSigner ();
 			}
 			
-			requestVisitor = (ApiRequestVisitor)BeanUtils.create (bluenimbleClassLoader, Json.getObject (descriptor, ConfigKeys.RequestVisitor), pluginsRegistry);
+			requestVisitor = (ApiRequestVisitor)BeanUtils.create (serverClassLoader, Json.getObject (descriptor, ConfigKeys.RequestVisitor), pluginsRegistry);
 			if (requestVisitor == null) {
 				requestVisitor = new DefaultApiRequestVisitor ();
 			}
@@ -282,7 +289,11 @@ public class FileSystemApiServer extends AbstractApiServer {
 		File fDescriptor = new File (spaceHome, ConfigKeys.Descriptor.Space);
 		if (fDescriptor.exists ()) {
 			try {
-				oSpace = resolve (Json.load (fDescriptor));
+				oSpace = Json.load (fDescriptor);
+				oSpace = resolve (
+					oSpace, 
+					InstallUtils.varsMapping (ResolverPrefix.This, Folders.Spaces, Json.getString (oSpace, ApiSpace.Spec.Namespace))
+				);
 			} catch (Exception ex) {
 				failed.put ("unnable to load space '" + spaceHome.getName () + "'", ex);
 				return;
@@ -453,8 +464,38 @@ public class FileSystemApiServer extends AbstractApiServer {
 	}
 	
 	@Override
-	public JsonObject resolve (JsonObject descriptor) {
-		return (JsonObject)Json.resolve (descriptor, ExpressionCompiler, variablesResolver);
+	public JsonObject resolve (JsonObject descriptor, Map<String, String []> varsMapping) {
+		return (JsonObject)Json.resolve (descriptor, ExpressionCompiler, new VariableResolver () {
+			private static final long serialVersionUID = -485939153491337463L;
+			@Override
+			public Object resolve (String namespace, String... property) {
+				if (Lang.isNullOrEmpty (namespace)) {
+					return null;
+				}
+				if (namespace.equals (ResolverPrefix.Server)) {
+					return Json.find (descriptor, property);
+				} else if (namespace.equals (ResolverPrefix.Sys)) {
+					return System.getProperty (Lang.join (property, Lang.DOT));
+				} else if (namespace.equals (ResolverPrefix.Vars)) {
+					if (variables == null) {
+						return null;
+					}
+					return Json.find (variables, property);
+				} else if (varsMapping != null && varsMapping.containsKey (namespace)) {
+					if (variables == null) {
+						return null;
+					}
+					
+					Object v = Json.find (variables, varsMapping.get (namespace));
+					if (v == null || !(v instanceof JsonObject)) {
+						return null;
+					}
+					
+					return Json.find ((JsonObject)v, property);
+				}
+				return null;
+			}
+		});
 	}
 
 	private void setup () throws Exception {
@@ -465,29 +506,6 @@ public class FileSystemApiServer extends AbstractApiServer {
 				variables = Json.load (new File (tenantHome, ConfigKeys.VariablesFile));
 			}
 		}
-		
-		variablesResolver = new VariableResolver () {
-			private static final long serialVersionUID = -485939153491337463L;
-
-			@Override
-			public Object resolve (String namespace, String... property) {
-				if (Lang.isNullOrEmpty (namespace)) {
-					return null;
-				}
-				if (namespace.equals ("server")) {
-					return Json.find (descriptor, property);
-				} else if (namespace.equals ("sys")) {
-					return System.getProperty (Lang.join (property, Lang.DOT));
-				} else if (namespace.equals ("vars")) {
-					if (variables == null) {
-						return null;
-					}
-					return Json.find (variables, property);
-				}
-				return null;
-			}
-			
-		};
 		
 		if (!runtimeHome.exists ()) {
 			runtimeHome.mkdir ();
@@ -504,9 +522,9 @@ public class FileSystemApiServer extends AbstractApiServer {
 		
 		descriptor = null;
 		
-		File bluenimbleFile = new File (installHome, ConfigKeys.InstanceConfig);
-		if (bluenimbleFile.exists ()) {
-			descriptor = resolve ((JsonObject)Json.load (bluenimbleFile));
+		File instanceFile = new File (installHome, ConfigKeys.InstanceConfig);
+		if (instanceFile.exists ()) {
+			descriptor = resolve ((JsonObject)Json.load (instanceFile), null);
 		} else {
 			descriptor = new JsonObject ();
 		}

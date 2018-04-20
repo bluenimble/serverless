@@ -100,7 +100,7 @@ public class DataSourcePlugin extends AbstractPlugin {
 			}
 			@Override
 			public String provider () {
-				return DataSourcePlugin.this.getName ();
+				return DataSourcePlugin.this.getNamespace ();
 			}
 		});
 		
@@ -144,7 +144,7 @@ public class DataSourcePlugin extends AbstractPlugin {
 			String key = keys.next ();
 			JsonObject source = Json.getObject (dbFeature, key);
 			
-			if (!this.getName ().equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
+			if (!this.getNamespace ().equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
 				continue;
 			}
 			

@@ -123,7 +123,7 @@ public interface Database extends Recyclable {
 	boolean 				isEntity 	(Object value) 											throws DatabaseException;
 
 	List<DatabaseObject> 	find 		(String entity, Query query, Visitor visitor) 			throws DatabaseException;
-	DatabaseObject 			findOne 	(String entity, Query query) 								throws DatabaseException;
+	DatabaseObject 			findOne 	(String entity, Query query) 							throws DatabaseException;
 	
 	List<DatabaseObject> 	pop 		(String entity, Query query, Visitor visitor) 			throws DatabaseException;
 	DatabaseObject 			popOne 		(String entity, Query query) 								throws DatabaseException;

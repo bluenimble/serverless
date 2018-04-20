@@ -57,7 +57,7 @@ public class HandlebarsTemplateEngine implements TemplateEngine {
 	
 	public HandlebarsTemplateEngine (MediaPlugin plugin, Api api) {
 		this.api = api;
-		features = Json.getObject (api.getFeatures (), plugin.getName ());
+		features = Json.getObject (api.getFeatures (), plugin.getNamespace ());
 		engine = new Handlebars (new ResourceTemplateLoader (api));
 		engine.startDelimiter (Json.getString (features, StartDelimitter, DefaultStartDelimitter));
 		engine.endDelimiter (Json.getString (features, EndDelimitter, DefaultEndDelimitter));

@@ -1,8 +1,7 @@
 {
 
-	"name": "database.mongodb",
-	
-	"title": "Document Database Implementation - MongoDB",
+	"namespace": "database.mongodb",
+	"name": "Document Database Implementation - MongoDB",
 	
 	"spi": {
 		"class": "com.bluenimble.platform.plugins.database.mongodb.MongoDatabasePlugin",

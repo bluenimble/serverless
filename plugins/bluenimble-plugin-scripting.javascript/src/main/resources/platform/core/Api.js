@@ -221,7 +221,7 @@ function Api (proxy) {
 	  @returns {Messenger} an instance of a remote object
 	*/
 	this.remote = function (context, feature) {
-		if (!context) {
+		if (!context || !context.proxy) {
 			throw "missing argument context";
 		}
 		if (!feature) {

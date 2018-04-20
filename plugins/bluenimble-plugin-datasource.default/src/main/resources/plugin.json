@@ -1,8 +1,7 @@
 {
 
-	"name": "datasource.default",
-	
-	"title": "Datasource Implementation - Major RDBMSs (Oracle, MySQL, MariaDB, DB2, SqlServer, ...)",
+	"namespace": "datasource.default",
+	"name": "Datasource Implementation - Major RDBMSs (Oracle, MySQL, MariaDB, DB2, SqlServer, ...)",
 	
 	"spi": {
 		"class": "com.bluenimble.platform.plugins.datasource.DataSourcePlugin",

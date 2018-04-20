@@ -1,6 +1,6 @@
 {
-	"name": "tracing.log4j",
-	"title": "Tracing Implementation - Log4J",
+	"namespace": "tracing.log4j",
+	"name": "Tracing Implementation - Log4J",
 	
 	"spi": {
 		"class": "com.bluenimble.platform.plugins.tracing.log4j.Log4JTracerPlugin",

@@ -27,6 +27,8 @@ import com.bluenimble.platform.api.ApiService;
 import com.bluenimble.platform.api.security.ApiConsumer;
 
 public interface ApiMediaProcessor extends Serializable {
+	
+	String Any = "*/*";
 
 	void process 		(Api api, ApiService service, ApiConsumer consumer, ApiOutput output, ApiRequest request, ApiResponse response) 
 							throws ApiMediaException;

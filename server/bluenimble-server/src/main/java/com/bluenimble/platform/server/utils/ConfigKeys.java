@@ -89,6 +89,8 @@ public interface ConfigKeys {
 	String ClusterPeerFactory
 							= "clusterPeerFactory";
 	String PluginsRegistry	= "pluginsRegistry";
+	String MediaProcessorRegistry	
+							= "mediaProcessorRegistry";
 	String MapProvider		= "mapProvider";
 	String Interceptor 		= "interceptor";
 	String Authenticator	= "authenticator";

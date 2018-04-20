@@ -114,7 +114,7 @@ public class ScriptingPlugin extends AbstractPlugin {
 			}
 			@Override
 			public String provider () {
-				return ScriptingPlugin.this.getName ();
+				return ScriptingPlugin.this.getNamespace ();
 			}
 			@Override
 			public Plugin implementor () {

@@ -1,6 +1,6 @@
 {
-	"name": "indexer.elasticsearch",
-	"title": "Indexer Implementation - ElasticSearch",
+	"namespace": "indexer.elasticsearch",
+	"name": "Indexer Implementation - ElasticSearch",
 	
 	"spi": {
 		"class": "com.bluenimble.platform.server.plugins.indexer.elasticsearch.ElasticSearchPlugin",

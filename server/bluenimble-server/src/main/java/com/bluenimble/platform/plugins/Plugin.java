@@ -30,11 +30,11 @@ public interface Plugin extends Traceable {
 	
 	void 	init 			(ApiServer server) throws Exception;
 	
+	void 	setNamespace 	(String namespace);
+	String 	getNamespace 	();
+	
 	void 	setName 		(String name);
 	String 	getName 		();
-	
-	void 	setTitle 		(String title);
-	String 	getTitle 		();
 	
 	void 	setDescription 	(String description);
 	String 	getDescription 	();

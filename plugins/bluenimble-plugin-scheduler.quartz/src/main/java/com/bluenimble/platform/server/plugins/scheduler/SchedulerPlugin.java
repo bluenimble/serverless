@@ -137,7 +137,7 @@ public class SchedulerPlugin extends AbstractPlugin {
 			String key = keys.next ();
 			JsonObject source = Json.getObject (schedulerFeature, key);
 			
-			if (!this.getName ().equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
+			if (!this.getNamespace ().equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
 				continue;
 			}
 			
@@ -213,7 +213,7 @@ public class SchedulerPlugin extends AbstractPlugin {
 			String key = keys.next ();
 			JsonObject source = Json.getObject (schedulerFeature, key);
 			
-			if (!this.getName ().equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
+			if (!this.getNamespace ().equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
 				continue;
 			}
 			

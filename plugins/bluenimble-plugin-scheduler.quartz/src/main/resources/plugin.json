@@ -1,6 +1,6 @@
 {
-	"name": "scheduler.quartz",
-	"title": "Scheduler Implementation - Run Jobs - Quartz",
+	"namespace": "scheduler.quartz",
+	"name": "Scheduler Implementation - Run Jobs - Quartz",
 	
 	"spi": {
 		"class": "com.bluenimble.platform.server.plugins.scheduler.SchedulerPlugin",
@@ -13,15 +13,15 @@
 				}]
 			},
 			"scheduler": {
-				"org.quartz.scheduler.instanceName": "DefaultScheduler",
-				"org.quartz.scheduler.instanceId": "AUTO",
-				"org.quartz.threadPool.threadCount": "[ vars.plugins.scheduler.threadPool | '10' ]"
+				"org.quartz.scheduler.instanceName": "[ this.scheduler.name | 'DefaultScheduler' ]",
+				"org.quartz.scheduler.instanceId": "[ this.scheduler.id | 'AUTO' ]",
+				"org.quartz.threadPool.threadCount": "[ this.scheduler.pool | '10' ]"
 			}
 		}
 	},
 	
 	"systemProperties": {
-		"org.slf4j.simpleLogger.defaultLogLevel": "ERROR"
+		"org.slf4j.simpleLogger.defaultLogLevel": "[ this.defaultLogLevel | 'ERROR' ]"
 	}
 			
 }	

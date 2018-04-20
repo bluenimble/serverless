@@ -23,6 +23,7 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import com.bluenimble.platform.Feature;
 import com.bluenimble.platform.Json;
@@ -53,6 +54,7 @@ import com.bluenimble.platform.api.media.ApiMediaProcessor;
 import com.bluenimble.platform.api.media.MediaTypeUtils;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.tracing.Tracer;
+import com.bluenimble.platform.api.tracing.Tracer.Level;
 import com.bluenimble.platform.api.tracing.impls.NoTracing;
 import com.bluenimble.platform.api.validation.ApiServiceValidatorException;
 import com.bluenimble.platform.datasource.RemoteDataSource;
@@ -470,7 +472,7 @@ public class ApiImpl implements Api {
 		
 		return langI18n;
 	}
-
+/*
 	@Override
 	public ApiMediaProcessor lockupMediaProcessor (ApiRequest request, ApiService service) {
 		
@@ -482,9 +484,8 @@ public class ApiImpl implements Api {
 			requestedMedia = defaultContentType;
 		}
 		
-		if (!Lang.isNullOrEmpty (requestedMedia)) {
-			requestedMedia = requestedMedia.toLowerCase ();
-		}
+		requestedMedia = requestedMedia.toLowerCase ();
+		
 		
 		Map<String, ApiMediaProcessor> mediaProcessors = space.getServer ().getMediaProcessors ();
 		
@@ -498,11 +499,11 @@ public class ApiImpl implements Api {
 			} 
 			if (!Json.isNullOrEmpty (oMedia)) {
 				String baseMedia = Json.getString (oMedia, ApiService.Spec.Media.Base);
-				request.set (ApiRequest.SelectedMedia, anySelected ? Lang.STAR : requestedMedia, ApiRequest.Scope.Parameter);
+				request.set (ApiRequest.SelectedMedia, anySelected ? Lang.STAR : requestedMedia);
 				return mediaProcessors.get (baseMedia);
 			}
 		} else if (mediaProcessors.containsKey (requestedMedia)) {
-			request.set (ApiRequest.SelectedMedia, requestedMedia, ApiRequest.Scope.Parameter);
+			request.set (ApiRequest.SelectedMedia, requestedMedia);
 			return mediaProcessors.get (requestedMedia);
 		}
 		
@@ -537,11 +538,80 @@ public class ApiImpl implements Api {
 			requestedMedia = defaultContentType;
 		}
 		
-		request.set (ApiRequest.SelectedMedia, requestedMedia, ApiRequest.Scope.Parameter);
+		request.set (ApiRequest.SelectedMedia, requestedMedia);
 		
 		return mediaProcessors.get (requestedMedia);
 	}
+*/
+	@Override
+	public ApiMediaProcessor lockupMediaProcessor (ApiRequest request, ApiService service) {
+		
+		String defaultContentType = Json.getString (getMedia (), Api.Spec.Media.Default, ApiContentTypes.Json);
+		space.tracer ().log (Level.Info, "LockupMediaProcessor ...");
+		space.tracer ().log (Level.Info, "   Api Default Content {0}", defaultContentType);
+		
+		String accept = (String)request.get (ApiHeaders.Accept, Scope.Header);
+		space.tracer ().log (Level.Info, "   Request Accept Header {0}", accept);
+		
+		if (Lang.isNullOrEmpty (accept)) {
+			accept = defaultContentType;
+		}
+		
+		accept = accept.toLowerCase ();
+		
+		// check if accept is in service media spec and get the processor
+		space.tracer ().log (Level.Info, "   Check if accept is in service media spec and get the processor");
 
+		String processor = (String)Json.find (service.getMedia (), accept, ApiService.Spec.Media.Processor);
+		space.tracer ().log (Level.Info, "   Processor found? {0}", processor);
+		
+		if (!Lang.isNullOrEmpty (processor)) {
+			space.tracer ().log (Level.Info, "   Return Processor {0}", processor);
+			request.set (ApiRequest.SelectedMedia, accept);
+			return space.getServer ().getMediaProcessorRegistry ().lockup (processor);
+		}
+		
+		// if service has no media spec, get default
+		space.tracer ().log (Level.Info, "   Check if service has no media spec, then get default");
+		if (Json.isNullOrEmpty (service.getMedia ())) {
+			space.tracer ().log (Level.Info, "   Return Default Processor");
+			request.set (ApiRequest.SelectedMedia, accept);
+			return space.getServer ().getMediaProcessorRegistry ().getDefault ();
+		}
+		
+		// find a best match for accept in service media spec and get the processor
+		space.tracer ().log (Level.Info, "   Find a best match for accept in service media spec and get the processor");
+		
+		@SuppressWarnings("unchecked")
+		String [] candidates = Lang.toArray (
+			(Set<String>)service.getMedia ().keySet (), 
+			null
+		);
+		space.tracer ().log (Level.Info, "   Content Types candidates for a best match {0}", Lang.join (candidates));
+		
+		accept = MediaTypeUtils.bestMatch (candidates, accept);
+		space.tracer ().log (Level.Info, "   Best match is {0}", accept);
+		if (accept == null) {
+			space.tracer ().log (Level.Info, "   Best match is null, set default which is {0}", defaultContentType);
+			accept = defaultContentType;
+		}
+		
+		processor = (String)Json.find (service.getMedia (), accept, ApiService.Spec.Media.Processor);
+		space.tracer ().log (Level.Info, "   Processor found? {0}", processor);
+		if (!Lang.isNullOrEmpty (processor)) {
+			space.tracer ().log (Level.Info, "   Return Processor {0}", processor);
+			request.set (ApiRequest.SelectedMedia, accept);
+			return space.getServer ().getMediaProcessorRegistry ().lockup (processor);
+		}
+		
+		// no processor found in service media spec
+		space.tracer ().log (Level.Info, "   No processor found in service media spec");
+		space.tracer ().log (Level.Info, "   Set Selected Media to {0} and return default processor" , accept);
+		request.set (ApiRequest.SelectedMedia, accept);
+		return space.getServer ().getMediaProcessorRegistry ().getDefault ();
+	
+	}
+		
 	@Override
 	public void validate (ApiConsumer consumer, JsonObject spec, ApiRequest request)
 			throws ApiServiceValidatorException {

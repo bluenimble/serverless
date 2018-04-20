@@ -88,7 +88,7 @@ public class RemotePlugin extends AbstractPlugin {
 			}
 			@Override
 			public String provider () {
-				return RemotePlugin.this.getName ();
+				return RemotePlugin.this.getNamespace ();
 			}
 			@Override
 			public Plugin implementor () {
@@ -132,7 +132,7 @@ public class RemotePlugin extends AbstractPlugin {
 			String key = keys.next ();
 			JsonObject source = Json.getObject (storageFeature, key);
 			
-			if (!this.getName ().equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
+			if (!this.getNamespace ().equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
 				continue;
 			}
 			

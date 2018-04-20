@@ -42,8 +42,8 @@ public interface ApiService extends Serializable {
 		interface Media	{
 			String Resource		= "resource";
 			String Engine		= "engine";
-			String Base			= "base";
-			String Format		= "format";
+			String Processor	= "processor";
+			String Extends		= "extends";
 		}
 
 		String Status		= "status";

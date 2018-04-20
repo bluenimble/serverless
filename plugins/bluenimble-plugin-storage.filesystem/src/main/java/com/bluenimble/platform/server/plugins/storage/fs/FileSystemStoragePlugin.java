@@ -59,9 +59,12 @@ public class FileSystemStoragePlugin extends AbstractPlugin {
 		}
 		feature = aFeature.name ();
 
-		if (!Lang.isNullOrEmpty (root)) {
-			fRoot = new File (root);
+		if (Lang.isNullOrEmpty (root)) {
+			root = System.getProperty ("user.home") + File.pathSeparator + "bluenimble/" + getNamespace ();
 		}
+		
+		fRoot = new File (root);
+		
 		if (!fRoot.exists ()) {
 			fRoot.mkdirs ();
 		}
@@ -83,7 +86,7 @@ public class FileSystemStoragePlugin extends AbstractPlugin {
 			}
 			@Override
 			public String provider () {
-				return FileSystemStoragePlugin.this.getName ();
+				return FileSystemStoragePlugin.this.getNamespace ();
 			}
 			@Override
 			public Plugin implementor () {
@@ -134,7 +137,7 @@ public class FileSystemStoragePlugin extends AbstractPlugin {
 			String key = keys.next ();
 			JsonObject source = Json.getObject (storageFeature, key);
 			
-			if (!this.getName ().equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
+			if (!this.getNamespace ().equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
 				continue;
 			}
 			

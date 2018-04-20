@@ -1,6 +1,6 @@
 {
-	"name": "tracking.database",
-	"title": "Requests Tracking implementation - Database backend",
+	"namespace": "tracking.database",
+	"name": "Requests Tracking implementation - Database backend",
 	
 	"spi": {
 		"class": "com.bluenimble.platform.plugins.tracking.DatabaseBasedTrackingPlugin",

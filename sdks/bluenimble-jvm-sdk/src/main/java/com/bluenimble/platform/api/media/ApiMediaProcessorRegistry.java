@@ -14,24 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.plugins.database.orientdb.tests;
+package com.bluenimble.platform.api.media;
 
-import com.bluenimble.platform.db.Database;
-import com.bluenimble.platform.db.DatabaseException;
-import com.bluenimble.platform.db.DatabaseObject;
-import com.bluenimble.platform.db.impls.DefaultDatabaseObjectSerializer;
+import java.io.Serializable;
 
-public class Get {
-	
-	public static void main (String [] args) throws DatabaseException {
-		
-		Database db = new DatabaseServer ().get ();
-		
-		DatabaseObject employee = db.get ("Employees", "e16c87ee-8151-438d-a5e2-9d2a22ed6ab1");
-		if (employee != null) {
-			System.out.println (employee.toJson (new DefaultDatabaseObjectSerializer (2, 2)));
-		}		
-		
-	}
+public interface ApiMediaProcessorRegistry extends Serializable {
+
+	void 				register 	(String name, ApiMediaProcessor processor, boolean _default);	
+	ApiMediaProcessor 	lockup 		(String name);
+	ApiMediaProcessor 	getDefault	();
 	
 }

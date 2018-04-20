@@ -57,6 +57,8 @@ public class StreamMediaProcessor implements ApiMediaProcessor {
 		String Attachment 	= "attachment";
 	}
 
+	public static final String Name = "stream";
+	
     private static final long 		EXPIRE_TIME 			= 604800000L; // ..ms = 1 week.
     private static final int 		BUFFER_SIZE 			= 32 * 1024;
 
@@ -75,7 +77,7 @@ public class StreamMediaProcessor implements ApiMediaProcessor {
 		if (Lang.isNullOrEmpty (contentType)) {
 			contentType = (String)request.get (ApiRequest.SelectedMedia); 
 		}
-		if (Lang.isNullOrEmpty (contentType) || Lang.STAR.equals  (contentType)) {
+		if (Lang.isNullOrEmpty (contentType) || ApiMediaProcessor.Any.equals  (contentType)) {
 			contentType = ApiContentTypes.Stream;
 		}
 		

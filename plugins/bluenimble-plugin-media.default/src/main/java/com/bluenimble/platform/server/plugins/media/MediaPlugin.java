@@ -22,14 +22,13 @@ import java.io.InputStream;
 
 import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.api.Api;
-import com.bluenimble.platform.api.ApiContentTypes;
 import com.bluenimble.platform.api.impls.media.PlainMediaProcessor;
 import com.bluenimble.platform.api.impls.media.StreamMediaProcessor;
 import com.bluenimble.platform.api.impls.media.engines.TemplateEngine;
 import com.bluenimble.platform.api.impls.media.engines.TemplateEnginesRegistry;
 import com.bluenimble.platform.api.impls.media.engines.handlebars.HandlebarsTemplateEngine;
 import com.bluenimble.platform.api.impls.media.engines.javascript.JavascriptEngine;
-import com.bluenimble.platform.api.media.ApiMediaProcessor;
+import com.bluenimble.platform.api.media.ApiMediaProcessorRegistry;
 import com.bluenimble.platform.api.media.MediaTypeUtils;
 import com.bluenimble.platform.plugins.impls.AbstractPlugin;
 import com.bluenimble.platform.server.ApiServer;
@@ -44,12 +43,8 @@ public class MediaPlugin extends AbstractPlugin {
 	
 	private TemplateEnginesRegistry enginesRegistry = new TemplateEnginesRegistry ();
 	
-	private ApiServer server;
-	
 	@Override
 	public void init (final ApiServer server) throws Exception {
-		
-		this.server = server;
 		
 		// install mimes
 		InputStream mimes = null;
@@ -60,13 +55,13 @@ public class MediaPlugin extends AbstractPlugin {
 			IOUtils.closeQuietly (mimes);
 		}
 		
-		PlainMediaProcessor text = new PlainMediaProcessor (this, ApiContentTypes.Text);
+		ApiMediaProcessorRegistry registry = server.getMediaProcessorRegistry ();
+		if (registry == null) {
+			return;
+		}
 		
-		server.addMediaProcessor (ApiContentTypes.Text, text);
-		server.addMediaProcessor (ApiContentTypes.Html, text);
-		server.addMediaProcessor (ApiContentTypes.Json, new PlainMediaProcessor (this, ApiContentTypes.Json));
-		server.addMediaProcessor (ApiContentTypes.Yaml, new PlainMediaProcessor (this, ApiContentTypes.Yaml));
-		server.addMediaProcessor (ApiContentTypes.Stream, new StreamMediaProcessor ());
+		registry.register (PlainMediaProcessor.Name, new PlainMediaProcessor (this), true);
+		registry.register (StreamMediaProcessor.Name, new StreamMediaProcessor (), false);
 		
 	}
 
@@ -89,10 +84,6 @@ public class MediaPlugin extends AbstractPlugin {
 
 	public TemplateEngine loockupEngine (Api api, String name) {
 		return enginesRegistry.get (api, name);
-	}
-	
-	public ApiMediaProcessor getMediaProcessor (String name) {
-		return server.getMediaProcessors ().get (name);
 	}
 	
 }

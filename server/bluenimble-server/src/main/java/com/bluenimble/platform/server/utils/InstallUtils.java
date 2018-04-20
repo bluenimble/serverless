@@ -20,9 +20,12 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
+import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.json.JsonArray;
 
 public class InstallUtils {
@@ -86,6 +89,19 @@ public class InstallUtils {
 	
 	public static boolean isValidPluginNs (String name) {
 		return Pattern.matches ("^[a-zA-Z0-9_-[.]]*$", name);
+	}
+	
+	public static Map<String, String []> varsMapping (String key, String category, String namespace) {
+		Map<String, String []> map = new HashMap<String, String []> ();
+		
+		String [] mapping = Lang.split (namespace, Lang.DOT, true);
+		if (category != null) {
+			mapping = Lang.add (new String [] { category }, mapping);
+		}
+		
+		map.put (key, mapping);
+		
+		return map;
 	}
 
 }

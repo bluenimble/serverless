@@ -1,6 +1,6 @@
 {
-	"name": "dev.playground",
-	"title": "Dev Playground plugin. Starts an embedded database and more for testing purposes. !!! Don't ship to productions !!!",
+	"namespace": "dev.playground",
+	"name": "Dev Playground plugin. Starts an embedded database and more for testing purposes. !!! Don't ship to productions !!!",
 	
 	"spi": {
 		"class": "com.bluenimble.platform.plugins.dev.playground.PlaygroundPlugin",
@@ -17,7 +17,7 @@
 	},
 	
 	"systemProperties": {
-		"log.console.level": "SEVERE",
+		"log.console.level": "[ this.logConsoleLevel | 'SEVERE' ]",
 		"orientdb.installCustomFormatter=false": "false"
 	}
 	

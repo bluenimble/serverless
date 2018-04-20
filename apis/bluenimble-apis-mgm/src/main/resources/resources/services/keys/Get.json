@@ -10,8 +10,8 @@
 	},
 	
 	"media": {
-		"*": {
-			"base": "application/octet-stream"
+		"*/*": {
+			"processor": "stream"
 		}
 	},
 	
