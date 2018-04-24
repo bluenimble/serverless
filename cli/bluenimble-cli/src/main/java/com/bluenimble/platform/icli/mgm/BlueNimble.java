@@ -37,7 +37,7 @@ import com.bluenimble.platform.cli.ToolClient;
 import com.bluenimble.platform.cli.ToolContext;
 import com.bluenimble.platform.cli.ToolStartupException;
 import com.bluenimble.platform.cli.command.Command;
-import com.bluenimble.platform.cli.impls.RunnableTool;
+import com.bluenimble.platform.cli.impls.JLineTool;
 import com.bluenimble.platform.cli.impls.ToolContextImpl;
 import com.bluenimble.platform.encoding.Base64;
 import com.bluenimble.platform.icli.mgm.boot.BnMgmICli;
@@ -59,7 +59,7 @@ import com.bluenimble.platform.icli.mgm.monitors.KeysMonitor;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 
-public class BlueNimble extends RunnableTool {
+public class BlueNimble extends JLineTool {
 	
 	private static final long serialVersionUID = -6945317797511551981L;
 	
