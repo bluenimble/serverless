@@ -1,0 +1,17 @@
+{
+	"namespace": "cache.memcached",
+	"name": "Cache Implementation - MemCached / Redis",
+	
+	"spi": {
+		"class": "com.bluenimble.platform.server.plugins.cache.memcached.MemCachedPlugin",
+		"properties": {
+			"version": "[version]",
+			"vendor": {
+				"name": "BlueNimble, Inc",
+				"links": [{
+					"Read More": "https://www.bluenimble.com"
+				}]
+			}
+		}
+	}
+}	
