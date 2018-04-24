@@ -54,7 +54,7 @@
 		<dependency>
 		    <groupId>com.bluenimble.serverless</groupId>
 		    <artifactId>bluenimble-jvm-sdk</artifactId>
-		    <version>1.4.0-SNAPSHOT</version><!--bn.version--><!--bn.version-->
+		    <version>1.4.0</version><!--bn.version-->
 		</dependency>
 		<dependency>
 			<groupId>javax.persistence</groupId>
