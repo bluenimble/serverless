@@ -66,7 +66,7 @@ public class PrettyPrinter extends AbstractPrinter {
 		if (!on) {
 			return;
 		}
-		tool.writeln (Lang.ENDLN);
+		tool.writeln (Lang.BLANK);
 		margin ();
 		
 		Label oLabel = null;

@@ -79,11 +79,11 @@ public abstract class AbstractTool implements Tool {
 		
 	private CommandParser commandParser = new CommandParserImpl ();
 	private List<String> history = new ArrayList<String> (); 
-	private ToolContext currentContext;
+	protected ToolContext currentContext;
 	private Date startTime;
 	private boolean testMode;
 	
-	private Printer printer;
+	protected Printer printer;
 	
 	private String paraphrase;
 	
