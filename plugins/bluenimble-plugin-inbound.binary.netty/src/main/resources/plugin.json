@@ -16,18 +16,7 @@
 			
 			"async": "true",
 			
-			"port": "[ this.port | '7070' ]",
-			"idleTimeout": "[ this.idleTimeout | '30' ]",
-			
-			"pool": {
-				"idleTimeout": "[ this.pool.idleTimeout | '300' ]"
-			},
-			
-			"ssl": {
-				"port": "[ this.ssl.port | '8443' ]",
-				"keystore": "[ this.ssl.keystore | '' ]",
-				"password": "[ this.ssl.password | '' ]"
-			}
+			"port": "[ this.port | '7070' ]"
 		}
 	}
 }	

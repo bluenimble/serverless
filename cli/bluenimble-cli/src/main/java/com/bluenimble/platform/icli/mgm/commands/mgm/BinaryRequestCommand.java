@@ -61,6 +61,12 @@ public class BinaryRequestCommand extends AbstractCommand  {
 		
 		BinaryClient client = new BinaryClient (host, port);
 		
+		try {
+			client.connect ();
+		} catch (Exception ex) {
+			throw new CommandExecutionException (ex.getMessage (), ex);
+		}
+		
 		client.send (new SimpleApiRequest (oSpec), new ResponseCallback () {
 			@Override
 			public void onStatus (ApiResponse.Status status) {
