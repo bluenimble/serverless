@@ -49,7 +49,7 @@ public class BinaryRequestCommand extends AbstractCommand  {
 		String 	host = hostAndPort.substring (0, indexOfColon);
 		int 	port = 0;
 		try {
-			Integer.valueOf (hostAndPort.substring (indexOfColon + 1));
+			port = Integer.valueOf (hostAndPort.substring (indexOfColon + 1));
 		} catch (Exception ex) {
 			return new DefaultCommandResult (CommandResult.KO, "Invalid port number '" + hostAndPort.substring (indexOfColon + 1) + "'");
 		}
@@ -58,6 +58,8 @@ public class BinaryRequestCommand extends AbstractCommand  {
 		Map<String, Object> vars = (Map<String, Object>)tool.getContext (Tool.ROOT_CTX).get (ToolContext.VARS);
 		
 		JsonObject oSpec = (JsonObject)vars.get (vSpec);
+		
+		tool.printer ().content ("Connecting to ...", host + ":" + port);
 		
 		BinaryClient client = new BinaryClient (host, port);
 		
@@ -86,7 +88,7 @@ public class BinaryRequestCommand extends AbstractCommand  {
 			}
 		});
 		
-		return new DefaultCommandResult (CommandResult.KO, "Invalid port number '" + hostAndPort.substring (indexOfColon + 1) + "'");
+		return new DefaultCommandResult (CommandResult.KO, "");
 
 	}
 	

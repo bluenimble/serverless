@@ -33,7 +33,7 @@ public class ClientTest {
 		);
 		*/
 		
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 1; i++) {
 			new Worker (client, String.valueOf (i)).start ();
 		}
 		
