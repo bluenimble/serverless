@@ -37,6 +37,8 @@
 		
 		<module>bluenimble-plugin-im.default</module>
 
+		<module>bluenimble-plugin-inbound.binary.netty</module>
+
 		<module>bluenimble-plugin-inbound.http.jetty</module>
 
 		<module>bluenimble-plugin-cache.memcached</module>

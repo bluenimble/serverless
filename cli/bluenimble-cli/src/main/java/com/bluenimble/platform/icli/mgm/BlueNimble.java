@@ -52,6 +52,7 @@ import com.bluenimble.platform.icli.mgm.commands.dev.LoadCommand;
 import com.bluenimble.platform.icli.mgm.commands.dev.SecureCommand;
 import com.bluenimble.platform.icli.mgm.commands.dev.UseCommand;
 import com.bluenimble.platform.icli.mgm.commands.dev.WorkspaceCommand;
+import com.bluenimble.platform.icli.mgm.commands.mgm.BinaryRequestCommand;
 import com.bluenimble.platform.icli.mgm.commands.mgm.MacroSourceCommand;
 import com.bluenimble.platform.icli.mgm.commands.mgm.RemoteCommand;
 import com.bluenimble.platform.icli.mgm.commands.mgm.ScriptSourceCommand;
@@ -122,6 +123,8 @@ public class BlueNimble extends JLineTool {
 		addCommand (new UseCommand ());
 		
 		addCommand (new FeaturesCommand ());
+		
+		addCommand (new BinaryRequestCommand ());
 		
 		addCommand (new HttpCommand ());
 

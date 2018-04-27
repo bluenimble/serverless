@@ -15,11 +15,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.bluenimble.serverless</groupId>
-	<artifactId>bluenimble-plugin-runtime.kubernetes</artifactId>
+	<artifactId>bluenimble-plugin-inbound.binary.netty</artifactId>
 	<version>1.5.0-SNAPSHOT</version><!--bn.version-->
 	
 	<packaging>jar</packaging>
-	<name>bluenimble-plugin-runtime.kubernetes</name>
+	<name>bluenimble-plugin-inbound.binary.netty</name>
 	
 	<properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -104,11 +104,15 @@
 			<artifactId>bluenimble-server</artifactId>
 			<version>1.5.0-SNAPSHOT</version><!--bn.version-->
 		</dependency>
-<dependency>
-    <groupId>io.kubernetes</groupId>
-    <artifactId>client-java</artifactId>
-    <version>1.0.0-beta3</version>
-</dependency>
-
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+			<version>4.1.24.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-handler</artifactId>
+			<version>4.1.24.Final</version>
+		</dependency>
 	</dependencies>
 </project>

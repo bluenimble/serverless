@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
+import com.bluenimble.platform.Json;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiVerb;
 import com.bluenimble.platform.iterators.EmptyIterator;
@@ -38,6 +39,32 @@ public class SimpleApiRequest extends AbstractApiRequest {
 	private 	String 				endpoint;
 	private 	String 				path;
 	
+	@SuppressWarnings("unchecked")
+	public SimpleApiRequest (JsonObject payload) {
+		this (
+			Json.getString (payload, ApiRequest.Fields.Channel),
+			ApiVerb.valueOf (Json.getString (payload, ApiRequest.Fields.Verb, ApiVerb.GET.name ()).toUpperCase ()),
+			Json.getString (payload, ApiRequest.Fields.Scheme),
+			Json.getString (payload, ApiRequest.Fields.Endpoint),
+			Json.getString (payload, ApiRequest.Fields.Path),
+			Json.getString (payload, ApiRequest.Fields.Device.Origin),
+			Json.getString (payload, ApiRequest.Fields.Device.Agent)
+		);
+		
+		JsonObject oParameters = Json.getObject (payload, ApiRequest.Fields.Data.Parameters);
+		if (!Json.isNullOrEmpty (oParameters)) {
+			application = new HashMap<String, Object> ();
+			application.putAll (oParameters);
+		}
+		
+		JsonObject oHeaders = Json.getObject (payload, ApiRequest.Fields.Data.Headers);
+		if (!Json.isNullOrEmpty (oHeaders)) {
+			headers = new HashMap<String, Object> ();
+			headers.putAll (oHeaders);
+		}
+		
+	}
+
 	public SimpleApiRequest (String channel, ApiVerb verb, String scheme, String endpoint, String path, String origin, String agent) {
 		this.channel 		= channel;
 		this.verb 			= verb;
@@ -48,6 +75,7 @@ public class SimpleApiRequest extends AbstractApiRequest {
 									.set (ApiRequest.Fields.Device.Agent, agent)
 									.set (ApiRequest.Fields.Device.Origin, origin)
 									.set (ApiRequest.Fields.Device.Language, Locale.ENGLISH.getLanguage ());
+		node = new JsonObject ();
 	}
 
 	@Override

@@ -114,7 +114,9 @@ public interface ApiResponse extends Serializable {
 	public static final Status HTTP_VERSION_NOT_SUPPORTED		= new Status (505, "HTTP Version Not Supported");
 	public static final Status INSUFFICIENT_STORAGE				= new Status (507, "Insufficient Storage");
 
-	class Status {
+	class Status implements Serializable {
+		
+		private static final long serialVersionUID = -2128228864466624663L;
 		
 		private int code;
 		private String message;

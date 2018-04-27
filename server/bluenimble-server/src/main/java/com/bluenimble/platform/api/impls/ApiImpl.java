@@ -246,7 +246,6 @@ public class ApiImpl implements Api {
 						
 						// create factory
 						recyclable.set (space, this.getClassLoader (), (String)datasources.get (i));
-						
 					}
 				}
 				

@@ -1,0 +1,33 @@
+{
+	"namespace": "inbound.binary.netty",
+	"name": "Inbound Binary Protocol - Netty",
+	
+	"spi": {
+		"class": "com.bluenimble.platform.server.plugins.inbound.binary.netty.NettyPlugin",
+		"properties": {
+			
+			"version": "[version]",
+			"vendor": {
+				"name": "BlueNimble, Inc",
+				"links": [{
+					"Read More": "https://www.bluenimble.com"
+				}]
+			},
+			
+			"async": "true",
+			
+			"port": "[ this.port | '7070' ]",
+			"idleTimeout": "[ this.idleTimeout | '30' ]",
+			
+			"pool": {
+				"idleTimeout": "[ this.pool.idleTimeout | '300' ]"
+			},
+			
+			"ssl": {
+				"port": "[ this.ssl.port | '8443' ]",
+				"keystore": "[ this.ssl.keystore | '' ]",
+				"password": "[ this.ssl.password | '' ]"
+			}
+		}
+	}
+}	
