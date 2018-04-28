@@ -34,7 +34,6 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     	ApiRequest request = (ApiRequest)msg;
     	request.set (NettyServer.Context, ctx);
     	
-    	ctx.write (request.getId ());
     	try {
 			proessor.process (request);
 		} catch (Exception e) {

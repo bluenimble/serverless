@@ -1,10 +1,10 @@
-package com.bluenimble.platform.icli.mgm.remote.binary;
+package vom.bluenimble.platform.tools.binary;
 
 import java.util.Map;
 
 import com.bluenimble.platform.api.ApiResponse;
 
-public interface ResponseCallback {
+public interface Callback {
 	
 	void onStatus 	(ApiResponse.Status status);
 	void onHeaders 	(Map<String, Object> headers);

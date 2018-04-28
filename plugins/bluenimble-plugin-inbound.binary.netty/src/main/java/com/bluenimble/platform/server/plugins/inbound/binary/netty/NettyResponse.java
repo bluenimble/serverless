@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 
-import com.bluenimble.platform.Null;
 import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.impls.AbstractApiResponse;
 
@@ -66,7 +65,7 @@ public class NettyResponse extends AbstractApiResponse {
 
 	@Override
 	public void commit () {
-		context.write (new Null ());
+		
 	}
 
 }
