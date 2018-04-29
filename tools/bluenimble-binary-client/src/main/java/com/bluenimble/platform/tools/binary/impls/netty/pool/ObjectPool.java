@@ -1,4 +1,4 @@
-package vom.bluenimble.platform.tools.binary.impls.netty.pool;
+package com.bluenimble.platform.tools.binary.impls.netty.pool;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;

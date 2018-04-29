@@ -1,13 +1,12 @@
-package vom.bluenimble.platform.tools.binary.tests;
+package com.bluenimble.platform.tools.binary.tests;
 
 import java.util.Map;
 
 import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.ApiVerb;
 import com.bluenimble.platform.api.impls.SimpleApiRequest;
-
-import vom.bluenimble.platform.tools.binary.BinaryClientFactory;
-import vom.bluenimble.platform.tools.binary.Callback;
+import com.bluenimble.platform.tools.binary.BinaryClientFactory;
+import com.bluenimble.platform.tools.binary.Callback;
 
 public class Worker extends Thread {
 	

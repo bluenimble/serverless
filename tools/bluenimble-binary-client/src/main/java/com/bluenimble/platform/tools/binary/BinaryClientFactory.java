@@ -1,4 +1,4 @@
-package vom.bluenimble.platform.tools.binary;
+package com.bluenimble.platform.tools.binary;
 
 import java.io.Serializable;
 

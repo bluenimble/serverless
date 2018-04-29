@@ -1,4 +1,4 @@
-package vom.bluenimble.platform.tools.binary.impls.netty.pool;
+package com.bluenimble.platform.tools.binary.impls.netty.pool;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadLocalRandom;

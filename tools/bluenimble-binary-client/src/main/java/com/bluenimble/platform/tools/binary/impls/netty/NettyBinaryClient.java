@@ -1,9 +1,12 @@
-package vom.bluenimble.platform.tools.binary.impls.netty;
+package com.bluenimble.platform.tools.binary.impls.netty;
 
 import java.util.Map;
 
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResponse;
+import com.bluenimble.platform.tools.binary.BinaryClient;
+import com.bluenimble.platform.tools.binary.BinaryClientException;
+import com.bluenimble.platform.tools.binary.Callback;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelHandlerContext;
@@ -17,9 +20,6 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
-import vom.bluenimble.platform.tools.binary.BinaryClient;
-import vom.bluenimble.platform.tools.binary.BinaryClientException;
-import vom.bluenimble.platform.tools.binary.Callback;
 
 public class NettyBinaryClient implements BinaryClient {
 

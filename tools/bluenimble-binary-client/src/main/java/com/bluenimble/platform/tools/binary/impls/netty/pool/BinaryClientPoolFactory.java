@@ -1,7 +1,7 @@
-package vom.bluenimble.platform.tools.binary.impls.netty.pool;
+package com.bluenimble.platform.tools.binary.impls.netty.pool;
 
-import vom.bluenimble.platform.tools.binary.BinaryClient;
-import vom.bluenimble.platform.tools.binary.impls.netty.NettyBinaryClient;
+import com.bluenimble.platform.tools.binary.BinaryClient;
+import com.bluenimble.platform.tools.binary.impls.netty.NettyBinaryClient;
 
 public class BinaryClientPoolFactory implements ObjectFactory<BinaryClient> {
 	

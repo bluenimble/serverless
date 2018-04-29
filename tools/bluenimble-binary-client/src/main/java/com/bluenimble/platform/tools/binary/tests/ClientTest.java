@@ -1,8 +1,8 @@
-package vom.bluenimble.platform.tools.binary.tests;
+package com.bluenimble.platform.tools.binary.tests;
 
-import vom.bluenimble.platform.tools.binary.BinaryClientFactory;
-import vom.bluenimble.platform.tools.binary.impls.netty.NettyBinaryClientFactory;
-import vom.bluenimble.platform.tools.binary.impls.netty.pool.PoolConfig;
+import com.bluenimble.platform.tools.binary.BinaryClientFactory;
+import com.bluenimble.platform.tools.binary.impls.netty.NettyBinaryClientFactory;
+import com.bluenimble.platform.tools.binary.impls.netty.pool.PoolConfig;
 
 public class ClientTest {
 

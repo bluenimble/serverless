@@ -1,11 +1,11 @@
-package vom.bluenimble.platform.tools.binary.impls.netty;
+package com.bluenimble.platform.tools.binary.impls.netty;
 
-import vom.bluenimble.platform.tools.binary.BinaryClient;
-import vom.bluenimble.platform.tools.binary.BinaryClientFactory;
-import vom.bluenimble.platform.tools.binary.Callback;
-import vom.bluenimble.platform.tools.binary.impls.netty.pool.BinaryClientPoolFactory;
-import vom.bluenimble.platform.tools.binary.impls.netty.pool.ObjectPool;
-import vom.bluenimble.platform.tools.binary.impls.netty.pool.PoolConfig;
+import com.bluenimble.platform.tools.binary.BinaryClient;
+import com.bluenimble.platform.tools.binary.BinaryClientFactory;
+import com.bluenimble.platform.tools.binary.Callback;
+import com.bluenimble.platform.tools.binary.impls.netty.pool.BinaryClientPoolFactory;
+import com.bluenimble.platform.tools.binary.impls.netty.pool.ObjectPool;
+import com.bluenimble.platform.tools.binary.impls.netty.pool.PoolConfig;
 
 public class NettyBinaryClientFactory implements BinaryClientFactory {
 
