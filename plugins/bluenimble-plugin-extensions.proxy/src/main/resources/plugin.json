@@ -1,9 +1,9 @@
 {
-	"namespace": "remote.default",
-	"name": "Remoting Implementation - Http and Binary",
+	"namespace": "extensions.proxy",
+	"name": "Extensions - Binary and Http Proxy",
 	
 	"spi": {
-		"class": "com.bluenimble.platform.server.plugins.remote.RemotePlugin",
+		"class": "com.bluenimble.platform.plugins.extensions.proxy.GenericProxyPlugin",
 		"properties": {
 			"version": "[version]",
 			"vendor": {

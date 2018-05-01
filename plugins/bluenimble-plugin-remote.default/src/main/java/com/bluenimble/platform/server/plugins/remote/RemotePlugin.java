@@ -16,48 +16,38 @@
  */
 package com.bluenimble.platform.server.plugins.remote;
 
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import com.bluenimble.platform.Feature;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.PackageClassLoader;
+import com.bluenimble.platform.Recyclable;
 import com.bluenimble.platform.api.ApiSpace;
+import com.bluenimble.platform.api.Manageable;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.Plugin;
 import com.bluenimble.platform.plugins.PluginRegistryException;
 import com.bluenimble.platform.plugins.impls.AbstractPlugin;
+import com.bluenimble.platform.pooling.PoolConfig;
 import com.bluenimble.platform.remote.Remote;
-import com.bluenimble.platform.remote.factories.RemoteFactory;
-import com.bluenimble.platform.remote.factories.impls.HttpRemoteFactory;
+import com.bluenimble.platform.remote.impls.binary.BinaryRemote;
 import com.bluenimble.platform.remote.impls.http.HttpRemote;
 import com.bluenimble.platform.server.ApiServer;
 import com.bluenimble.platform.server.ApiServer.Event;
 import com.bluenimble.platform.server.ServerFeature;
+import com.bluenimble.platform.tools.binary.BinaryClient;
+import com.bluenimble.platform.tools.binary.BinaryClientFactory;
+import com.bluenimble.platform.tools.binary.impls.netty.NettyBinaryClientFactory;
 
 public class RemotePlugin extends AbstractPlugin {
 
 	private static final long serialVersionUID = 3203657740159783537L;
 
-	interface Spec {
-		String Protocol 	= "protocol";
-	}
-	
 	enum Protocol {
 		http,
-		coap,
-		ldap,
-		ssh
+		binary
 	}
-	
-	private static final Map<Protocol, RemoteFactory> Factories = new HashMap<Protocol, RemoteFactory>();
-	static {
-		Factories.put (Protocol.http, new HttpRemoteFactory ());
-	}
-	
-	private Map<String, Remote> remotes = new HashMap<String, Remote> ();
 	
 	private String 	feature;
 	
@@ -73,7 +63,7 @@ public class RemotePlugin extends AbstractPlugin {
 
 		PackageClassLoader pcl = (PackageClassLoader)RemotePlugin.class.getClassLoader ();
 		
-		pcl.registerObject (Protocol.http.name (), new HttpRemote (null));
+		pcl.registerObject (Protocol.http.name (), new HttpRemote ());
 		
 		server.addFeature (new ServerFeature () {
 			private static final long serialVersionUID = -9012279234275100528L;
@@ -84,7 +74,19 @@ public class RemotePlugin extends AbstractPlugin {
 			}
 			@Override
 			public Object get (ApiSpace space, String name) {
-				return remotes.get (createRemoteKey (name, space));
+				JsonObject spec = (JsonObject)Json.find (space.getFeatures (), feature, name, ApiSpace.Features.Spec);
+				String protocol = Json.getString (spec, Remote.Spec.Protocol);
+
+				Remote remote = null;
+				
+				if (Protocol.binary.name ().equalsIgnoreCase (protocol)) {
+					remote = new BinaryRemote (
+						((RecyclableBinaryClientFactory)space.getRecyclable (createKey (name, space))).create ()
+					);
+				} else {
+					remote = new HttpRemote (space, name, spec);
+				}
+				return remote;
 			}
 			@Override
 			public String provider () {
@@ -98,7 +100,7 @@ public class RemotePlugin extends AbstractPlugin {
 	}
 
 	@Override
-	public void onEvent (Event event, Object target) throws PluginRegistryException {
+	public void onEvent (Event event, Manageable target, Object... args) throws PluginRegistryException {
 		if (!ApiSpace.class.isAssignableFrom (target.getClass ())) {
 			return;
 		}
@@ -107,54 +109,127 @@ public class RemotePlugin extends AbstractPlugin {
 		
 		switch (event) {
 			case Create:
-				createRemote (space);
+				createFactories (space);
 				break;
 			case AddFeature:
-				createRemote (space);
+				createFactories (space);
 				break;
 			case DeleteFeature:
-				// NOTHING TO BE DONE. Backup? maybe !!!
-				
+				deleteFactories (space);
 				break;
 			default:
 				break;
 		}
 	}
 	
-	private void createRemote (ApiSpace space) {
-		JsonObject storageFeature = Json.getObject (space.getFeatures (), feature);
-		if (storageFeature == null || storageFeature.isEmpty ()) {
+	private void createFactories (ApiSpace space) {
+		JsonObject remoteFeatures = Json.getObject (space.getFeatures (), feature);
+		if (remoteFeatures == null || remoteFeatures.isEmpty ()) {
 			return;
 		}
 		
-		Iterator<String> keys = storageFeature.keys ();
+		Iterator<String> keys = remoteFeatures.keys ();
 		while (keys.hasNext ()) {
-			String key = keys.next ();
-			JsonObject source = Json.getObject (storageFeature, key);
-			
-			if (!this.getNamespace ().equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
-				continue;
-			}
-			
-			JsonObject spec = Json.getObject (source, ApiSpace.Features.Spec);
-			if (spec == null) {
-				spec = JsonObject.Blank;
-			}
-			
-			Protocol protocol = null;
-			
-			try {
-				protocol = Protocol.valueOf (Json.getString (spec, Spec.Protocol, Protocol.http.name ()).toLowerCase ());	
-			} catch (Exception ex) {
-				protocol = Protocol.http;
-			}
-			
-			remotes.put (createRemoteKey  (key, space), Factories.get (protocol).create (space, key, spec));
+			String name = keys.next ();
+			JsonObject featureSpec = Json.getObject (remoteFeatures, name);
+			createFactory (space, name, featureSpec);
 		}
 	}
 	
-	private String createRemoteKey (String name, ApiSpace space) {
+	private void createFactory (ApiSpace space, String name, JsonObject featureSpec) {
+		if (!this.getNamespace ().equalsIgnoreCase (Json.getString (featureSpec, ApiSpace.Features.Provider))) {
+			return;
+		}
+		
+		JsonObject spec = Json.getObject (featureSpec, ApiSpace.Features.Spec);
+
+		String sProtocol = Json.getString (spec, Remote.Spec.Protocol);
+		
+		// only if binary. Http remote is accessible directly from the plugin feature
+		if (!Protocol.binary.name ().equalsIgnoreCase (sProtocol)) {
+			return;
+		}
+		
+		String factoryKey = createKey (name, space);
+		
+		Recyclable recyclable = space.getRecyclable (factoryKey);
+		if (recyclable != null) {
+			return;
+		}
+		
+		String 	host = Json.getString (spec, Remote.Spec.Host);
+		int 	port = Json.getInteger (spec, Remote.Spec.Port, 0);
+		
+		if (Lang.isNullOrEmpty (host) || port == 0) {
+			return;
+		}
+		
+		if (spec == null) {
+			spec = JsonObject.Blank;
+		}
+				
+		space.addRecyclable (
+			factoryKey, 
+			new RecyclableBinaryClientFactory (
+				new NettyBinaryClientFactory (host, port, new PoolConfig (Json.getObject (spec, Remote.Spec.Pool)))
+			)
+		);
+	}
+	
+	private void deleteFactories (ApiSpace space) {
+		JsonObject remoteFeatures = Json.getObject (space.getFeatures (), feature);
+		if (remoteFeatures == null || remoteFeatures.isEmpty ()) {
+			return;
+		}
+		
+		Iterator<String> keys = remoteFeatures.keys ();
+		while (keys.hasNext ()) {
+			String name = keys.next ();
+			
+			String factoryKey = createKey (name, space);
+			Recyclable recyclable = space.getRecyclable (factoryKey);
+			if (recyclable == null) {
+				continue;
+			}
+			recyclable.recycle ();
+			space.removeRecyclable (factoryKey);
+			
+		}
+		
+	}
+	
+	private String createKey (String name, ApiSpace space) {
 		return feature + Lang.DOT + space.getNamespace () + Lang.DOT + name;
+	}
+	
+	class RecyclableBinaryClientFactory implements Recyclable {
+		private static final long serialVersionUID = 50882416501226306L;
+
+		private BinaryClientFactory factory;
+		
+		public RecyclableBinaryClientFactory (BinaryClientFactory factory) {
+			this.factory = factory;
+		}
+		
+		@Override
+		public void recycle () {
+			factory.shutdown ();
+		}
+
+		public BinaryClient create () {
+			return factory.create ();
+		}
+
+		@Override
+		public Object get () {
+			return factory;
+		}
+
+		@Override
+		public void set (ApiSpace space, ClassLoader classLoader, Object... args) {
+			
+		}
+		
 	}
 	
 }

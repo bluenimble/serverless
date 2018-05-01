@@ -34,6 +34,7 @@ import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.PackageClassLoader;
+import com.bluenimble.platform.api.Manageable;
 import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.Plugin;
@@ -394,7 +395,7 @@ public class DefaultPluginsRegistry implements PluginsRegistry, ClassLoaderRegis
 	}
 
 	@Override
-	public void onEvent (final Event event, final Object target) throws PluginRegistryException {
+	public void onEvent (final Event event, final Manageable target, Object... args) throws PluginRegistryException {
 		final Iterator<String> names = getNames ();
 		while (names.hasNext ()) {
 			String plugin = names.next ();

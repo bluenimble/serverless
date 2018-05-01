@@ -16,13 +16,11 @@
  */
 package com.bluenimble.platform.api;
 
-import java.io.Serializable;
-
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.scripting.Scriptable;
 
 @Scriptable ( name = "ApiService", runtime = "scripting/service")
-public interface ApiService extends Serializable {
+public interface ApiService extends Manageable {
 	
 	interface Spec {
 		

@@ -16,21 +16,12 @@
  */
 package com.bluenimble.platform.pooling;
 
-public abstract class PoolableObjectBase<T> implements PoolableObject<T> {
+public interface ObjectFactory<T> {
 
-	@Override
-	public boolean validate (T t) {
-		return true;
-	}
+    T create();
 
-	@Override
-	public void destroy (T t) {
+    void destroy(T t);
 
-	}
-
-	@Override
-	public void passivate (T t) {
-
-	}
+    boolean validate(T t);
 
 }

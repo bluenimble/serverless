@@ -24,7 +24,7 @@ import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.scripting.Scriptable;
 
 @Scriptable ( name = "Api", runtime = "scripting/api")
-public interface Api extends Traceable {
+public interface Api extends Traceable, Manageable {
 	
 	interface Spec {
 		String Namespace 		= "namespace";

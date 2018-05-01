@@ -19,11 +19,12 @@ package com.bluenimble.platform.plugins;
 import java.io.File;
 
 import com.bluenimble.platform.Traceable;
+import com.bluenimble.platform.api.Manageable;
 import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.server.ApiServer;
 
-public interface Plugin extends Traceable {
+public interface Plugin extends Traceable, Manageable {
 
 	File 	getHome 		();
 	void 	setHome 		(File home);
@@ -51,7 +52,7 @@ public interface Plugin extends Traceable {
 	
 	boolean isInitOnInstall	();
 	
-	void	onEvent 		(ApiServer.Event event, Object target) throws PluginRegistryException;
+	void	onEvent 		(ApiServer.Event event, Manageable target, Object... args) throws PluginRegistryException;
 	
 	JsonObject
 			getVendor		();

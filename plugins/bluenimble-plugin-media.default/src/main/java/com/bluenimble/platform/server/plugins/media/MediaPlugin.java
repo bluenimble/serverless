@@ -22,6 +22,7 @@ import java.io.InputStream;
 
 import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.api.Api;
+import com.bluenimble.platform.api.Manageable;
 import com.bluenimble.platform.api.impls.media.PlainMediaProcessor;
 import com.bluenimble.platform.api.impls.media.StreamMediaProcessor;
 import com.bluenimble.platform.api.impls.media.engines.TemplateEngine;
@@ -66,7 +67,7 @@ public class MediaPlugin extends AbstractPlugin {
 	}
 
 	@Override
-	public void onEvent (Event event, Object target) {
+	public void onEvent (Event event, Manageable target, Object... args) {
 		if (!Api.class.isAssignableFrom (target.getClass ())) {
 			return;
 		}

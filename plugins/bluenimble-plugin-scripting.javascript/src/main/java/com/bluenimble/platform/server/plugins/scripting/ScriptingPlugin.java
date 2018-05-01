@@ -29,6 +29,7 @@ import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.PackageClassLoader;
 import com.bluenimble.platform.api.ApiSpace;
+import com.bluenimble.platform.api.Manageable;
 import com.bluenimble.platform.api.impls.scripting.ScriptableApiServiceSpi;
 import com.bluenimble.platform.api.impls.scripting.ScriptableApiSpi;
 import com.bluenimble.platform.api.scripting.impls.DefaultScriptingEngine;
@@ -125,7 +126,7 @@ public class ScriptingPlugin extends AbstractPlugin {
 	}
 	
 	@Override
-	public void onEvent (Event event, Object target) {
+	public void onEvent (Event event, Manageable target, Object... args) {
 	}
 
 	public ScriptEngine create () throws Exception {

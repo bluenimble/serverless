@@ -26,6 +26,7 @@ import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.CodeExecutor;
 import com.bluenimble.platform.api.DescribeOption;
+import com.bluenimble.platform.api.Manageable;
 import com.bluenimble.platform.api.media.ApiMediaProcessorRegistry;
 import com.bluenimble.platform.api.security.ApiConsumerResolver;
 import com.bluenimble.platform.api.security.ApiRequestSigner;
@@ -41,7 +42,7 @@ import com.bluenimble.platform.server.interceptor.ApiInterceptor;
 import com.bluenimble.platform.server.maps.MapProvider;
 import com.bluenimble.platform.server.tracking.ServerRequestTracker;
 
-public interface ApiServer extends Traceable {
+public interface ApiServer extends Traceable, Manageable {
 	
 	enum InstallType {
 		New,

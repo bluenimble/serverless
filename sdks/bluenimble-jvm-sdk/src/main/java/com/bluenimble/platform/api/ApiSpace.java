@@ -28,7 +28,7 @@ import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.security.KeyPair;
 import com.bluenimble.platform.security.SpaceKeyStore;
 
-public interface ApiSpace extends Traceable {
+public interface ApiSpace extends Traceable, Manageable {
 	
 	interface Features {
 		String Default 		= "default";

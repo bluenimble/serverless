@@ -43,6 +43,7 @@ import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.ApiVerb;
 import com.bluenimble.platform.api.CodeExecutor;
+import com.bluenimble.platform.api.Manageable;
 import com.bluenimble.platform.api.impls.scheduler.SchedulerApiRequest;
 import com.bluenimble.platform.api.impls.scheduler.SchedulerApiResponse;
 import com.bluenimble.platform.json.JsonObject;
@@ -104,7 +105,7 @@ public class SchedulerPlugin extends AbstractPlugin {
 	}
 	
 	@Override
-	public void onEvent (Event event, Object target) throws PluginRegistryException {
+	public void onEvent (Event event, Manageable target, Object... args) throws PluginRegistryException {
 		if (!ApiSpace.class.isAssignableFrom (target.getClass ())) {
 			return;
 		}

@@ -17,6 +17,8 @@
 package com.bluenimble.platform.server.plugins.inbound.binary.netty;
 
 import com.bluenimble.platform.api.ApiRequest;
+import com.bluenimble.platform.api.impls.SimpleApiRequest;
+import com.bluenimble.platform.json.JsonObject;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -31,10 +33,10 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead (ChannelHandlerContext ctx, Object msg) {
-    	ApiRequest request = (ApiRequest)msg;
-    	request.set (NettyServer.Context, ctx);
-    	
     	try {
+        	ApiRequest request = new SimpleApiRequest (new JsonObject (new String ((byte [])msg)));
+        	request.set (NettyServer.Context, ctx);
+        	
 			proessor.process (request);
 		} catch (Exception e) {
 			throw new RuntimeException (e.getMessage (), e);

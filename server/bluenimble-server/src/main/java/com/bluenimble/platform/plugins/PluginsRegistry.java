@@ -19,6 +19,7 @@ package com.bluenimble.platform.plugins;
 import java.io.File;
 import java.util.Iterator;
 
+import com.bluenimble.platform.api.Manageable;
 import com.bluenimble.platform.reflect.ClassLoaderRegistry;
 import com.bluenimble.platform.server.ApiServer;
 
@@ -37,6 +38,6 @@ public interface PluginsRegistry extends ClassLoaderRegistry {
 	
 	Iterator<String> 	getNames 	();
 	
-	void				onEvent 	(ApiServer.Event event, Object target) throws PluginRegistryException;
+	void				onEvent 	(ApiServer.Event event, Manageable target, Object... args) throws PluginRegistryException;
 	
 }

@@ -23,6 +23,7 @@ import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.PackageClassLoader;
 import com.bluenimble.platform.api.ApiSpace;
+import com.bluenimble.platform.api.Manageable;
 import com.bluenimble.platform.indexer.Indexer;
 import com.bluenimble.platform.indexer.impls.ElasticSearchIndexer;
 import com.bluenimble.platform.json.JsonObject;
@@ -127,7 +128,7 @@ public class ElasticSearchPlugin extends AbstractPlugin {
 	}
 
 	@Override
-	public void onEvent (Event event, Object target) throws PluginRegistryException {
+	public void onEvent (Event event, Manageable target, Object... args) throws PluginRegistryException {
 		
 	}
 	

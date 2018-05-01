@@ -18,6 +18,7 @@ package com.bluenimble.platform.plugins.impls;
 
 import java.io.File;
 
+import com.bluenimble.platform.api.Manageable;
 import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.Plugin;
@@ -134,7 +135,7 @@ public abstract class AbstractPlugin implements Plugin {
 	}
 
 	@Override
-	public void onEvent (Event event, Object target) throws PluginRegistryException {
+	public void onEvent (Event event, Manageable target, Object... args) throws PluginRegistryException {
 	}
 	
 	@Override

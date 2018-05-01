@@ -27,7 +27,9 @@ import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.Recyclable;
 import com.bluenimble.platform.api.ApiSpace;
+import com.bluenimble.platform.api.Manageable;
 import com.bluenimble.platform.cache.Cache;
+import com.bluenimble.platform.cache.impls.memcached.MemCachedCache;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.Plugin;
 import com.bluenimble.platform.plugins.PluginRegistryException;
@@ -35,8 +37,6 @@ import com.bluenimble.platform.plugins.impls.AbstractPlugin;
 import com.bluenimble.platform.server.ApiServer;
 import com.bluenimble.platform.server.ApiServer.Event;
 import com.bluenimble.platform.server.ServerFeature;
-
-import com.bluenimble.platform.cache.impls.memcached.MemCachedCache;
 
 import net.spy.memcached.AddrUtil;
 import net.spy.memcached.ConnectionFactoryBuilder;
@@ -89,7 +89,7 @@ public class MemCachedPlugin extends AbstractPlugin {
 	}
 
 	@Override
-	public void onEvent (Event event, Object target) throws PluginRegistryException {
+	public void onEvent (Event event, Manageable target, Object... args) throws PluginRegistryException {
 		if (!ApiSpace.class.isAssignableFrom (target.getClass ())) {
 			return;
 		}

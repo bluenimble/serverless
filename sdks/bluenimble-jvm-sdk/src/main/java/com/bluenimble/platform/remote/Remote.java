@@ -16,14 +16,13 @@
  */
 package com.bluenimble.platform.remote;
 
-import java.io.Serializable;
-
 import com.bluenimble.platform.Feature;
+import com.bluenimble.platform.Recyclable;
 import com.bluenimble.platform.api.ApiStreamSource;
 import com.bluenimble.platform.json.JsonObject;
 
 @Feature (name = "remote")
-public interface Remote extends Serializable {
+public interface Remote extends Recyclable {
 	
 	interface Error {
 		int UnknownHost = 1100;
@@ -33,6 +32,12 @@ public interface Remote extends Serializable {
 	
 	interface Spec {
 		
+		String Protocol 	= "protocol";
+		
+		String Host			= "host";
+		String Port			= "port";
+		
+		String Scheme 		= "scheme";
 		String Endpoint 	= "endpoint";
 		String Path 		= "path";
 		
@@ -71,6 +76,8 @@ public interface Remote extends Serializable {
 			String ProxyType	= "type";
 			String ProxyHost	= "host";
 			String ProxyPort	= "port";
+			
+		String  Pool			= "pool";	
 		
 		String SuccessCode	= "successCode";
 		

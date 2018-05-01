@@ -23,10 +23,8 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
@@ -39,23 +37,18 @@ import javax.net.ssl.X509TrustManager;
 import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
+import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.ApiStreamSource;
 import com.bluenimble.platform.api.ApiVerb;
 import com.bluenimble.platform.encoding.Base64;
 import com.bluenimble.platform.http.HttpHeaders;
 import com.bluenimble.platform.http.utils.ContentTypes;
 import com.bluenimble.platform.json.JsonObject;
-import com.bluenimble.platform.remote.Remote;
 import com.bluenimble.platform.remote.Serializer;
+import com.bluenimble.platform.remote.impls.AbstractRemote;
 import com.bluenimble.platform.remote.impls.http.bnb.AccessSecretKeysBasedHttpRequestSigner;
 import com.bluenimble.platform.remote.impls.http.oauth.OkHttpOAuthConsumer;
-import com.bluenimble.platform.remote.impls.serializers.JsonSerializer;
-import com.bluenimble.platform.remote.impls.serializers.StreamSerializer;
-import com.bluenimble.platform.remote.impls.serializers.TextSerializer;
-import com.bluenimble.platform.remote.impls.serializers.XmlSerializer;
-import com.bluenimble.platform.templating.ExpressionCompiler;
 import com.bluenimble.platform.templating.VariableResolver;
-import com.bluenimble.platform.templating.impls.DefaultExpressionCompiler;
 
 import okhttp3.FormBody;
 import okhttp3.HttpUrl;
@@ -66,7 +59,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class HttpRemote implements Remote {
+public class HttpRemote extends AbstractRemote {
 	
 	private static final long serialVersionUID = -4470909404236824873L;
 
@@ -107,75 +100,21 @@ public class HttpRemote implements Remote {
 				.writeTimeout (10, TimeUnit.SECONDS)
 				.build ();
 	
-	ExpressionCompiler ECompiler = new DefaultExpressionCompiler ();
-	
-	private static final Map<Serializer.Name, Serializer> Serializers = new HashMap<Serializer.Name, Serializer> ();
-	static {
-		Serializers.put (Serializer.Name.text, 		new TextSerializer ());
-		Serializers.put (Serializer.Name.json, 		new JsonSerializer ());
-		Serializers.put (Serializer.Name.stream, 	new StreamSerializer ());
-		Serializers.put (Serializer.Name.xml, 		new XmlSerializer ());
-	}
-	
-	private static final Map<String, MediaType> MediaTypes 	= new HashMap<String, MediaType> ();
-	static {
-		// media types
-		MediaTypes.put (ContentTypes.Json, MediaType.parse (ContentTypes.Json));
-		MediaTypes.put (Serializer.Name.json.name (), MediaTypes.get (ContentTypes.Json));
-		MediaTypes.put (ContentTypes.FormUrlEncoded, MediaType.parse (ContentTypes.FormUrlEncoded));
-		MediaTypes.put (ContentTypes.Multipart, MediaType.parse (ContentTypes.Multipart));
-		MediaTypes.put (ContentTypes.Text, MediaType.parse (ContentTypes.Text));
-	}
-	
-	interface Signers {
-		String Bnb 		= "bnb";
-		String OAuth 	= "oauth";
-		String Basic	= "basic";
-	}
-	
 	AccessSecretKeysBasedHttpRequestSigner BnBSigner = new AccessSecretKeysBasedHttpRequestSigner ();
 	
 	private OkHttpClient http = DefaultHttpClient;
 	
-	private JsonObject featureSpec;
+	private JsonObject 	featureSpec;
 	
-	
-	public HttpRemote (JsonObject featureSpec) {
+	public HttpRemote () {
+	}
+
+	public HttpRemote (ApiSpace space, String feature, JsonObject featureSpec) {
 		this.featureSpec = featureSpec;
-		createHttpClient ();
-	}
- 
-	@Override
-	public boolean get (JsonObject spec, Callback callback) {
-		return request (ApiVerb.GET, spec, callback);
-	}
-	
-	@Override
-	public boolean post (JsonObject spec, Callback callback, ApiStreamSource... attachments) {
-		return request (ApiVerb.POST, spec, callback);
+		init (space, feature, featureSpec);
 	}
 
-	@Override
-	public boolean put (JsonObject spec, Callback callback, ApiStreamSource... attachments) {
-		return request (ApiVerb.PUT, spec, callback);
-	}
-
-	@Override
-	public boolean delete (JsonObject spec, Callback callback) {
-		return request (ApiVerb.DELETE, spec, callback);
-	}
-
-	@Override
-	public boolean head (JsonObject spec, Callback callback) {
-		return request (ApiVerb.HEAD, spec, callback);
-	}
-
-	@Override
-	public boolean patch (JsonObject spec, Callback callback) {
-		return request (ApiVerb.PATCH, spec, callback);
-	}
-	
-	private void createHttpClient () {
+	private void init (ApiSpace space, String feature, JsonObject featureSpec) {
 		if (Json.isNullOrEmpty (featureSpec)) {
 			return;
 		}
@@ -228,8 +167,41 @@ public class HttpRemote implements Remote {
 		}
 		
 		http = builder.proxy (new Proxy (type, new InetSocketAddress (host, port))).build ();
+		
+		return;
+		
+	}
+ 
+	@Override
+	public boolean get (JsonObject spec, Callback callback) {
+		return request (ApiVerb.GET, spec, callback);
+	}
+	
+	@Override
+	public boolean post (JsonObject spec, Callback callback, ApiStreamSource... attachments) {
+		return request (ApiVerb.POST, spec, callback);
 	}
 
+	@Override
+	public boolean put (JsonObject spec, Callback callback, ApiStreamSource... attachments) {
+		return request (ApiVerb.PUT, spec, callback);
+	}
+
+	@Override
+	public boolean delete (JsonObject spec, Callback callback) {
+		return request (ApiVerb.DELETE, spec, callback);
+	}
+
+	@Override
+	public boolean head (JsonObject spec, Callback callback) {
+		return request (ApiVerb.HEAD, spec, callback);
+	}
+
+	@Override
+	public boolean patch (JsonObject spec, Callback callback) {
+		return request (ApiVerb.PATCH, spec, callback);
+	}
+	
 	private boolean request (ApiVerb verb, JsonObject spec, Callback callback, ApiStreamSource... attachments) {
 		
 		JsonObject rdata = Json.getObject (spec, Spec.Data);
@@ -293,6 +265,7 @@ public class HttpRemote implements Remote {
 					String hv = Json.getString (headers, hn);
 					if (HttpHeaders.CONTENT_TYPE.toUpperCase ().equals (hn.toUpperCase ())) {
 						contentType = hv;
+						break;
 					}
 				}
 			}
@@ -407,7 +380,7 @@ public class HttpRemote implements Remote {
 			
 			response = http.newCall (request).execute ();
 						
-			if (response.code () > Json.getInteger (spec, Spec.SuccessCode, 202)) {
+			if (response.code () > Json.getInteger (spec, Spec.SuccessCode, 399)) {
 				callback.onError (
 					response.code (), 
 					response.body ().string ()
@@ -510,17 +483,31 @@ public class HttpRemote implements Remote {
 		
 	}
 	
+	@Override
+	public void set (ApiSpace space, ClassLoader classLoader, Object... args) {
+	}
+
+	@Override
+	public Object get () {
+		return null;
+	}
+
+	@Override
+	public void recycle () {
+	}
+
 	public static void main (String [] args) throws Exception {
-		new HttpRemote (Json.load (new File ("/tmp/broker-http-post-master.json"))).post (Json.load (new File ("/tmp/broker-http-post-data.json")), new Callback () {
-			@Override
-			public void onSuccess (int code, Object data) {
-				System.err.println ("Success\n\t" + code + " : " + data);
-			}
-			@Override
-			public void onError (int code, Object message) {
-				System.err.println ("Error\n\t" + code + " : " + message);
-			}
-		});
+		new HttpRemote (null, null, Json.load (new File ("/tmp/broker-http-post-master.json")))
+			.post (Json.load (new File ("/tmp/broker-http-post-data.json")), new Callback () {
+				@Override
+				public void onSuccess (int code, Object data) {
+					System.err.println ("Success\n\t" + code + " : " + data);
+				}
+				@Override
+				public void onError (int code, Object message) {
+					System.err.println ("Error\n\t" + code + " : " + message);
+				}
+			});
 	}
 
 }

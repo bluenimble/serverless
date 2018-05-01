@@ -15,12 +15,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.bluenimble.serverless</groupId>
-	<artifactId>bluenimble-plugin-remote.default</artifactId>
+	<artifactId>bluenimble-plugin-extensions.proxy</artifactId>
 	<version>1.5.0-SNAPSHOT</version><!--bn.version-->
-	
+
 	<packaging>jar</packaging>
-	<name>bluenimble-plugin-remote.default</name>
-	
+	<name>bluenimble-plugin-extensions.proxy</name>
+
 	<properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -103,16 +103,6 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>bluenimble-server</artifactId>
 			<version>1.5.0-SNAPSHOT</version><!--bn.version-->
-		</dependency>
-		<dependency>
-		    <groupId>com.squareup.okhttp3</groupId>
-		    <artifactId>okhttp</artifactId>
-		    <version>3.10.0</version>
-		</dependency>
-		<dependency>
-		    <groupId>oauth.signpost</groupId>
-		    <artifactId>signpost-core</artifactId>
-		    <version>1.2.1.2</version>
 		</dependency>
         <dependency>
 			<groupId>${project.groupId}</groupId>

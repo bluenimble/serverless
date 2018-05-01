@@ -14,21 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.remote.factories.impls;
+package com.bluenimble.platform.plugins.extensions.proxy;
 
-import com.bluenimble.platform.api.ApiSpace;
-import com.bluenimble.platform.json.JsonObject;
-import com.bluenimble.platform.remote.Remote;
-import com.bluenimble.platform.remote.factories.RemoteFactory;
-import com.bluenimble.platform.remote.impls.http.HttpRemote;
+import com.bluenimble.platform.PackageClassLoader;
+import com.bluenimble.platform.api.impls.proxy.BinaryProxyApiServiceSpi;
+import com.bluenimble.platform.plugins.impls.AbstractPlugin;
+import com.bluenimble.platform.server.ApiServer;
 
-public class HttpRemoteFactory implements RemoteFactory {
+/**
+ * Should add proxies if defined space spec
+ * 
+ * 
+ **/
+public class GenericProxyPlugin extends AbstractPlugin {
 
-	private static final long serialVersionUID = -8455645352282674070L;
+	private static final long serialVersionUID = -7715328225346939289L;
+	
+	interface Registered {
+		String ApiSpi 		= "ApiSpi";
+		String ServiceSpi 	= "ServiceSpi";
+	}
 
 	@Override
-	public Remote create (ApiSpace space, String feature, JsonObject spec) {
-		return new HttpRemote (spec);
+	public void init (ApiServer server) throws Exception {
+		PackageClassLoader pcl = (PackageClassLoader)GenericProxyPlugin.class.getClassLoader ();
+		pcl.registerObject (Registered.ServiceSpi, new BinaryProxyApiServiceSpi ());
 	}
 
 }

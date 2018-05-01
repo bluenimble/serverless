@@ -14,18 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.pooling;
+package com.bluenimble.platform.tools.binary;
 
-public interface PoolableObject<T> {
+import java.util.Map;
 
-	public T 		make 		() throws PoolException;
+import com.bluenimble.platform.api.ApiResponse;
 
-	public boolean 	validate 	(T t);
-
-	public void 	destroy		(T t);
-
-	public void 	activate	(T t) throws PoolException;
-
-	public void 	passivate	(T t);
-
+public interface BinaryClientCallback {
+	
+	void onStatus 	(ApiResponse.Status status);
+	void onHeaders 	(Map<String, Object> headers);
+	void onChunk 	(byte [] chunk);
+	void onFinish 	();
+	
 }
