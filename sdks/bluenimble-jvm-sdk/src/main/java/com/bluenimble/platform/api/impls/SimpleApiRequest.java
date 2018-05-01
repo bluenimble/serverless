@@ -41,16 +41,14 @@ public class SimpleApiRequest extends AbstractApiRequest {
 	
 	@SuppressWarnings("unchecked")
 	public SimpleApiRequest (JsonObject payload) {
-		this (
-			Json.getString (payload, ApiRequest.Fields.Channel),
-			ApiVerb.valueOf (Json.getString (payload, ApiRequest.Fields.Verb, ApiVerb.GET.name ()).toUpperCase ()),
-			Json.getString (payload, ApiRequest.Fields.Scheme),
-			Json.getString (payload, ApiRequest.Fields.Endpoint),
-			Json.getString (payload, ApiRequest.Fields.Path),
-			Json.getString (payload, ApiRequest.Fields.Device.Origin),
-			Json.getString (payload, ApiRequest.Fields.Device.Agent)
-		);
-		
+		this.channel 	= Json.getString (payload, ApiRequest.Fields.Channel);
+		this.verb 		= ApiVerb.valueOf (Json.getString (payload, ApiRequest.Fields.Verb, ApiVerb.GET.name ()).toUpperCase ());
+		this.scheme 	= Json.getString (payload, ApiRequest.Fields.Scheme);
+		this.endpoint 	= Json.getString (payload, ApiRequest.Fields.Endpoint);
+		this.path		= Json.getString (payload, ApiRequest.Fields.Path);
+		this.device		= Json.getObject (payload, ApiRequest.Fields.Device.class.getSimpleName ().toLowerCase ());
+		this.node 			= new JsonObject ();
+				
 		JsonObject oParameters = Json.getObject (payload, ApiRequest.Fields.Data.Parameters);
 		if (!Json.isNullOrEmpty (oParameters)) {
 			application = new HashMap<String, Object> ();

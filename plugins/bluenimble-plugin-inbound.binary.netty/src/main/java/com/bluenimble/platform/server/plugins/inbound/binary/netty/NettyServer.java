@@ -42,7 +42,8 @@ import io.netty.handler.ssl.util.SelfSignedCertificate;
 
 public final class NettyServer {
 	
-	public static final String Context = "Netty.Context";
+	public static final String 	Context = "Netty.Context";
+	public static final String 	Channel	= "bnbp";
 	
 	private EventLoopGroup bossGroup;;
 	private EventLoopGroup workerGroup;

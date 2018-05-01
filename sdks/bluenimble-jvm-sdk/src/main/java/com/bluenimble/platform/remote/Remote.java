@@ -48,6 +48,7 @@ public interface Remote extends Recyclable {
 		
 		String TrustAll 	= "trustAll";
 		
+		String UseStreaming	= "useStreaming";	
 		String Serializer	= "serializer";
 		String Sign			= "sign";
 			String SignProtocol		= "protocol";

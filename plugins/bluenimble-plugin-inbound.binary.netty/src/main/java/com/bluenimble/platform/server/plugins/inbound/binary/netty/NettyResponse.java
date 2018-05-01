@@ -45,7 +45,7 @@ public class NettyResponse extends AbstractApiResponse {
 		}
 		
 		if (status != null) {
-			context.write (status);
+			context.write (status.getCode ());
 			status = null;
 		}
 		

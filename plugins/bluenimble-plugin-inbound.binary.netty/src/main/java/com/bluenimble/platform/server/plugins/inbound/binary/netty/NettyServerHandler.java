@@ -16,6 +16,9 @@
  */
 package com.bluenimble.platform.server.plugins.inbound.binary.netty;
 
+import java.net.InetSocketAddress;
+
+import com.bluenimble.platform.Json;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.impls.SimpleApiRequest;
 import com.bluenimble.platform.json.JsonObject;
@@ -24,6 +27,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
 public class NettyServerHandler extends ChannelInboundHandlerAdapter {
+	
+	private static final String Device = ApiRequest.Fields.Device.class.getSimpleName ().toLowerCase ();
 	
 	private NettyRequestProcessor proessor;
 	
@@ -34,10 +39,27 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead (ChannelHandlerContext ctx, Object msg) {
     	try {
-        	ApiRequest request = new SimpleApiRequest (new JsonObject (new String ((byte [])msg)));
+    		JsonObject data = new JsonObject (new String ((byte [])msg));
+    		
+    		// set bnb channel
+    		data.set (ApiRequest.Fields.Channel, NettyServer.Channel);
+    		
+    		// set / create device
+    		JsonObject device = Json.getObject (data, Device);
+    		if (device == null) {
+    			device = new JsonObject ();
+    			data.set (Device, device);
+    		}
+    		
+    		device.set (ApiRequest.Fields.Device.Origin, ((InetSocketAddress )ctx.channel().remoteAddress ()).getAddress ().getHostAddress ());
+    		
+    		// set origin, agent and channel 
+    		
+        	ApiRequest request = new SimpleApiRequest (data);
         	request.set (NettyServer.Context, ctx);
         	
 			proessor.process (request);
+			
 		} catch (Exception e) {
 			throw new RuntimeException (e.getMessage (), e);
 		}
@@ -51,6 +73,6 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught (ChannelHandlerContext ctx, Throwable cause) {
         cause.printStackTrace();
-        ctx.close();
+        ctx.close ();
     }
 }

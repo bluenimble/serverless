@@ -16,26 +16,30 @@
  */
 package com.bluenimble.platform.remote.impls.binary;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
+import com.bluenimble.platform.ValueHolder;
 import com.bluenimble.platform.api.ApiContentTypes;
 import com.bluenimble.platform.api.ApiRequest;
-import com.bluenimble.platform.api.ApiResponse.Status;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.ApiStreamSource;
 import com.bluenimble.platform.api.ApiVerb;
 import com.bluenimble.platform.http.HttpHeaders;
 import com.bluenimble.platform.http.utils.ContentTypes;
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.remote.SerializationException;
 import com.bluenimble.platform.remote.Serializer;
-import com.bluenimble.platform.remote.Remote.Spec;
 import com.bluenimble.platform.remote.impls.AbstractRemote;
 import com.bluenimble.platform.templating.VariableResolver;
 import com.bluenimble.platform.tools.binary.BinaryClient;
 import com.bluenimble.platform.tools.binary.BinaryClientCallback;
+import com.bluenimble.platform.tools.binary.BinaryClientException;
 
 public class BinaryRemote extends AbstractRemote {
 
@@ -178,12 +182,25 @@ public class BinaryRemote extends AbstractRemote {
 				break;
 		}
 		
-		Status status = null;
+		int 	errorCodeLimit 	= Json.getInteger (spec, Spec.SuccessCode, 399);
+		boolean useStreaming 	= Json.getBoolean (spec, Spec.UseStreaming, false);
+		
+		final ValueHolder<ByteArrayOutputStream> error = new ValueHolder<ByteArrayOutputStream> ();
+		
+		final ValueHolder<Integer> status = new ValueHolder<Integer> ();
+		
+		final ValueHolder<ByteArrayOutputStream> responseData = new ValueHolder<ByteArrayOutputStream> ();
 		
 		BinaryClientCallback bcc = new BinaryClientCallback () {
 			@Override
-			public void onStatus (Status cStatus) {
-				status = cStatus; 
+			public void onStatus (int iStatus) {
+				status.set (iStatus);
+				if (iStatus > errorCodeLimit) {
+					error.set (new ByteArrayOutputStream ());
+				}
+				if (useStreaming) {
+					responseData.set (new ByteArrayOutputStream ());
+				}
 			}
 			@Override
 			public void onHeaders (Map<String, Object> headers) {
@@ -191,17 +208,40 @@ public class BinaryRemote extends AbstractRemote {
 			}
 			@Override
 			public void onChunk (byte [] chunk) {
-				
+				if (status.get () > errorCodeLimit) {
+					try {
+						error.get ().write (chunk);
+					} catch (IOException e) {
+						throw new BinaryClientException (e.getMessage (), e);
+					}
+				} else if (useStreaming) {
+					callback.onSuccess (
+						status.get (), 
+						chunk
+					);
+				}
 			}
 			@Override
 			public void onFinish () {
-				
+				if (status.get () > errorCodeLimit) {
+					callback.onError (status.get (), new String (error.get ().toByteArray ()));
+				} else if (!useStreaming) {
+					try {
+						callback.onSuccess (
+							status.get (), 
+							serializer.serialize (new ByteArrayInputStream (responseData.get ().toByteArray ()))
+						);
+					} catch (SerializationException e) {
+						throw new BinaryClientException (e.getMessage (), e);
+					}
+				}
 			}
 		};
 		
-		client.send (request, callback);
+		// send request
+		client.send (request, bcc);
 		
-		return false;
+		return status.get () > errorCodeLimit;
 	}
 	
 	private void addParameters (JsonObject parameters, JsonObject data) {
