@@ -16,6 +16,8 @@
  */
 package com.bluenimble.platform.indexer.impls;
 
+import java.util.Map;
+
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.tracing.Tracer;
@@ -72,14 +74,19 @@ public class ElasticSearchIndexer implements Indexer {
 					.set (HttpHeaders.AUTHORIZATION, authToken)
 				),
 			new Remote.Callback () {
-				
-				@Override
-				public void onSuccess (int code, Object data) {
-				}
-				
 				@Override
 				public void onError (int code, Object message) {
 					error.set (code, message);
+				}
+
+				@Override
+				public void onData (int code, byte [] data) {
+				}
+				@Override
+				public void onHeaders (Map<String, Object> headers) {
+				}
+				@Override
+				public void onDone (int code, Object message) {
 				}
 			}
 		);
@@ -114,7 +121,7 @@ public class ElasticSearchIndexer implements Indexer {
 			oEntity, 
 			new Remote.Callback () {
 				@Override
-				public void onSuccess (int code, Object data) {
+				public void onData (int code, byte [] data) {
 					if (data != null) {
 						result.putAll ((JsonObject)data);
 					}
@@ -162,14 +169,20 @@ public class ElasticSearchIndexer implements Indexer {
 			oEntity, 
 			new Remote.Callback () {
 				@Override
-				public void onSuccess (int code, Object data) {
-					if (data != null) {
-						result.putAll ((JsonObject)data);
-					}
+				public void onData (int code, byte [] data) {
 				}
 				@Override
 				public void onError (int code, Object message) {
 					error.set (code, message);
+				}
+				@Override
+				public void onHeaders (Map<String, Object> headers) {
+				}
+				@Override
+				public void onDone (int code, Object data) {
+					if (data != null) {
+						result.putAll ((JsonObject)data);
+					}
 				}
 			}
 		);
@@ -207,14 +220,20 @@ public class ElasticSearchIndexer implements Indexer {
 				).set (Remote.Spec.Serializer, Serializer.Name.json), 
 			new Remote.Callback () {
 				@Override
-				public void onSuccess (int code, Object data) {
-					if (data != null) {
-						result.putAll ((JsonObject)data);
-					}
+				public void onData (int code, byte [] data) {
 				}
 				@Override
 				public void onError (int code, Object message) {
 					error.set (code, message);
+				}
+				@Override
+				public void onHeaders (Map<String, Object> headers) {
+				}
+				@Override
+				public void onDone (int code, Object data) {
+					if (data != null) {
+						result.putAll ((JsonObject)data);
+					}
 				}
 			}
 		);
@@ -243,14 +262,20 @@ public class ElasticSearchIndexer implements Indexer {
 			).set (Remote.Spec.Serializer, Serializer.Name.json), 
 			new Remote.Callback () {
 				@Override
-				public void onSuccess (int code, Object data) {
-					if (data != null) {
-						result.putAll ((JsonObject)data);
-					}
+				public void onData (int code, byte [] data) {
 				}
 				@Override
 				public void onError (int code, Object message) {
 					error.set (code, message);
+				}
+				@Override
+				public void onHeaders (Map<String, Object> headers) {
+				}
+				@Override
+				public void onDone (int code, Object data) {
+					if (data != null) {
+						result.putAll ((JsonObject)data);
+					}
 				}
 			}
 		);
@@ -297,14 +322,20 @@ public class ElasticSearchIndexer implements Indexer {
 				.set (Remote.Spec.Serializer, Serializer.Name.json), 
 			new Remote.Callback () {
 				@Override
-				public void onSuccess (int code, Object data) {
-					if (data != null) {
-						result.putAll ((JsonObject)data);
-					}
+				public void onData (int code, byte [] data) {
 				}
 				@Override
 				public void onError (int code, Object message) {
 					error.set (code, message);
+				}
+				@Override
+				public void onHeaders (Map<String, Object> headers) {
+				}
+				@Override
+				public void onDone (int code, Object data) {
+					if (data != null) {
+						result.putAll ((JsonObject)data);
+					}
 				}
 			}
 		);
@@ -334,14 +365,20 @@ public class ElasticSearchIndexer implements Indexer {
 				.set (Remote.Spec.Serializer, Serializer.Name.json), 
 			new Remote.Callback () {
 				@Override
-				public void onSuccess (int code, Object data) {
-					if (data != null) {
-						result.putAll ((JsonObject)data);
-					}
+				public void onData (int code, byte [] data) {
 				}
 				@Override
 				public void onError (int code, Object message) {
 					error.set (code, message);
+				}
+				@Override
+				public void onHeaders (Map<String, Object> headers) {
+				}
+				@Override
+				public void onDone (int code, Object data) {
+					if (data != null) {
+						result.putAll ((JsonObject)data);
+					}
 				}
 			}
 		);
@@ -392,14 +429,20 @@ public class ElasticSearchIndexer implements Indexer {
 				.set (Remote.Spec.Serializer, Serializer.Name.json), 
 			new Remote.Callback () {
 				@Override
-				public void onSuccess (int code, Object data) {
-					if (data != null) {
-						result.putAll ((JsonObject)data);
-					}
+				public void onData (int code, byte [] data) {
 				}
 				@Override
 				public void onError (int code, Object message) {
 					error.set (code, message);
+				}
+				@Override
+				public void onHeaders (Map<String, Object> headers) {
+				}
+				@Override
+				public void onDone (int code, Object data) {
+					if (data != null) {
+						result.putAll ((JsonObject)data);
+					}
 				}
 			}
 		);
@@ -429,14 +472,20 @@ public class ElasticSearchIndexer implements Indexer {
 				.set (Remote.Spec.Serializer, Serializer.Name.json), 
 			new Remote.Callback () {
 				@Override
-				public void onSuccess (int code, Object data) {
-					if (data != null) {
-						result.putAll ((JsonObject)data);
-					}
+				public void onData (int code, byte [] data) {
 				}
 				@Override
 				public void onError (int code, Object message) {
 					error.set (code, message);
+				}
+				@Override
+				public void onHeaders (Map<String, Object> headers) {
+				}
+				@Override
+				public void onDone (int code, Object data) {
+					if (data != null) {
+						result.putAll ((JsonObject)data);
+					}
 				}
 			}
 		);
@@ -471,14 +520,20 @@ public class ElasticSearchIndexer implements Indexer {
 				.set (Remote.Spec.Serializer, Serializer.Name.json), 
 			new Remote.Callback () {
 				@Override
-				public void onSuccess (int code, Object data) {
-					if (data != null) {
-						result.putAll ((JsonObject)data);
-					}
+				public void onData (int code, byte [] data) {
 				}
 				@Override
 				public void onError (int code, Object message) {
 					error.set (code, message);
+				}
+				@Override
+				public void onHeaders (Map<String, Object> headers) {
+				}
+				@Override
+				public void onDone (int code, Object data) {
+					if (data != null) {
+						result.putAll ((JsonObject)data);
+					}
 				}
 			}
 		);

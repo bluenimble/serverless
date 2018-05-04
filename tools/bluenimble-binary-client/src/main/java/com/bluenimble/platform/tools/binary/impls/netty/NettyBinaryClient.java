@@ -16,6 +16,7 @@
  */
 package com.bluenimble.platform.tools.binary.impls.netty;
 
+import java.io.IOException;
 import java.util.Map;
 
 import com.bluenimble.platform.json.JsonObject;
@@ -102,18 +103,26 @@ public class NettyBinaryClient implements BinaryClient {
 		@Override
 	    public void channelRead (ChannelHandlerContext ctx, Object msg) {
 	    	//System.out.println (callback);
-	    	if (msg instanceof Integer) {
-		    	callback.onStatus ((Integer)msg);
-	    	} else if (msg instanceof Map) {
-		    	callback.onHeaders ((Map<String, Object>)msg);
-	    	} else if (msg instanceof byte []) {
-		    	callback.onChunk ((byte [])msg);
-	    	} 
+	    	try {
+		    	if (msg instanceof Integer) {
+			    	callback.onStatus ((Integer)msg);
+		    	} else if (msg instanceof Map) {
+			    	callback.onHeaders ((Map<String, Object>)msg);
+		    	} else if (msg instanceof byte []) {
+					callback.onChunk ((byte [])msg);
+		    	} 
+			} catch (IOException e) {
+				throw new RuntimeException (e.getMessage (), e);
+			}
 	    }
 
 	    @Override
 	    public void channelReadComplete (ChannelHandlerContext ctx) {
-	    	callback.onFinish ();
+	    	try {
+	    		callback.onFinish ();
+			} catch (IOException e) {
+				throw new RuntimeException (e.getMessage (), e);
+			}
     		ctx.flush ();
 	    }
 

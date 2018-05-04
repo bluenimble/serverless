@@ -47,7 +47,7 @@ public class SimpleApiRequest extends AbstractApiRequest {
 		this.endpoint 	= Json.getString (payload, ApiRequest.Fields.Endpoint);
 		this.path		= Json.getString (payload, ApiRequest.Fields.Path);
 		this.device		= Json.getObject (payload, ApiRequest.Fields.Device.class.getSimpleName ().toLowerCase ());
-		this.node 			= new JsonObject ();
+		this.node 		= new JsonObject ();
 				
 		JsonObject oParameters = Json.getObject (payload, ApiRequest.Fields.Data.Parameters);
 		if (!Json.isNullOrEmpty (oParameters)) {

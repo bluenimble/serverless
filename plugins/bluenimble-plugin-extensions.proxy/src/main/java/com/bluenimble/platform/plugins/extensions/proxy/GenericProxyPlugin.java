@@ -17,7 +17,7 @@
 package com.bluenimble.platform.plugins.extensions.proxy;
 
 import com.bluenimble.platform.PackageClassLoader;
-import com.bluenimble.platform.api.impls.proxy.BinaryProxyApiServiceSpi;
+import com.bluenimble.platform.api.impls.proxy.RemoteApiServiceSpi;
 import com.bluenimble.platform.plugins.impls.AbstractPlugin;
 import com.bluenimble.platform.server.ApiServer;
 
@@ -38,7 +38,7 @@ public class GenericProxyPlugin extends AbstractPlugin {
 	@Override
 	public void init (ApiServer server) throws Exception {
 		PackageClassLoader pcl = (PackageClassLoader)GenericProxyPlugin.class.getClassLoader ();
-		pcl.registerObject (Registered.ServiceSpi, new BinaryProxyApiServiceSpi ());
+		pcl.registerObject (Registered.ServiceSpi, new RemoteApiServiceSpi ());
 	}
 
 }

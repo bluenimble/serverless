@@ -16,6 +16,9 @@
  */
 package com.bluenimble.platform.remote;
 
+import java.io.IOException;
+import java.util.Map;
+
 import com.bluenimble.platform.Feature;
 import com.bluenimble.platform.Recyclable;
 import com.bluenimble.platform.api.ApiStreamSource;
@@ -85,8 +88,10 @@ public interface Remote extends Recyclable {
 	}
 	
 	interface Callback {
-		void onError 	(int status, Object message);
-		void onSuccess 	(int status, Object payload);
+		void onHeaders 	(Map<String, Object> headers);
+		void onData 	(int status, byte [] chunk) 	throws IOException;
+		void onDone 	(int status, Object data) 		throws IOException;
+		void onError 	(int status, Object message) 	throws IOException;
 	}
 
 	boolean post 	(JsonObject spec, Callback callback, ApiStreamSource... attachments);

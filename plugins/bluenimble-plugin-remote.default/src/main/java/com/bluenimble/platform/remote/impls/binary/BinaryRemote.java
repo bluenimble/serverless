@@ -108,17 +108,6 @@ public class BinaryRemote extends AbstractRemote {
 			path = Lang.SLASH;
 		}
 		
-		Serializer.Name serName = null;
-		
-		try {
-			serName = Serializer.Name.valueOf (Json.getString (spec, Spec.Serializer, Serializer.Name.text.name ()).toLowerCase ());
-		} catch (Exception ex) {
-			// ignore
-			serName = Serializer.Name.text;
-		}
-		
-		Serializer serializer = Serializers.get (serName);
-		
 		// contentType
 		String contentType = null;
 
@@ -182,14 +171,32 @@ public class BinaryRemote extends AbstractRemote {
 				break;
 		}
 		
-		int 	errorCodeLimit 	= Json.getInteger (spec, Spec.SuccessCode, 399);
-		boolean useStreaming 	= Json.getBoolean (spec, Spec.UseStreaming, false);
+		// write response
+		
+		Serializer serializer = null;
+		
+		String sSerializer = Json.getString (spec, Spec.Serializer);
+		if (Lang.isNullOrEmpty (sSerializer)) {
+			Serializer.Name serName = null;
+			try {
+				serName = Serializer.Name.valueOf (sSerializer.toLowerCase ());
+			} catch (Exception ex) {
+				// ignore
+			}
+			if (serName != null) {
+				serializer = Serializers.get (serName);
+			}
+		}
+		
+		int   errorCodeLimit = Json.getInteger (spec, Spec.SuccessCode, 399);
 		
 		final ValueHolder<ByteArrayOutputStream> error = new ValueHolder<ByteArrayOutputStream> ();
 		
 		final ValueHolder<Integer> status = new ValueHolder<Integer> ();
 		
-		final ValueHolder<ByteArrayOutputStream> responseData = new ValueHolder<ByteArrayOutputStream> ();
+		final ValueHolder<ByteArrayOutputStream> dataHolder = new ValueHolder<ByteArrayOutputStream> ();
+		
+		final Serializer fSerlizer = serializer;
 		
 		BinaryClientCallback bcc = new BinaryClientCallback () {
 			@Override
@@ -198,42 +205,54 @@ public class BinaryRemote extends AbstractRemote {
 				if (iStatus > errorCodeLimit) {
 					error.set (new ByteArrayOutputStream ());
 				}
-				if (useStreaming) {
-					responseData.set (new ByteArrayOutputStream ());
+				if (fSerlizer != null) {
+					dataHolder.set (new ByteArrayOutputStream ());
 				}
 			}
 			@Override
 			public void onHeaders (Map<String, Object> headers) {
-				
+				if (headers == null || headers.isEmpty ()) {
+					return;
+				}
+				callback.onHeaders (headers);
 			}
 			@Override
-			public void onChunk (byte [] chunk) {
+			public void onChunk (byte [] chunk) throws IOException {
 				if (status.get () > errorCodeLimit) {
 					try {
 						error.get ().write (chunk);
 					} catch (IOException e) {
 						throw new BinaryClientException (e.getMessage (), e);
 					}
-				} else if (useStreaming) {
-					callback.onSuccess (
-						status.get (), 
-						chunk
-					);
+				} else {
+					if (fSerlizer != null) {
+						dataHolder.get ().write (chunk); 
+					} else {
+						callback.onData (
+							status.get (), 
+							chunk
+						);
+					}
 				}
 			}
 			@Override
-			public void onFinish () {
+			public void onFinish () throws IOException {
 				if (status.get () > errorCodeLimit) {
 					callback.onError (status.get (), new String (error.get ().toByteArray ()));
-				} else if (!useStreaming) {
-					try {
-						callback.onSuccess (
-							status.get (), 
-							serializer.serialize (new ByteArrayInputStream (responseData.get ().toByteArray ()))
-						);
-					} catch (SerializationException e) {
-						throw new BinaryClientException (e.getMessage (), e);
+				} else {
+					if (fSerlizer != null) {
+						try {
+							callback.onDone (
+								status.get (), 
+								fSerlizer.serialize (new ByteArrayInputStream (dataHolder.get ().toByteArray ()))
+							);
+						} catch (SerializationException e) {
+							throw new IOException (e.getMessage (), e);
+						}
+					} else {
+						callback.onDone (status.get (), null);
 					}
+					
 				}
 			}
 		};

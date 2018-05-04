@@ -17,6 +17,7 @@
 package com.bluenimble.platform.remote.impls.http;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.SocketTimeoutException;
@@ -25,6 +26,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
@@ -387,7 +389,7 @@ public class HttpRemote extends AbstractRemote {
 				);
 				return false;
 			} else {
-				callback.onSuccess (
+				callback.onDone (
 					response.code (), 
 					serializer.serialize (response.body ().byteStream ())
 				);
@@ -395,13 +397,25 @@ public class HttpRemote extends AbstractRemote {
 			}
 			
 		} catch (UnknownHostException uhex) {
-			callback.onError (Error.UnknownHost, "Endpoint " + endpoint + " can't be resolved. Check your internet connection and make sure the endpoint is correct");
+			try {
+				callback.onError (Error.UnknownHost, "Endpoint " + endpoint + " can't be resolved. Check your internet connection and make sure the endpoint is correct");
+			} catch (IOException e) {
+				throw new RuntimeException (e.getMessage (), e);
+			}
 			return false;
 		} catch (SocketTimeoutException stoex) {
-			callback.onError (Error.Timeout, "Endpoint " + endpoint + " was found but " + stoex.getMessage ());
+			try {
+				callback.onError (Error.Timeout, "Endpoint " + endpoint + " was found but " + stoex.getMessage ());
+			} catch (IOException e) {
+				throw new RuntimeException (e.getMessage (), e);
+			}
 			return false;
 		} catch (Exception ex) {
-			callback.onError (Error.Other, Lang.toError (ex));
+			try {
+				callback.onError (Error.Other, Lang.toError (ex));
+			} catch (IOException e) {
+				throw new RuntimeException (e.getMessage (), e);
+			}
 			return false;
 		} finally {
 			if (response != null) {
@@ -500,12 +514,19 @@ public class HttpRemote extends AbstractRemote {
 		new HttpRemote (null, null, Json.load (new File ("/tmp/broker-http-post-master.json")))
 			.post (Json.load (new File ("/tmp/broker-http-post-data.json")), new Callback () {
 				@Override
-				public void onSuccess (int code, Object data) {
-					System.err.println ("Success\n\t" + code + " : " + data);
+				public void onData (int code, byte [] data) {
+					System.err.println ("onData\n\t" + code + " : " + data);
 				}
 				@Override
 				public void onError (int code, Object message) {
 					System.err.println ("Error\n\t" + code + " : " + message);
+				}
+				@Override
+				public void onHeaders (Map<String, Object> headers) {
+				}
+				@Override
+				public void onDone (int code, Object data) {
+					System.err.println ("onDone\n\t" + code + " : " + data);
 				}
 			});
 	}

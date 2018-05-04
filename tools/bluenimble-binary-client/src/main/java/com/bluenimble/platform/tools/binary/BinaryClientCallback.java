@@ -16,13 +16,14 @@
  */
 package com.bluenimble.platform.tools.binary;
 
+import java.io.IOException;
 import java.util.Map;
 
 public interface BinaryClientCallback {
 	
-	void onStatus 	(int status);
-	void onHeaders 	(Map<String, Object> headers);
-	void onChunk 	(byte [] chunk);
-	void onFinish 	();
+	void onStatus 	(int status)					throws IOException;
+	void onHeaders 	(Map<String, Object> headers)	throws IOException;
+	void onChunk 	(byte [] chunk) 				throws IOException;
+	void onFinish 	() 								throws IOException;
 	
 }
