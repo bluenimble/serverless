@@ -23,6 +23,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 import com.bluenimble.platform.api.ApiResponse;
+import com.bluenimble.platform.json.JsonObject;
 
 public class SimpleApiResponse extends AbstractApiResponse {
 	
@@ -30,16 +31,16 @@ public class SimpleApiResponse extends AbstractApiResponse {
 	
 	protected OutputStream out;
 	
-	public SimpleApiResponse (String id, OutputStream out) {
-		super (id);
+	public SimpleApiResponse (String id, JsonObject node, OutputStream out) {
+		super (id, node);
 		if (out == null) {
 			out = new ByteArrayOutputStream ();
 		}
 		this.out = out;
 	}
 	
-	public SimpleApiResponse (String id) {
-		this (id, null);
+	public SimpleApiResponse (String id, JsonObject node) {
+		this (id, node, null);
 	}
 	
 	@Override
@@ -73,6 +74,18 @@ public class SimpleApiResponse extends AbstractApiResponse {
 		}
 		
 		return bytes;
+	}
+
+	@Override
+	public void setBuffer (int size) {
+	}
+
+	@Override
+	public void reset () {
+	}
+
+	@Override
+	public void flushHeaders () {
 	}
 
 }

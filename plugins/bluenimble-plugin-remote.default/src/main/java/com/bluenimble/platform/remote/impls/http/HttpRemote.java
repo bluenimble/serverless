@@ -16,7 +16,6 @@
  */
 package com.bluenimble.platform.remote.impls.http;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
@@ -24,9 +23,11 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
@@ -53,6 +54,7 @@ import com.bluenimble.platform.remote.impls.http.oauth.OkHttpOAuthConsumer;
 import com.bluenimble.platform.templating.VariableResolver;
 
 import okhttp3.FormBody;
+import okhttp3.Headers;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -381,6 +383,16 @@ public class HttpRemote extends AbstractRemote {
 			request = sign (rBuilder.build (), spec, parameters);
 			
 			response = http.newCall (request).execute ();
+			
+			Headers rHttpHeaders = response.headers ();
+			Set<String> hNames = rHttpHeaders.names ();
+			if (hNames != null && !hNames.isEmpty ()) {
+				Map<String, Object> cHeaders = new HashMap<String, Object> ();
+				for (String hn : hNames) {
+					cHeaders.put (hn, rHttpHeaders.get (hn));
+				}
+				callback.onStatus (response.code (), false, cHeaders);
+			}
 						
 			if (response.code () > Json.getInteger (spec, Spec.SuccessCode, 399)) {
 				callback.onError (
@@ -508,27 +520,6 @@ public class HttpRemote extends AbstractRemote {
 
 	@Override
 	public void recycle () {
-	}
-
-	public static void main (String [] args) throws Exception {
-		new HttpRemote (null, null, Json.load (new File ("/tmp/broker-http-post-master.json")))
-			.post (Json.load (new File ("/tmp/broker-http-post-data.json")), new Callback () {
-				@Override
-				public void onData (int code, byte [] data) {
-					System.err.println ("onData\n\t" + code + " : " + data);
-				}
-				@Override
-				public void onError (int code, Object message) {
-					System.err.println ("Error\n\t" + code + " : " + message);
-				}
-				@Override
-				public void onHeaders (Map<String, Object> headers) {
-				}
-				@Override
-				public void onDone (int code, Object data) {
-					System.err.println ("onDone\n\t" + code + " : " + data);
-				}
-			});
 	}
 
 }

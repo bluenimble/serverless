@@ -17,9 +17,12 @@
 package com.bluenimble.platform.api.impls;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.json.JsonObject;
 
@@ -27,7 +30,7 @@ public abstract class AbstractApiResponse implements ApiResponse {
 	
 	private static final long serialVersionUID = 2484293173544350202L;
 	
-	protected Status						status;
+	protected Status						status = OK;
 	protected JsonObject 					error;
 	
 	protected String 						id;
@@ -36,28 +39,24 @@ public abstract class AbstractApiResponse implements ApiResponse {
 	
 	protected Map<String, Object>			headers;
 	
-	protected AbstractApiResponse (String id) {
-		this.id = id;
+	protected JsonObject					node;
+	
+	protected AbstractApiResponse (String id, JsonObject node) {
+		this.id 	= id;
+		this.node 	= node;
 	}
 	
 	@Override
-	public void close () throws IOException {
-		commit ();
-	}
-
-	@Override
-	public void commit () {
-		committed = true;
-	}
-
-	@Override
 	public ApiResponse error (Status status, Object message) {
 		
-		this.status = status;
+		if (this.status == null || (this.status != null && this.status.getCode () < ApiResponse.BAD_REQUEST.getCode ())) {
+			this.status = status;
+		}
 		
 		error = new JsonObject ();
-		error.set (RequestID, id);
-		error.set (Error.Code, status.getCode ());
+		error.set (ApiRequest.Fields.Node.class.getSimpleName ().toLowerCase (), node);
+		error.set (ApiRequest.Fields.Id, id);
+		error.set (Error.Code, this.status.getCode ());
 		
 		if (message != null && (message instanceof Object [])) {
 			Object [] aMessage = (Object [])message;
@@ -71,10 +70,6 @@ public abstract class AbstractApiResponse implements ApiResponse {
 	}
 	
 	@Override
-	public void flushHeaders () {
-	}
-
-	@Override
 	public JsonObject getError () {
 		return error;
 	}
@@ -85,25 +80,49 @@ public abstract class AbstractApiResponse implements ApiResponse {
 	}
 
 	@Override
+	public void close () throws IOException {
+		commit ();
+	}
+
+	@Override
+	public void commit () {
+		committed = true;
+	}
+
+	@Override
 	public boolean isCommitted () {
 		return false;
 	}
 
-	@Override
-	public void reset () {
-	}
-
+	@SuppressWarnings("unchecked")
 	@Override
 	public ApiResponse set (String name, Object value) {
+		
+		if (name == null || value == null) {
+			return this;
+		}
+		
 		if (headers == null) {
 			headers = new HashMap<String, Object> ();
 		}
+		
+		Object alreadyThere = headers.get (name);
+		if (alreadyThere != null) {
+			List<Object> values = null;
+			if (List.class.isAssignableFrom (alreadyThere.getClass ())) {
+				values = (List<Object>)alreadyThere;
+			} else {
+				values = new ArrayList<Object> ();
+				values.add (alreadyThere);
+			}
+			values.add (value);
+			value = values;
+		}
+		
 		headers.put (name, value);
+		
 		return this;
-	}
-
-	@Override
-	public void setBuffer (int size) {
+		
 	}
 
 	@Override

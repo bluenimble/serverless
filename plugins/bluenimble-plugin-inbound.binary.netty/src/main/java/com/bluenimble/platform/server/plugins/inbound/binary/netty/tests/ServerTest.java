@@ -16,7 +16,8 @@ public class ServerTest {
 			@Override
 			public ApiResponse process (ApiRequest request) throws Exception {
 		    	System.out.println (request.toJson ().toString (2));
-				ApiResponse response = new NettyResponse (request.getId (), (ChannelHandlerContext)request.get (NettyServer.Context));
+				ApiResponse response = 
+					new NettyResponse (request.getId (), request.getNode (), (ChannelHandlerContext)request.get (NettyServer.Context));
 				
 				response.setStatus (ApiResponse.CREATED);
 				

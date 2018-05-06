@@ -42,7 +42,8 @@ public class NettyPlugin extends AbstractPlugin {
 		NettyServer nettyServer = new NettyServer (port, new NettyRequestProcessor () {
 			@Override
 			public ApiResponse process (ApiRequest request) throws Exception {
-				ApiResponse response = new NettyResponse (request.getId (), (ChannelHandlerContext)request.get (NettyServer.Context));
+				ApiResponse response = 
+					new NettyResponse (request.getId (), request.getNode (), (ChannelHandlerContext)request.get (NettyServer.Context));
 				
 				request.getNode ().set (ApiRequest.Fields.Node.Id, server.id ());
     			request.getNode ().set (ApiRequest.Fields.Node.Type, server.type ());

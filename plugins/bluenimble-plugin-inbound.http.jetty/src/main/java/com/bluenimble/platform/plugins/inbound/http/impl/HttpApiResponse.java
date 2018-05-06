@@ -19,21 +19,18 @@ package com.bluenimble.platform.plugins.inbound.http.impl;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResponse;
+import com.bluenimble.platform.api.impls.AbstractApiResponse;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.scripting.Scriptable;
 
 @Scriptable (name = "ApiResponse")
-public class HttpApiResponse implements ApiResponse {
+public class HttpApiResponse extends AbstractApiResponse {
 	
 	private static final long serialVersionUID = -8396891999750710394L;
 	
@@ -41,74 +38,16 @@ public class HttpApiResponse implements ApiResponse {
 	protected 	OutputStream 			out;
 	protected 	Writer 					writer;
 	
-	protected 	Status					status = OK;
-	
-	protected 	JsonObject 				error;
-	
-	protected	Map<String, Object>		headers;
-	
-	private 	JsonObject 				node;
-	private 	String 					id;
-	
-	private 	boolean 				committed;
-	
 	private 	boolean					headersWritten;
 	
 	public HttpApiResponse (JsonObject node, String id, HttpServletResponse proxy) throws IOException {
+		super (id, node);
 		this.proxy 	= proxy;
-		this.node 	= node;
-		this.id 	= id;
 	}
 	
 	@Override
-	public String getId () {
-		return id;
-	}
-	
-	@SuppressWarnings("unchecked")
-	@Override
-	public ApiResponse set (String name, Object value) {
+	public ApiResponse append (byte [] buff, int offset, int length) throws IOException {
 		
-		if (name == null || value == null) {
-			return this;
-		}
-		
-		if (headers == null) {
-			headers = new HashMap<String, Object> ();
-		}
-		
-		Object alreadyThere = headers.get (name);
-		if (alreadyThere != null) {
-			List<Object> values = null;
-			if (List.class.isAssignableFrom (alreadyThere.getClass ())) {
-				values = (List<Object>)alreadyThere;
-			} else {
-				values = new ArrayList<Object> ();
-				values.add (alreadyThere);
-			}
-			values.add (value);
-			value = values;
-		}
-		
-		headers.put (name, value);
-		
-		return this;
-		
-	}
-
-	@Override
-	public ApiResponse write (byte [] buff, int offset, int length) throws IOException {
-		
-		if (committed) {
-			return this;
-		}
-		
-		if (buff == null || buff.length == 0) {
-			return this;
-		}
-		
-		flushHeaders ();
-
 		boolean written = false;
 		if (out != null) {
 			out.write (buff, offset, length);
@@ -126,64 +65,8 @@ public class HttpApiResponse implements ApiResponse {
 	}
 
 	@Override
-	public ApiResponse write (Object buff) throws IOException {
-		
-		if (committed) {
-			return this;
-		}
-		
-		if (buff == null) {
-			return this;
-		}
-		
-		flushHeaders ();
-
-		boolean written = false;
-		if (out != null) {
-			out.write (buff.toString ().getBytes ());
-			written = true;
-		}
-		if (writer != null) {
-			writer.write (buff.toString ());
-			written = true;
-		}
-		if (!written) {
-			out = proxy.getOutputStream ();
-			out.write (buff.toString ().getBytes ());
-		}
-		return this;
-	}
-
-	@Override
-	public ApiResponse error (Status status, Object message) {
-		
-		if (this.status == null || (this.status != null && this.status.getCode () < ApiResponse.BAD_REQUEST.getCode ())) {
-			this.status = status;
-		}
-		
-		error = new JsonObject ();
-		error.set (ApiRequest.Fields.Node.class.getSimpleName ().toLowerCase (), node);
-		error.set (ApiRequest.Fields.Id, id);
-		error.set (Error.Code, this.status.getCode ());
-		
-		if (message != null && (message instanceof Object [])) {
-			Object [] aMessage = (Object [])message;
-			error.set (Error.Message, aMessage [0]);
-			error.set (Error.Trace, aMessage [1]);
-		} else {
-			error.set (Error.Message, message);
-		}
-		
-		return this;
-	}
-	
-	@Override
-	public JsonObject getError () {
-		return error;
-	}
-
-	@Override
 	public void close () throws IOException {
+		super.close ();
 		if (out != null) {
 			out.flush ();
 			out.close ();
@@ -192,25 +75,11 @@ public class HttpApiResponse implements ApiResponse {
 			writer.flush ();
 			writer.close ();
 		}
-		committed = true;
 	}
 
 	@Override
 	public void reset () {
 		proxy.reset ();
-	}
-
-	@Override
-	public void setStatus (Status status) {
-		if (status == null) {
-			return;
-		}
-		this.status = status;
-	}
-
-	@Override
-	public Status getStatus () {
-		return status;
 	}
 
 	@Override
@@ -238,16 +107,6 @@ public class HttpApiResponse implements ApiResponse {
 			writer = proxy.getWriter ();
 		}
 		return writer;
-	}
-
-	@Override
-	public void commit () {
-		committed = true;
-	}
-
-	@Override
-	public boolean isCommitted () {
-		return committed;
 	}
 
 	@Override

@@ -88,7 +88,7 @@ public interface Remote extends Recyclable {
 	}
 	
 	interface Callback {
-		void onHeaders 	(Map<String, Object> headers);
+		void onStatus 	(int status, boolean chunked, Map<String, Object> headers);
 		void onData 	(int status, byte [] chunk) 	throws IOException;
 		void onDone 	(int status, Object data) 		throws IOException;
 		void onError 	(int status, Object message) 	throws IOException;

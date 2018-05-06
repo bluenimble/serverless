@@ -56,32 +56,32 @@ public class BinaryRemote extends AbstractRemote {
 
 	@Override
 	public boolean post (JsonObject spec, Callback callback, ApiStreamSource... attachments) {
-		return false;
+		return request (ApiVerb.POST, spec, callback);
 	}
 
 	@Override
 	public boolean put (JsonObject spec, Callback callback, ApiStreamSource... attachments) {
-		return false;
+		return request (ApiVerb.PUT, spec, callback);
 	}
 
 	@Override
 	public boolean get (JsonObject spec, Callback callback) {
-		return false;
+		return request (ApiVerb.GET, spec, callback);
 	}
 
 	@Override
 	public boolean delete (JsonObject spec, Callback callback) {
-		return false;
+		return request (ApiVerb.DELETE, spec, callback);
 	}
 
 	@Override
 	public boolean head (JsonObject spec, Callback callback) {
-		return false;
+		return request (ApiVerb.HEAD, spec, callback);
 	}
 
 	@Override
 	public boolean patch (JsonObject spec, Callback callback) {
-		return false;
+		return request (ApiVerb.PATCH, spec, callback);
 	}
 	
 	public boolean request (ApiVerb verb, JsonObject spec, Callback callback) {
@@ -201,6 +201,7 @@ public class BinaryRemote extends AbstractRemote {
 		BinaryClientCallback bcc = new BinaryClientCallback () {
 			@Override
 			public void onStatus (int iStatus) {
+				System.err.println ("Status: " + iStatus);
 				status.set (iStatus);
 				if (iStatus > errorCodeLimit) {
 					error.set (new ByteArrayOutputStream ());
@@ -214,7 +215,8 @@ public class BinaryRemote extends AbstractRemote {
 				if (headers == null || headers.isEmpty ()) {
 					return;
 				}
-				callback.onHeaders (headers);
+				System.err.println ("onHeaders - Status: >>> " + status);
+				callback.onStatus (status.get (), true, headers);
 			}
 			@Override
 			public void onChunk (byte [] chunk) throws IOException {

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Json;
+import com.bluenimble.platform.ValueHolder;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiContext;
 import com.bluenimble.platform.api.ApiManagementException;
@@ -72,30 +73,36 @@ public class RemoteApiServiceSpi implements ApiServiceSpi {
 			throw new ApiServiceExecutionException (e.getMessage (), e);
 		}
 		
+		final ValueHolder<Boolean> vhChunked = new ValueHolder<Boolean> ();
+		
 		final OutputStream fOut = out;
 		
 		Remote.Callback callback = new Remote.Callback () {
+			@Override
+			public void onStatus (int status, boolean chunked, Map<String, Object> headers) {
+				vhChunked.set (chunked);
+				if (headers == null || headers.isEmpty ()) {
+					return;
+				}
+				for (String h : headers.keySet ()) {
+					response.set (h, headers.get (h));
+				}
+				response.flushHeaders ();
+			}
 			@Override
 			public void onError (int status, Object message) throws IOException {
 				response.write (message);
 			}
 			@Override
 			public void onData (int status, byte [] chunk) throws IOException {
-				if (chunk == null || chunk.length == 0) {
+				if (!vhChunked.get () || chunk == null || chunk.length == 0) {
 					return;
 				}
 				fOut.write (chunk);
 			}
 			@Override
-			public void onHeaders (Map<String, Object> headers) {
-				if (headers == null || headers.isEmpty ()) {
-					return;
-				}
-				response.flushHeaders ();
-			}
-			@Override
 			public void onDone (int code, Object data) throws IOException {
-				if (data != null) {
+				if (!vhChunked.get () && data != null) {
 					if (data instanceof InputStream) {
 						IOUtils.copy ((InputStream)data, fOut);
 					} else {

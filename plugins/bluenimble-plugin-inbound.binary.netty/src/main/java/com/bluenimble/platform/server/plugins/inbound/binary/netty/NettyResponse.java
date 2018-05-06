@@ -6,6 +6,7 @@ import java.io.Writer;
 
 import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.impls.AbstractApiResponse;
+import com.bluenimble.platform.json.JsonObject;
 
 import io.netty.channel.ChannelHandlerContext;
 
@@ -17,8 +18,8 @@ public class NettyResponse extends AbstractApiResponse {
 	
 	private boolean					headersWritten;
 	
-	public NettyResponse (String id, ChannelHandlerContext context) {
-		super (id);
+	public NettyResponse (String id, JsonObject node, ChannelHandlerContext context) {
+		super (id, node);
 		this.context = context;
 	}
 
@@ -36,6 +37,14 @@ public class NettyResponse extends AbstractApiResponse {
 	@Override
 	public Writer toWriter () throws IOException {
 		throw new UnsupportedOperationException ("toWriter is unsupported by " + this.getClass ().getSimpleName ());
+	}
+
+	@Override
+	public void reset () {
+	}
+
+	@Override
+	public void setBuffer (int size) {
 	}
 
 	@Override

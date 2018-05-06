@@ -75,15 +75,14 @@ public class ElasticSearchIndexer implements Indexer {
 				),
 			new Remote.Callback () {
 				@Override
+				public void onStatus (int status, boolean chunked, Map<String, Object> headers) {
+				}
+				@Override
 				public void onError (int code, Object message) {
 					error.set (code, message);
 				}
-
 				@Override
 				public void onData (int code, byte [] data) {
-				}
-				@Override
-				public void onHeaders (Map<String, Object> headers) {
 				}
 				@Override
 				public void onDone (int code, Object message) {
@@ -169,14 +168,14 @@ public class ElasticSearchIndexer implements Indexer {
 			oEntity, 
 			new Remote.Callback () {
 				@Override
+				public void onStatus (int status, boolean chunked, Map<String, Object> headers) {
+				}
+				@Override
 				public void onData (int code, byte [] data) {
 				}
 				@Override
 				public void onError (int code, Object message) {
 					error.set (code, message);
-				}
-				@Override
-				public void onHeaders (Map<String, Object> headers) {
 				}
 				@Override
 				public void onDone (int code, Object data) {
@@ -220,14 +219,14 @@ public class ElasticSearchIndexer implements Indexer {
 				).set (Remote.Spec.Serializer, Serializer.Name.json), 
 			new Remote.Callback () {
 				@Override
+				public void onStatus (int status, boolean chunked, Map<String, Object> headers) {
+				}
+				@Override
 				public void onData (int code, byte [] data) {
 				}
 				@Override
 				public void onError (int code, Object message) {
 					error.set (code, message);
-				}
-				@Override
-				public void onHeaders (Map<String, Object> headers) {
 				}
 				@Override
 				public void onDone (int code, Object data) {
@@ -262,14 +261,14 @@ public class ElasticSearchIndexer implements Indexer {
 			).set (Remote.Spec.Serializer, Serializer.Name.json), 
 			new Remote.Callback () {
 				@Override
+				public void onStatus (int status, boolean chunked, Map<String, Object> headers) {
+				}
+				@Override
 				public void onData (int code, byte [] data) {
 				}
 				@Override
 				public void onError (int code, Object message) {
 					error.set (code, message);
-				}
-				@Override
-				public void onHeaders (Map<String, Object> headers) {
 				}
 				@Override
 				public void onDone (int code, Object data) {
@@ -322,14 +321,14 @@ public class ElasticSearchIndexer implements Indexer {
 				.set (Remote.Spec.Serializer, Serializer.Name.json), 
 			new Remote.Callback () {
 				@Override
+				public void onStatus (int status, boolean chunked, Map<String, Object> headers) {
+				}
+				@Override
 				public void onData (int code, byte [] data) {
 				}
 				@Override
 				public void onError (int code, Object message) {
 					error.set (code, message);
-				}
-				@Override
-				public void onHeaders (Map<String, Object> headers) {
 				}
 				@Override
 				public void onDone (int code, Object data) {
@@ -365,14 +364,14 @@ public class ElasticSearchIndexer implements Indexer {
 				.set (Remote.Spec.Serializer, Serializer.Name.json), 
 			new Remote.Callback () {
 				@Override
+				public void onStatus (int status, boolean chunked, Map<String, Object> headers) {
+				}
+				@Override
 				public void onData (int code, byte [] data) {
 				}
 				@Override
 				public void onError (int code, Object message) {
 					error.set (code, message);
-				}
-				@Override
-				public void onHeaders (Map<String, Object> headers) {
 				}
 				@Override
 				public void onDone (int code, Object data) {
@@ -429,14 +428,14 @@ public class ElasticSearchIndexer implements Indexer {
 				.set (Remote.Spec.Serializer, Serializer.Name.json), 
 			new Remote.Callback () {
 				@Override
+				public void onStatus (int status, boolean chunked, Map<String, Object> headers) {
+				}
+				@Override
 				public void onData (int code, byte [] data) {
 				}
 				@Override
 				public void onError (int code, Object message) {
 					error.set (code, message);
-				}
-				@Override
-				public void onHeaders (Map<String, Object> headers) {
 				}
 				@Override
 				public void onDone (int code, Object data) {
@@ -472,14 +471,14 @@ public class ElasticSearchIndexer implements Indexer {
 				.set (Remote.Spec.Serializer, Serializer.Name.json), 
 			new Remote.Callback () {
 				@Override
+				public void onStatus (int status, boolean chunked, Map<String, Object> headers) {
+				}
+				@Override
 				public void onData (int code, byte [] data) {
 				}
 				@Override
 				public void onError (int code, Object message) {
 					error.set (code, message);
-				}
-				@Override
-				public void onHeaders (Map<String, Object> headers) {
 				}
 				@Override
 				public void onDone (int code, Object data) {
@@ -520,14 +519,14 @@ public class ElasticSearchIndexer implements Indexer {
 				.set (Remote.Spec.Serializer, Serializer.Name.json), 
 			new Remote.Callback () {
 				@Override
+				public void onStatus (int status, boolean chunked, Map<String, Object> headers) {
+				}
+				@Override
 				public void onData (int code, byte [] data) {
 				}
 				@Override
 				public void onError (int code, Object message) {
 					error.set (code, message);
-				}
-				@Override
-				public void onHeaders (Map<String, Object> headers) {
 				}
 				@Override
 				public void onDone (int code, Object data) {
