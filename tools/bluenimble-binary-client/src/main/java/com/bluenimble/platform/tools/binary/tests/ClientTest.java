@@ -16,7 +16,12 @@
  */
 package com.bluenimble.platform.tools.binary.tests;
 
+import java.util.Map;
+
+import com.bluenimble.platform.api.ApiRequest;
+import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.pooling.PoolConfig;
+import com.bluenimble.platform.tools.binary.BinaryClientCallback;
 import com.bluenimble.platform.tools.binary.BinaryClientFactory;
 import com.bluenimble.platform.tools.binary.impls.netty.NettyBinaryClientFactory;
 
@@ -33,9 +38,29 @@ public class ClientTest {
 				.setMaxIdleMilliseconds(60 * 1000 * 5)
 		);
 		
-		for (int i = 0; i < 20; i++) {
-			new Worker (factory, String.valueOf (i)).start ();
-		}
+		factory.create ().send (
+			(JsonObject)new JsonObject ()
+				.set (ApiRequest.Fields.Verb, "GET")
+				.set (ApiRequest.Fields.Path, "/sys/mgm/instance/keys"),
+			new BinaryClientCallback () {
+				@Override
+				public void onStatus (int status) {
+					System.out.println ("Status: " + status);
+				}
+				@Override
+				public void onHeaders (Map<String, Object> headers) {
+					System.out.println ("Headers: " + headers);
+				}
+				@Override
+				public void onChunk (byte [] bytes) {
+					System.out.println ("Chunk: \n" + bytes);
+				}
+				@Override
+				public void onFinish () {
+					System.out.println ("Done! ");
+				}
+			}
+		);
 		
 	}	
 }
