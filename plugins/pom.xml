@@ -23,7 +23,7 @@
 	<name>BlueNimble Serverless Plugins</name>
 	
 	<modules>
-		<module>bluenimble-plugin-server.ext</module>
+		<module>bluenimble-plugin-visitors.default</module>
 		<module>bluenimble-plugin-security.default</module>
 		<module>bluenimble-plugin-security.keystore</module>
 		<module>bluenimble-plugin-media.default</module>

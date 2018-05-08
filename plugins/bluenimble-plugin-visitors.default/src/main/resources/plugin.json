@@ -1,9 +1,9 @@
 {
-	"namespace": "server.ext",
+	"namespace": "visitors.default",
 	"name": "Instance Extensions - ApiRequest Visitor",
 	
 	"spi": {
-		"class": "com.bluenimble.platform.plugins.ext.ExtensionsPlugin",
+		"class": "com.bluenimble.platform.plugins.visitors.DefaultVisitorsPlugin",
 		"properties": {
 			"version": "[version]",
 			"vendor": {

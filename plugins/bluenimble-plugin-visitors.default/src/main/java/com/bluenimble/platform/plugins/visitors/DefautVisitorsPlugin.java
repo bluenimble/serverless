@@ -14,14 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.plugins.ext;
+package com.bluenimble.platform.plugins.visitors;
 
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.impls.AbstractPlugin;
 import com.bluenimble.platform.server.ApiServer;
 import com.bluenimble.platform.server.impls.ExtendedApiRequestVisitor;
 
-public class ExtensionsPlugin extends AbstractPlugin {
+public class DefautVisitorsPlugin extends AbstractPlugin {
 
 	private static final long serialVersionUID = -7715328225346939289L;
 	
