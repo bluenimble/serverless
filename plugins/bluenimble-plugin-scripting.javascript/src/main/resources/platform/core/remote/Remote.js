@@ -10,8 +10,10 @@ function toJavaAttachments (attachments) {
 }
 
 var NoCallback = {
-	onSuccess: function (code, payload) {},
-	onError: function (code, message) {}
+	onStatus: function (status, chunked, headers) {},
+	onData: function (status, chunk) {},
+	onDone: function (status, data) {},
+	onError: function (status, message) {}
 };
 
 /**
@@ -40,16 +42,19 @@ var Remote = function (proxy) {
 	  		email: 'john@bluenimble.com'
 	  	}
 	  }, {
-	  	onSuccess: function (code, data) {
-	  		api.logger.info (code + ': ' + data);
+	  	onStatus: function (status, chunked, headers) {
+	  		api.logger.info (status + ': chunked: ' + chunked + ' > ' + headers);
 	  	},
-	  	onError: function (code, message) {
-	  		api.logger.error (code + ': ' + message);
+	  	onDone: function (status, data) {
+	  		api.logger.info (status + ': data);
+	  	},
+	  	onError: function (status, message) {
+	  		api.logger.error (status + ': ' + message);
 	  	}
 	  });
 	*/
 	this.get = function (spec, callback) {
-		return proxy.get (
+		proxy.get (
 			JC_Converters.convert (spec),
 			this._callback (callback)
 		);
@@ -73,16 +78,19 @@ var Remote = function (proxy) {
 	  		'Content-Type': 'application/json'
 	  	}
 	  }, {
-	  	onSuccess: function (code, data) {
-	  		api.logger.info (code + ': ' + data);
+	  	onStatus: function (status, chunked, headers) {
+	  		api.logger.info (status + ': chunked: ' + chunked + ' > ' + headers);
 	  	},
-	  	onError: function (code, message) {
-	  		api.logger.error (code + ': ' + message);
+	  	onDone: function (status, data) {
+	  		api.logger.info (status + ': data);
+	  	},
+	  	onError: function (status, message) {
+	  		api.logger.error (status + ': ' + message);
 	  	}
 	  });
 	*/
 	this.post = function (spec, callback, attachments) {
-		return proxy.post (
+		proxy.post (
 			JC_Converters.convert (spec),
 			this._callback (callback),
 			toJavaAttachments (attachments)
@@ -105,16 +113,19 @@ var Remote = function (proxy) {
 	  		'Content-Type': 'application/json'
 	  	}
 	  }, {
-	  	onSuccess: function (code, data) {
-	  		api.logger.info (code + ': ' + data);
+	  	onStatus: function (status, chunked, headers) {
+	  		api.logger.info (status + ': chunked: ' + chunked + ' > ' + headers);
 	  	},
-	  	onError: function (code, message) {
-	  		api.logger.error (code + ': ' + message);
+	  	onDone: function (status, data) {
+	  		api.logger.info (status + ': data);
+	  	},
+	  	onError: function (status, message) {
+	  		api.logger.error (status + ': ' + message);
 	  	}
 	  });
 	*/
 	this.put = function (spec, callback, attachments) {
-		return proxy.put (
+		proxy.put (
 			JC_Converters.convert (spec),
 			this._callback (callback),
 			toJavaAttachments (attachments)
@@ -131,16 +142,19 @@ var Remote = function (proxy) {
 	  api.remote (request).delete ({
 	  	endpoint: 'https://myserver.com/123456789'
 	  }, {
-	  	onSuccess: function (code, data) {
-	  		api.logger.info (code + ': ' + data);
+	  	onStatus: function (status, chunked, headers) {
+	  		api.logger.info (status + ': chunked: ' + chunked + ' > ' + headers);
 	  	},
-	  	onError: function (code, message) {
-	  		api.logger.error (code + ': ' + message);
+	  	onDone: function (status, data) {
+	  		api.logger.info (status + ': data);
+	  	},
+	  	onError: function (status, message) {
+	  		api.logger.error (status + ': ' + message);
 	  	}
 	  });
 	*/
 	this.delete = function (spec, callback) {
-		return proxy.delete (
+		proxy.delete (
 			JC_Converters.convert (spec),
 			this._callback (callback)
 		);
@@ -156,16 +170,19 @@ var Remote = function (proxy) {
 	  api.remote (request).head ({
 	  	endpoint: 'https://myserver.com/123456789'
 	  }, {
-	  	onSuccess: function (code, data) {
-	  		api.logger.info (code + ': ' + data);
+	  	onStatus: function (status, chunked, headers) {
+	  		api.logger.info (status + ': chunked: ' + chunked + ' > ' + headers);
 	  	},
-	  	onError: function (code, message) {
-	  		api.logger.error (code + ': ' + message);
+	  	onDone: function (status, data) {
+	  		api.logger.info (status + ': data);
+	  	},
+	  	onError: function (status, message) {
+	  		api.logger.error (status + ': ' + message);
 	  	}
 	  });
 	*/
 	this.head = function (spec, callback) {
-		return proxy.head (
+		proxy.head (
 			JC_Converters.convert (spec),
 			this._callback (callback)
 		);
@@ -181,16 +198,19 @@ var Remote = function (proxy) {
 	  api.remote (request).patch ({
 	  	endpoint: 'https://myserver.com/123456789'
 	  }, {
-	  	onSuccess: function (code, data) {
-	  		api.logger.info (code + ': ' + data);
+	  	onStatus: function (status, chunked, headers) {
+	  		api.logger.info (status + ': chunked: ' + chunked + ' > ' + headers);
 	  	},
-	  	onError: function (code, message) {
-	  		api.logger.error (code + ': ' + message);
+	  	onDone: function (status, data) {
+	  		api.logger.info (status + ': data);
+	  	},
+	  	onError: function (status, message) {
+	  		api.logger.error (status + ': ' + message);
 	  	}
 	  });
 	*/
 	this.patch = function (spec, callback) {
-		return proxy.patch (
+		proxy.patch (
 			JC_Converters.convert (spec),
 			this._callback (callback)
 		);
@@ -202,11 +222,30 @@ var Remote = function (proxy) {
 		}
 	
 		var JC_Callback = Java.extend (JC_Remote_Callback, {
-			onSuccess: function (code, payload) {
-				callback.onSuccess (code, payload);
+			
+			onStatus: function (status, chunked, headers) {
+				if (!callback.onStatus) {
+					return;
+				}
+				callback.onStatus (status, chunked, headers);
 			},
-			onError: function (code, message) {
-				callback.onError (code, message);
+			onData: function (status, chunk) {
+				if (!callback.onData) {
+					return;
+				}
+				callback.onData (status, chunk);
+			},
+			onDone: function (status, data) {
+				if (!callback.onDone) {
+					return;
+				}
+				callback.onDone (status, data);
+			},
+			onError: function (status, message) {
+				if (!callback.onError) {
+					return;
+				}
+				callback.onError (status, message);
 			}
 		});
 		

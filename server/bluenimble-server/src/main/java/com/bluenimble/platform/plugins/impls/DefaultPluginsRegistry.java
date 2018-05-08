@@ -23,8 +23,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,9 +57,16 @@ public class DefaultPluginsRegistry implements PluginsRegistry, ClassLoaderRegis
 	private static final String PluginsHomePrefix	= "bluenimble.plugins.";
 	private static final String PluginsHomePostfix	= ".home";
 	
+	private static final Comparator<Plugin> Comparator = new Comparator<Plugin>() {
+	    @Override
+	    public int compare (Plugin left, Plugin right) {
+	        return left.getWeight () - right.getWeight (); // use your logic
+	    }
+	};
+	
 	private static boolean isWindows;
 
-	private Map<String, Plugin> 	plugins  	= new HashMap<String, Plugin> ();
+	private Map<String, Plugin> 	plugins  	= new LinkedHashMap<String, Plugin> ();
 	
 	private Map<String, String> 	references 	= new HashMap<String, String> ();
 	private Map<String, PackageClassLoader> 		
@@ -219,10 +228,7 @@ public class DefaultPluginsRegistry implements PluginsRegistry, ClassLoaderRegis
 			// create plugin
 			Plugin plugin = create (pluginNs, file, home, timestamp, descriptor);
 			
-			plugins.put (
-				pluginNs, 
-				plugin
-			);
+			addPlugin (pluginNs, plugin);
 			
 			if (plugin.isInitOnInstall ()) {
 				_init (server, home, plugin);
@@ -235,6 +241,13 @@ public class DefaultPluginsRegistry implements PluginsRegistry, ClassLoaderRegis
 		}
 	}
 	
+	private void addPlugin (String pluginNs, Plugin plugin) {
+		plugins.put (
+			pluginNs, 
+			plugin
+		);
+	}
+
 	private boolean registerLibrary (File home) {
 		
 		File nativeLibs = new File (home, ConfigKeys.Native);
@@ -379,10 +392,18 @@ public class DefaultPluginsRegistry implements PluginsRegistry, ClassLoaderRegis
 	
 	@Override
 	public void shutdown () {
-		Iterator<Plugin> ip = plugins.values ().iterator ();
-		while (ip.hasNext ()) {
+		if (plugins == null || plugins.isEmpty ()) {
+			return;
+		}
+		
+		server.tracer ().log (Tracer.Level.Info, "Shutting down Plugins Registry");
+		
+		List<Plugin> list = new ArrayList<Plugin> (plugins.values ());
+		Collections.sort (list, Comparator);
+		
+		for (Plugin p : list) {
 			try {
-				uninstall (ip.next (), true);
+				uninstall (p, true);
 			} catch (Exception ex) {
 				server.tracer ().log (Tracer.Level.Error, Lang.BLANK, ex);
 			}

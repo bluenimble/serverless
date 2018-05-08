@@ -27,7 +27,6 @@ import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.ValueHolder;
 import com.bluenimble.platform.api.ApiContentTypes;
 import com.bluenimble.platform.api.ApiRequest;
-import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.ApiStreamSource;
 import com.bluenimble.platform.api.ApiVerb;
 import com.bluenimble.platform.http.HttpHeaders;
@@ -35,13 +34,13 @@ import com.bluenimble.platform.http.utils.ContentTypes;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.remote.SerializationException;
 import com.bluenimble.platform.remote.Serializer;
-import com.bluenimble.platform.remote.impls.AbstractRemote;
+import com.bluenimble.platform.remote.impls.BaseRemote;
 import com.bluenimble.platform.templating.VariableResolver;
 import com.bluenimble.platform.tools.binary.BinaryClient;
 import com.bluenimble.platform.tools.binary.BinaryClientCallback;
 import com.bluenimble.platform.tools.binary.BinaryClientException;
 
-public class BinaryRemote extends AbstractRemote {
+public class BinaryRemote extends BaseRemote {
 
 	private static final long serialVersionUID = 5077033220938663135L;
 	
@@ -55,36 +54,7 @@ public class BinaryRemote extends AbstractRemote {
 	}
 
 	@Override
-	public boolean post (JsonObject spec, Callback callback, ApiStreamSource... attachments) {
-		return request (ApiVerb.POST, spec, callback);
-	}
-
-	@Override
-	public boolean put (JsonObject spec, Callback callback, ApiStreamSource... attachments) {
-		return request (ApiVerb.PUT, spec, callback);
-	}
-
-	@Override
-	public boolean get (JsonObject spec, Callback callback) {
-		return request (ApiVerb.GET, spec, callback);
-	}
-
-	@Override
-	public boolean delete (JsonObject spec, Callback callback) {
-		return request (ApiVerb.DELETE, spec, callback);
-	}
-
-	@Override
-	public boolean head (JsonObject spec, Callback callback) {
-		return request (ApiVerb.HEAD, spec, callback);
-	}
-
-	@Override
-	public boolean patch (JsonObject spec, Callback callback) {
-		return request (ApiVerb.PATCH, spec, callback);
-	}
-	
-	public boolean request (ApiVerb verb, JsonObject spec, Callback callback) {
+	public void request (ApiVerb verb, JsonObject spec, Callback callback, ApiStreamSource... attachments) {
 		JsonObject rdata = Json.getObject (spec, Spec.Data);
 		
 		if (!Json.isNullOrEmpty (featureSpec)) {
@@ -104,7 +74,7 @@ public class BinaryRemote extends AbstractRemote {
 		}
 		
 		String path = Json.getString (spec, Spec.Path);
-		if (!Lang.isNullOrEmpty (path)) {
+		if (Lang.isNullOrEmpty (path)) {
 			path = Lang.SLASH;
 		}
 		
@@ -201,7 +171,6 @@ public class BinaryRemote extends AbstractRemote {
 		BinaryClientCallback bcc = new BinaryClientCallback () {
 			@Override
 			public void onStatus (int iStatus) {
-				System.err.println ("Status: " + iStatus);
 				status.set (iStatus);
 				if (iStatus > errorCodeLimit) {
 					error.set (new ByteArrayOutputStream ());
@@ -215,7 +184,6 @@ public class BinaryRemote extends AbstractRemote {
 				if (headers == null || headers.isEmpty ()) {
 					return;
 				}
-				System.err.println ("onHeaders - Status: >>> " + status);
 				callback.onStatus (status.get (), true, headers);
 			}
 			@Override
@@ -262,7 +230,6 @@ public class BinaryRemote extends AbstractRemote {
 		// send request
 		client.send (request, bcc);
 		
-		return status.get () > errorCodeLimit;
 	}
 	
 	private void addParameters (JsonObject parameters, JsonObject data) {
@@ -288,16 +255,6 @@ public class BinaryRemote extends AbstractRemote {
 		if (client != null) {
 			client.recycle ();
 		}
-	}
-
-	@Override
-	public void set (ApiSpace space, ClassLoader classLoader, Object... args) {
-		
-	}
-
-	@Override
-	public Object get() {
-		return null;
 	}
 
 }

@@ -102,8 +102,10 @@ public class NettyBinaryClient implements BinaryClient {
 	    @SuppressWarnings("unchecked")
 		@Override
 	    public void channelRead (ChannelHandlerContext ctx, Object msg) {
+	    	if (callback == null) {
+	    		return;
+	    	}
 	    	try {
-	    		
 		    	if (msg instanceof Integer) {
 			    	callback.onStatus ((Integer)msg);
 		    	} else if (msg instanceof Map) {
@@ -118,12 +120,16 @@ public class NettyBinaryClient implements BinaryClient {
 
 	    @Override
 	    public void channelReadComplete (ChannelHandlerContext ctx) {
+	    	if (callback == null) {
+	    		return;
+	    	}
 	    	try {
 	    		callback.onFinish ();
 			} catch (IOException e) {
 				throw new RuntimeException (e.getMessage (), e);
 			}
     		ctx.flush ();
+    		callback = null;
 	    }
 
 	    @Override

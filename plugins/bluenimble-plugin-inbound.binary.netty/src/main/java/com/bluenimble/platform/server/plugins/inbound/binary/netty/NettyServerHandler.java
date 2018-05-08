@@ -56,6 +56,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     		// set origin, agent and channel 
     		
         	ApiRequest request = new SimpleApiRequest (data);
+        	
         	request.set (NettyServer.Context, ctx);
         	
 			proessor.process (request);

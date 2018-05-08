@@ -12,8 +12,10 @@
 					"Read More": "https://www.bluenimble.com"
 				}]
 			},
-			"initOnInstall": "true"
-		},
+			"initOnInstall": "true",
+			
+			"weight": "1000"
+		}
 	},
 	
 	"systemProperties": {

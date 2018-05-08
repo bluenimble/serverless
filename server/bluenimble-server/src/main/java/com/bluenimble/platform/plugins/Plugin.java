@@ -29,6 +29,9 @@ public interface Plugin extends Traceable, Manageable {
 	File 	getHome 		();
 	void 	setHome 		(File home);
 	
+	int		getWeight		();
+	void	setWeight		(int weight);
+	
 	void 	init 			(ApiServer server) throws Exception;
 	
 	void 	setNamespace 	(String namespace);

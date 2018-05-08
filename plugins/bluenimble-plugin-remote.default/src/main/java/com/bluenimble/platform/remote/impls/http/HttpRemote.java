@@ -48,7 +48,7 @@ import com.bluenimble.platform.http.HttpHeaders;
 import com.bluenimble.platform.http.utils.ContentTypes;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.remote.Serializer;
-import com.bluenimble.platform.remote.impls.AbstractRemote;
+import com.bluenimble.platform.remote.impls.BaseRemote;
 import com.bluenimble.platform.remote.impls.http.bnb.AccessSecretKeysBasedHttpRequestSigner;
 import com.bluenimble.platform.remote.impls.http.oauth.OkHttpOAuthConsumer;
 import com.bluenimble.platform.templating.VariableResolver;
@@ -63,11 +63,21 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class HttpRemote extends AbstractRemote {
+public class HttpRemote extends BaseRemote {
 	
 	private static final long serialVersionUID = -4470909404236824873L;
 
 	private static final String DefaultUserAgent 	= "BlueNimble Http Client";
+	
+	protected static final Map<String, MediaType> MediaTypes 	= new HashMap<String, MediaType> ();
+	static {
+		// media types
+		MediaTypes.put (ContentTypes.Json, MediaType.parse (ContentTypes.Json));
+		MediaTypes.put (Serializer.Name.json.name (), MediaTypes.get (ContentTypes.Json));
+		MediaTypes.put (ContentTypes.FormUrlEncoded, MediaType.parse (ContentTypes.FormUrlEncoded));
+		MediaTypes.put (ContentTypes.Multipart, MediaType.parse (ContentTypes.Multipart));
+		MediaTypes.put (ContentTypes.Text, MediaType.parse (ContentTypes.Text));
+	}
 	
 	private HostnameVerifier TrustAllHostVerifier = new HostnameVerifier () {
 		@Override
@@ -177,36 +187,12 @@ public class HttpRemote extends AbstractRemote {
 	}
  
 	@Override
-	public boolean get (JsonObject spec, Callback callback) {
-		return request (ApiVerb.GET, spec, callback);
+	public void get (JsonObject spec, Callback callback) {
+		request (ApiVerb.GET, spec, callback);
 	}
 	
 	@Override
-	public boolean post (JsonObject spec, Callback callback, ApiStreamSource... attachments) {
-		return request (ApiVerb.POST, spec, callback);
-	}
-
-	@Override
-	public boolean put (JsonObject spec, Callback callback, ApiStreamSource... attachments) {
-		return request (ApiVerb.PUT, spec, callback);
-	}
-
-	@Override
-	public boolean delete (JsonObject spec, Callback callback) {
-		return request (ApiVerb.DELETE, spec, callback);
-	}
-
-	@Override
-	public boolean head (JsonObject spec, Callback callback) {
-		return request (ApiVerb.HEAD, spec, callback);
-	}
-
-	@Override
-	public boolean patch (JsonObject spec, Callback callback) {
-		return request (ApiVerb.PATCH, spec, callback);
-	}
-	
-	private boolean request (ApiVerb verb, JsonObject spec, Callback callback, ApiStreamSource... attachments) {
+	public void request (ApiVerb verb, JsonObject spec, Callback callback, ApiStreamSource... attachments) {
 		
 		JsonObject rdata = Json.getObject (spec, Spec.Data);
 		
@@ -300,7 +286,7 @@ public class HttpRemote extends AbstractRemote {
 						builder.addFormDataPart (ss.name (), ss.name (), RequestBody.create (MediaType.parse (contentType), IOUtils.toByteArray (ss.stream ())));
 					} catch (Exception ex) {
 						callback.onError (Error.Other, ex.getMessage ());
-						return false;
+						return;
 					}
 				}
 			} else if (contentType.startsWith (ContentTypes.Json)) {
@@ -399,13 +385,13 @@ public class HttpRemote extends AbstractRemote {
 					response.code (), 
 					response.body ().string ()
 				);
-				return false;
+				return;
 			} else {
 				callback.onDone (
 					response.code (), 
 					serializer.serialize (response.body ().byteStream ())
 				);
-				return true;
+				return;
 			}
 			
 		} catch (UnknownHostException uhex) {
@@ -414,21 +400,21 @@ public class HttpRemote extends AbstractRemote {
 			} catch (IOException e) {
 				throw new RuntimeException (e.getMessage (), e);
 			}
-			return false;
+			return;
 		} catch (SocketTimeoutException stoex) {
 			try {
 				callback.onError (Error.Timeout, "Endpoint " + endpoint + " was found but " + stoex.getMessage ());
 			} catch (IOException e) {
 				throw new RuntimeException (e.getMessage (), e);
 			}
-			return false;
+			return;
 		} catch (Exception ex) {
 			try {
 				callback.onError (Error.Other, Lang.toError (ex));
 			} catch (IOException e) {
 				throw new RuntimeException (e.getMessage (), e);
 			}
-			return false;
+			return;
 		} finally {
 			if (response != null) {
 				response.close ();
@@ -507,15 +493,6 @@ public class HttpRemote extends AbstractRemote {
 			throw new Exception ("unsupported signature protocol " + signer);
 		}
 		
-	}
-	
-	@Override
-	public void set (ApiSpace space, ClassLoader classLoader, Object... args) {
-	}
-
-	@Override
-	public Object get () {
-		return null;
 	}
 
 	@Override

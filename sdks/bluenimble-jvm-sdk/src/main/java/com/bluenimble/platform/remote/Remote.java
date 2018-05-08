@@ -94,11 +94,11 @@ public interface Remote extends Recyclable {
 		void onError 	(int status, Object message) 	throws IOException;
 	}
 
-	boolean post 	(JsonObject spec, Callback callback, ApiStreamSource... attachments);
-	boolean put 	(JsonObject spec, Callback callback, ApiStreamSource... attachments);
-	boolean get 	(JsonObject spec, Callback callback);
-	boolean delete 	(JsonObject spec, Callback callback);
-	boolean head 	(JsonObject spec, Callback callback);
-	boolean patch 	(JsonObject spec, Callback callback);
+	void post 	(JsonObject spec, Callback callback, ApiStreamSource... attachments);
+	void put 	(JsonObject spec, Callback callback, ApiStreamSource... attachments);
+	void get 	(JsonObject spec, Callback callback);
+	void delete (JsonObject spec, Callback callback);
+	void head 	(JsonObject spec, Callback callback);
+	void patch 	(JsonObject spec, Callback callback);
 	
 }

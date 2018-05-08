@@ -35,6 +35,7 @@ public abstract class AbstractPlugin implements Plugin {
 	private 	String 		version;
 	
 	protected 	File 		home;
+	protected	int			weight = 0;
 	
 	private 	boolean 	async 		= false;
 	private 	boolean 	closable 	= true;
@@ -79,12 +80,20 @@ public abstract class AbstractPlugin implements Plugin {
 	public String getName () {
 		return name;
 	}
-	
 	@Override
 	public void setName (String name) {
 		this.name = name;
 	}
 	
+	@Override
+	public int getWeight() {
+		return weight;
+	}
+	@Override
+	public void setWeight (int weight) {
+		this.weight = weight;
+	}
+
 	@Override
 	public String getVersion () {
 		return version;

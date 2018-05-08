@@ -34,7 +34,9 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -90,8 +92,17 @@ public class IOUtils {
 		LINE_SEPARATOR = buf.toString();
 	}
 
-	public static byte[] charsToBytes(char[] value) {
-		return new String(value).getBytes();
+	public static byte [] charsToBytes (char [] chars) {
+		return charsToBytes (chars, null);
+	}
+	public static byte [] charsToBytes (char [] chars, String charset) {
+		if (charset == null) {
+			charset = Encodings.UTF8;
+		}
+		ByteBuffer bb = Charset.forName (charset).encode (CharBuffer.wrap (chars));
+		byte[] bytes = new byte [bb.remaining ()];
+		bb.get (bytes);
+		return bytes;
 	}
 
 	public static char[] stringToChars(String value) {
@@ -941,6 +952,12 @@ public class IOUtils {
 			remain -= n;
 		}
 		return toSkip - remain;
+	}
+	
+	public static void main (String [] args) {
+		String str = "Hello Eveybody\nI like that";
+		char [] chars = str.toCharArray ();
+		System.out.println (new String (charsToBytes (chars)));
 	}
 
 }

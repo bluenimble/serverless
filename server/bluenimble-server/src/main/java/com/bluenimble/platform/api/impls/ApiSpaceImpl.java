@@ -846,7 +846,7 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 			return;
 		}
 		
-		tracer.log (Tracer.Level.Info, "Stopping down Space {0}", getNamespace ());
+		tracer.log (Tracer.Level.Info, "Stopping Space {0}", getNamespace ());
 		
 		if (!apis.isEmpty ()) {
 			Iterator<Api> ip = apis.values ().iterator ();
