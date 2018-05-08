@@ -14,10 +14,10 @@ Using BlueNimble, Developers focus on coding application business logic, without
 ### Install BlueNimble
 
 #### Install from binaries
-* Download either [bluenimble-1.4.0-bin.zip](https://github.com/bluenimble/serverless/releases/download/v1.4.0/bluenimble-1.4.0-bin.zip) or [bluenimble-1.4.0-bin.tar.gz](https://github.com/bluenimble/serverless/releases/download/v1.4.0/bluenimble-1.4.0-bin.tar.gz) and decompress in a folder of your choice
+* Download either [bluenimble-1.5.0-bin.zip](https://github.com/bluenimble/serverless/releases/download/v1.5.0/bluenimble-1.5.0-bin.zip) or [bluenimble-1.5.0-bin.tar.gz](https://github.com/bluenimble/serverless/releases/download/v1.5.0/bluenimble-1.5.0-bin.tar.gz) and decompress in a folder of your choice
 * If you're a Mac or Linux user, set the right .sh file mode:
     ````
-    cd ~/bluenimble-1.4.0 && sudo chmod 755 *.sh
+    cd ~/bluenimble-1.5.0 && sudo chmod 755 *.sh
     ````
 #### Start BlueNimble 
 * Mac or Linux users
@@ -29,10 +29,10 @@ Using BlueNimble, Developers focus on coding application business logic, without
     ./bnb.bat
     ````
 #### Install the CLI from binaries
-* Download either [bluenimble-cli-1.4.0-bin.zip](https://github.com/bluenimble/serverless/releases/download/v1.4.0/bluenimble-cli-1.4.0-bin.zip) or [bluenimble-cli-1.4.0-bin.tar.gz](https://github.com/bluenimble/serverless/releases/download/v1.4.0/bluenimble-cli-1.4.0-bin.tar.gz) and decompress in a folder of your choice
+* Download either [bluenimble-cli-1.5.0-bin.zip](https://github.com/bluenimble/serverless/releases/download/v1.5.0/bluenimble-cli-1.5.0-bin.zip) or [bluenimble-cli-1.5.0-bin.tar.gz](https://github.com/bluenimble/serverless/releases/download/v1.5.0/bluenimble-cli-1.5.0-bin.tar.gz) and decompress in a folder of your choice
 * If you're a Mac or Linux user, set the right .sh file mode:
     ````
-    cd ~/blueNimble-cli-1.4.0 && chmod 755 *.sh
+    cd ~/blueNimble-cli-1.5.0 && chmod 755 *.sh
     ````
 The CLI could be installed in any other machine, not necessarily where the server is installed 
 
