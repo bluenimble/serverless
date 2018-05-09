@@ -1,4 +1,4 @@
-![BlueNimble Server Install Page](https://github.com/bluenimble/serverless/blob/master/assets/images/bn-header.png)
+![BlueNimble Server Install Page](https://github.com/bluenimble/serverless/blob/master/assets/images/bn-header.jpg)
 ## What is BlueNimble?
 
 BlueNimble is a Hybrid Serverless Platform, focusing on developer productivity and application portability.
