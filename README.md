@@ -1,4 +1,7 @@
 ![BlueNimble Server Install Page](assets/images/bn-header.jpg)
+
+<img src="assets/images/bn-header.jpg" width="100%">
+
 ## What is BlueNimble?
 
 BlueNimble is a Hybrid Serverless Platform, focusing on developer productivity and application portability.
