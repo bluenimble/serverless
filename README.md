@@ -1,5 +1,5 @@
 <a href="https://www.bluenimble.com">
-<img src="assets/images/bn-banner.jpg" width="100%" alt="BlueNimble Hybrid Serverless Platform">
+<img src="assets/images/bnb-banner.jpg" width="100%" alt="BlueNimble Hybrid Serverless Platform">
 </a>
 
 ## What is BlueNimble?
