@@ -21,7 +21,7 @@ import com.bluenimble.platform.plugins.impls.AbstractPlugin;
 import com.bluenimble.platform.server.ApiServer;
 import com.bluenimble.platform.server.impls.ExtendedApiRequestVisitor;
 
-public class DefautVisitorsPlugin extends AbstractPlugin {
+public class DefaultVisitorsPlugin extends AbstractPlugin {
 
 	private static final long serialVersionUID = -7715328225346939289L;
 	

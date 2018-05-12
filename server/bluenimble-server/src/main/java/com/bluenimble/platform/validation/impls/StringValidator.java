@@ -64,7 +64,7 @@ public class StringValidator extends AbstractTypeValidator {
 		String displayValue = Json.getBoolean (spec, Spec.Secret, false) ? SecretValue : sValue;
 		
 		// validate length
-		int min = Json.getInteger (spec, Spec.Min, 1);
+		int min = Json.getInteger (spec, Spec.Min, 0);
 		if (sValue.length () < min) {
 			feedback = ValidationUtils.feedback (
 				feedback, spec, Spec.Min, 
