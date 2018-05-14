@@ -158,7 +158,7 @@ Here is the list of the out-of-the-box features:
 - Remoting: Supports only the HTTP protocol to integrate with REST/SOAP services. To support additional protocols, such as COAP, You can extend or implement a new Remoting plugin.
 
 ## Documentation
-Visit the [Developer Guide](https://www.bluenimble.com/devcommunity.html), [CLI Guide](https://www.bluenimble.com/icli.html) and [SDK Reference Guide](https://www.bluenimble.com/docs/apiref/js/index.html) for more details.
+Visit the [Developer Guide](https://www.bluenimble.com/docs/guides/developer.html), [CLI Guide](https://www.bluenimble.com/docs/guides/icli.html) and [SDK Reference Guide](https://www.bluenimble.com/docs/apiref/js/index.html) for more details.
 
 
 License
