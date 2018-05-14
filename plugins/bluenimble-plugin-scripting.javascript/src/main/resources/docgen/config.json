@@ -1,0 +1,31 @@
+{
+    "applicationName": "BlueNimble Javascript SDK Reference",
+    "googleAnalytics": "",
+    "openGraph": {
+        "title": "BlueNimble Javascript SDK Reference",
+        "type": "website",
+        "image": "",
+        "site_name": "BlueNimble Javascript SDK Reference",
+        "url": "https://www.bluenimble.com/docs/sdks/javascript/index.html"
+    },
+    "meta": {
+        "title": "BlueNimble Javascript SDK Reference",
+        "description": "BlueNimble Javascript SDK Classes and Functions",
+        "keyword": "bluenimble serverless baas faas microservices apis apimanagement kubernetes"
+    },
+    "linenums": true,
+    "source": {
+        "include": [
+            "src/main/resources/platform"
+        ],
+        "includePattern": ".+\\.js(doc)?$",
+        "excludePattern": ""
+    },
+    "opts": {
+        "encoding": "utf8",
+        "recurse": true,
+        "private": false,
+        "lenient": true,
+        "destination": "../../build/docs/sdks/javascript"
+    }
+}
