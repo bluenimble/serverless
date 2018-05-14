@@ -15,11 +15,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.bluenimble.serverless</groupId>
-	<artifactId>bluenimble-plugin-extensions.proxy</artifactId>
+	<artifactId>bluenimble-plugin-proxy.default</artifactId>
 	<version>1.7.0-SNAPSHOT</version><!--bn.version-->
 
 	<packaging>jar</packaging>
-	<name>bluenimble-plugin-extensions.proxy</name>
+	<name>bluenimble-plugin-proxy.default</name>
 
 	<properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

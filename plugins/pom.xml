@@ -41,7 +41,7 @@
 
 		<module>bluenimble-plugin-inbound.http.jetty</module>
 
-		<module>bluenimble-plugin-extensions.proxy</module>
+		<module>bluenimble-plugin-proxy.default</module>
 
 		<module>bluenimble-plugin-cache.memcached</module>
 		

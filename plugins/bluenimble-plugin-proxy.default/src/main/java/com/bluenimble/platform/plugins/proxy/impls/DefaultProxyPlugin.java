@@ -14,19 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.plugins.extensions.proxy;
+package com.bluenimble.platform.plugins.proxy.impls;
 
 import com.bluenimble.platform.PackageClassLoader;
 import com.bluenimble.platform.api.impls.proxy.RemoteApiServiceSpi;
 import com.bluenimble.platform.plugins.impls.AbstractPlugin;
 import com.bluenimble.platform.server.ApiServer;
 
-/**
- * Should add proxies if defined space spec
- * 
- * 
- **/
-public class GenericProxyPlugin extends AbstractPlugin {
+public class DefaultProxyPlugin extends AbstractPlugin {
 
 	private static final long serialVersionUID = -7715328225346939289L;
 	
@@ -37,7 +32,7 @@ public class GenericProxyPlugin extends AbstractPlugin {
 
 	@Override
 	public void init (ApiServer server) throws Exception {
-		PackageClassLoader pcl = (PackageClassLoader)GenericProxyPlugin.class.getClassLoader ();
+		PackageClassLoader pcl = (PackageClassLoader)DefaultProxyPlugin.class.getClassLoader ();
 		pcl.registerObject (Registered.ServiceSpi, new RemoteApiServiceSpi ());
 	}
 
