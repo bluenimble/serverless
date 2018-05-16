@@ -282,6 +282,9 @@ public class Component implements Serializable {
 
 	/**
 	 * @deprecated use attributes()
+	 * @param attr_name attribute name
+	 * @param ignore_case ignore case
+	 * @return ComponentAttribute
 	 */
 	public ComponentAttribute getAttribute(String attr_name, boolean ignore_case) {
 		int j = -1;
@@ -667,7 +670,6 @@ public class Component implements Serializable {
 		childs.trimToSize();
 	}
 
-	/** adding attributes to the object */
 	@SuppressWarnings("unchecked")
 	public final void addAttribute(ComponentAttribute attribute) {
 		attributes.ensureCapacity(1);
@@ -842,7 +844,6 @@ public class Component implements Serializable {
 		replaceAttributeAt(attr2_index, temp);
 	}
 
-	/** Modifing Inner objects attributes */
 	public final void addInnerAttributeTo(int inner_obj, ComponentAttribute attr) {
 		getObjectAt(inner_obj).attributes
 				.ensureCapacity(getObjectAt(inner_obj).attributes.size() + 1);

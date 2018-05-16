@@ -103,10 +103,6 @@ public class PoolConfig {
         return scavengeIntervalMilliseconds;
     }
 
-    /**
-     * @param scavengeIntervalMilliseconds set it to zero if you don't want to automatically shrink your pool.
-     *                                     This is useful for fixed-size pool, or pools don't increase too much.
-     */
     public PoolConfig setScavengeIntervalMilliseconds(int scavengeIntervalMilliseconds) {
         this.scavengeIntervalMilliseconds = scavengeIntervalMilliseconds;
         return this;
@@ -116,10 +112,6 @@ public class PoolConfig {
         return scavengeRatio;
     }
 
-    /**
-     *  Each time we shrink a pool, we only scavenge some of the objects to avoid an empty pool
-     * @param scavengeRatio must be a double between (0, 1]
-     */
     public PoolConfig setScavengeRatio(double scavengeRatio) {
         if (scavengeRatio <= 0 || scavengeRatio > 1) {
             throw new IllegalArgumentException("Invalid scavenge ratio: " + scavengeRatio);

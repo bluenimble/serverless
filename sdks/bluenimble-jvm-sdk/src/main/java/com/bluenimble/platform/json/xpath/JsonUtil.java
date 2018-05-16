@@ -21,53 +21,24 @@ import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public class JsonUtil {
-    /**
-     * checks if object is <code>instanceof</code> <code>java.util.List</code> or <code>java.util.Map</code>
-     *
-     * @param obj object to check
-     * @return true if List or Map
-     */
+
     public static boolean isContainer(Object obj) {
         return (isList(obj) || isMap(obj));
     }
 
-    /**
-     * checks if object is <code>instanceof</code> <code>java.util.List</code>
-     *
-     * @param obj object to check
-     * @return true if List
-     */
     public static boolean isList(Object obj) {
         return (obj instanceof List);
     }
 
-    /**
-     * checks if object is <code>instanceof</code> <code>java.util.Map</code>
-     *
-     * @param obj object to check
-     * @return true if Map
-     */
     public static boolean isMap(Object obj) {
         return (obj instanceof Map);
     }
 
-    /**
-     * converts casts to <code>java.util.List</code>
-     *
-     * @param obj
-     * @return the list
-     */
     @SuppressWarnings("rawtypes")
 	public static List<Object> toList(Object obj) {
         return (List) obj;
     }
 
-    /**
-     * converts casts to <code>java.util.Map</code>
-     *
-     * @param obj
-     * @return the Map
-     */
     @SuppressWarnings("rawtypes")
 	public static Map<Object, Object> toMap (Object obj) {
         return (Map) obj;

@@ -300,63 +300,33 @@ public class XmlReader extends DefaultHandler implements ErrorHandler {
 	}
 	
 
-	/**
-	 * @param path chemin de sortie
-	 * @throws IOException
-	 */
 	public void witeToFile (String path) throws IOException {
 		document.print(path);
 	}
 
-	/**
-	 * @return renvoi du composant charg�
-	 */
 	public Component getDocument() {
 		return document.childs(0);
 	}
 	
-    /**
-     * ErrorHandler interface method
-     * @param exception
-     * @throws SAXException
-     */
     public void warning(SAXParseException exception)
         throws SAXException {
         errorHandlerException(exception);
     }
 
-    /**
-     * ErrorHandler interface method
-     * @param exception
-     * @throws SAXException
-     */
     public void error(SAXParseException exception)
         throws SAXException {
         errorHandlerException(exception);
     }
 
-    /**
-     * ErrorHandler interface method
-     * @param exception
-     * @throws SAXException
-     */
     public void fatalError(SAXParseException exception)
         throws SAXException {
         errorHandlerException(exception);
     }
 
-    /**
-     * Deal with exceptions passed to the ErrorHandler interface by the parser
-     */
     private void errorHandlerException(Exception e) {
         invalidate(e.getMessage());
     }
 
-    /**
-     * Set the validation status flag to false and capture the message for
-     *  use later
-     * @param message
-     */
     private void invalidate(String message) {
         messages.append(message).append(Lang.ENDLN);
     }

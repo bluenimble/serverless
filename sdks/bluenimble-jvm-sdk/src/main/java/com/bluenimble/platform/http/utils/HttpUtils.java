@@ -48,16 +48,6 @@ public class HttpUtils {
         }
     }
 
-    /**
-     * Returns true if the specified URI is using a non-standard port (i.e. any
-     * port other than 80 for HTTP URIs or any port other than 443 for HTTPS
-     * URIs).
-     *
-     * @param uri
-     *
-     * @return True if the specified URI is using a non-standard port, otherwise
-     *         false.
-     */
     public static boolean isUsingNonDefaultPort(URI uri) {
         String scheme = uri.getScheme().toLowerCase();
         int port = uri.getPort();

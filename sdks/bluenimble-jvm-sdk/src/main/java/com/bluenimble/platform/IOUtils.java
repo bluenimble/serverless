@@ -219,7 +219,7 @@ public class IOUtils {
 	 * Equivalent to {@link Reader#close()}, except any exceptions will be
 	 * ignored. This is typically used in finally blocks.
 	 * 
-	 * @param input
+	 * @param raf
 	 *            the Reader to close, may be null or already closed
 	 */
 	public static void closeQuietly (RandomAccessFile raf) {

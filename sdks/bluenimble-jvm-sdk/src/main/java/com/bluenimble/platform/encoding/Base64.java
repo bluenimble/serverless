@@ -228,7 +228,7 @@ public class Base64 implements BinaryEncoder, BinaryDecoder {
      * 
      * @param lineLength
      *            Each line of encoded data will be at most of the given length (rounded down to nearest multiple of 4).
-     *            If lineLength <= 0, then the output will not be divided into lines (chunks). Ignored when decoding.
+     *            If lineLength le 0, then the output will not be divided into lines (chunks). Ignored when decoding.
      * @since 1.4
      */
     public Base64(int lineLength) {
@@ -250,7 +250,7 @@ public class Base64 implements BinaryEncoder, BinaryDecoder {
      * 
      * @param lineLength
      *            Each line of encoded data will be at most of the given length (rounded down to nearest multiple of 4).
-     *            If lineLength <= 0, then the output will not be divided into lines (chunks). Ignored when decoding.
+     *            If lineLength le 0, then the output will not be divided into lines (chunks). Ignored when decoding.
      * @param lineSeparator
      *            Each line of encoded data will end with this sequence of bytes.
      * @throws IllegalArgumentException
@@ -276,7 +276,7 @@ public class Base64 implements BinaryEncoder, BinaryDecoder {
      * 
      * @param lineLength
      *            Each line of encoded data will be at most of the given length (rounded down to nearest multiple of 4).
-     *            If lineLength <= 0, then the output will not be divided into lines (chunks). Ignored when decoding.
+     *            If lineLength le 0, then the output will not be divided into lines (chunks). Ignored when decoding.
      * @param lineSeparator
      *            Each line of encoded data will end with this sequence of bytes.
      * @param urlSafe
@@ -926,7 +926,7 @@ public class Base64 implements BinaryEncoder, BinaryDecoder {
      * Pre-calculates the amount of space needed to base64-encode the supplied array.
      *
      * @param pArray byte[] array which will later be encoded
-     * @param chunkSize line-length of the output (<= 0 means no chunking) between each
+     * @param chunkSize line-length of the output (le 0 means no chunking) between each
      *        chunkSeparator (e.g. CRLF).
      * @param chunkSeparator the sequence of bytes used to separate chunks of output (e.g. CRLF).
      *

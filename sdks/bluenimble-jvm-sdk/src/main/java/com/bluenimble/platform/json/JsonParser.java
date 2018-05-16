@@ -31,11 +31,6 @@ public class JsonParser implements Serializable {
     private String source;
 
 
-    /**
-     * Construct a JsonTokener from a string.
-     *
-     * @param s     A source string.
-     */
     public JsonParser (String source) {
         this.position = 0;
         this.source = source;
@@ -158,12 +153,6 @@ public class JsonParser implements Serializable {
      }
 
 
-    /**
-     * Get the next char in the string, skipping whitespace
-     * and comments (slashslash, slashstar, and hash).
-     * @throws JsonException
-     * @return  A character, or 0 if there are no more characters.
-     */
     public char nextClean() throws JsonException {
         for (;;) {
             char c = next();
