@@ -20,9 +20,28 @@ return {
 	 * 
 	 **/
 	findConsumer: function (api, service, request, consumer) {
-        // unsecure api based on blank template
-        // you can either create you own authentication algorithm or use BlueNimble out-of-the-box Identity Management plugin
-        return;
+		/**
+		 *
+		 * Remove this portion of code if you want to write your own authentication logic.
+		 * This code remains valid only if you're using BlueNimble default authentication schemes see api.json / security section
+		 *
+		 **/
+
+		/**
+		 *
+		 * Authorize call if it's originating from another service in the same space 
+		 *
+		 **/
+		if (request.channel == 'container') {
+			consumer.override (
+				request.get (ApiRequest.Consumer)
+			);
+	        return;
+	    }
+		
+	    if (consumer.type == ApiConsumer.Type.Unknown && consumer.isAnonymous () && this.isSecure (service) ) {
+			throw 'authentication error'
+		}
 	} 
 	
 }

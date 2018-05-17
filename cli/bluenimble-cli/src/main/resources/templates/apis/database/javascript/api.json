@@ -40,10 +40,10 @@
  **/
 
 {
-	"namespace": 	"${namespace}",
+	"namespace": 	"${api}",
 	
-	"name": 		"${namespace} api",
-	"description": 	"${namespace} description",
+	"name": 		"${Api} api",
+	"description": 	"${Api} description",
 	
 	"runtime": {
 		"function": "functions/Api.js"

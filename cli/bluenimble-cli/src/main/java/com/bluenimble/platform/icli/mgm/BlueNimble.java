@@ -86,6 +86,10 @@ public class BlueNimble extends JLineTool {
 		String RemoteHeadersAccept 		
 								= "remote.headers.accept";
 		String SpecLanguage 	= "spec.lang";
+		
+		String UserMeta			= "user.meta";
+			String UserName		= "name";
+			String UserPackage	= "package";
 	}
 	
 	public interface SpecLangs {
@@ -520,6 +524,9 @@ public class BlueNimble extends JLineTool {
 		if (oVars == null) {
 			oVars = new JsonObject ();
 			Config.set (CliSpec.Config.Variables, oVars);
+		}
+		if (!oVars.containsKey (DefaultVars.UserMeta)) {
+			oVars.set (DefaultVars.UserMeta, new JsonObject ().set (DefaultVars.UserName, System.getProperty ("user.name")));
 		}
 		if (!oVars.containsKey (DefaultVars.StorageProvider)) {
 			oVars.set (DefaultVars.StorageProvider, "default");

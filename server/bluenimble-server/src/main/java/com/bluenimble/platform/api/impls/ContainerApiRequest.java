@@ -35,8 +35,6 @@ public class ContainerApiRequest extends AbstractApiRequest {
 
 	private static final EmptyIterator<String> 	EmptyIterator	= new EmptyIterator<String> ();
 
-	private static final String Channel = "container";
-
 	private static final String Origin 	= "Container";
 	private static final String Scheme 	= "baas";
 	
@@ -52,7 +50,7 @@ public class ContainerApiRequest extends AbstractApiRequest {
 	public ContainerApiRequest (ApiRequest parentRequest, String agent, ApiSpace.Endpoint endpoint) {
 		super (parentRequest);
 		this.space 			= endpoint.space ();
-		this.channel 		= Channel;
+		this.channel 		= ApiRequest.Channels.container.name ();
 		this.api 			= endpoint.api ();
 		this.verb 			= endpoint.verb ();
 		this.endpoint 		= parentRequest.getEndpoint ();

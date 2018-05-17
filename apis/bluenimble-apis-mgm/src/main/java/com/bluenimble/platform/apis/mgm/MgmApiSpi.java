@@ -26,16 +26,14 @@ import com.bluenimble.platform.api.ApiContext;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResource;
 import com.bluenimble.platform.api.ApiResourcesManagerException;
-import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.ApiService;
-import com.bluenimble.platform.api.ApiServiceExecutionException;
-import com.bluenimble.platform.api.ApiSpi;
+import com.bluenimble.platform.api.impls.spis.AbstractApiSpi;
 import com.bluenimble.platform.api.security.ApiAuthenticationException;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.security.ApiConsumer.Type;
 import com.bluenimble.platform.json.JsonObject;
 
-public class MgmApiSpi implements ApiSpi {
+public class MgmApiSpi extends AbstractApiSpi {
 
 	private static final long serialVersionUID = 8197725424778011778L;
 
@@ -69,7 +67,7 @@ public class MgmApiSpi implements ApiSpi {
 	public void findConsumer (Api api, ApiService service, ApiRequest request, ApiConsumer consumer) throws ApiAuthenticationException {
 		Type type 	= consumer.type ();
 		
-		if ("container".equals (request.getChannel ())) {
+		if (ApiRequest.Channels.container.name ().equals (request.getChannel ())) {
 			consumer.override (
 				(ApiConsumer)request.get (ApiRequest.Consumer)
 			);
@@ -102,45 +100,12 @@ public class MgmApiSpi implements ApiSpi {
 		}
 	}
 	
-	private boolean isSecure (ApiService service) {
-		JsonObject security = service.getSecurity ();
-        return 	security == null || 
-        		!security.containsKey (ApiService.Spec.Security.Enabled) || 
-        		security.get (ApiService.Spec.Security.Enabled) == "true";
-	}
-
 	@Override
 	public void onStop (Api api, ApiContext context) {
 		if (consumers == null) {
 			return;
 		}
 		consumers.clear ();
-	}
-
-	@Override
-	public void onRequest (Api api, ApiRequest request, ApiResponse response)
-			throws ApiServiceExecutionException {
-	}
-
-	@Override
-	public void onService (Api api, ApiService service, ApiRequest request,
-			ApiResponse respoonse) throws ApiServiceExecutionException {
-	}
-
-	@Override
-	public void onExecute (Api api, ApiConsumer consumer, ApiService service,
-			ApiRequest request, ApiResponse response)
-			throws ApiServiceExecutionException {
-	}
-
-	@Override
-	public void afterExecute (Api api, ApiConsumer consumer, ApiService service, ApiRequest request, ApiResponse response)
-			throws ApiServiceExecutionException {
-	}
-
-	@Override
-	public void onError (Api api, ApiService service, ApiConsumer consumer,
-			ApiRequest request, ApiResponse response, JsonObject error) {
 	}
 
 }

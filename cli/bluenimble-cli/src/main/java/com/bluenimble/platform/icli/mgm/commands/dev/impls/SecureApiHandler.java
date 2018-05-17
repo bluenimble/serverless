@@ -34,6 +34,7 @@ import com.bluenimble.platform.cli.command.impls.DefaultCommandResult;
 import com.bluenimble.platform.icli.mgm.BlueNimble;
 import com.bluenimble.platform.icli.mgm.CliSpec;
 import com.bluenimble.platform.icli.mgm.utils.CodeGenUtils;
+import com.bluenimble.platform.icli.mgm.utils.CodeGenUtils.Tokens;
 import com.bluenimble.platform.icli.mgm.utils.SpecUtils;
 import com.bluenimble.platform.json.JsonObject;
 
@@ -134,6 +135,8 @@ public class SecureApiHandler implements CommandHandler {
 		
 		// tool.printer ().content ("Api '" + api + "' updated spec", oApi.toString (2));
 		
+		apiFolder = SpecUtils.specFolder (apiFolder);
+		
 		// add services
 		if (Lang.existsIn ("up", methods)) {
 			try {
@@ -152,8 +155,8 @@ public class SecureApiHandler implements CommandHandler {
 				File signupTplFile = new File (BlueNimble.Home, "templates/security/templates/emails/signup.html");
 				 
 				Map<String, String> tokens = new HashMap<String, String> ();
-				tokens.put ("api", api);
-				tokens.put ("Api", api.substring (0, 1).toUpperCase () + api.substring (1));
+				tokens.put (Tokens.api, api);
+				tokens.put (Tokens.Api, api.substring (0, 1).toUpperCase () + api.substring (1));
 				
 				CodeGenUtils.writeFile (signupTplFile, apiSignupTplFile, tokens, null);
 				tool.printer ().important (
@@ -198,14 +201,10 @@ public class SecureApiHandler implements CommandHandler {
 		
 	}
 	
-	private void addService (Tool tool, String api, File apiFolder, String service) throws Exception {
-		File secSpecsFolder = new File (apiFolder, "resources/services/security");
+	private void addService (Tool tool, String api, File root, String service) throws Exception {
+		File secSpecsFolder = new File (root, "resources/services/security");
 		if (!secSpecsFolder.exists ()) {
 			secSpecsFolder.mkdirs ();
-		}
-		File secFunctionsFolder = new File (apiFolder, "resources/functions/security");
-		if (!secFunctionsFolder.exists ()) {
-			secFunctionsFolder.mkdirs ();
 		}
 		
 		Map<String, String> tokens = new HashMap<String, String> ();
@@ -229,7 +228,13 @@ public class SecureApiHandler implements CommandHandler {
 		
 		File scriptFile = new File (BlueNimble.Home, "templates/security/services/" + service + "/function.js");
 		if (scriptFile.exists ()) {
+			File secFunctionsFolder = new File (root, "resources/functions/security");
+			if (!secFunctionsFolder.exists ()) {
+				secFunctionsFolder.mkdirs ();
+			}
+			
 			CodeGenUtils.writeFile (scriptFile, new File (secFunctionsFolder, tokens.get ("Service") + ".js"), tokens, null);
+			
 			tool.printer ().node (1, "script file created 'functions/security/" + tokens.get ("Service") + ".js'"); 
 		}
 	}

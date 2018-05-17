@@ -80,6 +80,10 @@ public interface ApiRequest extends ApiContext {
 		Stream
 	}
 	
+	enum Channels {
+		container
+	}
+	
 	String 				getEndpoint 	();
 	String 				getScheme 		();
 

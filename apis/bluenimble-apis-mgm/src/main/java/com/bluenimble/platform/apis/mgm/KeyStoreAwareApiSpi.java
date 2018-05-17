@@ -57,7 +57,7 @@ public class KeyStoreAwareApiSpi extends AbstractApiSpi {
 		
 		String accessKey	= (String)consumer.get (ApiConsumer.Fields.AccessKey);
 		
-		if ("container".equals (request.getChannel ())) {
+		if (ApiRequest.Channels.container.name ().equals (request.getChannel ())) {
 			consumer.override (
 				(ApiConsumer)request.get (ApiRequest.Consumer)
 			);

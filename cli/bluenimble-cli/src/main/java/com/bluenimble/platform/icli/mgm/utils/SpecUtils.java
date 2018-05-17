@@ -138,6 +138,8 @@ public class SpecUtils {
 	
 	public static void write (File apiFolder, JsonObject spec) throws CommandExecutionException {
 		
+		apiFolder = specFolder (apiFolder);
+		
 		File fApi = new File (apiFolder, "api." + BlueNimble.SpecLangs.Yaml);
 		if (fApi.exists ()) {
 			// yaml
@@ -167,6 +169,9 @@ public class SpecUtils {
 	
 	@SuppressWarnings("unchecked")
 	public static JsonObject read (File apiFolder) throws CommandExecutionException {
+		
+		apiFolder = specFolder (apiFolder);
+		
 		File fApi = new File (apiFolder, "api.json");
 		if (fApi.exists ()) {
 			try {
@@ -200,6 +205,18 @@ public class SpecUtils {
 		JsonObject json = new JsonObject (jsonText);
 		YamlPrinter printer = new YamlOutputStreamPrinter (out);
 		printer.print (json);
+	}
+	
+	public static File specFolder (File apiFolder) {
+		File specFolder = apiFolder;
+		
+		File mvnSpecFolder = new File (apiFolder, "src/main/resources");
+		if (mvnSpecFolder.exists ()) {
+			specFolder = mvnSpecFolder;
+		}
+		
+		return specFolder;
+		
 	}
 
 }

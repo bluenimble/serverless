@@ -16,6 +16,7 @@
  */
 package com.bluenimble.platform.api.impls.spis;
 
+import com.bluenimble.platform.Json;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiContext;
 import com.bluenimble.platform.api.ApiManagementException;
@@ -52,6 +53,10 @@ public abstract class AbstractApiSpi implements ApiSpi {
 
 	@Override
 	public void onError 	(Api api, ApiService service, ApiConsumer consumer, ApiRequest request, ApiResponse response, JsonObject error) {
+	}
+
+	protected boolean isSecure (ApiService service) {
+        return 	Json.getBoolean (service.getSecurity (), ApiService.Spec.Security.Enabled, true);
 	}
 
 }

@@ -40,17 +40,17 @@
  **/
 
 {
-	"namespace": 	"${namespace}",
+	"namespace": 	"${api}",
 	
-	"name": 		"${namespace} api",
-	"description": 	"${namespace} description",
+	"name": 		"${Api} api",
+	"description": 	"${Api} description",
 	
 	"tracer": {
 		"class": "!tracing.log4j:default"
 	},
 	
 	"spi": {
-		"class": "${package}.${Namespace}Api"
+		"class": "${package}.${Api}ApiSpi"
 	}	
 	
 }

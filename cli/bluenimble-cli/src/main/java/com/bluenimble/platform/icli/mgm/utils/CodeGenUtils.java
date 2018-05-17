@@ -54,7 +54,8 @@ public class CodeGenUtils {
 	}
 
 	public interface Tokens {
-		String Api			= "api";
+		String api			= "api";
+		String Api			= "Api";
 
 		String model 		= "model";
 		String Model 		= "Model";
@@ -69,6 +70,9 @@ public class CodeGenUtils {
 		String Path			= "path";
 		
 		String Function 	= "function";
+		
+		String Package 		= "package";
+		
 	} 
 
 	private static final Map<String, String> Verbs = new HashMap<String, String> ();
@@ -95,8 +99,12 @@ public class CodeGenUtils {
 		if (tokens == null) {
 			tokens = new HashMap<String, String> ();
 		}
-		tokens.put (Tokens.User, System.getProperty ("user.name"));
+		
 		tokens.put (Tokens.Date, Lang.toString (new Date (), Lang.DEFAULT_DATE_TIME_FORMAT, Locale.getDefault ()));
+
+		if (!tokens.containsKey (Tokens.User)) {
+			tokens.put (Tokens.User, System.getProperty ("user.name"));
+		}
 		
 		boolean isYamlSpec = source.getName ().endsWith (BlueNimble.SpecLangs.Json) && BlueNimble.SpecLangs.Yaml.equals (lang);
 		
@@ -244,7 +252,10 @@ public class CodeGenUtils {
 		String Models = (Model.endsWith ("y") ? (Model.substring (0, Model.length () - 1) + "ies") : Model + "s");
 		
 		Map<String, String> tokens = new HashMap<String, String> ();
-		tokens.put (Tokens.Api, Json.getString (BlueNimble.Config, CliSpec.Config.CurrentApi));
+		String api = Json.getString (BlueNimble.Config, CliSpec.Config.CurrentApi);
+		String Api = api.substring (0, 1).toUpperCase () + api.substring (1);
+		tokens.put (Tokens.api, api);
+		tokens.put (Tokens.Api, Api);
 		tokens.put (Tokens.model, model);
 		tokens.put (Tokens.Model, Model);
 		tokens.put (Tokens.models, models);
@@ -274,6 +285,53 @@ public class CodeGenUtils {
 
 		writeFile (function, new File (modelFunctionFolder, (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + ".js"), tokens, specLang);
 		tool.printer ().node (1, "function file created under 'functions/" + (printFolder ? modelFunctionFolder.getName () + "/" : "" ) + (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + ".js'"); 
+		
+	}
+
+	public static void renameAll (File file, Map<String, String> tokens) {
+		if (file.isFile ()) {
+			rename (file, tokens);
+			return;
+		}
+		if (!file.isDirectory ()) {
+			return;
+		}
+		File [] files = file.listFiles ();
+		if (files == null || files.length == 0) {
+			return;
+		}
+		for (File f : files) {
+			renameAll (f, tokens);
+		}
+		rename (file, tokens);
+	}
+	
+	public static String replace (String content, Map<String, String> tokens) {
+		Set<String> keys = tokens.keySet ();
+		for (String k : keys) {
+			content = Lang.replace (content, Delimiters.Start + k + Delimiters.End, tokens.get (k));
+		}
+		return content;
+	}
+	
+	public static void rename (File file, Map<String, String> tokens) {
+		String name = replace (file.getName (), tokens);
+		if (file.getName ().equals (name)) {
+			return;
+		}
+		
+		File parentFolder = file.getParentFile ();
+		
+		if (file.isDirectory () && name.indexOf (Lang.DOT) > 0) {
+			String [] folders = Lang.split (name, Lang.DOT);
+			for (int i = 0; i < folders.length - 1; i++) {
+				parentFolder = new File (parentFolder, folders [i]);
+				parentFolder.mkdir ();
+			}
+			name = folders [folders.length - 1];
+		}
+		
+		file.renameTo (new File (parentFolder, name));
 		
 	}
 

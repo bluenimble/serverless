@@ -33,6 +33,7 @@ import com.bluenimble.platform.icli.mgm.BlueNimble;
 import com.bluenimble.platform.icli.mgm.CliSpec;
 import com.bluenimble.platform.icli.mgm.CliSpec.Templates;
 import com.bluenimble.platform.icli.mgm.utils.CodeGenUtils;
+import com.bluenimble.platform.icli.mgm.utils.CodeGenUtils.Tokens;
 import com.bluenimble.platform.icli.mgm.utils.SpecUtils;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.json.printers.YamlStringPrinter;
@@ -42,7 +43,6 @@ public class CreateApiHandler implements CommandHandler {
 	private static final long serialVersionUID = 7185236990672693349L;
 	
 	private static final String DefaultTemplate = "blank/javascript";
-	private static final String Namespace 	= "namespace";
 	
 	private static final CommandHandler SecureApiHandler = new SecureApiHandler ();
 
@@ -104,12 +104,35 @@ public class CreateApiHandler implements CommandHandler {
 			throw new CommandExecutionException (ex.getMessage (), ex);
 		}
 		
+		JsonObject tokens = (JsonObject)new JsonObject ()
+				.set (Tokens.api, namespace)
+				.set (Tokens.Api, namespace.substring (0, 1).toUpperCase () + namespace.substring (1));
+		
+		JsonObject meta = (JsonObject)vars.get (BlueNimble.DefaultVars.UserMeta);
+		
+		String userName 	= Json.getString (meta, BlueNimble.DefaultVars.UserName);
+		if (Lang.isNullOrEmpty (userName)) {
+			userName = System.getProperty ("user.name");
+		}
+		
+		tokens.set (Tokens.User, userName);
+		
+		String userPackage 	= Json.getString (meta, BlueNimble.DefaultVars.UserPackage);
+		if (Lang.isNullOrEmpty (userPackage)) {
+			userPackage = "com." + userName.toLowerCase ();
+		}
+		
+		tokens.set (Tokens.Package, userPackage + Lang.DOT + namespace);
+		
+		// rename files anf folders with tokens
+		CodeGenUtils.renameAll (apiFolder, tokens);
+		
 		String specLang 	= (String)vars.get (BlueNimble.DefaultVars.SpecLanguage);
 		if (Lang.isNullOrEmpty (specLang)) {
 			specLang = BlueNimble.SpecLangs.Json;
 		}
 		
-		CodeGenUtils.writeAll (apiFolder, (JsonObject)new JsonObject ().set (Namespace, namespace), specLang);
+		CodeGenUtils.writeAll (apiFolder, tokens, specLang);
 		
 		BlueNimble.Config.set (CliSpec.Config.CurrentApi, namespace);
 		JsonObject oApis = Json.getObject (BlueNimble.Config, CliSpec.Config.Apis);
