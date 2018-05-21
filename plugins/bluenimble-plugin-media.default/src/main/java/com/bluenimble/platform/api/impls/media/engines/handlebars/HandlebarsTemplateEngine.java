@@ -67,6 +67,19 @@ public class HandlebarsTemplateEngine implements TemplateEngine {
 				return new Handlebars.SafeString (data.toString ());
 			}
 		});
+		engine.registerHelper ("equals", new Helper<Object>() {
+			public CharSequence apply (Object right, Options options) throws IOException {
+				Object left = options.param (0);
+				if (right == null && left == null) {
+					return options.fn ();
+				} else {
+					if (right == null) {
+						return options.inverse ();
+					}
+			        return right.equals (left) ? options.fn () : options.inverse ();
+				}
+			}
+		});
 		
 	}
 	

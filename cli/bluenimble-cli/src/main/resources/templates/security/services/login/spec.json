@@ -5,7 +5,6 @@
 	    "name": "Login",
 	
 	"spec": {
-		"contentType": "application/json",
 		"fields": {
 			"payload": { "type": "Map",
 				"fields": {

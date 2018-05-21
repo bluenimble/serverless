@@ -19,6 +19,7 @@ package com.bluenimble.platform.plugins.im;
 import com.bluenimble.platform.PackageClassLoader;
 import com.bluenimble.platform.api.impls.im.ActivateServiceSpi;
 import com.bluenimble.platform.api.impls.im.ChangePasswordSpi;
+import com.bluenimble.platform.api.impls.im.CreateTokenSpi;
 import com.bluenimble.platform.api.impls.im.LoginServiceSpi;
 import com.bluenimble.platform.api.impls.im.OAuthServiceSpi;
 import com.bluenimble.platform.api.impls.im.ResendActivationRequestSpi;
@@ -31,6 +32,7 @@ public class IMPlugin extends AbstractPlugin {
 	private static final long serialVersionUID = -7715328225346939289L;
 
 	interface Registered {
+		String CreateTokenSpi 		= "CreateTokenSpi";
 		String LoginSpi 			= "LoginSpi";
 		String SignupSpi 			= "SignupSpi";
 		String ActivateSpi 			= "ActivateSpi";
@@ -43,6 +45,7 @@ public class IMPlugin extends AbstractPlugin {
 	public void init (ApiServer server) throws Exception {
 		PackageClassLoader pcl = (PackageClassLoader)IMPlugin.class.getClassLoader ();
 		
+		pcl.registerObject (Registered.CreateTokenSpi, new CreateTokenSpi ());
 		pcl.registerObject (Registered.LoginSpi, new LoginServiceSpi ());
 		pcl.registerObject (Registered.SignupSpi, new SignupServiceSpi ());
 		pcl.registerObject (Registered.ActivateSpi, new ActivateServiceSpi ());

@@ -1,0 +1,22 @@
+{
+	
+	    "verb": "post",
+	"endpoint": "/security/token",
+	    "name": "Create Token",
+	
+	"spec": {
+		"fields": {
+			"payload": { 
+				"type": "Map",
+				"fields": {
+					"age": 	{ "required": "false" }
+				}
+			}
+		}
+	},
+	
+	"spi": {
+		"class": "im.default:CreateTokenSpi"
+	}
+	
+}

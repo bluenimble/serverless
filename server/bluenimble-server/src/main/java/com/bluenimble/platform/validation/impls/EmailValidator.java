@@ -33,7 +33,7 @@ public class EmailValidator extends AbstractTypeValidator {
 	
 	public static final String TypeMessage			= "EmailType";
 	
-	public static final Pattern EMAIL_REGEX = 
+	public static final Pattern EmailRegex = 
 		    Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
 	
 	@Override
@@ -45,7 +45,7 @@ public class EmailValidator extends AbstractTypeValidator {
 	public Object validate (Api api, ApiConsumer consumer, ApiRequest request, 
 			DefaultApiServiceValidator validator, String name, String label, JsonObject spec, Object value) {
 		
-		Matcher matcher = EMAIL_REGEX.matcher (String.valueOf (value));
+		Matcher matcher = EmailRegex.matcher (String.valueOf (value));
 		
 		if (!matcher.find ()) {
 			return ValidationUtils.feedback (

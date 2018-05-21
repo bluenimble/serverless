@@ -53,7 +53,7 @@ function Api (proxy) {
 	  The features defined by this api - if any -
 	  @type {JsonObject}
 	*/
-	this.fetures		= proxy.getFeatures ();
+	this.features		= proxy.getFeatures ();
 	/**	
 	  The security block in the api.json spec - if any -
 	  @type {JsonObject}
@@ -133,9 +133,7 @@ function Api (proxy) {
 		if (!context) {
 			throw "missing argument context";
 		}
-		if (!feature) {
-			feature = 'default';
-		}
+		feature = this._feature ('database', feature);
 		return new Database (proxy, JC_FeaturesUtils.feature (proxy.space (), JC_FeaturesUtils.Features.Database, context.proxy, feature));
 	};
 	
@@ -152,9 +150,7 @@ function Api (proxy) {
 		if (!context) {
 			throw "missing argument context";
 		}
-		if (!feature) {
-			feature = 'default';
-		}
+		feature = this._feature ('datasource', feature);
 		return JC_FeaturesUtils.feature (proxy.space (), JC_FeaturesUtils.Features.DataSource, context.proxy, feature);
 	};
 	
@@ -170,9 +166,7 @@ function Api (proxy) {
 		if (!context) {
 			throw "missing argument context";
 		}
-		if (!feature) {
-			feature = 'default';
-		}
+		feature = this._feature ('storage', feature);
 		return new Storage (JC_FeaturesUtils.feature (proxy.space (), JC_FeaturesUtils.Features.Storage, context.proxy, feature));
 	};
 	
@@ -188,9 +182,7 @@ function Api (proxy) {
 		if (!context) {
 			throw "missing argument context";
 		}
-		if (!feature) {
-			feature = 'default';
-		}
+		feature = this._feature ('messenger', feature);
 		return new Messenger (JC_FeaturesUtils.feature (proxy.space (), JC_FeaturesUtils.Features.Messenger, context.proxy, feature));
 	};
 	
@@ -206,9 +198,7 @@ function Api (proxy) {
 		if (!context) {
 			throw "missing argument context";
 		}
-		if (!feature) {
-			feature = 'default';
-		}
+		feature = this._feature ('cache', feature);
 		return new Cache (JC_FeaturesUtils.feature (proxy.space (), JC_FeaturesUtils.Features.Cache, context.proxy, feature));
 	};
 	
@@ -224,9 +214,7 @@ function Api (proxy) {
 		if (!context || !context.proxy) {
 			throw "missing argument context";
 		}
-		if (!feature) {
-			feature = 'default';
-		}
+		feature = this._feature ('remote', feature);
 		return new Remote (JC_FeaturesUtils.feature (proxy.space (), JC_FeaturesUtils.Features.Remote, context.proxy, feature));
 	};
 	
@@ -242,9 +230,7 @@ function Api (proxy) {
 		if (!context) {
 			throw "missing argument context";
 		}
-		if (!feature) {
-			feature = 'default';
-		}
+		feature = this._feature ('indexer', feature);
 		return new Indexer (JC_FeaturesUtils.feature (proxy.space (), JC_FeaturesUtils.Features.Indexer, context.proxy, feature));
 	};
 	
@@ -295,6 +281,18 @@ function Api (proxy) {
 			throw "request spec is required";
 		}
 		return new ApiOutput (JC_ApiUtils.call (proxy, consumer.proxy, request.proxy, JC_Converters.convert (spec)));
-	}
-	
+	};
+
+	// private
+	this._feature = function (featureType, feature) {
+		if (feature) {
+			return feature;
+		}
+		var fdef = this.features [featureType];
+		if (!fdef) {
+			return 'default';
+		}
+		return fdef.default||'default';
+	};
+
 };

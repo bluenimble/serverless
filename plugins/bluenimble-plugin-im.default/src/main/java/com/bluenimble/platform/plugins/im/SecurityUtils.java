@@ -32,7 +32,6 @@ import com.bluenimble.platform.api.ApiSpace.Endpoint;
 import com.bluenimble.platform.api.ApiVerb;
 import com.bluenimble.platform.api.impls.im.LoginServiceSpi.Config;
 import com.bluenimble.platform.api.security.ApiConsumer;
-import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 
@@ -43,16 +42,17 @@ public class SecurityUtils {
 		String Cookie 	= "cookie";
 	}
 
-	public static String [] tokenAndExpiration (Api api, JsonObject entity, Date now) throws ApiServiceExecutionException {
+	public static String [] tokenAndExpiration (Api api, JsonObject entity, Date now, long age) throws ApiServiceExecutionException {
 		
 		String thing = salt (api, entity);
 		
-		JsonObject auth = Json.getObject (Json.getObject (Json.getObject (api.getSecurity (), Api.Spec.Security.Schemes), Schemes.Token), Api.Spec.Security.Auth);
+		JsonObject auth = (JsonObject)Json.find (api.getSecurity (), Api.Spec.Security.Schemes, Schemes.Token, Api.Spec.Security.Auth);
 		if (auth == null) {
-			auth = Json.getObject (Json.getObject (Json.getObject (api.getSecurity (), Api.Spec.Security.Schemes), Schemes.Cookie), Api.Spec.Security.Auth);
+			auth = (JsonObject)Json.find (api.getSecurity (), Api.Spec.Security.Schemes, Schemes.Cookie, Api.Spec.Security.Auth);
 		}
+		
 		String secretsName = Json.getString (auth, ApiSpace.Spec.secrets.class.getSimpleName (), ApiSpace.Secrets.Default);
-		// encrypt
+		
 		JsonObject secrets;
 		try {
 			secrets = api.space ().getSecrets (secretsName);
@@ -71,10 +71,15 @@ public class SecurityUtils {
 			alg = Crypto.Algorithm.AES;
 		}
 		
-		long expiresOn = now.getTime () + Json.getLong (secrets, ApiSpace.Spec.secrets.Age, 60) * 60 * 1000;
-
-		String toEncrypt = expiresOn + Lang.SPACE + thing;
+		if (age == 0) {
+			age = Json.getLong (auth, ApiSpace.Spec.secrets.Age, Json.getLong (secrets, ApiSpace.Spec.secrets.Age, 60));
+		} 
+		age = age  * 60 * 1000;
 		
+		long expiresOn = now.getTime () + age;
+
+		// encrypt
+		String toEncrypt = expiresOn + Lang.SPACE + thing;
 		try {
 			return new String [] {
 				new String (Lang.encodeHex (Crypto.encrypt (toEncrypt.getBytes (), Json.getString (secrets, ApiSpace.Spec.secrets.Key), alg))),
@@ -89,7 +94,7 @@ public class SecurityUtils {
 	private static String salt (Api api, JsonObject entity) {
 		JsonArray fields = Json.getArray (api.getSecurity (), Api.Spec.Security.Encrypt);
 		if (fields == null || fields.isEmpty ()) {
-			return String.valueOf (entity.get (Database.Fields.Id));
+			return String.valueOf (entity.get (ApiConsumer.Fields.Id));
 		}
 		StringBuilder sb = new StringBuilder ();
 		for (int i = 0; i < fields.count (); i++) {

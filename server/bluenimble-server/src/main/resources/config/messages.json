@@ -63,6 +63,9 @@
 	"UrlType": {
 		"en": "{0} must be a valid Url"
 	},
+	"PhoneType": {
+		"en": "{0} must be a valid Phone Number"
+	},
 	"StartsWith": {
 		"en": "{0} does not start with {1}"
 	},

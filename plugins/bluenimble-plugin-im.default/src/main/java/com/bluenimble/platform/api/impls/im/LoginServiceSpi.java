@@ -50,10 +50,7 @@ public class LoginServiceSpi extends SimpleApiServiceSpi {
 	
 	interface Defaults {
 		String 	Users 			= "Users";
-		String 	Token			= "token";
 		String 	ActivationCode	= "activationCode";
-		String 	ExpiresOn		= "expiresOn";
-		long 	TokenAge		= 60 * 60;
 	}
 
 	public interface Config {
@@ -110,9 +107,9 @@ public class LoginServiceSpi extends SimpleApiServiceSpi {
 		
 		JsonObject payload = (JsonObject)request.get (ApiRequest.Payload);
 		
-		Database db = api.space ().feature (Database.class, Json.getString (config, Config.Database, ApiSpace.Features.Default), request);
-		
 		boolean encryptPassword = Json.getBoolean (config, Config.EncryptPassword, true);
+		
+		Database db = api.space ().feature (Database.class, Json.getString (config, Config.Database, ApiSpace.Features.Default), request);
 		
 		DatabaseObject account = null;
 		try {
@@ -164,9 +161,9 @@ public class LoginServiceSpi extends SimpleApiServiceSpi {
 			}
 			
 			// create token
-			String [] tokenAndExpiration = SecurityUtils.tokenAndExpiration (api, oAccount, now);
-			oAccount.set (Defaults.Token, tokenAndExpiration [0]);
-			oAccount.set (Defaults.ExpiresOn, tokenAndExpiration [1]);
+			String [] tokenAndExpiration = SecurityUtils.tokenAndExpiration (api, oAccount, now, 0);
+			oAccount.set (ApiConsumer.Fields.Token, tokenAndExpiration [0]);
+			oAccount.set (ApiConsumer.Fields.ExpiryDate, tokenAndExpiration [1]);
 		} 
 		
 		// call extend if any

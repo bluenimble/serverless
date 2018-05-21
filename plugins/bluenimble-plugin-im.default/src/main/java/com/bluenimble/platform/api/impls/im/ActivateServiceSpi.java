@@ -90,11 +90,11 @@ public class ActivateServiceSpi extends SimpleApiServiceSpi {
 		JsonObject oAccount = account.toJson (DefaultDatabaseObjectSerializer.Default);
 		
 		// create token
-		String [] tokenAndExpiration = SecurityUtils.tokenAndExpiration (api, oAccount, now);
+		String [] tokenAndExpiration = SecurityUtils.tokenAndExpiration (api, oAccount, now, 0);
 
 		oAccount.remove (Json.getString (config, Config.PasswordProperty, Spec.Password));
-		oAccount.set (Defaults.Token, tokenAndExpiration [0]);
-		oAccount.set (Defaults.ExpiresOn, tokenAndExpiration [1]);
+		oAccount.set (ApiConsumer.Fields.Token, tokenAndExpiration [0]);
+		oAccount.set (ApiConsumer.Fields.ExpiryDate, tokenAndExpiration [1]);
 		
 		// call onFinish if any
 		JsonObject onFinish = Json.getObject (config, Config.onFinish.class.getSimpleName ());
