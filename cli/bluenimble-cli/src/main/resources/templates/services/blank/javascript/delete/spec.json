@@ -32,23 +32,23 @@
  *					}
  *				}
  *   
- *	@author		${user}
- *	@created	${date}
+ *	@author		[[user]]
+ *	@created	[[date]]
  * 
  **/
 
 {
 	
 	    "verb": "delete",
-	"endpoint": "/${models}/:${model}",
-		"name": "Delete ${Model}",
+	"endpoint": "/[[models]]/:[[model]]",
+		"name": "Delete [[Model]]",
 	
 	"security": {
 		"enabled": "false"
 	},
 	
 	"runtime": {
-		"function": "functions/${models}/Delete${Model}.js"
+		"function": "functions/[[models]]/Delete[[Model]].js"
 	},
 	
 	"spi": {

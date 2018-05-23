@@ -125,7 +125,11 @@ public class CreateApiHandler implements CommandHandler {
 		tokens.set (Tokens.Package, userPackage + Lang.DOT + namespace);
 		
 		// rename files anf folders with tokens
-		CodeGenUtils.renameAll (apiFolder, tokens);
+		try {
+			CodeGenUtils.renameAll (apiFolder, tokens);
+		} catch (Exception ex) {
+			throw new CommandExecutionException (ex.getMessage (), ex);
+		}
 		
 		String specLang 	= (String)vars.get (BlueNimble.DefaultVars.SpecLanguage);
 		if (Lang.isNullOrEmpty (specLang)) {

@@ -32,16 +32,16 @@
  *					}
  *				}
  *   
- *	@author		${user}
- *	@created	${date}
+ *	@author		[[user]]
+ *	@created	[[date]]
  * 
  **/
 
 {
 	
 	    "verb": "post",
-	"endpoint": "/${models}",
-		"name": "Create ${Model}",
+	"endpoint": "/[[models]]",
+		"name": "Create [[Model]]",
 	
 	"spec": {
 		"fields": {
@@ -50,7 +50,7 @@
 	},
 	
 	"runtime": {
-		"function": "functions/${models}/Create${Model}.js"
+		"function": "functions/[[models]]/Create[[Model]].js"
 	},
 	
 	"spi": {

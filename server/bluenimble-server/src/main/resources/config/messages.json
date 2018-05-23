@@ -86,6 +86,9 @@
 	},
 	"StreamType": {
 		"en": "{0} must be a valid stream"
+	},
+	"MapStrict": {
+		"en": "{0} contains unnecessary fields ({1})"
 	}
 
 }

@@ -1,10 +1,10 @@
 return {
 	
 	/**
-	 * The only required function that you should implement, if no mock data provided in your Find${Model}.json
+	 * The only required function that you should implement, if no mock data provided in your Find[[Model]].json
 	 * 
-	 * The execute function will be triggered when an application or device makes a call to ${verb} [bluenimble-space].[bluenimble-instance].bluenimble.com/${api}/${models}/query 
-	 * which is defined in your service specification file Find${Model}.json 
+	 * The execute function will be triggered when an application or device makes a call to [[verb]] [bluenimble-space].[bluenimble-instance].bluenimble.com/[[api]]/[[models]]/query 
+	 * which is defined in your service specification file Find[[Model]].json 
 	 * 
 	 * Arguments:
 	 *  Api 		 the api where this service is running  
@@ -19,13 +19,13 @@ return {
 	 *				 you can also write data to the response but this is rarely will happen as the platform takes care of this.	
 	 *
 	 *
-	 *	@author		${user}
-	 *	@created	${date}
+	 *	@author		[[user]]
+	 *	@created	[[date]]
 	 * 
 	 **/
 	execute: function (api, consumer, request, response) {
 		
-		// find ${Models} by query
+		// find [[Models]] by query
 		
 		var query = request.get ('query');
 		if (!query) {
@@ -34,10 +34,10 @@ return {
 			query = Json.parse (query);
 		}
 		
-		var result = { ${models}: Json.array () };
+		var result = { [[models]]: Json.array () };
 		
-		api.database (request).find ('${Models}', query, function (record) {
-			result.${models}.push (record.toJson ());
+		api.database (request).find ('[[Models]]', query, function (record) {
+			result.[[models]].push (record.toJson ());
 		});
 		
 		return result;

@@ -17,9 +17,13 @@
 package com.bluenimble.platform.validation.impls;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.bluenimble.platform.Json;
+import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.security.ApiConsumer;
@@ -34,6 +38,8 @@ public class MapValidator extends AbstractTypeValidator {
 	
 	public static final String Type 				= "Map";
 	public static final String AltType 				= "Object";
+	
+	public static final String StrictMessage		= "MapStrict";
 	
 	@Override
 	public String getName () {
@@ -87,6 +93,25 @@ public class MapValidator extends AbstractTypeValidator {
 				validator.getMessage (api, request.getLang (), RequiredMessage, label)
 			);
 		}
+		
+		// check strict
+		boolean strict = Json.getBoolean (spec, Spec.Strict, false);
+		if (strict && !object.isEmpty ()) {
+			List<String> failingFields = new ArrayList<String> ();
+			Set<String> fields = object.keySet ();
+			for (String field : fields) {
+				if (!object.containsKey (field)) {
+					
+				}
+			}
+			if (!failingFields.isEmpty ()) {
+				return ValidationUtils.feedback (
+					null, spec, Spec.Strict, 
+					validator.getMessage (api, request.getLang (), StrictMessage, label, Lang.join (failingFields, Lang.COMMA))
+				);
+			}
+		}
+		
 		
 		try {
 			validator.validate (api, spec, consumer, request, object);

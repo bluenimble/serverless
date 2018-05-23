@@ -17,7 +17,6 @@
 package com.bluenimble.platform.icli.mgm.commands.dev.impls;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -154,7 +153,7 @@ public class SecureApiHandler implements CommandHandler {
 			if (!apiSignupTplFile.exists ()) {
 				File signupTplFile = new File (BlueNimble.Home, "templates/security/templates/emails/signup.html");
 				 
-				Map<String, String> tokens = new HashMap<String, String> ();
+				JsonObject tokens = new JsonObject ();
 				tokens.put (Tokens.api, api);
 				tokens.put (Tokens.Api, api.substring (0, 1).toUpperCase () + api.substring (1));
 				
@@ -207,11 +206,11 @@ public class SecureApiHandler implements CommandHandler {
 			secSpecsFolder.mkdirs ();
 		}
 		
-		Map<String, String> tokens = new HashMap<String, String> ();
-		tokens.put ("api", api);
-		tokens.put ("Api", api.substring (0, 1).toUpperCase () + api.substring (1));
-		tokens.put ("service", service);
-		tokens.put ("Service", service.substring (0, 1).toUpperCase () + service.substring (1));
+		JsonObject tokens = new JsonObject ();
+		tokens.put (Tokens.api, api);
+		tokens.put (Tokens.Api, api.substring (0, 1).toUpperCase () + api.substring (1));
+		tokens.put (Tokens.service, service);
+		tokens.put (Tokens.Service, service.substring (0, 1).toUpperCase () + service.substring (1));
 		
 		@SuppressWarnings("unchecked")
 		Map<String, Object> vars = (Map<String, Object>)tool.getContext (Tool.ROOT_CTX).get (ToolContext.VARS);
@@ -221,10 +220,12 @@ public class SecureApiHandler implements CommandHandler {
 			specLang = BlueNimble.SpecLangs.Json;
 		}
 		
-		tool.printer ().node (0, "'" + tokens.get ("Service") + "' Service"); 
+		String uService = Json.getString (tokens, Tokens.Service);
+		
+		tool.printer ().node (0, "'" + uService + "' Service"); 
 		File specFile = new File (BlueNimble.Home, "templates/security/services/" + service + "/spec.json");
-		CodeGenUtils.writeFile (specFile, new File (secSpecsFolder, tokens.get ("Service") + "." + specLang), tokens, specLang);
-		tool.printer ().node (1, "  spec file created 'services/security/" + tokens.get ("Service") + "." + specLang + "'"); 
+		CodeGenUtils.writeFile (specFile, new File (secSpecsFolder, uService + "." + specLang), tokens, specLang);
+		tool.printer ().node (1, "  spec file created 'services/security/" + uService + "." + specLang + "'"); 
 		
 		File scriptFile = new File (BlueNimble.Home, "templates/security/services/" + service + "/function.js");
 		if (scriptFile.exists ()) {
@@ -233,9 +234,9 @@ public class SecureApiHandler implements CommandHandler {
 				secFunctionsFolder.mkdirs ();
 			}
 			
-			CodeGenUtils.writeFile (scriptFile, new File (secFunctionsFolder, tokens.get ("Service") + ".js"), tokens, null);
+			CodeGenUtils.writeFile (scriptFile, new File (secFunctionsFolder, uService + ".js"), tokens, null);
 			
-			tool.printer ().node (1, "script file created 'functions/security/" + tokens.get ("Service") + ".js'"); 
+			tool.printer ().node (1, "script file created 'functions/security/" + uService + ".js'"); 
 		}
 	}
 

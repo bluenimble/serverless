@@ -16,17 +16,16 @@
  */
 package com.bluenimble.platform.icli.mgm.utils;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.FileWriter;
 import java.io.OutputStream;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 import com.bluenimble.platform.FileUtils;
 import com.bluenimble.platform.IOUtils;
@@ -39,6 +38,7 @@ import com.bluenimble.platform.cli.command.CommandExecutionException;
 import com.bluenimble.platform.icli.mgm.BlueNimble;
 import com.bluenimble.platform.icli.mgm.CliSpec;
 import com.bluenimble.platform.icli.mgm.CliSpec.Templates;
+import com.bluenimble.platform.json.JsonObject;
 
 public class CodeGenUtils {
 
@@ -47,6 +47,8 @@ public class CodeGenUtils {
 	private static final String FindVerb		= "find";
 	
 	private static final String Custom			= "custom";
+	
+	public static final String ServicesCreated	= "services.created";
 	
 	interface Delimiters {
 		String Start 	= "${";
@@ -69,7 +71,8 @@ public class CodeGenUtils {
 		
 		String Path			= "path";
 		
-		String Function 	= "function";
+		String service 		= "service";
+		String Service 		= "Service";
 		
 		String Package 		= "package";
 		
@@ -83,27 +86,26 @@ public class CodeGenUtils {
 		Verbs.put (ApiVerb.DELETE.name ().toLowerCase (), "Delete");
 		Verbs.put (FindVerb, "Find");
 		Verbs.put ("root", "Root");
-		Verbs.put ("root", "Root");
 	}
 
-	public static void writeFile (File source, Map<String, String> tokens, String lang) throws CommandExecutionException {
-		writeFile (source, null, tokens, lang);
+	public static void writeFile (File source, JsonObject data, String lang) throws CommandExecutionException {
+		writeFile (source, null, data, lang);
 	}
 	
-	public static void writeFile (File source, File dest, Map<String, String> tokens, String lang) throws CommandExecutionException {
+	public static void writeFile (File source, File dest, JsonObject data, String lang) throws CommandExecutionException {
 		
 		if (!source.exists ()) {
 			return;
 		}
 		
-		if (tokens == null) {
-			tokens = new HashMap<String, String> ();
+		if (data == null) {
+			data = new JsonObject ();
 		}
 		
-		tokens.put (Tokens.Date, Lang.toString (new Date (), Lang.DEFAULT_DATE_TIME_FORMAT, Locale.getDefault ()));
+		data.set (Tokens.Date, Lang.toString (new Date (), Lang.DEFAULT_DATE_TIME_FORMAT, Locale.getDefault ()));
 
-		if (!tokens.containsKey (Tokens.User)) {
-			tokens.put (Tokens.User, System.getProperty ("user.name"));
+		if (!data.containsKey (Tokens.User)) {
+			data.set (Tokens.User, System.getProperty ("user.name"));
 		}
 		
 		boolean isYamlSpec = source.getName ().endsWith (BlueNimble.SpecLangs.Json) && BlueNimble.SpecLangs.Yaml.equals (lang);
@@ -119,26 +121,21 @@ public class CodeGenUtils {
 			}
 		}
 		
-		InputStream is = null;
-		OutputStream os = null;
+		Writer 			writer 	= null;
+		OutputStream 	os 		= null;
 		try {
-			is = new FileInputStream (source);
-			String content = IOUtils.toString (is);
-			
-			IOUtils.closeQuietly (is);
-
-			Set<String> keys = tokens.keySet ();
-			for (String k : keys) {
-				content = Lang.replace (content, Delimiters.Start + k + Delimiters.End, tokens.get (k));
+			if (isYamlSpec) {
+				writer = new StringWriter ();
+			} else {
+				writer = new FileWriter (dest);
 			}
 			
-			os = new FileOutputStream (dest);
-
-			// if Yaml
+			// apply template
+			TemplateEngine.apply (source, data, writer);
+			
 			if (isYamlSpec) {
-				SpecUtils.toYaml (content, os); 
-			} else {
-				IOUtils.copy (new ByteArrayInputStream (content.getBytes ()), os);
+				os = new FileOutputStream (dest);
+				SpecUtils.toYaml (((StringWriter)writer).toString (), os); 
 			}
 			
 			if (deleteSource) {
@@ -148,15 +145,15 @@ public class CodeGenUtils {
 		} catch (Exception ex) {
 			throw new CommandExecutionException (ex.getMessage (), ex);
 		} finally {
-			IOUtils.closeQuietly (is);
+			IOUtils.closeQuietly (writer);
 			IOUtils.closeQuietly (os);
 		}
 		
 	}
 	
-	public static void writeAll (File file, Map<String, String> tokens, String lang) throws CommandExecutionException {
+	public static void writeAll (File file, JsonObject data, String lang) throws CommandExecutionException {
 		if (file.isFile ()) {
-			writeFile (file, tokens, lang);
+			writeFile (file, data, lang);
 			return;
 		}
 		if (!file.isDirectory ()) {
@@ -167,11 +164,11 @@ public class CodeGenUtils {
 			return;
 		}
 		for (File f : files) {
-			writeAll (f, tokens, lang);
+			writeAll (f, data, lang);
 		}
 	}
 
-	public static void writeService (Tool tool, String verb, String model, File specsFolder, File functionsFolder) throws CommandExecutionException {
+	public static String [] writeService (Tool tool, String verb, String model, File specsFolder, File functionsFolder) throws CommandExecutionException {
 		
 		String path = null;
 		
@@ -188,18 +185,44 @@ public class CodeGenUtils {
 			model = model.substring (indexOfSlash + 1);
 		}
 		
-		if (Lang.STAR.equals (verb)) {
-			writeService (tool, ApiVerb.GET.name ().toLowerCase (), model, specsFolder, functionsFolder);
-			writeService (tool, ApiVerb.POST.name ().toLowerCase (), model, specsFolder, functionsFolder);
-			writeService (tool, ApiVerb.PUT.name ().toLowerCase (), model, specsFolder, functionsFolder);
-			writeService (tool, ApiVerb.DELETE.name ().toLowerCase (), model, specsFolder, functionsFolder);
-			writeService (tool, FindVerb, model, specsFolder, functionsFolder);
-			return;
-		}
-		
 		@SuppressWarnings("unchecked")
 		Map<String, Object> vars = (Map<String, Object>)tool.getContext (Tool.ROOT_CTX).get (ToolContext.VARS);
 
+		if (Lang.STAR.equals (verb)) {
+			
+			JsonObject servicesCreated = new JsonObject (); 
+			vars.put (ServicesCreated, servicesCreated);
+			
+			String [] service;
+			
+			service = writeService (tool, ApiVerb.GET.name ().toLowerCase (), model, specsFolder, functionsFolder);
+			if (service != null) {
+				servicesCreated.set (service [0], service [1]);
+			}
+			
+			service = writeService (tool, ApiVerb.POST.name ().toLowerCase (), model, specsFolder, functionsFolder);
+			if (service != null) {
+				servicesCreated.set (service [0], service [1]);
+			}
+			
+			service = writeService (tool, ApiVerb.PUT.name ().toLowerCase (), model, specsFolder, functionsFolder);
+			if (service != null) {
+				servicesCreated.set (service [0], service [1]);
+			}
+			
+			service = writeService (tool, ApiVerb.DELETE.name ().toLowerCase (), model, specsFolder, functionsFolder);
+			if (service != null) {
+				servicesCreated.set (service [0], service [1]);
+			}
+			
+			service = writeService (tool, FindVerb, model, specsFolder, functionsFolder);
+			if (service != null) {
+				servicesCreated.set (service [0], service [1]);
+			}
+			
+			return null;
+		}
+		
 		String template 	= (String)vars.get (BlueNimble.DefaultVars.TemplateServices);
 		if (Lang.isNullOrEmpty (template)) {
 			template = DefaultTemplate;
@@ -220,7 +243,7 @@ public class CodeGenUtils {
 		}
 		
 		if (!verbFolder.exists ()) {
-			return;
+			return null;
 		}
 		
 		File spec 	= new File (verbFolder, "spec.json");
@@ -251,17 +274,17 @@ public class CodeGenUtils {
 		
 		String Models = (Model.endsWith ("y") ? (Model.substring (0, Model.length () - 1) + "ies") : Model + "s");
 		
-		Map<String, String> tokens = new HashMap<String, String> ();
+		JsonObject data = new JsonObject ();
 		String api = Json.getString (BlueNimble.Config, CliSpec.Config.CurrentApi);
 		String Api = api.substring (0, 1).toUpperCase () + api.substring (1);
-		tokens.put (Tokens.api, api);
-		tokens.put (Tokens.Api, Api);
-		tokens.put (Tokens.model, model);
-		tokens.put (Tokens.Model, Model);
-		tokens.put (Tokens.models, models);
-		tokens.put (Tokens.Models, Models);
+		data.set (Tokens.api, api);
+		data.set (Tokens.Api, Api);
+		data.set (Tokens.model, model);
+		data.set (Tokens.Model, Model);
+		data.set (Tokens.models, models);
+		data.set (Tokens.Models, Models);
 		if (path != null) {
-			tokens.put (Tokens.Path, path);
+			data.set (Tokens.Path, path);
 		}
 		
 		String verbToken = verb;
@@ -273,24 +296,32 @@ public class CodeGenUtils {
 			tool.printer ().node (0, "'" + verb + " " + model + "' Service"); 
 		}
 		
-		tokens.put (Tokens.Verb, verbToken);
+		data.set (Tokens.Verb, verbToken);
 		
 		String specLang 	= (String)vars.get (BlueNimble.DefaultVars.SpecLanguage);
 		if (Lang.isNullOrEmpty (specLang)) {
 			specLang = BlueNimble.SpecLangs.Json;
 		}
+		
+		File destSpecFile = new File (modelSpecFolder, (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + "." + specLang);
 
-		writeFile (spec, new File (modelSpecFolder, (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + "." + specLang), tokens, specLang);
-		tool.printer ().node (1, "    spec file created under 'services/" + (printFolder ? modelSpecFolder.getName () + "/" : "" ) + (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + "." + specLang + "'"); 
+		writeFile (spec, destSpecFile, data, specLang);
+		tool.printer ().node (1, "     spec file created under 'services/" + (printFolder ? modelSpecFolder.getName () + "/" : "" ) + (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + "." + specLang + "'"); 
 
-		writeFile (function, new File (modelFunctionFolder, (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + ".js"), tokens, specLang);
+		File destFuncFile = new File (modelFunctionFolder, (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + ".js");
+		
+		writeFile (function, destFuncFile, data, specLang);
 		tool.printer ().node (1, "function file created under 'functions/" + (printFolder ? modelFunctionFolder.getName () + "/" : "" ) + (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + ".js'"); 
+		
+		return new String [] {
+			destSpecFile.getAbsolutePath (), destFuncFile.getAbsolutePath ()
+ 		};
 		
 	}
 
-	public static void renameAll (File file, Map<String, String> tokens) {
+	public static void renameAll (File file, JsonObject data) throws Exception {
 		if (file.isFile ()) {
-			rename (file, tokens);
+			rename (file, data);
 			return;
 		}
 		if (!file.isDirectory ()) {
@@ -301,21 +332,13 @@ public class CodeGenUtils {
 			return;
 		}
 		for (File f : files) {
-			renameAll (f, tokens);
+			renameAll (f, data);
 		}
-		rename (file, tokens);
+		rename (file, data);
 	}
 	
-	public static String replace (String content, Map<String, String> tokens) {
-		Set<String> keys = tokens.keySet ();
-		for (String k : keys) {
-			content = Lang.replace (content, Delimiters.Start + k + Delimiters.End, tokens.get (k));
-		}
-		return content;
-	}
-	
-	public static void rename (File file, Map<String, String> tokens) {
-		String name = replace (file.getName (), tokens);
+	public static void rename (File file, JsonObject data) throws Exception {
+		String name = TemplateEngine.apply (file.getName (), data);
 		if (file.getName ().equals (name)) {
 			return;
 		}

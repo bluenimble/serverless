@@ -34,23 +34,23 @@
  *  <spi>   	Which scripting language and implementation to use. (Required)
  *				for javascript developers it's always "class": "scripting.javascript:ApiSpi"
  *   
- *	@author		${user}
- *	@created	${date}
+ *	@author		[[user]]
+ *	@created	[[date]]
  * 
  **/
 
 {
-	"namespace": 	"${api}",
+	"namespace": 	"[[api]]",
 	
-	"name": 		"${Api} api",
-	"description": 	"${Api} description",
+	"name": 		"[[Api]] api",
+	"description": 	"[[Api]] description",
 	
 	"tracer": {
 		"class": "!tracing.log4j:default"
 	},
 	
 	"spi": {
-		"class": "${package}.${Api}ApiSpi"
+		"class": "[[package]].[[Api]]ApiSpi"
 	}	
 	
 }

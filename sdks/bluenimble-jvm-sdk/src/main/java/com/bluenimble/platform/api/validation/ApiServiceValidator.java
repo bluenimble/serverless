@@ -56,6 +56,8 @@ public interface ApiServiceValidator extends Serializable {
 		String Facets		= "facets";
 		
 		String ListOfValues	= "lov";
+		
+		String Strict		= "strict";
 
 	}
 

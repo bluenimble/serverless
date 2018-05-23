@@ -32,19 +32,19 @@
  *					}
  *				}
  *   
- *	@author		${user}
+ *	@author		[[user]]
  *	@created	${date}
  * 
  **/
 
 {
 	
-	    "verb": "${verb}",
-	"endpoint": "/${path}/${model}",
-	    "name": "${Model}",
+	    "verb": "[[verb]]",
+	"endpoint": "/[[path]]/[[model]]",
+	    "name": "[[Model]]",
 	
 	"runtime": {
-		"function": "functions/${path}/${Model}.js"
+		"function": "functions/[[path]]/[[Model]].js"
 	},
 	
 	"spi": {

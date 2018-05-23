@@ -32,16 +32,16 @@
  *					}
  *				}
  *   
- *	@author		${user}
- *	@created	${date}
+ *	@author		[[user]]
+ *	@created	[[date]]
  * 
  **/
 
 {
 	
 	    "verb": "get",
-	"endpoint": "/${models}/find",
-		"name": "Search ${Models}",
+	"endpoint": "/[[models]]/find",
+		"name": "Search [[Models]]",
 	
 	"spec": {
 		"fields": {
@@ -57,7 +57,7 @@
 	},
 	
 	"runtime": {
-		"function": "functions/${models}/Find${Models}.js"
+		"function": "functions/[[models]]/Find[[Models]].js"
 	},
 	
 	"spi": {

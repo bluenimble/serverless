@@ -1,4 +1,4 @@
-package ${package};
+package [[package]];
 
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiContext;
@@ -10,7 +10,7 @@ import com.bluenimble.platform.api.security.ApiAuthenticationException;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.security.ApiConsumer.Type;
 
-public class ${Api}ApiSpi extends AbstractApiSpi {
+public class [[Api]]ApiSpi extends AbstractApiSpi {
 
 	private static final long serialVersionUID = 8197725424778011778L;
 

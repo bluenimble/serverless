@@ -166,7 +166,6 @@ public class SpecUtils {
 		
 	}
 	
-	
 	@SuppressWarnings("unchecked")
 	public static JsonObject read (File apiFolder) throws CommandExecutionException {
 		

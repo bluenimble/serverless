@@ -80,7 +80,6 @@ public class HandlebarsTemplateEngine implements TemplateEngine {
 				}
 			}
 		});
-		
 	}
 	
 	@Override

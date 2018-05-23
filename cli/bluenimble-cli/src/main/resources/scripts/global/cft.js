@@ -14,10 +14,12 @@ if (tokens.length < 1) {
 	throw 'missing command arguments. eg. cft MyTemplateVar';
 }
 
-var template = Vars [tokens [0]];
+var templateName = tokens [0];
+
+var template = Vars [templateName];
 
 if (!template) {
-	throw 'template ' + tokens [0] + ' not found';
+	throw 'template ' + templateName + ' not found';
 }
 
 // check namespace
@@ -60,6 +62,9 @@ SpecUtils.write (apiFolder, apiSpec);
 for (var entity in template.model) {
 	// for each entity 
 	Tool.command ('create service * ' + entity);
+	
+	var services = Vars.get ('services.created');
+	
 	// add spec from template
 	// if a field is a reference, generate endpoint
 }
