@@ -135,6 +135,11 @@
 		    <version>4.0.6</version>
 		</dependency>
 		<dependency>
+	        <groupId>org.slf4j</groupId>
+	        <artifactId>slf4j-simple</artifactId>
+	        <version>1.7.5</version>
+	    </dependency>
+		<dependency>
 			<groupId>javax.persistence</groupId>
 			<artifactId>javax.persistence-api</artifactId>
 			<version>2.2</version>

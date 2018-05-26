@@ -20,7 +20,6 @@ import java.io.File;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import com.bluenimble.platform.FileUtils;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.cli.Tool;
@@ -44,7 +43,8 @@ public class CreateApiHandler implements CommandHandler {
 	
 	private static final String DefaultTemplate = "blank/javascript";
 	
-	private static final CommandHandler SecureApiHandler = new SecureApiHandler ();
+	private static final CommandHandler SecureApiHandler 			= new SecureApiHandler ();
+	private static final CommandHandler CreateApiFromModelHandler 	= new CreateApiFromModelHandler ();
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -54,7 +54,24 @@ public class CreateApiHandler implements CommandHandler {
 			throw new CommandExecutionException ("api namespace required. ex. create api myapi");
 		}
 		
+		Map<String, Object> vars = (Map<String, Object>)tool.getContext (Tool.ROOT_CTX).get (ToolContext.VARS);
+
 		String namespace 	= args [0];
+		
+		if (!vars.containsKey (CliSpec.Processing)) {
+			Object model = vars.get (namespace);
+			if (model != null && model instanceof JsonObject) {
+				vars.put (CliSpec.Processing, 1);
+				CommandResult result = null;
+				try {
+					result = CreateApiFromModelHandler.execute (tool, new String [] { namespace });
+				} finally {
+					vars.remove (CliSpec.Processing);
+				}
+				return result;
+			}
+		}
+		
 		if (!Pattern.matches ("^[a-zA-Z0-9_-]*$", namespace)) {
 			throw new CommandExecutionException ("api namespace must contain only numbers, letters, '_' and '-'");
 		}
@@ -84,8 +101,6 @@ public class CreateApiHandler implements CommandHandler {
 			}
 		}
 		
-		Map<String, Object> vars = (Map<String, Object>)tool.getContext (Tool.ROOT_CTX).get (ToolContext.VARS);
-
 		String template 	= (String)vars.get (BlueNimble.DefaultVars.TemplateApi);
 		if (Lang.isNullOrEmpty (template)) {
 			template = DefaultTemplate;
@@ -98,13 +113,7 @@ public class CreateApiHandler implements CommandHandler {
 		
 		apiFolder.mkdir ();
 		
-		try {
-			FileUtils.copy (fTemplate, apiFolder, false);
-		} catch (Exception ex) {
-			throw new CommandExecutionException (ex.getMessage (), ex);
-		}
-		
-		JsonObject tokens = (JsonObject)new JsonObject ()
+		JsonObject data = (JsonObject)new JsonObject ()
 				.set (Tokens.api, namespace)
 				.set (Tokens.Api, namespace.substring (0, 1).toUpperCase () + namespace.substring (1));
 		
@@ -115,28 +124,30 @@ public class CreateApiHandler implements CommandHandler {
 			userName = System.getProperty ("user.name");
 		}
 		
-		tokens.set (Tokens.User, userName);
+		data.set (Tokens.User, userName);
 		
 		String userPackage 	= Json.getString (meta, BlueNimble.DefaultVars.UserPackage);
 		if (Lang.isNullOrEmpty (userPackage)) {
 			userPackage = "com." + userName.toLowerCase ();
 		}
 		
-		tokens.set (Tokens.Package, userPackage + Lang.DOT + namespace);
-		
-		// rename files anf folders with tokens
-		try {
-			CodeGenUtils.renameAll (apiFolder, tokens);
-		} catch (Exception ex) {
-			throw new CommandExecutionException (ex.getMessage (), ex);
-		}
+		data.set (Tokens.Package, userPackage + Lang.DOT + namespace);
 		
 		String specLang 	= (String)vars.get (BlueNimble.DefaultVars.SpecLanguage);
 		if (Lang.isNullOrEmpty (specLang)) {
 			specLang = BlueNimble.SpecLangs.Json;
 		}
 		
-		CodeGenUtils.writeAll (apiFolder, tokens, specLang);
+		copy (fTemplate, apiFolder, false, data, specLang);
+		
+		// rename files and folders
+		try {
+			CodeGenUtils.renameAll (apiFolder, data);
+		} catch (Exception ex) {
+			throw new CommandExecutionException (ex.getMessage (), ex);
+		}
+		
+		//CodeGenUtils.writeAll (apiFolder, tokens, specLang);
 		
 		BlueNimble.Config.set (CliSpec.Config.CurrentApi, namespace);
 		JsonObject oApis = Json.getObject (BlueNimble.Config, CliSpec.Config.Apis);
@@ -180,6 +191,30 @@ public class CreateApiHandler implements CommandHandler {
 		}
 
 		return new DefaultCommandResult (CommandResult.OK, null);
+	}
+	
+	private void copy (File source, File destFolder, boolean copyRoot, JsonObject data, String specLang) throws CommandExecutionException {
+		if (source == null || destFolder == null) {
+			throw new CommandExecutionException ("null args for FileUtils.copy");
+		}
+		
+		if (source.isFile ()) {
+			CodeGenUtils.writeFile (source, new File (destFolder, source.getName ()), data, specLang); 
+			return;
+		}
+		
+		if (copyRoot) {
+			destFolder = new File (destFolder, source.getName ());
+			destFolder.mkdir ();
+		}
+		
+		File [] files = source.listFiles ();
+		if (files == null) {
+			return;
+		}
+		for (File file : files) {
+			copy (file, destFolder, true, data, specLang);
+		}
 	}
 
 	@Override

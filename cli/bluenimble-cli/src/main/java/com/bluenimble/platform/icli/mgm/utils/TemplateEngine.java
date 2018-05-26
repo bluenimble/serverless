@@ -22,14 +22,16 @@ public class TemplateEngine {
 	
 	private static Handlebars Engine = new Handlebars ();
 	static {
+		
 		Engine.startDelimiter ("[[");
 		Engine.endDelimiter ("]]");
+		
 		Engine.registerHelper ("json", new Helper<JsonObject>() {
 			public CharSequence apply (JsonObject data, Options options) {
 				return new Handlebars.SafeString (data.toString ());
 			}
 		});
-		Engine.registerHelper ("equals", new Helper<Object>() {
+		Engine.registerHelper ("eq", new Helper<Object>() {
 			public CharSequence apply (Object right, Options options) throws IOException {
 				Object left = options.param (0);
 				if (right == null && left == null) {
@@ -42,6 +44,20 @@ public class TemplateEngine {
 				}
 			}
 		});
+		Engine.registerHelper ("neq", new Helper<Object>() {
+			public CharSequence apply (Object right, Options options) throws IOException {
+				Object left = options.param (0);
+				if (right == null && left == null) {
+					return options.inverse ();
+				} else {
+					if (right == null) {
+						return options.fn ();
+					}
+			        return !right.equals (left) ? options.fn () : options.inverse ();
+				}
+			}
+		});
+		
 	}
 
 	public static String apply (String template, JsonObject data) throws Exception {

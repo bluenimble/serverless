@@ -25,22 +25,16 @@ return {
 	 **/
 	execute: function (api, consumer, request, response) {
 		
-		// deleting a [[Model]] by id (':[[model]]')
+		// deleting [[Model]] by id (':[[model]]')
 		
 		var [[model]] = api.database (request).get ( '[[Models]]', request.get ('[[model]]') );
 		if (![[model]]) {
 			return { deleted: 0, reason: 'NotFound' };
 		}
 		
-		var terminated = false;
+		[[#eq ModelSpec.markAsDeleted 'true']][[model]].set ('deleted', 1).save ();[[else]][[model]].delete ();[[/eq]]
 		
-		if (request.get ('terminate')) {
-			terminated = [[model]].delete ();
-		} else {
-			[[model]].set ('deleted', true).save ();
-		}
-		
-		return { deleted: (terminated ? 2 : 1) };
+		return { deleted: [[#if ModelSpec.markAsDeleted]]1[[else]]2[[/if]] };
 		
 	}
 

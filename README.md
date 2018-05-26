@@ -60,7 +60,7 @@ The CLI could be installed in any other machine, not necessarily where the serve
 * Build binaries
     * On the command line, enter:
     ````
-    mvn install
+    mvn clean install
     ````
 This command will build both BlueNimble Server and the CLI 
 

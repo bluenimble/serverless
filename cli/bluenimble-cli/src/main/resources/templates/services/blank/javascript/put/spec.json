@@ -45,7 +45,7 @@
 	
 	"spec": {
 		"fields": {
-			"${model}": {  },
+			"[[model]]": {  },
 			"payload": { "type": "Map" }
 		}
 	},

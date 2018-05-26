@@ -30,6 +30,9 @@ public interface CliSpec {
 	String ConfigVar	= "BlueNimble.Session.Config";
 	String CliConfig	= "config.json";
 	
+	String Processing	= "__currently.processing.command.__";
+	String ModelSpec	= "ModelSpec";
+	
 	interface Templates	{
 		String Apis 		= "apis";
 		String Services 	= "services";

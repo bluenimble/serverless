@@ -83,7 +83,7 @@ public class JsonLoadHandler implements CommandHandler {
 		
 		vars.put (var, json);
 		
-		return new DefaultCommandResult (CommandResult.OK, json);
+		return new DefaultCommandResult (CommandResult.OK, "Json load " + var + " <- " + file.getAbsolutePath ());
 	}
 
 

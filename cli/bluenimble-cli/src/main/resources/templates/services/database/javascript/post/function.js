@@ -25,13 +25,20 @@ return {
 	 **/
 	execute: function (api, consumer, request, response) {
 		
-		// add a [[Model]]
+		// add [[Model]]
 		
+		var payload = request.get (ApiRequest.Payload);
+
+		[[#if ModelSpec.refs]]// resolve references [[#each ModelSpec.refs]][[#neq multiple 'true']]
+		if (payload.[[@key]]) {
+			payload.[[@key]] [Database.Fields.Entity] = '[[entity]]';
+		}[[/neq]][[/each]][[/if]]
+		
+		// write to database
 		return api.database (request)	
-					.create ('[[Models]]', request.get (ApiRequest.Payload))
-					// set the current user as the creator of this record
+					.create ('[[Models]]', payload)
+					// set the current user as the creator of this [[Model]]
 					.ref ('createdBy', 'Users', consumer.id)
-					.set ('deleted', false)
 					.save ()
 					.toJson ();
 		

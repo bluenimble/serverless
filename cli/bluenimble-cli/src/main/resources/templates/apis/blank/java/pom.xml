@@ -45,8 +45,8 @@
 					</excludes>
 					<archive>
 						<manifestEntries>
-							<Built-By>${user}</Built-By>
-							<url>${user}.com</url>
+							<Built-By>[[user]]</Built-By>
+							<url>[[user]].com</url>
 						</manifestEntries>
 					</archive>
 				</configuration>

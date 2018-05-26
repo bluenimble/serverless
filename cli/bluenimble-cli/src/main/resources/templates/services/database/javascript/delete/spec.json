@@ -43,12 +43,6 @@
 	"endpoint": "/[[models]]/:[[model]]",
 		"name": "Delete [[Model]]",
 	
-	"spec": {
-		"fields": {
-			"terminate": { "type": "Boolean", "required": "false", "title": "Erase this record from the database" }
-		}
-	},
-	
 	"runtime": {
 		"function": "functions/[[models]]/Delete[[Model]].js"
 	},

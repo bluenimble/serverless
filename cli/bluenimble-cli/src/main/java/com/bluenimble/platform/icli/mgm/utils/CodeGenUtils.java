@@ -24,6 +24,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
@@ -32,9 +33,11 @@ import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.ApiVerb;
+import com.bluenimble.platform.api.validation.ApiServiceValidator;
 import com.bluenimble.platform.cli.Tool;
 import com.bluenimble.platform.cli.ToolContext;
 import com.bluenimble.platform.cli.command.CommandExecutionException;
+import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.icli.mgm.BlueNimble;
 import com.bluenimble.platform.icli.mgm.CliSpec;
 import com.bluenimble.platform.icli.mgm.CliSpec.Templates;
@@ -50,10 +53,13 @@ public class CodeGenUtils {
 	
 	public static final String ServicesCreated	= "services.created";
 	
-	interface Delimiters {
-		String Start 	= "${";
-		String End 		= "}";
-	}
+	private static final String Fields 		= "fields";
+	private static final String Refs 		= "refs";
+	private static final String TypeRef 	= "Ref";
+	private static final String Entity 		= "entity";
+	private static final String Multiple 	= "multiple";
+	private static final String MarkAsDeleted 	
+											= "markAsDeleted";
 
 	public interface Tokens {
 		String api			= "api";
@@ -168,7 +174,7 @@ public class CodeGenUtils {
 		}
 	}
 
-	public static String [] writeService (Tool tool, String verb, String model, File specsFolder, File functionsFolder) throws CommandExecutionException {
+	public static void writeService (Tool tool, String verb, String model, File specsFolder, File functionsFolder) throws CommandExecutionException {
 		
 		String path = null;
 		
@@ -190,37 +196,13 @@ public class CodeGenUtils {
 
 		if (Lang.STAR.equals (verb)) {
 			
-			JsonObject servicesCreated = new JsonObject (); 
-			vars.put (ServicesCreated, servicesCreated);
+			writeService (tool, ApiVerb.GET.name ().toLowerCase (), model, specsFolder, functionsFolder);
+			writeService (tool, ApiVerb.POST.name ().toLowerCase (), model, specsFolder, functionsFolder);
+			writeService (tool, ApiVerb.PUT.name ().toLowerCase (), model, specsFolder, functionsFolder);
+			writeService (tool, ApiVerb.DELETE.name ().toLowerCase (), model, specsFolder, functionsFolder);
+			writeService (tool, FindVerb, model, specsFolder, functionsFolder);
 			
-			String [] service;
-			
-			service = writeService (tool, ApiVerb.GET.name ().toLowerCase (), model, specsFolder, functionsFolder);
-			if (service != null) {
-				servicesCreated.set (service [0], service [1]);
-			}
-			
-			service = writeService (tool, ApiVerb.POST.name ().toLowerCase (), model, specsFolder, functionsFolder);
-			if (service != null) {
-				servicesCreated.set (service [0], service [1]);
-			}
-			
-			service = writeService (tool, ApiVerb.PUT.name ().toLowerCase (), model, specsFolder, functionsFolder);
-			if (service != null) {
-				servicesCreated.set (service [0], service [1]);
-			}
-			
-			service = writeService (tool, ApiVerb.DELETE.name ().toLowerCase (), model, specsFolder, functionsFolder);
-			if (service != null) {
-				servicesCreated.set (service [0], service [1]);
-			}
-			
-			service = writeService (tool, FindVerb, model, specsFolder, functionsFolder);
-			if (service != null) {
-				servicesCreated.set (service [0], service [1]);
-			}
-			
-			return null;
+			return;
 		}
 		
 		String template 	= (String)vars.get (BlueNimble.DefaultVars.TemplateServices);
@@ -243,7 +225,7 @@ public class CodeGenUtils {
 		}
 		
 		if (!verbFolder.exists ()) {
-			return null;
+			return;
 		}
 		
 		File spec 	= new File (verbFolder, "spec.json");
@@ -298,6 +280,8 @@ public class CodeGenUtils {
 		
 		data.set (Tokens.Verb, verbToken);
 		
+		data.set (CliSpec.ModelSpec, transformSpec ((JsonObject)vars.get (CliSpec.ModelSpec)));
+		
 		String specLang 	= (String)vars.get (BlueNimble.DefaultVars.SpecLanguage);
 		if (Lang.isNullOrEmpty (specLang)) {
 			specLang = BlueNimble.SpecLangs.Json;
@@ -313,10 +297,63 @@ public class CodeGenUtils {
 		writeFile (function, destFuncFile, data, specLang);
 		tool.printer ().node (1, "function file created under 'functions/" + (printFolder ? modelFunctionFolder.getName () + "/" : "" ) + (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + ".js'"); 
 		
-		return new String [] {
-			destSpecFile.getAbsolutePath (), destFuncFile.getAbsolutePath ()
- 		};
+		return;
 		
+	}
+
+	private static JsonObject transformSpec (JsonObject spec) {
+		if (!spec.containsKey (Fields)) {
+			return spec;
+		}
+		spec = spec.duplicate ();
+		
+		if (!spec.containsKey (MarkAsDeleted)) {
+			spec.set (MarkAsDeleted, "false");
+		}
+		
+		JsonObject oProperties = Json.getObject (spec, Fields);
+		Iterator<String> properties = oProperties.keys ();
+		while (properties.hasNext ()) {
+			String property = properties.next ();
+			JsonObject oProperty = Json.getObject (oProperties, property);
+			if (TypeRef.equalsIgnoreCase (Json.getString (oProperty, ApiServiceValidator.Spec.Type))) {
+				JsonObject oRefs = Json.getObject (spec, Refs);
+				if (oRefs == null) {
+					oRefs = new JsonObject ();
+					spec.set (Refs, oRefs);
+				}
+				
+				JsonObject oRef = oProperty.duplicate ();
+				if (!oRef.containsKey (Entity)) {
+					oRef.set (Entity, property);
+				}
+				
+				oRef.set (Entity, entity (Json.getString (oRef, Entity)));
+				
+				oRefs.set (property, oRef);
+				
+				oProperty.remove (ApiServiceValidator.Spec.Type);
+				oProperty.remove (Entity);
+				oProperty.remove (Multiple);
+				oProperty.set (
+					ApiServiceValidator.Spec.Fields, 
+					new JsonObject ().set (Database.Fields.Id, new JsonObject ().set (ApiServiceValidator.Spec.Type, "raw"))
+				);
+			}
+		}
+		
+		// clear Many relationships
+		JsonObject oRefs = Json.getObject (spec, Refs);
+		Iterator<String> refs = oProperties.keys ();
+		while (refs.hasNext ()) {
+			String ref = refs.next ();
+			JsonObject oRef = Json.getObject (oRefs, ref);
+			if (Json.getBoolean (oRef, Multiple, false)) {
+				refs.remove ();
+			}
+		}
+		
+		return spec;
 	}
 
 	public static void renameAll (File file, JsonObject data) throws Exception {
@@ -356,6 +393,12 @@ public class CodeGenUtils {
 		
 		file.renameTo (new File (parentFolder, name));
 		
+	}
+	
+	private static String entity (String name) {
+		String Model = Lang.BLANK.equals (name) ? Lang.BLANK : name.substring (0, 1).toUpperCase () + name.substring (1);
+		
+		return (Model.endsWith ("y") ? (Model.substring (0, Model.length () - 1) + "ies") : Model + "s");
 	}
 
 }

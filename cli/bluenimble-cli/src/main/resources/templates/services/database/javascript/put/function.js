@@ -25,7 +25,7 @@ return {
 	 **/
 	execute: function (api, consumer, request, response) {
 		
-		// get the [[Model]] record and check if it exists
+		// get [[Model]] to check existence
 		var [[model]] = api.database (request).get ('[[Models]]', request.get ('[[model]]'));
 		
 		if (![[model]]) {
@@ -33,9 +33,9 @@ return {
 			return;
 		}
 		
-		// update a [[Model]] by id (:[[model]])
+		// update [[Model]] by id (:[[model]])
 		return [[model]].load ( request.get (ApiRequest.Payload) )
-					// set who updated this record
+					// set who updated this [[Model]]
 					.ref    ('updatedBy', 'Users', consumer.id)
 					.save 	()
 					.toJson ();
