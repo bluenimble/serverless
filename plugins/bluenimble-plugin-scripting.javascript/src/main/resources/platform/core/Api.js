@@ -285,14 +285,10 @@ function Api (proxy) {
 
 	// private
 	this._feature = function (featureType, feature) {
-		if (feature) {
+		if (feature || !this.features || !this.features.defaults) {
 			return feature;
 		}
-		var fdef = this.features [featureType];
-		if (!fdef) {
-			return 'default';
-		}
-		return fdef.default||'default';
+		return this.features.defaults [featureType] || 'default';
 	};
 
 };

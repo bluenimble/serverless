@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import com.bluenimble.platform.Json;
+import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.cli.Tool;
 import com.bluenimble.platform.cli.ToolContext;
 import com.bluenimble.platform.cli.command.CommandExecutionException;
@@ -60,6 +61,11 @@ public class JsonSaveHandler implements CommandHandler {
 		JsonObject json = (JsonObject)o;
 		
 		String sFile = args [1];
+		
+		if (sFile.startsWith (Lang.TILDE + File.separator)) {
+			sFile = System.getProperty ("user.home") + sFile.substring (1);
+		}
+		
 		File file = new File (sFile);
 		
 		boolean overwrite = true;

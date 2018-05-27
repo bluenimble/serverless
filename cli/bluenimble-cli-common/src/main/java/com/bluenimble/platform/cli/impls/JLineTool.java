@@ -16,14 +16,19 @@
  */
 package com.bluenimble.platform.cli.impls;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 
+import org.jline.builtins.Completers;
 import org.jline.reader.LineReader;
+import org.jline.reader.LineReader.Option;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
+import org.jline.utils.AttributedStringBuilder;
+import org.jline.utils.AttributedStyle;
 
 import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Lang;
@@ -37,6 +42,8 @@ public abstract class JLineTool extends PojoTool {
 	
 	private LineReader 	reader;
 	private Writer 		writer;
+	
+	private String		prompt;
 
 	public JLineTool () throws InstallI18nException {
 		super ();
@@ -52,7 +59,9 @@ public abstract class JLineTool extends PojoTool {
 			throw new ToolStartupException (e.getMessage (), e);
 		}
         
-		reader = LineReaderBuilder.builder ().terminal (terminal).build ();
+		reader = LineReaderBuilder.builder ()
+				.option (Option.HISTORY_BEEP, true)
+				.terminal (terminal).completer (new Completers.FilesCompleter (new File (Lang.SLASH))).build ();
 		
 		writer = terminal.writer ();
                 
@@ -88,6 +97,29 @@ public abstract class JLineTool extends PojoTool {
 			}
 		}
 	}
+	
+	@Override
+	public void prompt () {
+		AttributedStringBuilder asb = new AttributedStringBuilder ()
+			.append (Lang.ENDLN)
+	        .style (AttributedStyle.DEFAULT.foreground (AttributedStyle.CYAN | AttributedStyle.BRIGHT))
+	        .append (getName ())
+	        .style (AttributedStyle.DEFAULT)
+	        .append (Lang.COLON)
+			.style (AttributedStyle.DEFAULT.foreground (AttributedStyle.BLUE | AttributedStyle.BRIGHT));
+		
+		if (currentContext == null) {
+	        asb.append (Lang.DOT);
+		} else {
+	        asb.append (currentContext.getName ());
+		}
+		
+        asb.style (AttributedStyle.DEFAULT)
+        	.append (Lang.GREATER + Lang.SPACE);
+		
+	    prompt = asb.toAnsi ();
+		
+	}
 
 	@Override
 	public Tool write (String text) {
@@ -113,7 +145,7 @@ public abstract class JLineTool extends PojoTool {
 
 	@Override
 	public String readLine () throws IOException {
-		return reader.readLine ();
+		return reader.readLine (prompt);
 	}
 
 	@Override

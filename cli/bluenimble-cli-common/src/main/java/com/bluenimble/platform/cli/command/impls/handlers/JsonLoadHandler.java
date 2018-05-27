@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.Map;
 
 import com.bluenimble.platform.Json;
+import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.cli.Tool;
 import com.bluenimble.platform.cli.ToolContext;
 import com.bluenimble.platform.cli.command.CommandExecutionException;
@@ -63,6 +64,10 @@ public class JsonLoadHandler implements CommandHandler {
 				throw new CommandExecutionException (e.getMessage (), e);
 			}
 			return new DefaultCommandResult (CommandResult.OK, json);
+		}
+		
+		if (sFile.startsWith (Lang.TILDE + File.separator)) {
+			sFile = System.getProperty ("user.home") + sFile.substring (1);
 		}
 		
 		File file = new File (sFile);

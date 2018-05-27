@@ -45,11 +45,11 @@
 	
 	"spec": {
 		"fields": {
-			"query": { "type": "Map", "required": "false",
+			"query": { "type": "Object", "required": "false",
 				"fields": {
 					"select": { "type": "Array", "required": "false" }, 
-					"where": { "type": "Map" }, 
-					"orderBy": { "type": "Map", "required": "false" }, 
+					"where": { "type": "Object" }, 
+					"orderBy": { "type": "Object", "required": "false" }, 
 					"groupBy": { "type": "Array", "required": "false" }
 				} 
 			}

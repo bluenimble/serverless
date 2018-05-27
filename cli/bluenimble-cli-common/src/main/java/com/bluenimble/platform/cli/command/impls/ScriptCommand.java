@@ -62,6 +62,10 @@ public class ScriptCommand extends AbstractCommand {
 		if (f != null) {
 			name = (String)f.getArg (0);
 			
+			if (name.startsWith (Lang.TILDE + File.separator)) {
+				name = System.getProperty ("user.home") + name.substring (1);
+			}
+			
 			File file = new File (name);
 			
 			if (!file.exists ()) {

@@ -42,6 +42,9 @@ import com.bluenimble.platform.icli.mgm.BlueNimble;
 import com.bluenimble.platform.icli.mgm.CliSpec;
 import com.bluenimble.platform.icli.mgm.CliSpec.Templates;
 import com.bluenimble.platform.json.JsonObject;
+import com.diogonunes.jcdp.color.api.Ansi.Attribute;
+import com.diogonunes.jcdp.color.api.Ansi.BColor;
+import com.diogonunes.jcdp.color.api.Ansi.FColor;
 
 public class CodeGenUtils {
 
@@ -58,6 +61,7 @@ public class CodeGenUtils {
 	private static final String TypeRef 	= "Ref";
 	private static final String Entity 		= "entity";
 	private static final String Multiple 	= "multiple";
+	private static final String Exists 		= "exists";
 	private static final String MarkAsDeleted 	
 											= "markAsDeleted";
 
@@ -83,6 +87,11 @@ public class CodeGenUtils {
 		String Package 		= "package";
 		
 	} 
+	
+	public interface FieldType {
+		String Object 	= "Object";
+		String Raw 		= "raw";
+	}
 
 	private static final Map<String, String> Verbs = new HashMap<String, String> ();
 	static {
@@ -271,11 +280,14 @@ public class CodeGenUtils {
 		
 		String verbToken = verb;
 		
+		String createdService = highlight (tool, verb + " " + model);
+		
 		if (FindVerb.equals (verb)) {
+			createdService = highlight (tool, verb + " " + models);
 			verbToken = ApiVerb.GET.name ();
-			tool.printer ().node (0, "'" + verb + " " + models + "' Service"); 
+			tool.printer ().node (0, "'" + createdService + "' Service"); 
 		} else {
-			tool.printer ().node (0, "'" + verb + " " + model + "' Service"); 
+			tool.printer ().node (0, "'" + createdService + "' Service"); 
 		}
 		
 		data.set (Tokens.Verb, verbToken);
@@ -290,25 +302,28 @@ public class CodeGenUtils {
 		File destSpecFile = new File (modelSpecFolder, (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + "." + specLang);
 
 		writeFile (spec, destSpecFile, data, specLang);
-		tool.printer ().node (1, "     spec file created under 'services/" + (printFolder ? modelSpecFolder.getName () + "/" : "" ) + (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + "." + specLang + "'"); 
+		tool.printer ().node (1, "    spec file 'services/" + underline (tool, (printFolder ? modelSpecFolder.getName () + "/" : "" ) + (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + "." + specLang) + "'"); 
 
 		File destFuncFile = new File (modelFunctionFolder, (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + ".js");
 		
 		writeFile (function, destFuncFile, data, specLang);
-		tool.printer ().node (1, "function file created under 'functions/" + (printFolder ? modelFunctionFolder.getName () + "/" : "" ) + (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + ".js'"); 
+		tool.printer ().node (1, "function file 'functions/" + underline (tool, (printFolder ? modelFunctionFolder.getName () + "/" : "" ) + (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + ".js") + "'"); 
 		
 		return;
 		
 	}
 
 	private static JsonObject transformSpec (JsonObject spec) {
+		if (spec == null) {
+			return null;
+		}
 		if (!spec.containsKey (Fields)) {
 			return spec;
 		}
 		spec = spec.duplicate ();
 		
 		if (!spec.containsKey (MarkAsDeleted)) {
-			spec.set (MarkAsDeleted, "false");
+			spec.set (MarkAsDeleted, String.valueOf (false));
 		}
 		
 		JsonObject oProperties = Json.getObject (spec, Fields);
@@ -332,24 +347,37 @@ public class CodeGenUtils {
 				
 				oRefs.set (property, oRef);
 				
-				oProperty.remove (ApiServiceValidator.Spec.Type);
+				oProperty.set (ApiServiceValidator.Spec.Type, FieldType.Object);
 				oProperty.remove (Entity);
 				oProperty.remove (Multiple);
+				
+				JsonObject idSpec = (JsonObject)new JsonObject ().set (ApiServiceValidator.Spec.Type, FieldType.Raw);
+				if (!Json.getBoolean (oProperty, Exists, false)) {
+					idSpec.set (ApiServiceValidator.Spec.Required, String.valueOf (false));
+				}
+				
+				oProperty.remove (Exists);
+				
 				oProperty.set (
 					ApiServiceValidator.Spec.Fields, 
-					new JsonObject ().set (Database.Fields.Id, new JsonObject ().set (ApiServiceValidator.Spec.Type, "raw"))
+					new JsonObject ().set (Database.Fields.Id, idSpec)
 				);
+				
 			}
 		}
 		
-		// clear Many relationships
+		// clear One2Many relationships
 		JsonObject oRefs = Json.getObject (spec, Refs);
-		Iterator<String> refs = oProperties.keys ();
+		if (Json.isNullOrEmpty (oRefs)) {
+			return spec;
+		}
+		
+		Iterator<String> refs = oRefs.keys ();
 		while (refs.hasNext ()) {
 			String ref = refs.next ();
 			JsonObject oRef = Json.getObject (oRefs, ref);
-			if (Json.getBoolean (oRef, Multiple, false)) {
-				refs.remove ();
+			if (!oRef.containsKey (Multiple)) {
+				oRef.set (Multiple, String.valueOf (false));
 			}
 		}
 		
@@ -399,6 +427,14 @@ public class CodeGenUtils {
 		String Model = Lang.BLANK.equals (name) ? Lang.BLANK : name.substring (0, 1).toUpperCase () + name.substring (1);
 		
 		return (Model.endsWith ("y") ? (Model.substring (0, Model.length () - 1) + "ies") : Model + "s");
+	}
+	
+	public static String highlight (Tool tool, String text) {
+		return tool.printer ().getFontPrinter ().generate (text, Attribute.LIGHT, FColor.YELLOW, BColor.NONE);
+	}
+
+	public static String underline (Tool tool, String text) {
+		return tool.printer ().getFontPrinter ().generate (text, Attribute.UNDERLINE, FColor.YELLOW, BColor.NONE);
 	}
 
 }

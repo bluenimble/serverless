@@ -16,6 +16,7 @@
  */
 package com.bluenimble.platform.cli.printing.impls;
 
+import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.cli.Tool;
 import com.diogonunes.jcdp.color.api.Ansi.Attribute;
 import com.diogonunes.jcdp.color.api.Ansi.BColor;
@@ -28,23 +29,42 @@ public class NixFontPrinter implements FontPrinter {
 	
 	private static final String Prefix = "\u001B[";
 	private static final String Postfix = "m";
+	private static final String DefaultAttr = "0";
 	
 	public NixFontPrinter (FColor fc, BColor bc) {
 	}
 
 	@Override
 	public void print (String text, Attribute attr, FColor fc, BColor bc) {
-		System.out.print (Prefix + fc.getCode () + Postfix + text + ANSI_RESET);
+		String code = DefaultAttr;
+		if (attr == null) {
+			code = DefaultAttr;
+		} else {
+			code = attr.getCode ();
+		}
+		System.out.print (Prefix + code + Lang.SEMICOLON + fc.getCode () + Postfix + text + ANSI_RESET);
 	}
 
 	@Override
 	public void println (String text, Attribute attr, FColor fc, BColor bc) {
-		System.out.println (Prefix + fc.getCode () + Postfix + text + ANSI_RESET);
+		String code = DefaultAttr;
+		if (attr == null) {
+			code = DefaultAttr;
+		} else {
+			code = attr.getCode ();
+		}
+		System.out.println (Prefix + code + Lang.SEMICOLON + fc.getCode () + Postfix + text + ANSI_RESET);
 	}
 
 	@Override
 	public String generate (String text, Attribute attr, FColor fc, BColor bc) {
-		return Prefix + fc.getCode () + Postfix + text;
+		String code = DefaultAttr;
+		if (attr == null) {
+			code = DefaultAttr;
+		} else {
+			code = attr.getCode ();
+		}
+		return Prefix + code + Lang.SEMICOLON + fc.getCode () + Postfix + text + ANSI_RESET;
 	}
 
 	@Override

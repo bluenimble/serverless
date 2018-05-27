@@ -45,7 +45,7 @@
 	
 	"spec": {
 		"fields": {
-			"payload": { "type": "Map"[[#if ModelSpec]][[#if ModelSpec.fields]], 
+			"payload": { "type": "Object"[[#if ModelSpec]][[#if ModelSpec.fields]], 
 				"fields": [[json ModelSpec.fields]][[/if]][[/if]] 
 			}
 		}

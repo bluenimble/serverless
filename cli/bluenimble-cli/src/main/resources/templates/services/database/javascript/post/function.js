@@ -29,18 +29,34 @@ return {
 		
 		var payload = request.get (ApiRequest.Payload);
 
+		// write to database
+		var db = api.database (request);
+			
+		var [[model]] = db.create ('[[Models]]', payload)
+			// set the current user as the creator of this [[Model]]
+			.ref ('createdBy', 'Users', consumer.id);
+		
 		[[#if ModelSpec.refs]]// resolve references [[#each ModelSpec.refs]][[#neq multiple 'true']]
 		if (payload.[[@key]]) {
+		[[#eq exists 'true']]
+			var [[@key]] = db.get ('[[entity]]', payload.[[@key]].id);	
+			if (![[@key]]) {
+				throw '[[@key]] ' + payload.[[@key]].id + ' not found';
+			}
+			[[model]].set ('[[@key]]', [[@key]]);
+			
+			// remove '[[@key]]' from payload
+			payload.remove ('[[@key]]');
+		[[else]]
 			payload.[[@key]] [Database.Fields.Entity] = '[[entity]]';
+		[[/eq]]
 		}[[/neq]][[/each]][[/if]]
 		
-		// write to database
-		return api.database (request)	
-					.create ('[[Models]]', payload)
-					// set the current user as the creator of this [[Model]]
-					.ref ('createdBy', 'Users', consumer.id)
-					.save ()
-					.toJson ();
+		// save [[model]]			
+		[[model]].save ();
+		
+		// return minimal info about created [[model]]		
+		return [[model]].toJson (0, 0);
 		
 	}
 

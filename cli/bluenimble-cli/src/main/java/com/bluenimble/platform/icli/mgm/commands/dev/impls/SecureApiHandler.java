@@ -159,7 +159,7 @@ public class SecureApiHandler implements CommandHandler {
 				
 				CodeGenUtils.writeFile (signupTplFile, apiSignupTplFile, tokens, null);
 				tool.printer ().important (
-					"An activation email html file was created! 'templates/emails/" + apiSignupTplFile.getName () + "' It's used by the Signup service" +
+					"An activation email html file was created -> " + CodeGenUtils.underline (tool, "'templates/emails/" + apiSignupTplFile.getName ()) + "'. It's used by the Signup service" +
 					"\nMake sure that the email feature is added to your space in order to send emails.\nUse command 'add feature' to add an smtp server config"
 				); 
 			}
@@ -190,7 +190,7 @@ public class SecureApiHandler implements CommandHandler {
 			
 			try {
 				addService (tool, api, apiFolder, "oAuth");
-				tool.printer ().important ("Make sure that your clientId and sercretId are set in your oauth providers.\nSee service spec file resources/services/security/OAuth." + specLang);
+				tool.printer ().important ("Make sure that your clientId and sercretId are set in your oauth providers.\nSee service spec file " + CodeGenUtils.underline (tool, "resources/services/security/OAuth." + specLang));
 			} catch (Exception ex) {
 				throw new CommandExecutionException ("An error occured when generating code for oAuth service. Cause: " + ex.getMessage (), ex);
 			}
@@ -222,10 +222,10 @@ public class SecureApiHandler implements CommandHandler {
 		
 		String uService = Json.getString (tokens, Tokens.Service);
 		
-		tool.printer ().node (0, "'" + uService + "' Service"); 
+		tool.printer ().node (0, "'" + CodeGenUtils.highlight (tool, uService) + "' Service"); 
 		File specFile = new File (BlueNimble.Home, "templates/security/services/" + service + "/spec.json");
 		CodeGenUtils.writeFile (specFile, new File (secSpecsFolder, uService + "." + specLang), tokens, specLang);
-		tool.printer ().node (1, "  spec file created 'services/security/" + uService + "." + specLang + "'"); 
+		tool.printer ().node (1, "  spec file 'services/" + CodeGenUtils.underline (tool, "security/" + uService + "." + specLang) + "'"); 
 		
 		File scriptFile = new File (BlueNimble.Home, "templates/security/services/" + service + "/function.js");
 		if (scriptFile.exists ()) {
@@ -236,7 +236,7 @@ public class SecureApiHandler implements CommandHandler {
 			
 			CodeGenUtils.writeFile (scriptFile, new File (secFunctionsFolder, uService + ".js"), tokens, null);
 			
-			tool.printer ().node (1, "script file created 'functions/security/" + uService + ".js'"); 
+			tool.printer ().node (1, "script file 'functions/" + CodeGenUtils.underline (tool, "security/" + uService + ".js") + "'"); 
 		}
 	}
 

@@ -396,6 +396,9 @@ public abstract class AbstractTool implements Tool {
 					}
 					OutputStream os = null;
 					try {
+						if (out.startsWith (Lang.TILDE + File.separator)) {
+							out = System.getProperty ("user.home") + out.substring (1);
+						}
 						os = new FileOutputStream (new File (out));
 						IOUtils.copy (is, os);
 					} catch (Exception e) {
