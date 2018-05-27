@@ -44,13 +44,6 @@ export JAVA
 
 JAVA_OPTS_SCRIPT="-Xms60m -Djna.nosys=true -XX:+HeapDumpOnOutOfMemoryError -Djava.awt.headless=true -Dfile.encoding=UTF8 -DBN_HOME=$BN_HOME"
 
-BN_PID=$BN_HOME/bnb.pid
-
-if [ -f "$BN_PID" ]; then
-    echo "removing old pid file $BN_PID"
-    rm "$BN_PID"
-fi
-
 # TO DEBUG BlueNimble RUN WITH THESE OPTIONS:
 # -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1044
 # AND ATTACH TO THE CURRENT HOST, PORT 1044
@@ -62,8 +55,6 @@ if [ -z "$BN_OPTS_MEMORY" ] ; then
 fi
 # BN MAXIMUM DISKCACHE IN MB, EXAMPLE, ENTER -Dstorage.diskCache.bufferSize=8192 FOR 8GB
 MAXDISKCACHE=""
-
-echo $$ > $BN_PID
 
 exec "$JAVA" $JAVA_OPTS $BN_OPTS_MEMORY $JAVA_OPTS_SCRIPT $MAXDISKCACHE \
     -cp "$BN_HOME/boot/bluenimble-jvm-sdk-[version].jar:$BN_HOME/boot/bluenimble-cli-boot-[version].jar" \

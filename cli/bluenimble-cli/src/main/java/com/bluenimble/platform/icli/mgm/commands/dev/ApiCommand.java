@@ -16,10 +16,12 @@
  */
 package com.bluenimble.platform.icli.mgm.commands.dev;
 
+import java.io.File;
 import java.util.Map;
 
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
+import com.bluenimble.platform.ValueHolder;
 import com.bluenimble.platform.cli.Tool;
 import com.bluenimble.platform.cli.ToolContext;
 import com.bluenimble.platform.cli.command.CommandExecutionException;
@@ -27,8 +29,9 @@ import com.bluenimble.platform.cli.command.CommandOption;
 import com.bluenimble.platform.cli.command.CommandResult;
 import com.bluenimble.platform.cli.command.impls.AbstractCommand;
 import com.bluenimble.platform.cli.command.impls.DefaultCommandResult;
-import com.bluenimble.platform.icli.mgm.CliSpec;
 import com.bluenimble.platform.icli.mgm.BlueNimble;
+import com.bluenimble.platform.icli.mgm.CliSpec;
+import com.bluenimble.platform.icli.mgm.utils.SpecUtils;
 import com.bluenimble.platform.json.JsonObject;
 
 public class ApiCommand extends AbstractCommand {
@@ -56,7 +59,24 @@ public class ApiCommand extends AbstractCommand {
 				if (Lang.isNullOrEmpty (currentApi)) {
 					tool.printer ().info ("use ' api YourApi ' or create a new one using ' create api YourApi '"); 
 				} else {
-					tool.printer ().content ("Current Api", "namespace: " + currentApi + "\npath: $ws/ " + Json.getString (Json.getObject (config, CliSpec.Config.Apis), currentApi));
+					
+					String apiPath = Json.getString (Json.getObject (BlueNimble.Config, CliSpec.Config.Apis), currentApi);
+					
+					File apiFolder = new File (BlueNimble.Workspace, apiPath);
+					
+					ValueHolder<Integer> counter = new ValueHolder<Integer>(0);
+					
+					SpecUtils.visitService (SpecUtils.servicesFolder (apiFolder), (file) -> {
+						counter.set (counter.get () + 1);
+						return null;
+					});
+					
+					tool.printer ().content (
+						"__PS__ GREEN:Current Api", 
+						"namespace: " + currentApi + 
+						"\npath: $ws/ " + Json.getString (Json.getObject (config, CliSpec.Config.Apis), currentApi) +
+						"\n# services: " + counter.get ()
+					);
 				}
 				return null;
 			} catch (Exception ex) {

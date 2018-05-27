@@ -137,7 +137,7 @@ public class PrettyPrinter extends AbstractPrinter {
 		if (!on) {
 			return;
 		}
-		tool.writeln (Lang.ENDLN);
+		tool.write (Lang.ENDLN);
 		if (!Lang.isNullOrEmpty (title)) {
 			margin ();
 			//tool/*.write (Circle).write (Lang.SPACE)*/.writeln (title);

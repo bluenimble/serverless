@@ -70,7 +70,7 @@ public abstract class AbstractPrinter implements Printer {
 		
 		int margin = -1 * this.margin;
 		
-		// __FT__ B/COLOR1:text1 _|_ COLOR2/F:text2 _|_ text3
+		// __PS__ B/COLOR1:text1 _|_ COLOR2/F:text2 _|_ text3
 		
 		if (!spec.startsWith (PrintSpec.Start)) {
 			text (margin, spec, null, null);
@@ -104,7 +104,7 @@ public abstract class AbstractPrinter implements Printer {
 				}
 			}
 			
-			text (margin, text, fcolor, bcolor);
+			text (margin, text, fcolor.trim (), bcolor);
 			
 		}
 		

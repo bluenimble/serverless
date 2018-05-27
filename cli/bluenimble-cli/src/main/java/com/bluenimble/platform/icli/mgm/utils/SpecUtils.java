@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.yaml.snakeyaml.Yaml;
 
@@ -198,6 +199,29 @@ public class SpecUtils {
 			IOUtils.closeQuietly (is);
 		}
 		
+	}
+	
+	public static File servicesFolder (File apiFolder) throws CommandExecutionException {
+		return new File (specFolder (apiFolder), "resources/services");
+	}
+	
+	public static void visitService (File folderOrFile, Function<File, Void> visitor) throws CommandExecutionException {
+		if (visitor == null || folderOrFile == null || !folderOrFile.exists ()) {
+			return;
+		}
+		
+		if (folderOrFile.isFile ()) {
+			visitor.apply (folderOrFile);
+			return;
+		}
+		
+		File [] files = folderOrFile.listFiles ();
+		if (files == null || files.length == 0) {
+			return;
+		}
+		for (File file : files) {
+			visitService (file, visitor);
+		}
 	}
 	
 	public static void toYaml (String jsonText, OutputStream out) throws Exception {
