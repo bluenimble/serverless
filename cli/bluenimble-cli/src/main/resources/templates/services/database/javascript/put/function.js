@@ -37,7 +37,9 @@ return {
 		var [[model]] = db.get ('[[Models]]', [[model]]Id);
 		
 		if (![[model]]) {
-			throw new ApiServiceExecutionException ("[[model]] '" + [[model]]Id + "' not found").status (ApiResponse.NOT_FOUND);
+			throw new ApiServiceExecutionException (
+				api.message (request.lang, 'NotFound', '[[model]]', [[model]]Id)
+			).status (ApiResponse.NOT_FOUND);
 		}
 		
 		// set the current user as the updater of this [[Model]]
@@ -48,7 +50,9 @@ return {
 		[[#eq exists 'true']]
 			var [[@key]] = db.get ('[[entity]]', payload.[[@key]].id);	
 			if (![[@key]]) {
-				throw new ApiServiceExecutionException ("[[@key]] '" + payload.[[@key]].id + "' not found").status (ApiResponse.NOT_FOUND);
+				throw new ApiServiceExecutionException (
+					api.message (request.lang, 'NotFound', '[[@key]]', payload.[[@key]].id)
+				).status (ApiResponse.NOT_FOUND);
 			}
 			[[model]].set ('[[@key]]', [[@key]]);
 			

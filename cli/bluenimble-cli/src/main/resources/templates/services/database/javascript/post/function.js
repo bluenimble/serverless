@@ -41,7 +41,9 @@ return {
 		[[#eq exists 'true']]
 			var [[@key]] = db.get ('[[entity]]', payload.[[@key]].id);	
 			if (![[@key]]) {
-				throw new ApiServiceExecutionException ("[[@key]] '" + payload.[[@key]].id + "' not found").status (ApiResponse.NOT_FOUND);
+				throw new ApiServiceExecutionException (
+					api.message (request.lang, 'NotFound', '[[@key]]', payload.[[@key]].id)
+				).status (ApiResponse.NOT_FOUND);
 			}
 			[[model]].set ('[[@key]]', [[@key]]);
 			

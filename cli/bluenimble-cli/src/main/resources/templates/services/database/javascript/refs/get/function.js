@@ -38,7 +38,9 @@ return {
 			}
 		});
 		if (![[model]][[Ref]]) {
-			throw new ApiServiceExecutionException ("[[model]][[Ref]] given by [[model]] '" + [[model]]Id + "' and [[ref]] '" + [[ref]]Id + "' not found").status (ApiResponse.NOT_FOUND);
+			throw new ApiServiceExecutionException (
+				api.message (request.lang, 'LinkNotFound', '[[model]][[Ref]]', '[[model]]', [[model]]Id, '[[ref]]', [[ref]]Id)
+			).status (ApiResponse.NOT_FOUND);
 		}
 		
 		return [[model]][[Ref]].get ('[[ref]]').toJson (0, 0);

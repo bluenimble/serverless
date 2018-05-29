@@ -33,13 +33,17 @@ return {
 		// lookup [[Model]] by :[[model]]
 		var [[model]] = db.get ('[[Models]]', [[model]]Id);
 		if (![[model]]) {
-			throw new ApiServiceExecutionException ("[[model]] '" + [[model]]Id + "' not found").status (ApiResponse.NOT_FOUND);
+			throw new ApiServiceExecutionException (
+				api.message (request.lang, 'NotFound', '[[model]]', [[model]]Id)
+			).status (ApiResponse.NOT_FOUND);
 		}
 		
 		// lookup [[Ref]] by :[[ref]]
 		var [[ref]] = db.get ('[[RefSpec.entity]]', [[ref]]Id);
 		if (![[ref]]) {
-			throw new ApiServiceExecutionException ("[[ref]] '" + [[ref]]Id + "' not found").status (ApiResponse.NOT_FOUND);
+			throw new ApiServiceExecutionException (
+				api.message (request.lang, 'NotFound', '[[ref]]', [[ref]]Id)
+			).status (ApiResponse.NOT_FOUND);
 		}
 		
 		// add link
@@ -50,7 +54,9 @@ return {
 			}
 		});
 		if (![[model]][[Ref]]) {
-			throw new ApiServiceExecutionException ("[[model]][[Ref]] given by [[model]] " + [[model]]Id + " and [[ref]] " + [[ref]]Id + " not found").status (ApiResponse.NOT_FOUND);
+			throw new ApiServiceExecutionException (
+				api.message (request.lang, 'LinkNotFound', '[[model]][[Ref]]', '[[model]]', [[model]]Id, '[[ref]]', [[ref]]Id)
+			).status (ApiResponse.NOT_FOUND);
 		}
 		
 		[[model]][[Ref]].delete ();
