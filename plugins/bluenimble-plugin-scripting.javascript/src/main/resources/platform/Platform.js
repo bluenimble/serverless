@@ -233,7 +233,9 @@ var JC_Libs_BN_Signer 		= Java.type ('com.bluenimble.platform.api.impls.scriptin
 			Json: Json,
 			ApiConsumer: ApiConsumer.prototype,
 			ApiRequest: ApiRequest.prototype,
-			ApiOutput: ApiOutput.prototype
+			ApiResponse: ApiResponse.prototype,
+			ApiOutput: ApiOutput.prototype,
+			ApiServiceExecutionException: Java.type ('com.bluenimble.platform.api.ApiServiceExecutionException')
 		}
 	};
 	

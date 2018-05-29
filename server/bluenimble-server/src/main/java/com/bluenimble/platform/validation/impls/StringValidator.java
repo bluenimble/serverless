@@ -16,6 +16,8 @@
  */
 package com.bluenimble.platform.validation.impls;
 
+import java.util.ArrayList;
+
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
@@ -44,6 +46,7 @@ public class StringValidator extends AbstractTypeValidator {
 		return Type;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Object validate (Api api, ApiConsumer consumer, ApiRequest request, 
 			DefaultApiServiceValidator validator, String name, String label, JsonObject spec, Object value) {
@@ -96,15 +99,27 @@ public class StringValidator extends AbstractTypeValidator {
 			}
 		}
 		
-		JsonArray lov = Json.getArray (spec, Spec.ListOfValues);
+		Object lov = spec.get (Spec.ListOfValues);
 		if (lov == null) {
 			return null;
 		}
 		
-		if (!lov.contains (sValue)) {
+		boolean lovFailed = false;
+		
+		String lovMessage = null;
+		
+		if (lov instanceof JsonArray) {
+			lovFailed = !((JsonArray)lov).contains (sValue);
+			lovMessage = ((JsonArray)lov).join (Lang.COMMA);
+		} else if (lov instanceof JsonObject) {
+			lovFailed = !((JsonObject)lov).containsKey (sValue);
+			lovMessage = Lang.join (new ArrayList<String> (((JsonObject)lov).keySet ()), Lang.COMMA);
+		}
+		
+		if (lovFailed) {
 			return ValidationUtils.feedback (
 				feedback, spec, Spec.ListOfValues, 
-				validator.getMessage (api, request.getLang (), LovMessage, label, lov.join (Lang.COMMA), displayValue)
+				validator.getMessage (api, request.getLang (), LovMessage, label, lovMessage, displayValue)
 			);
 		}
 		

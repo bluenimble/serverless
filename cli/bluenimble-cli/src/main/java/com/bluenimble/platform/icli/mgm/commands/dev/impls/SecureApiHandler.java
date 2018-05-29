@@ -178,6 +178,16 @@ public class SecureApiHandler implements CommandHandler {
 			} catch (Exception ex) {
 				throw new CommandExecutionException ("An error occured when generating code for ChangePassword service. Cause: " + ex.getMessage (), ex);
 			}
+			try {
+				addService (tool, api, apiFolder, "resend");
+			} catch (Exception ex) {
+				throw new CommandExecutionException ("An error occured when generating code for Resend service. Cause: " + ex.getMessage (), ex);
+			}
+			try {
+				addService (tool, api, apiFolder, "createToken");
+			} catch (Exception ex) {
+				throw new CommandExecutionException ("An error occured when generating code for CreateToken service. Cause: " + ex.getMessage (), ex);
+			}
 		}
 		if (oauth) {
 			@SuppressWarnings("unchecked")

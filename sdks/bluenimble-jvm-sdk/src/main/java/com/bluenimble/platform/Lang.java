@@ -900,4 +900,28 @@ public class Lang {
 		return array;
 	}
 	
+	public static String capitalizeFirst (String name) {
+		if (Lang.isNullOrEmpty (name)) {
+			return name;
+		}
+		if (name.length () == 1) {
+			return name.toUpperCase ();
+		}
+		return name.substring (0, 1).toUpperCase () + name.substring (1);
+	}
+	
+	public static String pluralize (String name) {
+		if (Lang.isNullOrEmpty (name)) {
+			return name;
+		}
+		return (name.endsWith ("y") ? (name.substring (0, name.length () - 1) + "ies") : name + "s");
+	}
+	
+	public static String singularize (String name) {
+		if (Lang.isNullOrEmpty (name) || !name.endsWith ("s")) {
+			return name;
+		}
+		return (name.endsWith ("ies") ? (name.substring (0, name.length () - 3) + "y") : name.substring (0, name.length () - 1));
+	}
+	
 }

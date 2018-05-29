@@ -16,11 +16,15 @@
  */
 package com.bluenimble.platform.validation.impls;
 
+import java.util.ArrayList;
+
 import com.bluenimble.platform.Json;
+import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.validation.ApiServiceValidator.Spec;
+import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 
 public class IntegerValidator extends AbstractTypeValidator {
@@ -33,12 +37,14 @@ public class IntegerValidator extends AbstractTypeValidator {
 	
 	public static final String MinMessage			= "IntegerMin";
 	public static final String MaxMessage			= "IntegerMax";
+	public static final String LovMessage			= "IntegerLov";
 	
 	@Override
 	public String getName () {
 		return Type;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Object validate (Api api, ApiConsumer consumer, ApiRequest request, 
 			DefaultApiServiceValidator validator, String name, String label, JsonObject spec, Object value) {
@@ -95,11 +101,37 @@ public class IntegerValidator extends AbstractTypeValidator {
 			);
 		}
 
-		if (feedback == null) {
+		if (feedback != null) {
+			return feedback;
+		}
+		
+		Object lov = spec.get (Spec.ListOfValues);
+		if (lov == null) {
 			return iValue;
 		}
 		
-		return feedback;
+		String sValue = String.valueOf (iValue);
+		
+		boolean lovFailed = false;
+		
+		String lovMessage = null;
+		
+		if (lov instanceof JsonArray) {
+			lovFailed = !((JsonArray)lov).contains (sValue);
+			lovMessage = ((JsonArray)lov).join (Lang.COMMA);
+		} else if (lov instanceof JsonObject) {
+			lovFailed = !((JsonObject)lov).containsKey (sValue);
+			lovMessage = Lang.join (new ArrayList<String> (((JsonObject)lov).keySet ()), Lang.COMMA);
+		}
+		
+		if (lovFailed) {
+			return ValidationUtils.feedback (
+				feedback, spec, Spec.ListOfValues, 
+				validator.getMessage (api, request.getLang (), LovMessage, label, lovMessage, sValue)
+			);
+		}
+		
+		return iValue;
 	}
 
 }

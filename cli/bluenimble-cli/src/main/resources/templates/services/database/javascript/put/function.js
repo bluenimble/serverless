@@ -25,21 +25,50 @@ return {
 	 **/
 	execute: function (api, consumer, request, response) {
 		
-		// get [[Model]] to check existence
-		var [[model]] = api.database (request).get ('[[Models]]', request.get ('[[model]]'));
+		// Update an existing [[Model]]
+
+		var payload = request.get (ApiRequest.Payload);
+		
+		var [[model]]Id =  request.get ('[[model]]');
+
+		var db = api.database (request);
+
+		// check existence of the [[Model]] given by :[[model]]Id
+		var [[model]] = db.get ('[[Models]]', [[model]]Id);
 		
 		if (![[model]]) {
-			response.setStatus (404);
-			return;
+			throw new ApiServiceExecutionException ("[[model]] '" + [[model]]Id + "' not found").status (ApiResponse.NOT_FOUND);
 		}
 		
-		// update [[Model]] by id (:[[model]])
-		return [[model]].load ( request.get (ApiRequest.Payload) )
-					// set who updated this [[Model]]
-					.ref    ('updatedBy', 'Users', consumer.id)
-					.save 	()
-					.toJson ();
+		// set the current user as the updater of this [[Model]]
+		[[model]].ref ('updatedBy', 'Users', consumer.id);
 		
+		[[#if ModelSpec.refs]]// resolve references [[#each ModelSpec.refs]][[#neq multiple 'true']]
+		if (payload.[[@key]]) {
+		[[#eq exists 'true']]
+			var [[@key]] = db.get ('[[entity]]', payload.[[@key]].id);	
+			if (![[@key]]) {
+				throw new ApiServiceExecutionException ("[[@key]] '" + payload.[[@key]].id + "' not found").status (ApiResponse.NOT_FOUND);
+			}
+			[[model]].set ('[[@key]]', [[@key]]);
+			
+			// remove '[[@key]]' from payload
+			payload.remove ('[[@key]]');
+		[[else]]
+			payload.[[@key]] [Database.Fields.Entity] = '[[entity]]';
+		[[/eq]]
+		}[[/neq]][[/each]][[/if]]
+		
+		// load payload into [[model]]
+		[[model]].load (payload);
+			
+		// save [[model]]			
+		[[model]].save ();
+		
+		// return minimal info about created [[model]]		
+		return [[model]].toJson (0, 0);
+
+	
 	}
 
 }

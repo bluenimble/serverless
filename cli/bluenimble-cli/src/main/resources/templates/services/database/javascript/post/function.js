@@ -25,14 +25,14 @@ return {
 	 **/
 	execute: function (api, consumer, request, response) {
 		
-		// add [[Model]]
+		// Create a new [[Model]]
 		
 		var payload = request.get (ApiRequest.Payload);
 
 		// write to database
 		var db = api.database (request);
 			
-		var [[model]] = db.create ('[[Models]]', payload)
+		var [[model]] = db.create ('[[Models]]')
 			// set the current user as the creator of this [[Model]]
 			.ref ('createdBy', 'Users', consumer.id);
 		
@@ -41,7 +41,7 @@ return {
 		[[#eq exists 'true']]
 			var [[@key]] = db.get ('[[entity]]', payload.[[@key]].id);	
 			if (![[@key]]) {
-				throw '[[@key]] ' + payload.[[@key]].id + ' not found';
+				throw new ApiServiceExecutionException ("[[@key]] '" + payload.[[@key]].id + "' not found").status (ApiResponse.NOT_FOUND);
 			}
 			[[model]].set ('[[@key]]', [[@key]]);
 			
@@ -52,6 +52,9 @@ return {
 		[[/eq]]
 		}[[/neq]][[/each]][[/if]]
 		
+		// load payload into [[model]]
+		[[model]].load (payload);
+			
 		// save [[model]]			
 		[[model]].save ();
 		

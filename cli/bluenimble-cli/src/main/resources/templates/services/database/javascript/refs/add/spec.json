@@ -39,21 +39,19 @@
 
 {
 	
-	    "verb": "put",
-	"endpoint": "/[[models]]/:[[model]]",
-		"name": "Update [[Model]]",
+	    "verb": "post",
+	"endpoint": "/[[models]]/:[[model]]/[[refs]]/:[[ref]]",
+		"name": "Add a new [[Ref]] to [[Model]]",
 	
 	"spec": {
 		"fields": {
-			"[[model]]": {},
-			"payload": { "type": "Object", "strict": [[#eq ModelSpec.strict 'true']]"true"[[else]]"false"[[/eq]][[#if ModelSpec]][[#if ModelSpec.fields]], 
-				"fields": [[json ModelSpec.fields]][[/if]][[/if]] 
-			}
+			"[[model]]": { },
+			"[[ref]]": { }
 		}
 	},
 	
 	"runtime": {
-		"function": "functions/[[models]]/Update[[Model]].js"
+		"function": "functions/[[models]]/Add[[Model]][[Ref]].js"
 	},
 	
 	"spi": {

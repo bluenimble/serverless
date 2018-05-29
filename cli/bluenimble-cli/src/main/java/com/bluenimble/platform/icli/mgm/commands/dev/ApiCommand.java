@@ -73,9 +73,9 @@ public class ApiCommand extends AbstractCommand {
 					
 					tool.printer ().content (
 						"__PS__ GREEN:Current Api", 
-						"namespace: " + currentApi + 
-						"\npath: $ws/ " + Json.getString (Json.getObject (config, CliSpec.Config.Apis), currentApi) +
-						"\n# services: " + counter.get ()
+						" namespace: " + currentApi + Lang.ENDLN +
+						"      path: $ws/ " + Json.getString (Json.getObject (config, CliSpec.Config.Apis), currentApi) + Lang.ENDLN +
+						"# services: " + counter.get ()
 					);
 				}
 				return null;

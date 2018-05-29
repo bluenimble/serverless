@@ -1,10 +1,10 @@
 return {
 	
 	/**
-	 * The only required function that you should implement, if no mock data provided in your Find[[Model]].json
+	 * The only required function that you should implement, if no mock data provided in your List[[Model]][[Refs]].json
 	 * 
-	 * The execute function will be triggered when an application or device makes a call to [[verb]] [bluenimble-space].[bluenimble-instance].bluenimble.com/[[api]]/[[models]]/query 
-	 * which is defined in your service specification file Find[[Model]].json 
+	 * The execute function will be triggered when an application or device makes a call to post [bluenimble-space].[bluenimble-instance].bluenimble.com/[[api]]/[[models]]
+	 * which is defined in your service specification file List[[Model]][[Refs]].json 
 	 * 
 	 * Arguments:
 	 *  Api 		 the api where this service is running  
@@ -25,19 +25,30 @@ return {
 	 **/
 	execute: function (api, consumer, request, response) {
 		
-		// find [[Models]] by query
+		var [[model]]Id = request.get ('[[model]]');
 		
-		var query = request.get ('query');
-		if (!query) {
-			query = { where: { 'createdBy.id': consumer.id, deleted: false } };
-		} else {
-			query = Json.parse (query);
+		var db = api.database (request);
+		
+		// build query
+
+		var filter = request.get ('filter');
+		
+		var where = {
+			[[model]]: [[model]]Id
+		};
+		if (filter) {
+			for (var k in filter) {
+				where [k] = filter [k];
+			}
 		}
+
+		// run query
+		var result = { [[refs]]: Json.array () };
 		
-		var result = { [[models]]: Json.array () };
-		
-		api.database (request).find ('[[Models]]', query, function ([[model]]) {
-			result.[[models]].push ([[model]].toJson ());
+		db.find ('[[Model]][[Refs]]', { 
+			where: where
+		}, function ([[model]][[Ref]]) {
+			result.[[refs]].push ([[model]][[Ref]].get ('[[ref]]').toJson (0, 0));
 		});
 		
 		return result;

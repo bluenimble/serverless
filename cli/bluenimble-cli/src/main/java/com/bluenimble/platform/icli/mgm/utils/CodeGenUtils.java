@@ -56,7 +56,6 @@ public class CodeGenUtils {
 	
 	public static final String ServicesCreated	= "services.created";
 	
-	private static final String Fields 		= "fields";
 	private static final String Refs 		= "refs";
 	private static final String TypeRef 	= "Ref";
 	private static final String Entity 		= "entity";
@@ -86,11 +85,23 @@ public class CodeGenUtils {
 		
 		String Package 		= "package";
 		
+		String ref 			= "ref";
+		String Ref 			= "Ref";
+		String refs 		= "refs";
+		String Refs 		= "Refs";
+		String RefSpec 		= "RefSpec";
 	} 
 	
 	public interface FieldType {
 		String Object 	= "Object";
 		String Raw 		= "raw";
+	}
+	
+	public interface RefVerbs {
+		String Add 		= "add";
+		String Get 		= "get";
+		String Remove 	= "remove";
+		String List 	= "list";
 	}
 
 	private static final Map<String, String> Verbs = new HashMap<String, String> ();
@@ -292,7 +303,19 @@ public class CodeGenUtils {
 		
 		data.set (Tokens.Verb, verbToken);
 		
-		data.set (CliSpec.ModelSpec, transformSpec ((JsonObject)vars.get (CliSpec.ModelSpec)));
+		JsonObject serviceModelSpec = transformSpec ((JsonObject)vars.get (CliSpec.ModelSpec));
+		
+		if (!Json.isNullOrEmpty (serviceModelSpec) && ApiVerb.PUT.name ().equalsIgnoreCase (verb)) {
+			JsonObject specFields = Json.getObject (serviceModelSpec, ApiServiceValidator.Spec.Fields);
+			Iterator<String> fieldNames = specFields.keys ();
+			while (fieldNames.hasNext ()) {
+				String field = fieldNames.next ();
+				JsonObject oField = Json.getObject (specFields, field);
+				oField.set (ApiServiceValidator.Spec.Required, String.valueOf (false));
+			}
+		}
+		
+		data.set (CliSpec.ModelSpec, serviceModelSpec);
 		
 		String specLang 	= (String)vars.get (BlueNimble.DefaultVars.SpecLanguage);
 		if (Lang.isNullOrEmpty (specLang)) {
@@ -309,7 +332,69 @@ public class CodeGenUtils {
 		writeFile (function, destFuncFile, data, specLang);
 		tool.printer ().node (1, "function file 'functions/" + underline (tool, (printFolder ? modelFunctionFolder.getName () + "/" : "" ) + (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + ".js") + "'"); 
 		
+		if (ApiVerb.POST.name ().equalsIgnoreCase (verb) && !Json.isNullOrEmpty (serviceModelSpec)) {
+			writeRefsServices (tool, templateFolder, modelSpecFolder, modelFunctionFolder, data, specLang);
+		}
+		
 		return;
+		
+	}
+
+	private static void writeRefsServices (Tool tool, File templateFolder, File modelSpecFolder, File modelFunctionFolder, JsonObject data, String specLang) 
+			throws CommandExecutionException {
+		
+		JsonObject serviceModelSpec = Json.getObject (data, CliSpec.ModelSpec);
+		
+		if (Json.isNullOrEmpty (serviceModelSpec)) {
+			return;
+		}
+		
+		JsonObject oRefs = Json.getObject (serviceModelSpec, Refs);
+		if (Json.isNullOrEmpty (oRefs)) {
+			return;
+		}
+		
+		Iterator<String> refs = oRefs.keys ();
+		while (refs.hasNext ()) {
+			String ref = refs.next ();
+			JsonObject oRef = Json.getObject (oRefs, ref);
+			if (!Json.getBoolean (oRef, Multiple, false)) {
+				continue;
+			}
+			writeRefService (tool, templateFolder, modelSpecFolder, modelFunctionFolder, RefVerbs.Add, ref, oRef, data, specLang);
+			writeRefService (tool, templateFolder, modelSpecFolder, modelFunctionFolder, RefVerbs.Get, ref, oRef, data, specLang);
+			writeRefService (tool, templateFolder, modelSpecFolder, modelFunctionFolder, RefVerbs.Remove, ref, oRef, data, specLang);
+			writeRefService (tool, templateFolder, modelSpecFolder, modelFunctionFolder, RefVerbs.List, ref, oRef, data, specLang);
+		}
+	}
+	
+	private static void writeRefService (Tool tool, File templateFolder, File modelSpecFolder, File modelFunctionFolder, 
+			String verb, String refs, JsonObject oRef, JsonObject data, String specLang) throws CommandExecutionException {
+		
+		String ref = Lang.singularize (refs);
+		String Ref = Lang.capitalizeFirst (ref);
+		
+		String refName = Lang.capitalizeFirst (verb) + data.get (Tokens.Model) + Ref;
+		
+		File destSpecFile = new File (modelSpecFolder, (verb.equals (RefVerbs.List) ? Lang.pluralize (refName) : refName) + "." + specLang);
+		
+		data.set (Tokens.ref, ref);
+		data.set (Tokens.Ref, Ref);
+		data.set (Tokens.refs, refs);
+		data.set (Tokens.Refs, Lang.pluralize (Ref));
+		data.set (Tokens.RefSpec, oRef);
+		
+		String serviceHeadder = verb + " " + data.get (Tokens.model) + " > " + (verb.equals (RefVerbs.List) ? refs : ref);
+		
+		tool.printer ().node (0, "'" + highlight (tool, serviceHeadder, true) + "' Service"); 
+
+		writeFile (new File (templateFolder, "refs/" + verb + Lang.SLASH + "spec.json"), destSpecFile, data, specLang);
+		tool.printer ().node (1, "    spec file 'services/" + underline (tool, modelSpecFolder.getName () + Lang.SLASH + (verb.equals (RefVerbs.List) ? Lang.pluralize (refName) : refName) + "." + specLang, true) + "'"); 
+
+		File destFuncFile = new File (modelFunctionFolder, (verb.equals (RefVerbs.List) ? Lang.pluralize (refName) : refName) + ".js");
+		
+		writeFile (new File (templateFolder, "refs/" + verb + Lang.SLASH + "function.js"), destFuncFile, data, specLang);
+		tool.printer ().node (1, "function file 'functions/" + underline (tool, modelSpecFolder.getName () + Lang.SLASH + (verb.equals (RefVerbs.List) ? Lang.pluralize (refName) : refName) + ".js", true) + "'"); 
 		
 	}
 
@@ -317,7 +402,7 @@ public class CodeGenUtils {
 		if (spec == null) {
 			return null;
 		}
-		if (!spec.containsKey (Fields)) {
+		if (!spec.containsKey (ApiServiceValidator.Spec.Fields)) {
 			return spec;
 		}
 		spec = spec.duplicate ();
@@ -326,7 +411,7 @@ public class CodeGenUtils {
 			spec.set (MarkAsDeleted, String.valueOf (false));
 		}
 		
-		JsonObject oProperties = Json.getObject (spec, Fields);
+		JsonObject oProperties = Json.getObject (spec, ApiServiceValidator.Spec.Fields);
 		Iterator<String> properties = oProperties.keys ();
 		while (properties.hasNext ()) {
 			String property = properties.next ();
@@ -379,6 +464,9 @@ public class CodeGenUtils {
 			if (!oRef.containsKey (Multiple)) {
 				oRef.set (Multiple, String.valueOf (false));
 			}
+			if (Json.getBoolean (oRef, Multiple, false)) {
+				Json.getObject (spec, ApiServiceValidator.Spec.Fields).remove (ref);
+			}
 		}
 		
 		return spec;
@@ -430,11 +518,19 @@ public class CodeGenUtils {
 	}
 	
 	public static String highlight (Tool tool, String text) {
-		return tool.printer ().getFontPrinter ().generate (text, Attribute.LIGHT, FColor.YELLOW, BColor.NONE);
+		return highlight (tool, text, false);
+	}
+
+	public static String highlight (Tool tool, String text, boolean altColor) {
+		return tool.printer ().getFontPrinter ().generate (text, Attribute.LIGHT, altColor ? FColor.MAGENTA : FColor.YELLOW, BColor.NONE);
 	}
 
 	public static String underline (Tool tool, String text) {
-		return tool.printer ().getFontPrinter ().generate (text, Attribute.UNDERLINE, FColor.YELLOW, BColor.NONE);
+		return underline (tool, text, false);
+	}
+
+	public static String underline (Tool tool, String text, boolean altColor) {
+		return tool.printer ().getFontPrinter ().generate (text, Attribute.UNDERLINE, altColor ? FColor.MAGENTA : FColor.YELLOW, BColor.NONE);
 	}
 
 }
