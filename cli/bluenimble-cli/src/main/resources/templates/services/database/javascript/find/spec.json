@@ -5,7 +5,7 @@
  *  <verb>     	The request verb. Allowed values 'get', 'post', 'put', 'delete' 
  *  <endpoint> 	The path or uri to call this service. Example /users or /users/:user where ':user' is an uri parameter
  *  <runtime> 	A section to define extra application specific data to be used at runtime. 
- *				For javascript developers, the runtime section should define the 'script' to execute by this service
+ *				For javascript developers, the runtime section should define the 'function' to execute by this service
  *  <security> 	In this section, you can define which security methods are supported by this service.
  *				the platform default security methods are 'token', 'basic', 'cookie', 'signature'. Here is an example of allowing only calls 
  *				sending over a token as a request header or a signature:
@@ -41,7 +41,7 @@
 	
 	    "verb": "get",
 	"endpoint": "/[[models]]/find",
-		"name": "Search [[Models]]",
+		"name": "Find [[Models]]",
 	
 	"spec": {
 		"fields": {

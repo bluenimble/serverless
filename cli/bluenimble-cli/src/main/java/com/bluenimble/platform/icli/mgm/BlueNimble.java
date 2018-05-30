@@ -311,11 +311,11 @@ public class BlueNimble extends JLineTool {
 	public void onReady () {
 		String sWorkspace = Json.getString (Config, CliSpec.Config.Workspace);
 		if (Lang.isNullOrEmpty (sWorkspace)) {
-			printer ().content ("Current workspace", "No workspace found! it seems it's your first time running BlueNimble.\nUse command: ws [path to a workspace folder]. Ex: ws /home/me/myprojects/bluenimble");
+			printer ().content ("__PS__ GREEN:Current workspace", "No workspace found! it seems it's your first time running BlueNimble.\nUse command: ws [path to a workspace folder]. Ex: ws /home/me/myprojects/bluenimble");
 		} else {
-			printer ().content ("Current workspace", sWorkspace);
+			printer ().content ("__PS__ GREEN:Current workspace", sWorkspace);
 		}
-		printer ().content ("Keys folder ", keysFolder ().getAbsolutePath ());
+		printer ().content ("__PS__ GREEN:Keys folder", keysFolder ().getAbsolutePath ());
 	}
 	
 	public static void saveConfig () throws IOException {

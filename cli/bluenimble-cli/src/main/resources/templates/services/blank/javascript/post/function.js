@@ -25,7 +25,7 @@ return {
 	 **/
 	execute: function (api, consumer, request, response) {
 		
-		return { greeting: "I'm [" + request.service.name + '] service and I want to eat some of your code' };
+		return { greeting: "I'm [" + request.service.name + "] and I am hungry to do something that matters!" };
 		
 	}
 

@@ -35,7 +35,6 @@ import com.bluenimble.platform.icli.mgm.utils.CodeGenUtils;
 import com.bluenimble.platform.icli.mgm.utils.CodeGenUtils.Tokens;
 import com.bluenimble.platform.icli.mgm.utils.SpecUtils;
 import com.bluenimble.platform.json.JsonObject;
-import com.bluenimble.platform.json.printers.YamlStringPrinter;
 
 public class CreateApiHandler implements CommandHandler {
 
@@ -178,10 +177,7 @@ public class CreateApiHandler implements CommandHandler {
 			
 			BlueNimble.saveConfig ();
 			
-			tool.printer ().content (
-				"Api '" + namespace + "' created! path: $ws/ " + sApiFolder, 
-				BlueNimble.SpecLangs.Json.equals (specLang) ? apiSpec.toString (2) : new YamlStringPrinter (2).print (apiSpec).toString ()
-			);
+			tool.printer ().info ("Api '" + namespace + "' created! path: $ws/ " + sApiFolder);
 		} catch (Exception e) {
 			throw new CommandExecutionException (e.getMessage (), e);
 		}

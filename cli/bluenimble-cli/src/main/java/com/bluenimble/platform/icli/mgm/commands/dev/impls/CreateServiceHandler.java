@@ -17,18 +17,22 @@
 package com.bluenimble.platform.icli.mgm.commands.dev.impls;
 
 import java.io.File;
+import java.util.Map;
 
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.cli.Tool;
+import com.bluenimble.platform.cli.ToolContext;
 import com.bluenimble.platform.cli.command.CommandExecutionException;
 import com.bluenimble.platform.cli.command.CommandHandler;
 import com.bluenimble.platform.cli.command.CommandResult;
 import com.bluenimble.platform.cli.command.impls.DefaultCommandResult;
 import com.bluenimble.platform.cli.impls.AbstractTool;
-import com.bluenimble.platform.icli.mgm.CliSpec;
 import com.bluenimble.platform.icli.mgm.BlueNimble;
+import com.bluenimble.platform.icli.mgm.CliSpec;
 import com.bluenimble.platform.icli.mgm.utils.CodeGenUtils;
+import com.bluenimble.platform.icli.mgm.utils.SpecUtils;
+import com.bluenimble.platform.json.JsonObject;
 
 public class CreateServiceHandler implements CommandHandler {
 
@@ -58,11 +62,28 @@ public class CreateServiceHandler implements CommandHandler {
 		String verb 	= args [0];
 		String model 	= args [1];
 		
-		File resourcesFolder 	= new File (apiFolder, "resources");
+		File resourcesFolder 	= new File (SpecUtils.specFolder (apiFolder), "resources");
 		File servicesFolder 	= new File (resourcesFolder, "services");
 		File functionsFolder 		= new File (resourcesFolder, "functions");
 		
-		CodeGenUtils.writeService ((AbstractTool)tool, verb, model, servicesFolder, functionsFolder);
+		@SuppressWarnings("unchecked")
+		Map<String, Object> vars = (Map<String, Object>)tool.getContext (Tool.ROOT_CTX).get (ToolContext.VARS);
+		
+		JsonObject meta = (JsonObject)vars.get (BlueNimble.DefaultVars.UserMeta);
+		
+		String userName 	= Json.getString (meta, BlueNimble.DefaultVars.UserName);
+		if (Lang.isNullOrEmpty (userName)) {
+			userName = System.getProperty ("user.name");
+		}
+		
+		String userPackage 	= Json.getString (meta, BlueNimble.DefaultVars.UserPackage);
+		if (Lang.isNullOrEmpty (userPackage)) {
+			userPackage = "com." + userName.toLowerCase ();
+		}
+		
+		String apiFunctionsPackage = userPackage + Lang.DOT + currentApi + Lang.DOT + "functions";
+		
+		CodeGenUtils.writeService ((AbstractTool)tool, verb, model, apiFunctionsPackage, servicesFolder, functionsFolder);
 		
 		return new DefaultCommandResult (CommandResult.OK, null);
 	}

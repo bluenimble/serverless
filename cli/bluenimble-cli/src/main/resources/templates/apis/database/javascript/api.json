@@ -12,7 +12,7 @@
  *  <description> 
  *				A verbose description of what's this api stands for. (Optional)
  *  <runtime> 	A section to define extra application specific data to be used at runtime by all services. (Required for javascript) 
- *				For javascript developers, the runtime section may define the 'script' to execute by this api -if any- 
+ *				For javascript developers, the runtime section may define the 'function' to execute by this api -if any- 
  *  <security> 	In this section, you can define which security methods are supported by this api. (Optional)
  *				bluenimble out-of-the-box security methods are 'token', 'basic', 'cookie', 'signature'. Here is an example of an 
  *				api supporting all security methods:

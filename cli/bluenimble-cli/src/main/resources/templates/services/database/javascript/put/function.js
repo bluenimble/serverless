@@ -41,9 +41,8 @@ return {
 				api.message (request.lang, 'NotFound', '[[model]]', [[model]]Id)
 			).status (ApiResponse.NOT_FOUND);
 		}
-		
-		// set the current user as the updater of this [[Model]]
-		[[model]].ref ('updatedBy', 'Users', consumer.id);
+		[[#eq ModelSpec.addDefaults 'true']]// set the current user as the updater of this [[Model]]
+		[[model]].ref ('updatedBy', 'Users', consumer.id);[[/eq]]
 		
 		[[#if ModelSpec.refs]]// resolve references [[#each ModelSpec.refs]][[#neq multiple 'true']]
 		if (payload.[[@key]]) {

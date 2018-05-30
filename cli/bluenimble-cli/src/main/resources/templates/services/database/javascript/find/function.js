@@ -29,10 +29,8 @@ return {
 		
 		var query = request.get ('query');
 		if (!query) {
-			query = { where: { 'createdBy.id': consumer.id, deleted: false } };
-		} else {
-			query = Json.parse (query);
-		}
+			query = { where: { [[#eq ModelSpec.addDefaults 'true']]'createdBy.id': consumer.id[[/eq]][[#eq ModelSpec.markAsDeleted 'true']], deleted: false[[/eq]] } };
+		} 
 		
 		var result = { [[models]]: Json.array () };
 		

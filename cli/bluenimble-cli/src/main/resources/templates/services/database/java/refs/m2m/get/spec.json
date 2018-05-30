@@ -1,0 +1,57 @@
+/**
+ * 
+ * This is where you write your service specification.
+ * Spec:
+ *  <verb>     	The request verb. Allowed values 'get', 'post', 'put', 'delete' 
+ *  <endpoint> 	The path or uri to call this service. Example /users or /users/:user where ':user' is an uri parameter
+ *  <runtime> 	A section to define extra application specific data to be used at runtime. 
+ *				For javascript developers, the runtime section should define the 'function' to execute by this service
+ *  <security> 	In this section, you can define which security methods are supported by this service.
+ *				the platform default security methods are 'token', 'basic', 'cookie', 'signature'. Here is an example of allowing only calls 
+ *				sending over a token as a request header or a signature:
+ *   			"security": {
+ *					"methods": ["token", "signature"]
+ *				}
+ *				Note: 
+ *					- This is optional. It's needed only if you want to restrict a service to be called using a specific security method
+ *					- These methods should be enabled at the api specification file 'api.json' in order to take effect
+ *  <spi>   	Which scripting language and implementation to use.
+ *				for javascript developers it's always "class": "scripting.javascript:ServiceSpi"
+ *  <mock>		This section is useful when prototyping, without the need to code the business logic behind.
+ *				Here, you can put data to return back to the calling application. It helps IoT and front-end developers 
+ *				to move fast without waiting for back-end logic to be ready.
+ *				Example:
+ *				"mock": {
+ *					// the mock data will be taken in consideration only if "enable" is "true". 
+ *					// means, you can always keep your mock data and turn off "enabled"
+ *					"enabled": "true",
+ *					// your mock service result here.
+ *					"output": {
+ *						"title": "iPad 2 Silver",
+ *						"price": "$560"
+ *					}
+ *				}
+ *   
+ *	@author		[[user]]
+ *	@created	[[date]]
+ * 
+ **/
+
+{
+	
+	    "verb": "get",
+	"endpoint": "/[[models]]/:[[model]]/[[refs]]/:[[ref]]",
+		"name": "Get [[Ref]] from [[Model]]",
+	
+	"spec": {
+		"fields": {
+			"[[model]]": { },
+			"[[ref]]": { }
+		}
+	},
+	
+	"spi": {
+		"class": "[[package]].[[models]].Get[[Model]][[Ref]]Spi"
+	}
+	
+}

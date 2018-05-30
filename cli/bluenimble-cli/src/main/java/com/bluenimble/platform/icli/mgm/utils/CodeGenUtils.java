@@ -98,10 +98,19 @@ public class CodeGenUtils {
 	}
 	
 	public interface RefVerbs {
-		String Add 		= "add";
+		String Set 		= "set";
+		String Unset 	= "unset";
+
 		String Get 		= "get";
+
+		String Add 		= "add";
 		String Remove 	= "remove";
 		String List 	= "list";
+	}
+	
+	public interface RefFolder {
+		String M2M 	= "m2m";
+		String O2O 	= "o2o";
 	}
 
 	private static final Map<String, String> Verbs = new HashMap<String, String> ();
@@ -112,6 +121,14 @@ public class CodeGenUtils {
 		Verbs.put (ApiVerb.DELETE.name ().toLowerCase (), "Delete");
 		Verbs.put (FindVerb, "Find");
 		Verbs.put ("root", "Root");
+	}
+	
+	private static final Map<String, String> Extensions = new HashMap<String, String> ();
+	static {
+		Extensions.put ("javascript", ".js");
+		Extensions.put ("java", ".java");
+		Extensions.put ("scala", ".sc");
+		Extensions.put ("python", ".py");
 	}
 
 	public static void writeFile (File source, JsonObject data, String lang) throws CommandExecutionException {
@@ -194,7 +211,7 @@ public class CodeGenUtils {
 		}
 	}
 
-	public static void writeService (Tool tool, String verb, String model, File specsFolder, File functionsFolder) throws CommandExecutionException {
+	public static void writeService (Tool tool, String verb, String model, String apiFunctionsPackage, File specsFolder, File functionsFolder) throws CommandExecutionException {
 		
 		String path = null;
 		
@@ -216,11 +233,11 @@ public class CodeGenUtils {
 
 		if (Lang.STAR.equals (verb)) {
 			
-			writeService (tool, ApiVerb.GET.name ().toLowerCase (), model, specsFolder, functionsFolder);
-			writeService (tool, ApiVerb.POST.name ().toLowerCase (), model, specsFolder, functionsFolder);
-			writeService (tool, ApiVerb.PUT.name ().toLowerCase (), model, specsFolder, functionsFolder);
-			writeService (tool, ApiVerb.DELETE.name ().toLowerCase (), model, specsFolder, functionsFolder);
-			writeService (tool, FindVerb, model, specsFolder, functionsFolder);
+			writeService (tool, ApiVerb.GET.name ().toLowerCase (), model, apiFunctionsPackage, specsFolder, functionsFolder);
+			writeService (tool, ApiVerb.POST.name ().toLowerCase (), model, apiFunctionsPackage, specsFolder, functionsFolder);
+			writeService (tool, ApiVerb.PUT.name ().toLowerCase (), model, apiFunctionsPackage, specsFolder, functionsFolder);
+			writeService (tool, ApiVerb.DELETE.name ().toLowerCase (), model, apiFunctionsPackage, specsFolder, functionsFolder);
+			writeService (tool, FindVerb, model, apiFunctionsPackage, specsFolder, functionsFolder);
 			
 			return;
 		}
@@ -248,8 +265,13 @@ public class CodeGenUtils {
 			return;
 		}
 		
+		String extension = Extensions.get (templateFolder.getName ());
+		if (extension == null) {
+			throw new CommandExecutionException ("can't find a mapping for language '" + templateFolder.getName () + "'");
+		}
+		
 		File spec 	= new File (verbFolder, "spec.json");
-		File function = new File (verbFolder, "function.js");
+		File function = new File (verbFolder, "function" + extension);
 		
 		String models = (model.endsWith ("y") ? (model.substring (0, model.length () - 1) + "ies") : model + "s");
 		
@@ -264,7 +286,7 @@ public class CodeGenUtils {
 			modelSpecFolder.mkdirs ();
 		}
 		
-		File modelFunctionFolder = functionsFolder; 
+		File modelFunctionFolder = supportsPackages (templateFolder.getName ()) ? new File (functionsFolder, Lang.replace (apiFunctionsPackage, Lang.DOT, Lang.SLASH)) : functionsFolder; 
 		if (!Lang.BLANK.equals (model) && !Lang.BLANK.equals (path)) {
 			modelFunctionFolder = new File (functionsFolder, path == null ? models : path);
 		}
@@ -285,6 +307,7 @@ public class CodeGenUtils {
 		data.set (Tokens.Model, Model);
 		data.set (Tokens.models, models);
 		data.set (Tokens.Models, Models);
+		data.set (Tokens.Package, apiFunctionsPackage);
 		if (path != null) {
 			data.set (Tokens.Path, path);
 		}
@@ -327,20 +350,20 @@ public class CodeGenUtils {
 		writeFile (spec, destSpecFile, data, specLang);
 		tool.printer ().node (1, "    spec file 'services/" + underline (tool, (printFolder ? modelSpecFolder.getName () + "/" : "" ) + (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + "." + specLang) + "'"); 
 
-		File destFuncFile = new File (modelFunctionFolder, (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + ".js");
+		File destFuncFile = new File (modelFunctionFolder, (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + extension);
 		
 		writeFile (function, destFuncFile, data, specLang);
-		tool.printer ().node (1, "function file 'functions/" + underline (tool, (printFolder ? modelFunctionFolder.getName () + "/" : "" ) + (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + ".js") + "'"); 
+		tool.printer ().node (1, "function file 'functions/" + underline (tool, (printFolder ? modelFunctionFolder.getName () + "/" : "" ) + (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + extension) + "'"); 
 		
 		if (ApiVerb.POST.name ().equalsIgnoreCase (verb) && !Json.isNullOrEmpty (serviceModelSpec)) {
-			writeRefsServices (tool, templateFolder, modelSpecFolder, modelFunctionFolder, data, specLang);
+			writeRefsServices (tool, templateFolder, modelSpecFolder, modelFunctionFolder, data, extension, specLang);
 		}
 		
 		return;
 		
 	}
 
-	private static void writeRefsServices (Tool tool, File templateFolder, File modelSpecFolder, File modelFunctionFolder, JsonObject data, String specLang) 
+	private static void writeRefsServices (Tool tool, File templateFolder, File modelSpecFolder, File modelFunctionFolder, JsonObject data, String extension, String specLang) 
 			throws CommandExecutionException {
 		
 		JsonObject serviceModelSpec = Json.getObject (data, CliSpec.ModelSpec);
@@ -358,18 +381,21 @@ public class CodeGenUtils {
 		while (refs.hasNext ()) {
 			String ref = refs.next ();
 			JsonObject oRef = Json.getObject (oRefs, ref);
-			if (!Json.getBoolean (oRef, Multiple, false)) {
-				continue;
+			if (Json.getBoolean (oRef, Multiple, false)) {
+				writeRefService (tool, templateFolder, modelSpecFolder, modelFunctionFolder, RefVerbs.Add, RefFolder.M2M, ref, oRef, data, extension, specLang);
+				writeRefService (tool, templateFolder, modelSpecFolder, modelFunctionFolder, RefVerbs.Get, RefFolder.M2M, ref, oRef, data, extension, specLang);
+				writeRefService (tool, templateFolder, modelSpecFolder, modelFunctionFolder, RefVerbs.Remove, RefFolder.M2M, ref, oRef, data, extension, specLang);
+				writeRefService (tool, templateFolder, modelSpecFolder, modelFunctionFolder, RefVerbs.List, RefFolder.M2M, ref, oRef, data, extension, specLang);
+			} else {
+				writeRefService (tool, templateFolder, modelSpecFolder, modelFunctionFolder, RefVerbs.Set, RefFolder.O2O, ref, oRef, data, extension, specLang);
+				writeRefService (tool, templateFolder, modelSpecFolder, modelFunctionFolder, RefVerbs.Get, RefFolder.O2O, ref, oRef, data, extension, specLang);
+				writeRefService (tool, templateFolder, modelSpecFolder, modelFunctionFolder, RefVerbs.Unset, RefFolder.O2O, ref, oRef, data, extension, specLang);
 			}
-			writeRefService (tool, templateFolder, modelSpecFolder, modelFunctionFolder, RefVerbs.Add, ref, oRef, data, specLang);
-			writeRefService (tool, templateFolder, modelSpecFolder, modelFunctionFolder, RefVerbs.Get, ref, oRef, data, specLang);
-			writeRefService (tool, templateFolder, modelSpecFolder, modelFunctionFolder, RefVerbs.Remove, ref, oRef, data, specLang);
-			writeRefService (tool, templateFolder, modelSpecFolder, modelFunctionFolder, RefVerbs.List, ref, oRef, data, specLang);
 		}
 	}
 	
 	private static void writeRefService (Tool tool, File templateFolder, File modelSpecFolder, File modelFunctionFolder, 
-			String verb, String refs, JsonObject oRef, JsonObject data, String specLang) throws CommandExecutionException {
+			String verb, String refFolder, String refs, JsonObject oRef, JsonObject data, String extension, String specLang) throws CommandExecutionException {
 		
 		String ref = Lang.singularize (refs);
 		String Ref = Lang.capitalizeFirst (ref);
@@ -388,13 +414,13 @@ public class CodeGenUtils {
 		
 		tool.printer ().node (0, "'" + highlight (tool, serviceHeadder, true) + "' Service"); 
 
-		writeFile (new File (templateFolder, "refs/" + verb + Lang.SLASH + "spec.json"), destSpecFile, data, specLang);
+		writeFile (new File (templateFolder, "refs/" + refFolder + "/" + verb + Lang.SLASH + "spec.json"), destSpecFile, data, specLang);
 		tool.printer ().node (1, "    spec file 'services/" + underline (tool, modelSpecFolder.getName () + Lang.SLASH + (verb.equals (RefVerbs.List) ? Lang.pluralize (refName) : refName) + "." + specLang, true) + "'"); 
 
-		File destFuncFile = new File (modelFunctionFolder, (verb.equals (RefVerbs.List) ? Lang.pluralize (refName) : refName) + ".js");
+		File destFuncFile = new File (modelFunctionFolder, (verb.equals (RefVerbs.List) ? Lang.pluralize (refName) : refName) + extension);
 		
-		writeFile (new File (templateFolder, "refs/" + verb + Lang.SLASH + "function.js"), destFuncFile, data, specLang);
-		tool.printer ().node (1, "function file 'functions/" + underline (tool, modelSpecFolder.getName () + Lang.SLASH + (verb.equals (RefVerbs.List) ? Lang.pluralize (refName) : refName) + ".js", true) + "'"); 
+		writeFile (new File (templateFolder, "refs/" + refFolder + "/" + verb + Lang.SLASH + "function" + extension), destFuncFile, data, specLang);
+		tool.printer ().node (1, "function file 'functions/" + underline (tool, modelSpecFolder.getName () + Lang.SLASH + (verb.equals (RefVerbs.List) ? Lang.pluralize (refName) : refName) + extension, true) + "'"); 
 		
 	}
 
@@ -531,6 +557,10 @@ public class CodeGenUtils {
 
 	public static String underline (Tool tool, String text, boolean altColor) {
 		return tool.printer ().getFontPrinter ().generate (text, Attribute.UNDERLINE, altColor ? FColor.MAGENTA : FColor.YELLOW, BColor.NONE);
+	}
+	
+	private static boolean supportsPackages (String template) {
+		return "java".equals (template);
 	}
 
 }
