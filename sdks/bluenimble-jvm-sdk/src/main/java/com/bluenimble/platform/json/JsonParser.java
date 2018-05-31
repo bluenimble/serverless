@@ -436,6 +436,7 @@ public class JsonParser implements Serializable {
      * Skip characters until past the requested string.
      * If it is not found, we are left at the end of the source.
      * @param to A string to skip past.
+     * @return true if past
      */
     public boolean skipPast(String to) {
         this.position = this.source.indexOf(to, this.position);
