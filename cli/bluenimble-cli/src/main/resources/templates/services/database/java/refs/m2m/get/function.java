@@ -60,8 +60,8 @@ public class Get[[Model]][[Ref]] extends AbstractApiServiceSpi {
 		DatabaseObject [[model]][[Ref]] = null;
 		try {
 			// find link
-			[[model]][[Ref]] = db.findOne ("[[Model]][[Refs]]", new JsonQuery ( 
-				(JsonObject)new JsonObject ().set ("where", new JsonObject ().set ("[[model]]", [[model]]Id).set ("[[ref]]", [[ref]]Id));
+			[[model]][[Ref]] = db.findOne ("[[Model]]_[[Refs]]", new JsonQuery ( 
+				(JsonObject)new JsonObject ().set ("where", new JsonObject ().set ("[[model]]", [[model]]Id).set ("[[ref]]", [[ref]]Id))
 			));
 		} catch (DatabaseException dbex) {
 			throw new ApiServiceExecutionException (dbex.getMessage (), dbex);

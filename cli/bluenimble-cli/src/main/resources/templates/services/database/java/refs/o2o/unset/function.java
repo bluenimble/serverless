@@ -57,7 +57,7 @@ public class Unset[[Model]][[Ref]] extends AbstractApiServiceSpi {
 			// get [[Model]] by :[[model]]
 			[[model]] = db.get ("[[Models]]", [[model]]Id);
 		} catch (DatabaseException dbex) {
-			throw new DatabaseException (dbex.getMessage (), dbex);
+			throw new ApiServiceExecutionException (dbex.getMessage (), dbex);
 		}
 		
 		if ([[model]] == null) {
@@ -68,9 +68,10 @@ public class Unset[[Model]][[Ref]] extends AbstractApiServiceSpi {
 		
 		try {
 			// unset [[ref]]
-			[[model]].remove ("[[ref]]").save ();
+			[[model]].remove ("[[ref]]");
+			[[model]].save ();
 		} catch (DatabaseException dbex) {
-			throw new DatabaseException (dbex.getMessage (), dbex);
+			throw new ApiServiceExecutionException (dbex.getMessage (), dbex);
 		}
 		
 		return new JsonApiOutput ([[model]].toJson (null));

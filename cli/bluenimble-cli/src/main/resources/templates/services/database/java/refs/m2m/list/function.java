@@ -18,6 +18,7 @@ import com.bluenimble.platform.db.query.impls.JsonQuery;
 import com.bluenimble.platform.api.impls.JsonApiOutput;
 
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.json.JsonArray;
 
 /**
  * The only required function that you should implement, if no mock data provided in your List[[Model]][[Refs]].json
@@ -56,9 +57,9 @@ public class List[[Model]][[Refs]] extends AbstractApiServiceSpi {
 		
 		// build query
 
-		JsonObject filter = (JsonObject)request.get ('filter');
+		JsonObject filter = (JsonObject)request.get ("filter");
 		
-		JsonObject where = new JsonObject ().set ("[[model]]", [[model]]Id);
+		JsonObject where = (JsonObject)new JsonObject ().set ("[[model]]", [[model]]Id);
 		
 		if (filter != null) {
 			where.putAll (filter);
@@ -67,15 +68,15 @@ public class List[[Model]][[Refs]] extends AbstractApiServiceSpi {
 		// run query
 		JsonObject result 		= new JsonObject ();
 		JsonArray [[refs]] 		= new JsonArray ();
-		result.set ("[[refs]]", [[models]]);
+		result.set ("[[refs]]", [[refs]]);
 		
 		Database db = feature (api, Database.class, null, request);
 		
 		try {
-			db.find ("[[Model]][[Refs]]", new JsonQuery (query), new Visitor () {
+			db.find ("[[Model]]_[[Refs]]", new JsonQuery ((JsonObject)new JsonObject ().set ("where", where)), new Visitor () {
 				@Override
 				public boolean onRecord (DatabaseObject [[model]][[Ref]]) {
-					[[refs]].add ([[model]][[Ref]].get ("[[ref]]").toJson (null));
+					[[refs]].add (((DatabaseObject)[[model]][[Ref]].get ("[[ref]]")).toJson (null));
 					return false;
 				}
 				@Override

@@ -74,8 +74,9 @@ public class Update[[Model]] extends AbstractApiServiceSpi {
 			[[#eq ModelSpec.addDefaults 'true']]// set the current user as the updater of this [[Model]]
 			[[model]].set ('updatedBy', new JsonObject ().set (Database.Fields.Entity, "Users").set (Database.Fields.Entity, consumer.get (ApiConsumer.Fields.Id));[[/eq]]
 			
-			[[#if ModelSpec.refs]]// resolve references [[#each ModelSpec.refs]][[#neq multiple 'true']]if (payload.containsKey ("[[@key]]")) {[[#eq exists 'true']]
-				Object [[@key]]Id = Json.find (payload, "[[@key]]", Database.Fields.Id);
+			[[#if ModelSpec.refs]][[#each ModelSpec.refs]][[#neq multiple 'true']]
+			if (payload.containsKey ("[[@key]]")) {[[#eq exists 'true']]
+				Object [[@key]]Id = com.bluenimble.platform.Json.find (payload, "[[@key]]", Database.Fields.Id);
 				DatabaseObject [[@key]] = db.get ("[[entity]]", [[@key]]Id);
 				if ([[@key]] == null) {
 					throw new ApiServiceExecutionException (
@@ -85,7 +86,7 @@ public class Update[[Model]] extends AbstractApiServiceSpi {
 				[[model]].set ("[[@key]]", [[@key]]);
 				
 				// remove '[[@key]]' from payload
-				payload.remove (""[[@key]]");
+				payload.remove ("[[@key]]");
 			[[else]]Json.getObject (payload, "[[@key]]").set (Database.Fields.Entity, "[[entity]]");[[/eq]]}[[/neq]][[/each]][[/if]]
 			
 			// load payload into [[model]]

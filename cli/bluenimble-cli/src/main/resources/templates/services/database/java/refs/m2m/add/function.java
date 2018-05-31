@@ -63,7 +63,7 @@ public class Add[[Model]][[Ref]] extends AbstractApiServiceSpi {
 		}	
 		if ([[model]] == null) {
 			throw new ApiServiceExecutionException (
-				api.message (request.getLang (), 'NotFound', '[[model]]', [[model]]Id)
+				api.message (request.getLang (), "NotFound", "[[model]]", [[model]]Id)
 			).status (ApiResponse.NOT_FOUND);
 		}
 		
@@ -83,7 +83,7 @@ public class Add[[Model]][[Ref]] extends AbstractApiServiceSpi {
 		DatabaseObject [[model]][[Ref]] = null;
 		try {
 			// add link
-			[[model]][[Ref]] = db.create ("[[Model]][[Refs]]");
+			[[model]][[Ref]] = db.create ("[[Model]]_[[Refs]]");
 			[[model]][[Ref]].set ("[[model]]", [[model]]Id);
 			[[model]][[Ref]].set ("[[ref]]", [[ref]]Id);
 			

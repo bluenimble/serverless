@@ -48,7 +48,7 @@ public class CreateApiFromModelHandler implements CommandHandler {
 	public CommandResult execute (Tool tool, String... args) throws CommandExecutionException {
 		
 		if (args == null || args.length < 1) {
-			throw new CommandExecutionException ("api model required. ex. create api modelVar");
+			throw new CommandExecutionException ("api model required. ex. create api modelVar [api folder - Optional]");
 		}
 		
 		Map<String, Object> vars = (Map<String, Object>)tool.getContext (Tool.ROOT_CTX).get (ToolContext.VARS);

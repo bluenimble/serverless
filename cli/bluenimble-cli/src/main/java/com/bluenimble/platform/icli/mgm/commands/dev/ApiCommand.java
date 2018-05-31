@@ -96,7 +96,7 @@ public class ApiCommand extends AbstractCommand {
 
 		try {
 			BlueNimble.saveConfig ();
-			tool.printer ().content ("Current Api", "namespace: " + apiNs + "\npath: $ws/ " + Json.getString (Json.getObject (config, CliSpec.Config.Apis), apiNs));
+			tool.printer ().content ("__PS__ GREEN:Current Api", "namespace: " + apiNs + "\npath: $ws/ " + Json.getString (Json.getObject (config, CliSpec.Config.Apis), apiNs));
 		} catch (Exception ex) {
 			throw new CommandExecutionException (ex.getMessage (), ex);
 		}

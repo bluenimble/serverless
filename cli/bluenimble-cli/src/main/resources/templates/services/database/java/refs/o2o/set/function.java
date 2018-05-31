@@ -58,7 +58,7 @@ public class Set[[Model]][[Ref]] extends AbstractApiServiceSpi {
 			// get [[Model]] by :[[model]]
 			[[model]] = db.get ("[[Models]]", [[model]]Id);
 		} catch (DatabaseException dbex) {
-			throw new DatabaseException (dbex.getMessage (), dbex);
+			throw new ApiServiceExecutionException (dbex.getMessage (), dbex);
 		}
 		if ([[model]] == null) {
 			throw new ApiServiceExecutionException (
@@ -69,9 +69,9 @@ public class Set[[Model]][[Ref]] extends AbstractApiServiceSpi {
 		DatabaseObject [[ref]] = null;
 		try {
 			// get [[Ref]] by :[[ref]]
-			[[ref]] = db.get ("[[RefSpec.entity]]", request.get ([[ref]]Id) );
+			[[ref]] = db.get ("[[RefSpec.entity]]", [[ref]]Id);
 		} catch (DatabaseException dbex) {
-			throw new DatabaseException (dbex.getMessage (), dbex);
+			throw new ApiServiceExecutionException (dbex.getMessage (), dbex);
 		}
 		
 		if ([[ref]] == null) {
@@ -82,9 +82,10 @@ public class Set[[Model]][[Ref]] extends AbstractApiServiceSpi {
 		
 		try {
 			// set [[ref]]
-			[[model]].set ("[[ref]]", [[ref]]).save ();
+			[[model]].set ("[[ref]]", [[ref]]);
+			[[model]].save ();
 		} catch (DatabaseException dbex) {
-			throw new DatabaseException (dbex.getMessage (), dbex);
+			throw new ApiServiceExecutionException (dbex.getMessage (), dbex);
 		}
 		
 		return new JsonApiOutput ([[model]].toJson (null));

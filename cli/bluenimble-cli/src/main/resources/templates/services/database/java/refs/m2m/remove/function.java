@@ -19,10 +19,10 @@ import com.bluenimble.platform.api.impls.JsonApiOutput;
 import com.bluenimble.platform.json.JsonObject;
 
 /**
- * The only required function that you should implement, if no mock data provided in your Delete[[Model]][[Ref]].json
+ * The only required function that you should implement, if no mock data provided in your Remove[[Model]][[Ref]].json
  * 
  * The execute function will be triggered when an application or device makes a call to [[verb]] [bluenimble-space].[bluenimble-instance].bluenimble.com/[[api]]
- * which is defined in your service specification file Add[[Model]][[Ref]].json 
+ * which is defined in your service specification file Remove[[Model]][[Ref]].json 
  * 
  * Arguments:
  *  Api 		 the api where this service is running  
@@ -41,7 +41,7 @@ import com.bluenimble.platform.json.JsonObject;
  * 
  **/
 
-public class Delete[[Model]][[Ref]] extends AbstractApiServiceSpi {
+public class Remove[[Model]][[Ref]] extends AbstractApiServiceSpi {
 	
 	private static final long serialVersionUID = [[randLong]]L;
 
@@ -60,8 +60,8 @@ public class Delete[[Model]][[Ref]] extends AbstractApiServiceSpi {
 		DatabaseObject [[model]][[Ref]] = null;
 		try {
 			// find link
-			[[model]][[Ref]] = db.findOne ("[[Model]][[Refs]]", new JsonQuery ( 
-				(JsonObject)new JsonObject ().set ("where", new JsonObject ().set ("[[model]]", [[model]]Id).set ("[[ref]]", [[ref]]Id));
+			[[model]][[Ref]] = db.findOne ("[[Model]]_[[Refs]]", new JsonQuery ( 
+				(JsonObject)new JsonObject ().set ("where", new JsonObject ().set ("[[model]]", [[model]]Id).set ("[[ref]]", [[ref]]Id))
 			));
 		} catch (DatabaseException dbex) {
 			throw new ApiServiceExecutionException (dbex.getMessage (), dbex);
@@ -80,7 +80,7 @@ public class Delete[[Model]][[Ref]] extends AbstractApiServiceSpi {
 			throw new ApiServiceExecutionException (dbex.getMessage (), dbex);
 		}
 		
-		return new JsonApiOutput (new JsonObject ().set ("removed", true));
+		return new JsonApiOutput ((JsonObject)new JsonObject ().set ("removed", true));
 	}
 	
 }

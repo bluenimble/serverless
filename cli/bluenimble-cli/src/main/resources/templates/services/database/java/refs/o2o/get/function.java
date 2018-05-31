@@ -50,6 +50,8 @@ public class Get[[Model]][[Ref]] extends AbstractApiServiceSpi {
 		
 		// get [[Ref]] of [[Model]]
 		
+		Object [[model]]Id = request.get ("[[model]]");
+		
 		Database db = feature (api, Database.class, null, request);
 		
 		DatabaseObject [[model]] = null;
@@ -57,16 +59,16 @@ public class Get[[Model]][[Ref]] extends AbstractApiServiceSpi {
 			// get [[Model]] by :[[model]]
 			[[model]] = db.get ("[[Models]]", request.get ("[[model]]") );
 		} catch (DatabaseException dbex) {
-			throw new DatabaseException (dbex.getMessage (), dbex);
+			throw new ApiServiceExecutionException (dbex.getMessage (), dbex);
 		}
 		
 		if ([[model]] == null) {
 			throw new ApiServiceExecutionException (
-				api.message (request.lang, "NotFound", "[[model]]", [[model]]Id)
+				api.message (request.getLang (), "NotFound", "[[model]]", [[model]]Id)
 			).status (ApiResponse.NOT_FOUND);
 		}
 		
-		DatabaseObject [[ref]] = [[model]].get ("[[ref]]");
+		DatabaseObject [[ref]] = (DatabaseObject)[[model]].get ("[[ref]]");
 		if ([[ref]] == null) {
 			return new JsonApiOutput (JsonObject.Blank);
 		}
