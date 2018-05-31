@@ -54,7 +54,7 @@
 	},
 	
 	"spi": {
-		"class": "[[package]].[[models]].Create[[Model]]Spi"
+		"class": "[[package]].[[models]].Create[[Model]]"
 	}
 	
 }

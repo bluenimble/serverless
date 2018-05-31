@@ -1,18 +1,16 @@
 package [[package]];
 
 import com.bluenimble.platform.api.Api;
-import com.bluenimble.platform.api.ApiContext;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiService;
 import com.bluenimble.platform.api.impls.spis.AbstractApiSpi;
 
 import com.bluenimble.platform.api.security.ApiAuthenticationException;
 import com.bluenimble.platform.api.security.ApiConsumer;
-import com.bluenimble.platform.api.security.ApiConsumer.Type;
 
-public class [[Api]]ApiSpi extends AbstractApiSpi {
+public class [[Api]]Api extends AbstractApiSpi {
 
-	private static final long serialVersionUID = 8197725424778011778L;
+	private static final long serialVersionUID = [[randLong]]L;
 
 	@Override
 	public void findConsumer (Api api, ApiService service, ApiRequest request, ApiConsumer consumer) throws ApiAuthenticationException {
@@ -35,13 +33,11 @@ public class [[Api]]ApiSpi extends AbstractApiSpi {
             return;
         }
 		
-        if (!this.isSecure (service) ) {
+        if (!isSecure (service) ) {
 			return;
 		}
 		
-		Type type 	= consumer.type ();
-		
-	    if (ApiConsumer.Type.Unknown.equals (consumer.type ()) && consumer.isAnonymous () && isSecure (service) ) {
+	    if (ApiConsumer.Type.Unknown.equals (consumer.type ()) && consumer.isAnonymous ()) {
 			throw new ApiAuthenticationException ("authentication error");
 		}
 

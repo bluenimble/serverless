@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 
 import com.bluenimble.platform.FileUtils;
 import com.bluenimble.platform.IOUtils;
@@ -75,6 +76,7 @@ public class CodeGenUtils {
 		
 		String User 		= "user";
 		String Date 		= "date";
+		String RandLong 	= "randLong";
 		
 		String Verb 		= "verb";
 		
@@ -84,6 +86,7 @@ public class CodeGenUtils {
 		String Service 		= "Service";
 		
 		String Package 		= "package";
+		String Artifact 	= "artifact";
 		
 		String ref 			= "ref";
 		String Ref 			= "Ref";
@@ -127,7 +130,7 @@ public class CodeGenUtils {
 	static {
 		Extensions.put ("javascript", ".js");
 		Extensions.put ("java", ".java");
-		Extensions.put ("scala", ".sc");
+		Extensions.put ("scala", ".scala");
 		Extensions.put ("python", ".py");
 	}
 
@@ -311,6 +314,7 @@ public class CodeGenUtils {
 		if (path != null) {
 			data.set (Tokens.Path, path);
 		}
+		data.set (Tokens.RandLong, new Random ().nextLong ());
 		
 		String verbToken = verb;
 		
@@ -559,8 +563,32 @@ public class CodeGenUtils {
 		return tool.printer ().getFontPrinter ().generate (text, Attribute.UNDERLINE, altColor ? FColor.MAGENTA : FColor.YELLOW, BColor.NONE);
 	}
 	
-	private static boolean supportsPackages (String template) {
+	public static boolean supportsPackages (String template) {
 		return "java".equals (template);
+	}
+	
+	public static File functionsFolder (Tool tool, File apiFolder, String functionsPackage) throws CommandExecutionException {
+		
+		@SuppressWarnings("unchecked")
+		Map<String, Object> vars = (Map<String, Object>)tool.getContext (Tool.ROOT_CTX).get (ToolContext.VARS);
+		
+		String template 	= (String)vars.get (BlueNimble.DefaultVars.ServiceTemplate);
+		if (Lang.isNullOrEmpty (template)) {
+			template = DefaultTemplate;
+		}
+		
+		String language = null;
+		try {
+			language = template.substring (template.indexOf (Lang.SLASH) + 1);
+		} catch (Exception ex) {
+			throw new CommandExecutionException ("can't resolve programming language from template '" + template + "'");
+		}
+		
+		if (language.equals ("javascript")) {
+			return new File (apiFolder, "resources/functions");
+		} else {
+			return new File (apiFolder, "src/main/" + language + Lang.SLASH + Lang.replace (functionsPackage, Lang.DOT, Lang.SLASH));
+		}
 	}
 
 }

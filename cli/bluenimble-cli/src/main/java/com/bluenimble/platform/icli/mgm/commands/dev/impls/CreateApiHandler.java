@@ -18,6 +18,7 @@ package com.bluenimble.platform.icli.mgm.commands.dev.impls;
 
 import java.io.File;
 import java.util.Map;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 import com.bluenimble.platform.Json;
@@ -113,6 +114,7 @@ public class CreateApiHandler implements CommandHandler {
 		apiFolder.mkdir ();
 		
 		JsonObject data = (JsonObject)new JsonObject ()
+				.set (Tokens.RandLong, new Random ().nextLong ())
 				.set (Tokens.api, namespace)
 				.set (Tokens.Api, namespace.substring (0, 1).toUpperCase () + namespace.substring (1));
 		
@@ -129,7 +131,7 @@ public class CreateApiHandler implements CommandHandler {
 		if (Lang.isNullOrEmpty (userPackage)) {
 			userPackage = "com." + userName.toLowerCase ();
 		}
-		
+		data.set (Tokens.Artifact, sApiFolder);
 		data.set (Tokens.Package, userPackage + Lang.DOT + namespace);
 		
 		String specLang 	= (String)vars.get (BlueNimble.DefaultVars.SpecLanguage);

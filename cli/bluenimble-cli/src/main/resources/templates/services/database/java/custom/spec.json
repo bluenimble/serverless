@@ -44,7 +44,7 @@
 	    "name": "[[Model]]",
 	
 	"spi": {
-		"class": "[[package]].[[path]].[[Model]]Spi"
+		"class": "[[package]].[[path]].[[Model]]"
 	}
 	
 }

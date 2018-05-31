@@ -4,16 +4,19 @@ import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResponse;
-import com.bluenimble.platform.api.security.ApiConsumer;
-import com.bluenimble.platform.db.Database.Visitor;
-import com.bluenimble.platform.db.Database;
-import com.bluenimble.platform.db.DatabaseObject;
-import com.bluenimble.platform.db.query.impls.JsonQuery;
-import com.bluenimble.platform.db.query.impls.JsonWhere;
 import com.bluenimble.platform.api.ApiServiceExecutionException;
+import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
+
+import com.bluenimble.platform.api.security.ApiConsumer;
 
 import com.bluenimble.platform.api.impls.JsonApiOutput;
-import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
+
+import com.bluenimble.platform.db.Database;
+import com.bluenimble.platform.db.Database.Visitor;
+import com.bluenimble.platform.db.DatabaseObject;
+import com.bluenimble.platform.db.DatabaseException;
+import com.bluenimble.platform.db.query.impls.JsonQuery;
+
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 
@@ -40,7 +43,9 @@ import com.bluenimble.platform.json.JsonObject;
  * 
  **/
 
-public class Find[[Models]]Spi extends AbstractApiServiceSpi {
+public class Find[[Models]] extends AbstractApiServiceSpi {
+	
+	private static final long serialVersionUID = [[randLong]]L;
 
 	@Override
 	public ApiOutput execute (Api api, ApiConsumer consumer, ApiRequest request,
@@ -50,23 +55,28 @@ public class Find[[Models]]Spi extends AbstractApiServiceSpi {
 		
 		JsonObject query = (JsonObject)request.get ("query");
 		if (query == null) {
-			query = (JsonObject)new JsonObject ().set ("where", new JsonObject ()[[#eq ModelSpec.addDefaults 'true']].set ("createdBy.id", true)[[/eq]][[#eq ModelSpec.markAsDeleted 'true']].set ("deleted", false)[[/eq]])
+			query = (JsonObject)new JsonObject ().set ("where", new JsonObject ()[[#eq ModelSpec.addDefaults 'true']].set ("createdBy.id", true)[[/eq]][[#eq ModelSpec.markAsDeleted 'true']].set ("deleted", false)[[/eq]]);
 		} 
 		
 		JsonObject result 		= new JsonObject ();
 		JsonArray [[models]] 	= new JsonArray ();
 		result.set ("[[models]]", [[models]]);
 		
-		Database db = api.space ().feature (Database.class, null, request);
+		Database db = feature (api, Database.class, null, request);
 		
-		db.find ("[[Models]]", new JsonQuery (query), new Visitor () {
-			@Override
-			public boolean onRecord (DatabaseObject [[model]]) {
-				[[models]].add ([[model]].toJson ());
-			}
-			@Override
-			public boolean optimize () { return true; }
-		});
+		try {
+			db.find ("[[Models]]", new JsonQuery (query), new Visitor () {
+				@Override
+				public boolean onRecord (DatabaseObject [[model]]) {
+					[[models]].add ([[model]].toJson (null));
+					return false;
+				}
+				@Override
+				public boolean optimize () { return true; }
+			});
+		} catch (DatabaseException dbex) {
+			throw new ApiServiceExecutionException (dbex.getMessage (), dbex);
+		}
 		
 		return new JsonApiOutput (result);
 	}

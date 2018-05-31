@@ -37,7 +37,9 @@ import com.bluenimble.platform.json.JsonObject;
  * 
  **/
 
-public class Delete[[Model]]Spi extends AbstractApiServiceSpi {
+public class Delete[[Model]] extends AbstractApiServiceSpi {
+	
+	private static final long serialVersionUID = [[randLong]]L;
 
 	@Override
 	public ApiOutput execute (Api api, ApiConsumer consumer, ApiRequest request,

@@ -44,7 +44,7 @@
 		"name": "Delete [[Model]]",
 	
 	"spi": {
-		"class": "[[package]].[[models]].Delete[[Model]]Spi"
+		"class": "[[package]].[[models]].Delete[[Model]]"
 	}
 	
 }

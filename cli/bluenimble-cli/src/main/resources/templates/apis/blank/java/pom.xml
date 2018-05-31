@@ -6,11 +6,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>[[user]]</groupId>
-	<artifactId>[[api]]</artifactId>
-	<version>0.0.1</version><!--bn.version-->
+	<artifactId>[[artifact]]</artifactId>
+	<version>0.0.1</version>
 	
 	<packaging>jar</packaging>
-	<name>[[api]]</name>
+	<name>[[artifact]]</name>
 	
 	<properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -58,7 +58,7 @@
 		<dependency>
 			<groupId>com.bluenimble.serverless</groupId>
 			<artifactId>bluenimble-jvm-sdk</artifactId>
-			<version>1.6.0</version>
+			<version>[version]</version>
 		</dependency>
 	</dependencies>
 	

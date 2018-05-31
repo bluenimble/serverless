@@ -64,7 +64,6 @@ public class CreateServiceHandler implements CommandHandler {
 		
 		File resourcesFolder 	= new File (SpecUtils.specFolder (apiFolder), "resources");
 		File servicesFolder 	= new File (resourcesFolder, "services");
-		File functionsFolder 		= new File (resourcesFolder, "functions");
 		
 		@SuppressWarnings("unchecked")
 		Map<String, Object> vars = (Map<String, Object>)tool.getContext (Tool.ROOT_CTX).get (ToolContext.VARS);
@@ -81,9 +80,9 @@ public class CreateServiceHandler implements CommandHandler {
 			userPackage = "com." + userName.toLowerCase ();
 		}
 		
-		String apiFunctionsPackage = userPackage + Lang.DOT + currentApi + Lang.DOT + "functions";
+		String functionsPackage = userPackage + Lang.DOT + currentApi + Lang.DOT + "functions";
 		
-		CodeGenUtils.writeService ((AbstractTool)tool, verb, model, apiFunctionsPackage, servicesFolder, functionsFolder);
+		CodeGenUtils.writeService ((AbstractTool)tool, verb, model, functionsPackage, servicesFolder, CodeGenUtils.functionsFolder (tool, apiFolder, functionsPackage));
 		
 		return new DefaultCommandResult (CommandResult.OK, null);
 	}

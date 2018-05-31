@@ -35,7 +35,9 @@ import com.bluenimble.platform.json.JsonObject;
  * 
  **/
 
-public class Create[[Model]]Spi extends AbstractApiServiceSpi {
+public class Create[[Model]] extends AbstractApiServiceSpi {
+	
+	private static final long serialVersionUID = [[randLong]]L;
 
 	@Override
 	public ApiOutput execute (Api api, ApiConsumer consumer, ApiRequest request,

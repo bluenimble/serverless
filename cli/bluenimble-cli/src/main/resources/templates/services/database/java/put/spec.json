@@ -53,7 +53,7 @@
 	},
 	
 	"spi": {
-		"class": "[[package]].[[models]].Update[[Model]]Spi"
+		"class": "[[package]].[[models]].Update[[Model]]"
 	}
 	
 }

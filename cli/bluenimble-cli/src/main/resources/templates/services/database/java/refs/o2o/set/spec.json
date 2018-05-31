@@ -51,7 +51,7 @@
 	},
 	
 	"spi": {
-		"class": "[[package]].[[models]].Set[[Model]][[Ref]]Spi"
+		"class": "[[package]].[[models]].Set[[Model]][[Ref]]"
 	}
 	
 }

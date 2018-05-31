@@ -1,18 +1,20 @@
 package [[package]].[[models]];
-	
-import com.bluenimble.platform.Json;
+
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResponse;
+import com.bluenimble.platform.api.ApiServiceExecutionException;
+import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
+
 import com.bluenimble.platform.api.security.ApiConsumer;
+
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseObject;
+import com.bluenimble.platform.db.DatabaseException;
 import com.bluenimble.platform.db.query.impls.JsonQuery;
-import com.bluenimble.platform.api.ApiServiceExecutionException;
 
 import com.bluenimble.platform.api.impls.JsonApiOutput;
-import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
 
 import com.bluenimble.platform.json.JsonObject;
 
@@ -39,7 +41,9 @@ import com.bluenimble.platform.json.JsonObject;
  * 
  **/
 
-public class Delete[[Model]][[Ref]]Spi extends AbstractApiServiceSpi {
+public class Delete[[Model]][[Ref]] extends AbstractApiServiceSpi {
+	
+	private static final long serialVersionUID = [[randLong]]L;
 
 	@Override
 	public ApiOutput execute (Api api, ApiConsumer consumer, ApiRequest request,
@@ -51,20 +55,30 @@ public class Delete[[Model]][[Ref]]Spi extends AbstractApiServiceSpi {
 		Object [[ref]]Id 	= request.get ("[[ref]]");
 		
 		// write to database
-		Database db = api.space ().feature (Database.class, null, request);
-			
-		// find link
-		DatabaseObject [[model]][[Ref]] = db.findOne ("[[Model]][[Refs]]", new JsonQuery ( 
-			(JsonObject)new JsonObject ().set ("where", new JsonObject ().set ("[[model]]", [[model]]Id).set ("[[ref]]", [[ref]]Id));
-		));
+		Database db = feature (api, Database.class, null, request);
+		
+		DatabaseObject [[model]][[Ref]] = null;
+		try {
+			// find link
+			[[model]][[Ref]] = db.findOne ("[[Model]][[Refs]]", new JsonQuery ( 
+				(JsonObject)new JsonObject ().set ("where", new JsonObject ().set ("[[model]]", [[model]]Id).set ("[[ref]]", [[ref]]Id));
+			));
+		} catch (DatabaseException dbex) {
+			throw new ApiServiceExecutionException (dbex.getMessage (), dbex);
+		}
+		
 		if ([[model]][[Ref]] == null) {
 			throw new ApiServiceExecutionException (
 				api.message (request.getLang (), "LinkNotFound", "[[model]][[Ref]]", "[[model]]", [[model]]Id, "[[ref]]", [[ref]]Id)
 			).status (ApiResponse.NOT_FOUND);
 		}
 		
-		// remove [[model]] - [[ref]] link
-		[[model]][[Ref]].delete ();
+		try {
+			// remove [[model]] - [[ref]] link
+			[[model]][[Ref]].delete ();
+		} catch (DatabaseException dbex) {
+			throw new ApiServiceExecutionException (dbex.getMessage (), dbex);
+		}
 		
 		return new JsonApiOutput (new JsonObject ().set ("removed", true));
 	}

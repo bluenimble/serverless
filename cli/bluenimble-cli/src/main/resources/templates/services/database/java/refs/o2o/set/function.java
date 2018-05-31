@@ -4,14 +4,16 @@ import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResponse;
-import com.bluenimble.platform.api.security.ApiConsumer;
-import com.bluenimble.platform.db.DatabaseObject;
 import com.bluenimble.platform.api.ApiServiceExecutionException;
-
-import com.bluenimble.platform.api.impls.JsonApiOutput;
 import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
 
-import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.api.security.ApiConsumer;
+
+import com.bluenimble.platform.db.Database;
+import com.bluenimble.platform.db.DatabaseObject;
+import com.bluenimble.platform.db.DatabaseException;
+
+import com.bluenimble.platform.api.impls.JsonApiOutput;
 
 /**
  * The only required function that you should implement, if no mock data provided in your Set[[Model]][[Ref]].json
@@ -36,7 +38,9 @@ import com.bluenimble.platform.json.JsonObject;
  * 
  **/
 
-public class Set[[Model]][[Ref]]Spi extends AbstractApiServiceSpi {
+public class Set[[Model]][[Ref]] extends AbstractApiServiceSpi {
+	
+	private static final long serialVersionUID = [[randLong]]L;
 
 	@Override
 	public ApiOutput execute (Api api, ApiConsumer consumer, ApiRequest request,
@@ -47,19 +51,28 @@ public class Set[[Model]][[Ref]]Spi extends AbstractApiServiceSpi {
 		Object [[model]]Id 	= request.get ("[[model]]");
 		Object [[ref]]Id 	= request.get ("[[ref]]");
 		
-		Database db = api.space ().feature (Database.class, null, request);
+		Database db = feature (api, Database.class, null, request);
 		
-		// get [[Model]] by :[[model]]
-		DatabaseObject [[model]] = db.get ("[[Models]]", [[model]]Id);
-		
+		DatabaseObject [[model]] = null;
+		try {
+			// get [[Model]] by :[[model]]
+			[[model]] = db.get ("[[Models]]", [[model]]Id);
+		} catch (DatabaseException dbex) {
+			throw new DatabaseException (dbex.getMessage (), dbex);
+		}
 		if ([[model]] == null) {
 			throw new ApiServiceExecutionException (
 				api.message (request.getLang (), "NotFound", "[[model]]", [[model]]Id)
 			).status (ApiResponse.NOT_FOUND);
 		}
 		
-		// get [[Ref]] by :[[ref]]
-		DatabaseObject [[ref]] = db.get ("[[RefSpec.entity]]", request.get ([[ref]]Id) );
+		DatabaseObject [[ref]] = null;
+		try {
+			// get [[Ref]] by :[[ref]]
+			[[ref]] = db.get ("[[RefSpec.entity]]", request.get ([[ref]]Id) );
+		} catch (DatabaseException dbex) {
+			throw new DatabaseException (dbex.getMessage (), dbex);
+		}
 		
 		if ([[ref]] == null) {
 			throw new ApiServiceExecutionException (
@@ -67,10 +80,14 @@ public class Set[[Model]][[Ref]]Spi extends AbstractApiServiceSpi {
 			).status (ApiResponse.NOT_FOUND);
 		}
 		
-		// set [[ref]]
-		[[model]].set ("[[ref]]", [[ref]]).save ();
+		try {
+			// set [[ref]]
+			[[model]].set ("[[ref]]", [[ref]]).save ();
+		} catch (DatabaseException dbex) {
+			throw new DatabaseException (dbex.getMessage (), dbex);
+		}
 		
-		return new JsonApiOutput ([[model]].toJson (0, 0));
+		return new JsonApiOutput ([[model]].toJson (null));
 		
 	}
 	

@@ -4,13 +4,16 @@ import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResponse;
-import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.ApiServiceExecutionException;
-
-import com.bluenimble.platform.api.impls.JsonApiOutput;
 import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
 
+import com.bluenimble.platform.api.security.ApiConsumer;
+
+import com.bluenimble.platform.api.impls.JsonApiOutput;
+
+import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseObject;
+import com.bluenimble.platform.db.DatabaseException;
 
 import com.bluenimble.platform.json.JsonObject;
 
@@ -39,7 +42,9 @@ import com.bluenimble.platform.json.JsonObject;
  * 
  **/
 
-public class Delete[[Model]]Spi extends AbstractApiServiceSpi {
+public class Delete[[Model]] extends AbstractApiServiceSpi {
+	
+	private static final long serialVersionUID = [[randLong]]L;
 
 	@Override
 	public ApiOutput execute (Api api, ApiConsumer consumer, ApiRequest request,
@@ -47,19 +52,29 @@ public class Delete[[Model]]Spi extends AbstractApiServiceSpi {
 		
 		// deleting [[Model]] by id (':[[model]]')
 		
-		Database db = api.space ().feature (Database.class, null, request);
+		Database db = feature (api, Database.class, null, request);
 		
-		DatabaseObject [[model]] = db.get ( '[[Models]]', request.get ('[[model]]') );
+		DatabaseObject [[model]] = null;
+		try {
+			[[model]] = db.get ("[[Models]]", request.get ("[[model]]"));
+		} catch (DatabaseException dbex) {
+			throw new ApiServiceExecutionException (dbex.getMessage (), dbex);
+		}
 		
-		if (![[model]]) {
+		if ([[model]] == null) {
 			return new JsonApiOutput (
-				(JsonObject)new JsonObject ().set ("deleted", 0).set (reason, 'NotFound')
+				(JsonObject)new JsonObject ().set ("deleted", 0).set ("reason", "NotFound")
 			);
 		}
 		
-		[[#eq ModelSpec.markAsDeleted 'true']][[model]].set ('deleted', 1);
-		// save status
-		[[model]].save ();[[else]][[model]].delete ();[[/eq]]
+		try {
+			[[#eq ModelSpec.markAsDeleted 'true']][[model]].set ('deleted', 1);
+			// save status
+			[[model]].save ();[[else]]// delete [[model]]
+			[[model]].delete ();[[/eq]]
+		} catch (DatabaseException dbex) {
+			throw new ApiServiceExecutionException (dbex.getMessage (), dbex);
+		}
 		
 		return new JsonApiOutput (
 			(JsonObject)new JsonObject ().set ("deleted", [[#if ModelSpec.markAsDeleted]]1[[else]]2[[/if]])

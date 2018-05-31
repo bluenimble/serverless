@@ -50,7 +50,7 @@
 	},
 	
 	"spi": {
-		"class": "[[package]].[[Api]]ApiSpi"
+		"class": "[[package]].[[Api]]Api"
 	}	
 	
 }

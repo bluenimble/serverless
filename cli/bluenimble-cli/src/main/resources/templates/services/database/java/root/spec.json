@@ -43,7 +43,7 @@
 	"endpoint": "/",
 	
 	"spi": {
-		"class": "[[package]].RootSpi"
+		"class": "[[package]].Root"
 	}
 	
 }

@@ -44,7 +44,7 @@
 		"name": "Get [[Model]]",
 	
 	"spi": {
-		"class": "[[package]].[[models]].Get[[Model]]Spi"
+		"class": "[[package]].[[models]].Get[[Model]]"
 	}
 	
 }

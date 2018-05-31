@@ -4,12 +4,16 @@ import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResponse;
-import com.bluenimble.platform.api.security.ApiConsumer;
-import com.bluenimble.platform.db.DatabaseObject;
 import com.bluenimble.platform.api.ApiServiceExecutionException;
+import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
+
+import com.bluenimble.platform.api.security.ApiConsumer;
+
+import com.bluenimble.platform.db.Database;
+import com.bluenimble.platform.db.DatabaseObject;
+import com.bluenimble.platform.db.DatabaseException;
 
 import com.bluenimble.platform.api.impls.JsonApiOutput;
-import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
 
 import com.bluenimble.platform.json.JsonObject;
 
@@ -36,7 +40,9 @@ import com.bluenimble.platform.json.JsonObject;
  * 
  **/
 
-public class Get[[Model]][[Ref]]Spi extends AbstractApiServiceSpi {
+public class Get[[Model]][[Ref]] extends AbstractApiServiceSpi {
+	
+	private static final long serialVersionUID = [[randLong]]L;
 
 	@Override
 	public ApiOutput execute (Api api, ApiConsumer consumer, ApiRequest request,
@@ -44,10 +50,15 @@ public class Get[[Model]][[Ref]]Spi extends AbstractApiServiceSpi {
 		
 		// get [[Ref]] of [[Model]]
 		
-		Database db = api.space ().feature (Database.class, null, request);
+		Database db = feature (api, Database.class, null, request);
 		
-		// get [[Model]] by :[[model]]
-		DatabaseObject [[model]] = db.get ("[[Models]]", request.get ("[[model]]") );
+		DatabaseObject [[model]] = null;
+		try {
+			// get [[Model]] by :[[model]]
+			[[model]] = db.get ("[[Models]]", request.get ("[[model]]") );
+		} catch (DatabaseException dbex) {
+			throw new DatabaseException (dbex.getMessage (), dbex);
+		}
 		
 		if ([[model]] == null) {
 			throw new ApiServiceExecutionException (
@@ -60,7 +71,7 @@ public class Get[[Model]][[Ref]]Spi extends AbstractApiServiceSpi {
 			return new JsonApiOutput (JsonObject.Blank);
 		}
 		
-		return new JsonApiOutput ([[ref]].toJson ());
+		return new JsonApiOutput ([[ref]].toJson (null));
 		
 	}
 	
