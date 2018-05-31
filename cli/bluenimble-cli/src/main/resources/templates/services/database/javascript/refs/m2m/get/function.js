@@ -25,12 +25,14 @@ return {
 	 **/
 	execute: function (api, consumer, request, response) {
 		
+		// Get [[model]][[Ref]] by :[[model]] and :[[ref]]
+		
 		var [[model]]Id = request.get ('[[model]]');
 		var [[ref]]Id 	= request.get ('[[ref]]');
 		
 		var db = api.database (request);
 
-		// add link
+		// find link
 		var [[model]][[Ref]] = db.findOne ('[[Model]][[Refs]]', { 
 			where: {
 				[[model]]: [[model]]Id,

@@ -14,10 +14,10 @@ import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
 import com.bluenimble.platform.json.JsonObject;
 
 /**
- * The only required function that you should implement, if no mock data provided in your Get[[Model]].json
+ * The only required function that you should implement, if no mock data provided in your Set[[Model]][[Ref]].json
  * 
  * The execute function will be triggered when an application or device makes a call to [[verb]] [bluenimble-space].[bluenimble-instance].bluenimble.com/[[api]]
- * which is defined in your service specification file Get[[Model]].json 
+ * which is defined in your service specification file Set[[Model]][[Ref]].json 
  * 
  * Arguments:
  *  Api 		 the api where this service is running  
@@ -36,25 +36,41 @@ import com.bluenimble.platform.json.JsonObject;
  * 
  **/
 
-public class Get[[Model]]Spi extends AbstractApiServiceSpi {
+public class Set[[Model]][[Ref]]Spi extends AbstractApiServiceSpi {
 
 	@Override
 	public ApiOutput execute (Api api, ApiConsumer consumer, ApiRequest request,
 			ApiResponse response) throws ApiServiceExecutionException {
 		
-		// get a [[Model]] by id (':[[model]]')
+		// set [[Ref]] for a [[Model]]
+		
+		Object [[model]]Id 	= request.get ("[[model]]");
+		Object [[ref]]Id 	= request.get ("[[ref]]");
 		
 		Database db = api.space ().feature (Database.class, null, request);
 		
-		DatabaseObject [[model]] = db.get ("[[Models]]", request.get ("[[model]]") );
+		// get [[Model]] by :[[model]]
+		DatabaseObject [[model]] = db.get ("[[Models]]", [[model]]Id);
 		
 		if ([[model]] == null) {
 			throw new ApiServiceExecutionException (
-				api.message (request.lang, "NotFound", "[[model]]", [[model]]Id)
+				api.message (request.getLang (), "NotFound", "[[model]]", [[model]]Id)
 			).status (ApiResponse.NOT_FOUND);
-		}			
+		}
 		
-		return new JsonApiOutput ([[model]].toJson ());
+		// get [[Ref]] by :[[ref]]
+		DatabaseObject [[ref]] = db.get ("[[RefSpec.entity]]", request.get ([[ref]]Id) );
+		
+		if ([[ref]] == null) {
+			throw new ApiServiceExecutionException (
+				api.message (request.getLang (), "NotFound", "[[ref]]", [[ref]]Id)
+			).status (ApiResponse.NOT_FOUND);
+		}
+		
+		// set [[ref]]
+		[[model]].set ("[[ref]]", [[ref]]).save ();
+		
+		return new JsonApiOutput ([[model]].toJson (0, 0));
 		
 	}
 	

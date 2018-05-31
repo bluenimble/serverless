@@ -61,6 +61,7 @@ public class SetCommand extends AbstractCommand {
 		final Map<String, Object> vars = (Map<String, Object>)tool.getContext (Tool.ROOT_CTX).get (ToolContext.VARS);
 		
 		try {
+			
 			if (varName.equals (Tool.ParaPhraseVar)) {
 				tool.setParaphrase ((String)value, true);
 				tool.printer ().content ("Security", "Paraphase Updated");

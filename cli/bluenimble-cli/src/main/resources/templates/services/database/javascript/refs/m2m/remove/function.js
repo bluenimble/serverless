@@ -46,7 +46,7 @@ return {
 			).status (ApiResponse.NOT_FOUND);
 		}
 		
-		// delete [[model]] - [[ref]] link
+		// remove [[model]] - [[ref]] link
 		[[model]][[Ref]].delete ();
 		
 		return { removed: true };

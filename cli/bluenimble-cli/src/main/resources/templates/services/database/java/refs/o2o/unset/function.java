@@ -14,10 +14,10 @@ import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
 import com.bluenimble.platform.json.JsonObject;
 
 /**
- * The only required function that you should implement, if no mock data provided in your Get[[Model]].json
+ * The only required function that you should implement, if no mock data provided in your Unset[[Model]][[Ref]].json
  * 
  * The execute function will be triggered when an application or device makes a call to [[verb]] [bluenimble-space].[bluenimble-instance].bluenimble.com/[[api]]
- * which is defined in your service specification file Get[[Model]].json 
+ * which is defined in your service specification file Unset[[Model]][[Ref]].json 
  * 
  * Arguments:
  *  Api 		 the api where this service is running  
@@ -36,25 +36,31 @@ import com.bluenimble.platform.json.JsonObject;
  * 
  **/
 
-public class Get[[Model]]Spi extends AbstractApiServiceSpi {
+public class Unset[[Model]][[Ref]]Spi extends AbstractApiServiceSpi {
 
 	@Override
 	public ApiOutput execute (Api api, ApiConsumer consumer, ApiRequest request,
 			ApiResponse response) throws ApiServiceExecutionException {
 		
-		// get a [[Model]] by id (':[[model]]')
+		// unset [[ref]] of a [[Model]]
+		
+		Object [[model]]Id 	= request.get ("[[model]]");
 		
 		Database db = api.space ().feature (Database.class, null, request);
 		
-		DatabaseObject [[model]] = db.get ("[[Models]]", request.get ("[[model]]") );
+		// get [[Model]] by :[[model]]
+		DatabaseObject [[model]] = db.get ("[[Models]]", [[model]]Id);
 		
 		if ([[model]] == null) {
 			throw new ApiServiceExecutionException (
-				api.message (request.lang, "NotFound", "[[model]]", [[model]]Id)
+				api.message (request.getLang (), "NotFound", "[[model]]", [[model]]Id)
 			).status (ApiResponse.NOT_FOUND);
-		}			
+		}
 		
-		return new JsonApiOutput ([[model]].toJson ());
+		// unset [[ref]]
+		[[model]].remove ("[[ref]]").save ();
+		
+		return new JsonApiOutput ([[model]].toJson (0, 0));
 		
 	}
 	

@@ -77,8 +77,8 @@ public class BlueNimble extends JLineTool {
 		String CacheProvider 	= "cache.provider";
 		String QueryAll 		= "q.all";
 		String QueryCount 		= "q.count";
-		String TemplateServices = "templates.services";
-		String TemplateApi 		= "templates.api";
+		String ServiceTemplate 	= "service.template";
+		String ApiTemplate 		= "api.template";
 		String ApiSecurityEnabled 		
 								= "api.security.enabled";
 		String Paraphrase 		= "paraphrase";
@@ -507,15 +507,36 @@ public class BlueNimble extends JLineTool {
 	
 	@Override
 	public void saveVariable (String name, Object value) throws IOException {
+		
+		String [] varsNames = null;
+		
+		if (DefaultVars.ApiTemplate.equals (name)) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> vars = (Map<String, Object>)getContext (Tool.ROOT_CTX).get (ToolContext.VARS);
+			if (value == null) {
+				vars.remove (DefaultVars.ServiceTemplate);
+			} else {
+				vars.put (DefaultVars.ServiceTemplate, value);
+			}
+			varsNames = new String [] {DefaultVars.ApiTemplate, DefaultVars.ServiceTemplate};
+		} else {
+			varsNames = new String [] { name };
+		}
+		
 		JsonObject oVars = Json.getObject (Config, CliSpec.Config.Variables);
+		
 		if (oVars == null) {
 			return;
 		}
-		if (value == null) {
-			oVars.remove (name);
-		} else {
-			oVars.set (name, value);
+		
+		for (String vn : varsNames) {
+			if (value == null) {
+				oVars.remove (vn);
+			} else {
+				oVars.set (vn, value);
+			}
 		}
+		
 		saveConfig ();	
 	}
 
@@ -543,11 +564,11 @@ public class BlueNimble extends JLineTool {
 		if (!oVars.containsKey (DefaultVars.QueryCount)) {
 			oVars.set (DefaultVars.QueryCount, new JsonObject ().set ("where", new JsonObject ()).set ("select", new JsonArray ().set (null, "count(1)")));
 		}
-		if (!oVars.containsKey (DefaultVars.TemplateServices)) {
-			oVars.set (DefaultVars.TemplateServices, "database/javascript");
+		if (!oVars.containsKey (DefaultVars.ServiceTemplate)) {
+			oVars.set (DefaultVars.ServiceTemplate, "database/javascript");
 		}
-		if (!oVars.containsKey (DefaultVars.TemplateApi)) {
-			oVars.set (DefaultVars.TemplateApi, "database/javascript");
+		if (!oVars.containsKey (DefaultVars.ApiTemplate)) {
+			oVars.set (DefaultVars.ApiTemplate, "database/javascript");
 		}
 		if (!oVars.containsKey (DefaultVars.SpecLanguage)) {
 			oVars.set (DefaultVars.SpecLanguage, SpecLangs.Json);

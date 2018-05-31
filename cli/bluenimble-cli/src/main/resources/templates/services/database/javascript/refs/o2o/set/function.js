@@ -25,6 +25,8 @@ return {
 	 **/
 	execute: function (api, consumer, request, response) {
 		
+		// set [[Ref]] for a [[Model]]
+		
 		var [[model]]Id = request.get ('[[model]]');
 		var [[ref]]Id 	= request.get ('[[ref]]');
 		

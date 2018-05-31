@@ -25,11 +25,13 @@ return {
 	 **/
 	execute: function (api, consumer, request, response) {
 		
+		// get [[Ref]] of [[Model]]
+		
 		var [[model]]Id = request.get ('[[model]]');
 		
 		var db = api.database (request);
 
-		// add link
+		// get [[Model]] by :[[model]]
 		var [[model]] = db.get ('[[Models]]', [[model]]Id);
 		
 		if (![[model]]) {

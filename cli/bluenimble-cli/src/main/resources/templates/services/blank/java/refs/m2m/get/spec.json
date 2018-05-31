@@ -39,18 +39,19 @@
 
 {
 	
-	    "verb": "delete",
-	"endpoint": "/[[models]]/:[[model]]/[[ref]]",
-		"name": "Unset [[Ref]] from [[Model]]",
+	    "verb": "get",
+	"endpoint": "/[[models]]/:[[model]]/[[refs]]/:[[ref]]",
+		"name": "Get [[Ref]] from [[Model]]",
 	
 	"spec": {
 		"fields": {
-			"[[model]]": { }
+			"[[model]]": { },
+			"[[ref]]": { }
 		}
 	},
 	
 	"spi": {
-		"class": "[[package]].[[models]].Unset[[Model]][[Ref]]Spi"
+		"class": "[[package]].[[models]].Get[[Model]][[Ref]]Spi"
 	}
 	
 }

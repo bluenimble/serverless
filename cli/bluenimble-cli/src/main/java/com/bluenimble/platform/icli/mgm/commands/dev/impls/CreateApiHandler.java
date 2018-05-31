@@ -100,7 +100,7 @@ public class CreateApiHandler implements CommandHandler {
 			}
 		}
 		
-		String template 	= (String)vars.get (BlueNimble.DefaultVars.TemplateApi);
+		String template 	= (String)vars.get (BlueNimble.DefaultVars.ApiTemplate);
 		if (Lang.isNullOrEmpty (template)) {
 			template = DefaultTemplate;
 		}

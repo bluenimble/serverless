@@ -59,7 +59,7 @@ public class Find[[Models]]Spi extends AbstractApiServiceSpi {
 		
 		Database db = api.space ().feature (Database.class, null, request);
 		
-		db.find ('[[Models]]', new JsonQuery (query), new Visitor () {
+		db.find ("[[Models]]", new JsonQuery (query), new Visitor () {
 			@Override
 			public boolean onRecord (DatabaseObject [[model]]) {
 				[[models]].add ([[model]].toJson ());

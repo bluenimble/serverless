@@ -25,9 +25,9 @@ return {
 	 **/
 	execute: function (api, consumer, request, response) {
 		
-		var [[model]]Id = request.get ('[[model]]');
+		// List [[Model]] [[Refs]] by :filter
 		
-		var db = api.database (request);
+		var [[model]]Id = request.get ('[[model]]');
 		
 		// build query
 
@@ -44,6 +44,8 @@ return {
 
 		// run query
 		var result = { [[refs]]: Json.array () };
+		
+		var db = api.database (request);
 		
 		db.find ('[[Model]][[Refs]]', { 
 			where: where

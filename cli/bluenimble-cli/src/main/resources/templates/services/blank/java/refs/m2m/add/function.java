@@ -1,10 +1,12 @@
 package [[package]].[[models]];
 	
+import com.bluenimble.platform.Json;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.security.ApiConsumer;
+import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseObject;
 import com.bluenimble.platform.api.ApiServiceExecutionException;
 
@@ -14,10 +16,10 @@ import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
 import com.bluenimble.platform.json.JsonObject;
 
 /**
- * The only required function that you should implement, if no mock data provided in your Get[[Model]].json
+ * The only required function that you should implement, if no mock data provided in your Add[[Model]][[Ref]].json
  * 
  * The execute function will be triggered when an application or device makes a call to [[verb]] [bluenimble-space].[bluenimble-instance].bluenimble.com/[[api]]
- * which is defined in your service specification file Get[[Model]].json 
+ * which is defined in your service specification file Add[[Model]][[Ref]].json 
  * 
  * Arguments:
  *  Api 		 the api where this service is running  
@@ -36,26 +38,16 @@ import com.bluenimble.platform.json.JsonObject;
  * 
  **/
 
-public class Get[[Model]]Spi extends AbstractApiServiceSpi {
+public class Add[[Model]][[Ref]]Spi extends AbstractApiServiceSpi {
 
 	@Override
 	public ApiOutput execute (Api api, ApiConsumer consumer, ApiRequest request,
 			ApiResponse response) throws ApiServiceExecutionException {
 		
-		// get a [[Model]] by id (':[[model]]')
-		
-		Database db = api.space ().feature (Database.class, null, request);
-		
-		DatabaseObject [[model]] = db.get ("[[Models]]", request.get ("[[model]]") );
-		
-		if ([[model]] == null) {
-			throw new ApiServiceExecutionException (
-				api.message (request.lang, "NotFound", "[[model]]", [[model]]Id)
-			).status (ApiResponse.NOT_FOUND);
-		}			
-		
-		return new JsonApiOutput ([[model]].toJson ());
-		
+		return new JsonApiOutput (
+			(JsonObject)new JsonObject ().set ("greeting", "I'm [" + request.getService ().getName () + "] and I am hungry to do something that matters!")
+		);
+
 	}
 	
 }

@@ -1,11 +1,15 @@
 package [[package]].[[models]];
 	
+import com.bluenimble.platform.Json;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.security.ApiConsumer;
+import com.bluenimble.platform.db.Database;
+import com.bluenimble.platform.db.Database.Visitor;
 import com.bluenimble.platform.db.DatabaseObject;
+import com.bluenimble.platform.db.query.impls.JsonQuery;
 import com.bluenimble.platform.api.ApiServiceExecutionException;
 
 import com.bluenimble.platform.api.impls.JsonApiOutput;
@@ -14,10 +18,10 @@ import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
 import com.bluenimble.platform.json.JsonObject;
 
 /**
- * The only required function that you should implement, if no mock data provided in your Get[[Model]].json
+ * The only required function that you should implement, if no mock data provided in your List[[Model]][[Refs]].json
  * 
  * The execute function will be triggered when an application or device makes a call to [[verb]] [bluenimble-space].[bluenimble-instance].bluenimble.com/[[api]]
- * which is defined in your service specification file Get[[Model]].json 
+ * which is defined in your service specification file List[[Model]][[Refs]].json 
  * 
  * Arguments:
  *  Api 		 the api where this service is running  
@@ -36,26 +40,43 @@ import com.bluenimble.platform.json.JsonObject;
  * 
  **/
 
-public class Get[[Model]]Spi extends AbstractApiServiceSpi {
+public class List[[Model]][[Refs]]Spi extends AbstractApiServiceSpi {
 
 	@Override
 	public ApiOutput execute (Api api, ApiConsumer consumer, ApiRequest request,
 			ApiResponse response) throws ApiServiceExecutionException {
 		
-		// get a [[Model]] by id (':[[model]]')
+		// List [[Model]] [[Refs]] by :filter
+		
+		Object [[model]]Id 	= request.get ("[[model]]");
+		
+		// build query
+
+		JsonObject filter = (JsonObject)request.get ('filter');
+		
+		JsonObject where = new JsonObject ().set ("[[model]]", [[model]]Id);
+		
+		if (filter != null) {
+			where.putAll (filter);
+		}
+
+		// run query
+		JsonObject result 		= new JsonObject ();
+		JsonArray [[refs]] 		= new JsonArray ();
+		result.set ("[[refs]]", [[models]]);
 		
 		Database db = api.space ().feature (Database.class, null, request);
+			
+		db.find ("[[Model]][[Refs]]", new JsonQuery (query), new Visitor () {
+			@Override
+			public boolean onRecord (DatabaseObject [[model]][[Ref]]) {
+				[[refs]].add ([[model]][[Ref]].get ("[[ref]]").toJson ());
+			}
+			@Override
+			public boolean optimize () { return true; }
+		});
 		
-		DatabaseObject [[model]] = db.get ("[[Models]]", request.get ("[[model]]") );
-		
-		if ([[model]] == null) {
-			throw new ApiServiceExecutionException (
-				api.message (request.lang, "NotFound", "[[model]]", [[model]]Id)
-			).status (ApiResponse.NOT_FOUND);
-		}			
-		
-		return new JsonApiOutput ([[model]].toJson ());
-		
+		return new JsonApiOutput (result);
 	}
 	
 }

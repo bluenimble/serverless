@@ -25,6 +25,8 @@ return {
 	 **/
 	execute: function (api, consumer, request, response) {
 		
+		// unset [[ref]] of a [[Model]]
+		
 		var [[model]]Id = request.get ('[[model]]');
 		
 		var db = api.database (request);

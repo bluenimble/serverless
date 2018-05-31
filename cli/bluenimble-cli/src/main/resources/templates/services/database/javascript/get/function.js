@@ -31,7 +31,9 @@ return {
 						 .get ( '[[Models]]', request.get ('[[model]]') );
 		
 		if (![[model]]) {
-			return {};
+			throw new ApiServiceExecutionException (
+				api.message (request.lang, 'NotFound', '[[model]]', [[model]]Id)
+			).status (ApiResponse.NOT_FOUND);
 		}			
 		
 		return [[model]].toJson ();	

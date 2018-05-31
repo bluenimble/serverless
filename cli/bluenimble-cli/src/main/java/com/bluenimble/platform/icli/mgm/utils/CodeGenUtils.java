@@ -242,7 +242,7 @@ public class CodeGenUtils {
 			return;
 		}
 		
-		String template 	= (String)vars.get (BlueNimble.DefaultVars.TemplateServices);
+		String template 	= (String)vars.get (BlueNimble.DefaultVars.ServiceTemplate);
 		if (Lang.isNullOrEmpty (template)) {
 			template = DefaultTemplate;
 		}

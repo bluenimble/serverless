@@ -25,6 +25,8 @@ return {
 	 **/
 	execute: function (api, consumer, request, response) {
 		
+		// Add a [[Ref]] to [[Model]]
+		
 		var [[model]]Id = request.get ('[[model]]');
 		var [[ref]]Id 	= request.get ('[[ref]]');
 		
@@ -43,19 +45,6 @@ return {
 		if (![[ref]]) {
 			throw new ApiServiceExecutionException (
 				api.message (request.lang, 'NotFound', '[[ref]]', [[ref]]Id)
-			).status (ApiResponse.NOT_FOUND);
-		}
-		
-		// add link
-		var [[model]][[Ref]] = db.findOne ('[[Model]][[Refs]]', { 
-			where: {
-				[[model]]: [[model]]Id,
-				[[ref]]: [[ref]]Id
-			}
-		});
-		if (![[model]][[Ref]]) {
-			throw new ApiServiceExecutionException (
-				api.message (request.lang, 'LinkNotFound', '[[model]][[Ref]]', '[[model]]', [[model]]Id, '[[ref]]', [[ref]]Id)
 			).status (ApiResponse.NOT_FOUND);
 		}
 		
