@@ -76,6 +76,10 @@ public class OrientDatabasePlugin extends AbstractPlugin {
 		server.addFeature (new ServerFeature () {
 			private static final long serialVersionUID = 2626039344401539390L;
 			@Override
+			public String id () {
+				return null;
+			}
+			@Override
 			public Class<?> type () {
 				return Database.class;
 			}

@@ -16,7 +16,7 @@
 			
 			"async": "true",
 			
-			"port": "[ this.port | '8080' ]",
+			"port": "[ this.port | '9090' ]",
 			"idleTimeout": "[ this.idleTimeout | '30' ]",
 			
 			"pool": {

@@ -22,7 +22,6 @@ import java.util.Map;
 import com.bluenimble.platform.api.ApiContext;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.cache.Cache;
-import com.bluenimble.platform.datasource.RemoteDataSource;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.indexer.Indexer;
 import com.bluenimble.platform.messaging.Messenger;
@@ -49,7 +48,6 @@ public class FeaturesUtils {
 		FeaturesMap.put (Features.Cache, Cache.class);
 		FeaturesMap.put (Features.Remote, Remote.class);
 		FeaturesMap.put (Features.Indexer, Indexer.class);
-		FeaturesMap.put (Features.DataSource, RemoteDataSource.class);
 	}
 	
 	@SuppressWarnings("unchecked")

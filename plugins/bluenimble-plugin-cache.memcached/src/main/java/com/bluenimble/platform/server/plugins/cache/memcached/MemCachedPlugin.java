@@ -70,6 +70,10 @@ public class MemCachedPlugin extends AbstractPlugin {
 		server.addFeature (new ServerFeature () {
 			private static final long serialVersionUID = 3585173809402444745L;
 			@Override
+			public String id () {
+				return null;
+			}
+			@Override
 			public Class<?> type () {
 				return Cache.class;
 			}

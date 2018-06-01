@@ -1,5 +1,5 @@
 package [[package]].[[models]];
-	
+
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.api.ApiRequest;
@@ -9,19 +9,18 @@ import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
 
 import com.bluenimble.platform.api.security.ApiConsumer;
 
+import com.bluenimble.platform.api.impls.JsonApiOutput;
+
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseObject;
-import com.bluenimble.platform.db.DatabaseException;
-
-import com.bluenimble.platform.api.impls.JsonApiOutput;
 
 import com.bluenimble.platform.json.JsonObject;
 
 /**
- * The only required function that you should implement, if no mock data provided in your Update[[Model]].json
+ * The only required function that you should implement, if no mock data provided in your Create[[Model]].json
  * 
  * The execute function will be triggered when an application or device makes a call to [[verb]] [bluenimble-space].[bluenimble-instance].bluenimble.com/[[api]]
- * which is defined in your service specification file Update[[Model]].json 
+ * which is defined in your service specification file Create[[Model]].json 
  * 
  * Arguments:
  *  Api 		 the api where this service is running  
@@ -40,7 +39,7 @@ import com.bluenimble.platform.json.JsonObject;
  * 
  **/
 
-public class Update[[Model]] extends AbstractApiServiceSpi {
+public class Create[[Model]] extends AbstractApiServiceSpi {
 	
 	private static final long serialVersionUID = [[randLong]]L;
 
@@ -52,30 +51,18 @@ public class Update[[Model]] extends AbstractApiServiceSpi {
 		
 		JsonObject payload = (JsonObject)request.get (ApiRequest.Payload);
 
-		Object [[model]]Id = request.get ("[[model]]");
-
-		Database db = feature (api, Database.class, null, request);
+		// write to database
+		 db = feature (api, Database.class, null, request);
 		
-		// get [[Model]] by :[[model]]Id
 		DatabaseObject [[model]] = null;
 		try {
-			[[model]] = db.get ("[[Models]]", [[model]]Id);
-		} catch (DatabaseException dbex) {
-			throw new ApiServiceExecutionException (dbex.getMessage (), dbex);
-		}
-
-		if ([[model]] == null) {
-			throw new ApiServiceExecutionException (
-				api.message (request.getLang (), "NotFound", "[[model]]", [[model]]Id)
-			).status (ApiResponse.NOT_FOUND);
-		}
-		
-		try {
-			[[#eq ModelSpec.addDefaults 'true']]// set the current user as the updater of this [[Model]]
-			[[model]].set ('updatedBy', new JsonObject ().set (Database.Fields.Entity, "Users").set (Database.Fields.Id, consumer.get (ApiConsumer.Fields.Id));[[/eq]]
+			[[model]] = db.create ("[[Models]]");
+			[[#eq ModelSpec.addDefaults 'true']]// set the current user as the creator of this [[Model]]
+			[[model]].set ('createdBy', new JsonObject ().set (Database.Fields.Entity, "Users").set (Database.Fields.Entity, consumer.get (ApiConsumer.Fields.Id));[[/eq]]
 			
 			[[#if ModelSpec.refs]][[#each ModelSpec.refs]][[#neq multiple 'true']]
-			if (payload.containsKey ("[[@key]]")) {[[#eq exists 'true']]
+			if (payload.containsKey ("[[@key]]")) {
+			[[#eq exists 'true']]
 				Object [[@key]]Id = com.bluenimble.platform.Json.find (payload, "[[@key]]", Database.Fields.Id);
 				DatabaseObject [[@key]] = db.get ("[[entity]]", [[@key]]Id);
 				if ([[@key]] == null) {
@@ -87,7 +74,10 @@ public class Update[[Model]] extends AbstractApiServiceSpi {
 				
 				// remove '[[@key]]' from payload
 				payload.remove ("[[@key]]");
-			[[else]]Json.getObject (payload, "[[@key]]").set (Database.Fields.Entity, "[[entity]]");[[/eq]]}[[/neq]][[/each]][[/if]]
+			[[else]]
+				Json.getObject (payload, "[[@key]]").set (Database.Fields.Entity, "[[entity]]");
+			[[/eq]]
+			}[[/neq]][[/each]][[/if]]
 			
 			// load payload into [[model]]
 			[[model]].load (payload);
@@ -100,8 +90,7 @@ public class Update[[Model]] extends AbstractApiServiceSpi {
 			}
 			throw new ApiServiceExecutionException (ex.getMessage (), ex);
 		}
-		
-		// return minimal info about created [[model]]		
+		// return minimal info about the created [[model]]		
 		return new JsonApiOutput ([[model]].toJson (null));
 	}
 	

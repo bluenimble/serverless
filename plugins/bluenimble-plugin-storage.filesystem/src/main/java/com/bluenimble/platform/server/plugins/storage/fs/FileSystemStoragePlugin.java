@@ -74,6 +74,10 @@ public class FileSystemStoragePlugin extends AbstractPlugin {
 			private static final long serialVersionUID = -9012279234275100528L;
 			
 			@Override
+			public String id () {
+				return null;
+			}
+			@Override
 			public Class<?> type () {
 				return Storage.class;
 			}

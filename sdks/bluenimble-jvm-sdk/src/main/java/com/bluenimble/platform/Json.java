@@ -454,6 +454,10 @@ public class Json {
 		return o == null || o.isEmpty ();
 	}
 	
+	public static boolean isNullOrEmpty (JsonArray a) {
+		return a == null || a.isEmpty ();
+	}
+	
 	public static boolean areEqual (Object leftValue, Object rightValue) {
 		if (leftValue == null && rightValue == null) {
 			return true;

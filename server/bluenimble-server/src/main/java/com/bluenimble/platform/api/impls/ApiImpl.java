@@ -25,10 +25,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import com.bluenimble.platform.Feature;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
-import com.bluenimble.platform.Recyclable;
 import com.bluenimble.platform.ValueHolder;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiContentTypes;
@@ -56,12 +54,12 @@ import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.api.tracing.impls.NoTracing;
 import com.bluenimble.platform.api.validation.ApiServiceValidatorException;
-import com.bluenimble.platform.datasource.RemoteDataSource;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.reflect.BeanUtils;
 import com.bluenimble.platform.regex.WildcardCompiler;
 import com.bluenimble.platform.regex.WildcardMatcher;
+import com.bluenimble.platform.server.ApiServer.Event;
 import com.bluenimble.platform.server.impls.ApiClassLoader;
 import com.bluenimble.platform.server.utils.ConfigKeys;
 import com.bluenimble.platform.server.utils.DescribeUtils;
@@ -71,7 +69,6 @@ public class ApiImpl implements Api {
 	
 	private static final long serialVersionUID = -6354828571701974927L;
 
-	private static final String DataSources			= "datasources";
 	private static final String RuntimeKey			= Spec.Runtime.class.getSimpleName ().toLowerCase ();
 	
 	interface Describe {
@@ -174,10 +171,25 @@ public class ApiImpl implements Api {
 		
 		// create classLoader
 		try {
-			if (new File (home, ConfigKeys.Folders.Lib).exists () || Json.getArray (descriptor, ConfigKeys.Classpath) != null) {
+			if (new File (home, ConfigKeys.Folders.Lib).exists () || 
+					!Json.isNullOrEmpty (Json.getArray (descriptor, ConfigKeys.Classpath)) ||
+					!Json.isNullOrEmpty (Json.getArray (descriptor, ConfigKeys.Dependencies))
+			) {
+				
+				ClassLoader [] clds = null;
+				
+				JsonArray aDependencies = Json.getArray (descriptor, ConfigKeys.Dependencies); 
+				if (!Json.isNullOrEmpty (aDependencies)) {
+					clds = new ClassLoader [aDependencies.count ()];
+					for (int i = 0; i < aDependencies.count (); i++) {
+						clds [i] = space.server.getPluginsRegistry ().find (String.valueOf (aDependencies.get (i)));
+					}
+				}
+				
 				this.classLoader = new ApiClassLoader (
 					space.getNamespace () + Lang.DOT + getNamespace (), 
-					InstallUtils.toUrls (home, Json.getArray (descriptor, ConfigKeys.Classpath))
+					InstallUtils.toUrls (home, Json.getArray (descriptor, ConfigKeys.Classpath)),
+					clds
 				);
 			}
 		} catch (Exception ex) {
@@ -230,23 +242,8 @@ public class ApiImpl implements Api {
 			// start spi
 			try {
 				
-				// initialize any linked datasource
-				JsonArray datasources = Json.getArray (getRuntime (), DataSources);
-				
-				if (datasources != null && !datasources.isEmpty ()) {
-					// change classloader
-					for (int i = 0; i < datasources.count (); i++) {
-						Recyclable recyclable = space.getRecyclable (
-							RemoteDataSource.class.getAnnotation (Feature.class).name () + Lang.DOT + space.getNamespace () + Lang.DOT + (String)datasources.get (i)
-						);
-						if (recyclable == null) {
-							continue;
-						}
-						
-						// create factory
-						recyclable.set (space, this.getClassLoader (), (String)datasources.get (i));
-					}
-				}
+				// notify api start
+				space.server.getPluginsRegistry ().onEvent (Event.Start, this);
 				
 				// start api
 				spi.onStart (this, context);

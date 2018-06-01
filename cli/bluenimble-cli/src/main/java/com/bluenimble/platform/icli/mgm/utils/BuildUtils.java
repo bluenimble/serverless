@@ -20,16 +20,11 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.DumperOptions.FlowStyle;
-import org.yaml.snakeyaml.Yaml;
 
 import com.bluenimble.platform.ArchiveUtils;
 import com.bluenimble.platform.IOUtils;
@@ -97,7 +92,6 @@ public class BuildUtils {
 		}
 		
 		File [] dataSources = dataSourcesFolder.listFiles (new FileFilter () {
-			
 			@Override
 			public boolean accept (File file) {
 				return file.isDirectory ();
@@ -426,18 +420,6 @@ public class BuildUtils {
 	
 	private static String capitalize (String name) {
 		return name.substring (0, 1).toUpperCase () + name.substring (1);
-	}
-	
-	public static void main (String [] args) throws IOException {
-		//System.out.println (yml2json (new File ("/tmp/yml/test.yml")));
-		DumperOptions options = new DumperOptions ();
-		options.setDefaultFlowStyle (FlowStyle.BLOCK);
-		options.setPrettyFlow(true);
-		
-		Yaml yaml = new Yaml (options);
-		@SuppressWarnings("unchecked")
-		Map<String, Object> map = yaml.loadAs (new FileInputStream (new File ("/tmp/yml/test.yml")), Map.class);
-		System.out.println (yaml.dump (map));
 	}
 
 }

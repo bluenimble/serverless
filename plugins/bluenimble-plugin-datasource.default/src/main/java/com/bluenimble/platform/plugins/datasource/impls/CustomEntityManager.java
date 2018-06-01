@@ -34,10 +34,10 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.metamodel.Metamodel;
 
+import com.bluenimble.platform.Recyclable;
 import com.bluenimble.platform.api.ApiSpace;
-import com.bluenimble.platform.datasource.RemoteDataSource;
 
-public class CustomEntityManager implements EntityManager, RemoteDataSource {
+public class CustomEntityManager implements EntityManager, Recyclable {
 	
 	private static final long serialVersionUID = 4640805690991659752L;
 	

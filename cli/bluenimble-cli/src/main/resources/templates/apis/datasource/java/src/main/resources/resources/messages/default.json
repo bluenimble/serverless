@@ -1,0 +1,8 @@
+{
+	"NotFound": {
+		"en": "{0} '{1}' not found" 
+	},
+	"LinkNotFound": {
+		"en": "{0} given by {1} {2} and {3} {4} not found" 
+	}
+}

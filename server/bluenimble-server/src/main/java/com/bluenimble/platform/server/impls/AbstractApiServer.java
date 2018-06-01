@@ -128,6 +128,10 @@ public abstract class AbstractApiServer implements ApiServer {
 
 	private Map<String, ServerFeature> 		
 											features 			= new ConcurrentHashMap<String, ServerFeature> ();
+	
+	private Map<Class<?>, String> 		
+											customFeatures 		= new ConcurrentHashMap<Class<?>, String> ();
+	
 	private Map<String, ApiConsumerResolver> 	
 											consumerResolvers 	= new ConcurrentHashMap<String, ApiConsumerResolver> ();
 
@@ -269,22 +273,38 @@ public abstract class AbstractApiServer implements ApiServer {
 	
 	@Override
 	public void	addFeature (ServerFeature feature) {
-		Feature aFeature = feature.type ().getAnnotation (Feature.class);
-		if (aFeature == null || Lang.isNullOrEmpty (aFeature.name ())) {
-			throw new FeatureNotFoundException ("feature " + feature.type ().getSimpleName () + " not registered in this instance");
-		} 
+		
+		String featureId = feature.id ();
+		
+		if (Lang.isNullOrEmpty (featureId)) {
+			Feature aFeature = feature.type ().getAnnotation (Feature.class);
+			if (aFeature == null || Lang.isNullOrEmpty (aFeature.name ())) {
+				throw new FeatureNotFoundException ("feature " + feature.type ().getSimpleName () + " not registered in this instance");
+			} 
+			featureId = aFeature.name ();
+		} else {
+			customFeatures.put (feature.type (), featureId);
+		}
 
-		features.put (aFeature.name () + FeatureProtocol + feature.provider (), feature);
+		features.put (featureId + FeatureProtocol + feature.provider (), feature);
 	}
 
 	@Override
 	public Object getFeature (ApiSpace space, Class<?> type, String name) {
-		Feature aFeature = type.getAnnotation (Feature.class);
+		
+		String featureId = customFeatures.get (type);
+		if (Lang.isNullOrEmpty (featureId)) {
+			Feature aFeature = type.getAnnotation (Feature.class);
+			if (aFeature == null) {
+				throw new FeatureNotFoundException ("feature annotation not declared in type " + type.getName ());
+			}
+			featureId = aFeature.name ();
+		}
 
-		JsonObject oFeature = Json.getObject (space.getFeatures (), aFeature.name ());
+		JsonObject oFeature = Json.getObject (space.getFeatures (), featureId);
 		
 		if (oFeature == null || oFeature.isEmpty ()) {
-			throw new FeatureNotFoundException ("feature " + aFeature.name () + " not available in space " + space.getNamespace ());
+			throw new FeatureNotFoundException ("feature " + featureId + " not available in space " + space.getNamespace ());
 		} 
 		
 		JsonObject oProvider = Json.getObject (oFeature, name);
@@ -294,12 +314,12 @@ public abstract class AbstractApiServer implements ApiServer {
 		
 		String provider = Json.getString (oProvider, ApiSpace.Features.Provider);
 		if (Lang.isNullOrEmpty (provider)) {
-			throw new FeatureNotFoundException ("provider for feature " + aFeature.name () + Lang.SLASH + name +  " is missing");
+			throw new FeatureNotFoundException ("provider for feature " + featureId + Lang.SLASH + name +  " is missing");
 		} 
 		
-		ServerFeature feature = features.get (aFeature.name () + FeatureProtocol + provider);
+		ServerFeature feature = features.get (featureId + FeatureProtocol + provider);
 		if (feature == null) {
-			throw new FeatureNotFoundException ("feature " + name + Lang.COLON + aFeature.name () + FeatureProtocol + provider + " not found");
+			throw new FeatureNotFoundException ("feature " + name + Lang.COLON + featureId + FeatureProtocol + provider + " not found");
 		}
 		return feature.get (space, name);
 	}

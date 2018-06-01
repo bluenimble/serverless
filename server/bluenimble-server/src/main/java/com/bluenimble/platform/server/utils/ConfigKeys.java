@@ -46,6 +46,7 @@ public interface ConfigKeys {
 	String Spaces 			= "spaces";	
 	
 	String Classpath		= "classpath";
+	String Dependencies		= "dependencies";
 	String Native			= "native";
 	String Spi				= "spi";
 	String Namespace		= "namespace";

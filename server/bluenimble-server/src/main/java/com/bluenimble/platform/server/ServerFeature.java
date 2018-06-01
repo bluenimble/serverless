@@ -27,6 +27,8 @@ public interface ServerFeature extends Serializable {
 	
 	Plugin 		implementor ();
 	
+	String 		id 			();
+	
 	Class<?> 	type 		();
 	
 	Object 		get 		(ApiSpace space, String name);

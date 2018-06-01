@@ -23,8 +23,8 @@ import com.bluenimble.platform.api.Api;
 
 public class ApiClassLoader extends PackageClassLoader {
 	
-	public ApiClassLoader (String name, URL [] urls) {
-		super (name, Api.class.getClassLoader (), urls, (ClassLoader [])null);
+	public ApiClassLoader (String name, URL [] urls, ClassLoader... dependencies) {
+		super (name, Api.class.getClassLoader (), urls, dependencies);
 	}
 
 }

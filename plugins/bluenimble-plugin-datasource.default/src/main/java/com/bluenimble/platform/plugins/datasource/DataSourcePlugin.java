@@ -29,14 +29,14 @@ import javax.sql.DataSource;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
-import com.bluenimble.platform.Feature;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.Recyclable;
+import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.Manageable;
 import com.bluenimble.platform.api.tracing.Tracer;
-import com.bluenimble.platform.datasource.RemoteDataSource;
+import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.Plugin;
 import com.bluenimble.platform.plugins.PluginRegistryException;
@@ -54,7 +54,9 @@ public class DataSourcePlugin extends AbstractPlugin {
 	
 	private static final String 	Vendors 		= "vendors";
 	
-	private String					feature;
+	private static final String 	DataSources		= "datasources";
+
+	private String					feature 		= "datasource";
 	
 	private int 					weight;
 	
@@ -77,18 +79,16 @@ public class DataSourcePlugin extends AbstractPlugin {
 	public void init (ApiServer server) throws Exception {
 		weight = server.weight ();
 		
-		Feature aFeature = RemoteDataSource.class.getAnnotation (Feature.class);
-		if (aFeature == null || Lang.isNullOrEmpty (aFeature.name ())) {
-			return;
-		}
-		feature = aFeature.name ();
-		
 		// add features
 		server.addFeature (new ServerFeature () {
 			private static final long serialVersionUID = 2626039344401539390L;
 			@Override
+			public String id () {
+				return feature;
+			}
+			@Override
 			public Class<?> type () {
-				return RemoteDataSource.class;
+				return EntityManager.class;
 			}
 			@Override
 			public Object get (ApiSpace space, String name) {
@@ -114,6 +114,11 @@ public class DataSourcePlugin extends AbstractPlugin {
 		}
 		
 		tracer ().log (Tracer.Level.Info, "onEvent {0}, target {1}", event, target.getClass ().getSimpleName ());
+		
+		if (Api.class.isAssignableFrom (target.getClass ())) {
+			onStartApi ((Api)target);
+			return;
+		}
 		
 		ApiSpace space = (ApiSpace)target;
 		
@@ -250,6 +255,28 @@ public class DataSourcePlugin extends AbstractPlugin {
 			}
 		}
 		
+	}
+	
+	private void onStartApi (Api api) {
+		
+		ApiSpace space = api.space ();
+		
+		// initialize any linked datasource
+		JsonArray datasources = Json.getArray (api.getRuntime (), DataSources);
+		
+		if (datasources != null && !datasources.isEmpty ()) {
+			// change classloader
+			for (int i = 0; i < datasources.count (); i++) {
+				Recyclable recyclable = space.getRecyclable (
+					factoryKey ((String)datasources.get (i), space)	
+				);
+				if (recyclable == null) {
+					continue;
+				}
+				// create factory
+				recyclable.set (space, api.getClassLoader (), (String)datasources.get (i));
+			}
+		}
 	}
 	
 	private String factoryKey (String name, ApiSpace space) {
