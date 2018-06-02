@@ -23,16 +23,13 @@ import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.PackageClassLoader;
 import com.bluenimble.platform.api.ApiSpace;
-import com.bluenimble.platform.api.Manageable;
 import com.bluenimble.platform.indexer.Indexer;
 import com.bluenimble.platform.indexer.impls.ElasticSearchIndexer;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.Plugin;
-import com.bluenimble.platform.plugins.PluginRegistryException;
 import com.bluenimble.platform.plugins.impls.AbstractPlugin;
 import com.bluenimble.platform.remote.Remote;
 import com.bluenimble.platform.server.ApiServer;
-import com.bluenimble.platform.server.ApiServer.Event;
 import com.bluenimble.platform.server.ServerFeature;
 
 public class ElasticSearchPlugin extends AbstractPlugin {
@@ -132,11 +129,6 @@ public class ElasticSearchPlugin extends AbstractPlugin {
 		});
 	}
 
-	@Override
-	public void onEvent (Event event, Manageable target, Object... args) throws PluginRegistryException {
-		
-	}
-	
 	public JsonObject getRemote () {
 		return remote;
 	}

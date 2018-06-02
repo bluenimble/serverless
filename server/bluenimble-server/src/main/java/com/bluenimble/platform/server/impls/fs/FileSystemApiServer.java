@@ -100,11 +100,6 @@ public class FileSystemApiServer extends AbstractApiServer {
 	}
 
 	@Override
-	public int weight () {
-		return Json.getInteger (descriptor, ConfigKeys.Weight, 2);
-	}
-
-	@Override
 	public String version () {
 		return Json.getString (descriptor, ConfigKeys.Version);
 	}
@@ -163,11 +158,13 @@ public class FileSystemApiServer extends AbstractApiServer {
 			}
 			
 			pluginsRegistry = (PluginsRegistry)BeanUtils.create (serverClassLoader, Json.getObject (descriptor, ConfigKeys.PluginsRegistry));
-			pluginsRegistry.init (
+			
+			// init plugins
+			pluginsRegistry.install (
 				this, 
 				new File (installHome, ConfigKeys.Folders.Plugins)
 			);
-			
+
 			// init tracer
 			JsonObject oTracer = Json.getObject (descriptor, ConfigKeys.Tracer);
 			if (!Json.isNullOrEmpty (oTracer)) {
@@ -230,10 +227,10 @@ public class FileSystemApiServer extends AbstractApiServer {
 			keyStoreManager.start ();
 		}
 		
-		tracer.log (Tracer.Level.Info, "Instance started @ {0} - in {1} Millis", new Date (), String.valueOf (System.currentTimeMillis () - startTime));
+		tracer.log (Tracer.Level.Info, "Node started @ {0} - in {1} Millis", new Date (), String.valueOf (System.currentTimeMillis () - startTime));
 		tracer.log (Tracer.Level.Info, "With Root Keys   {0}  [{1}]", 
 			keys.accessKey (), 
-			keys.expiryDate () == null ? "Never Expires" : Lang.toString (keys.expiryDate (), Lang.DEFAULT_DATE_FORMAT)
+			keys.expiryDate () == null ? "Never Expire" : Lang.toString (keys.expiryDate (), Lang.DEFAULT_DATE_FORMAT)
 		);
 
 		if (!failed.isEmpty ()) {
@@ -451,12 +448,12 @@ public class FileSystemApiServer extends AbstractApiServer {
 			}
 		}
 
-		if (pluginsRegistry != null) {
-			pluginsRegistry.shutdown ();
-		}
-		
 		if (keyStoreManager != null) {
 			keyStoreManager.stop ();
+		}
+		
+		if (pluginsRegistry != null) {
+			pluginsRegistry.shutdown ();
 		}
 		
 		tracer.onShutdown (this);

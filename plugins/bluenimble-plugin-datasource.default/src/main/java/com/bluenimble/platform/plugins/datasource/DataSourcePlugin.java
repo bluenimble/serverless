@@ -58,8 +58,6 @@ public class DataSourcePlugin extends AbstractPlugin {
 
 	private String					feature 		= "datasource";
 	
-	private int 					weight;
-	
 	interface Spec {
 		
 		String Vendor		= "vendor";
@@ -71,13 +69,21 @@ public class DataSourcePlugin extends AbstractPlugin {
 		String Password 	= "password";
 
 		String Properties 	= "properties";
+		
+		interface Pool {
+			String MaximumPoolSize 		= "maximumPoolSize";
+			String MaxLifeTime 			= "maxLifeTime";
+			String MinimumIdle 			= "minimumIdle";
+			String ConnectionTimeout 	= "connectionTimeout";
+			String IdleTimeout 			= "idleTimeout";
+		}	
+		
 	}
 	
 	private Map<String, DataSourceVendor> vendors = new HashMap<String, DataSourceVendor> ();
 		
 	@Override
 	public void init (ApiServer server) throws Exception {
-		weight = server.weight ();
 		
 		// add features
 		server.addFeature (new ServerFeature () {
@@ -109,14 +115,14 @@ public class DataSourcePlugin extends AbstractPlugin {
 
 	@Override
 	public void onEvent (Event event, Manageable target, Object... args) throws PluginRegistryException {
-		if (!ApiSpace.class.isAssignableFrom (target.getClass ())) {
+
+		if (Api.class.isAssignableFrom (target.getClass ()) && event.equals (Event.Start)) {
+			tracer ().log (Tracer.Level.Info, "onStartApi", ((Api)target).getNamespace ());
+			onStartApi ((Api)target);
 			return;
 		}
 		
-		tracer ().log (Tracer.Level.Info, "onEvent {0}, target {1}", event, target.getClass ().getSimpleName ());
-		
-		if (Api.class.isAssignableFrom (target.getClass ())) {
-			onStartApi ((Api)target);
+		if (!ApiSpace.class.isAssignableFrom (target.getClass ())) {
 			return;
 		}
 		
@@ -209,7 +215,12 @@ public class DataSourcePlugin extends AbstractPlugin {
 			config.setUsername (Json.getString (spec, Spec.User));
 			config.setPassword (Json.getString (spec, Spec.Password));
 			config.setAutoCommit (false);
-			config.setMaximumPoolSize (weight);
+			
+			config.setMaximumPoolSize 	(Json.getInteger (spec, Spec.Pool.MaximumPoolSize, 10));
+			config.setMaxLifetime		(Json.getLong (spec, Spec.Pool.MaxLifeTime, 30) * 60 * 1000);
+			config.setMinimumIdle 		(Json.getInteger (spec, Spec.Pool.MinimumIdle, -1));
+			config.setConnectionTimeout	(Json.getLong (spec, Spec.Pool.ConnectionTimeout, 30) * 60 * 1000);
+			config.setIdleTimeout		(Json.getLong (spec, Spec.Pool.IdleTimeout, 10) * 60 * 1000);
 			
 			JsonObject props = Json.getObject (spec, Spec.Properties);
 			if (!Json.isNullOrEmpty (props)) {

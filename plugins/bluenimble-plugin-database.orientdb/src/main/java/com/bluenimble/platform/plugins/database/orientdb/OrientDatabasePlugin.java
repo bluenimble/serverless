@@ -25,7 +25,6 @@ import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.Recyclable;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.Manageable;
-import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.Plugin;
@@ -110,8 +109,6 @@ public class OrientDatabasePlugin extends AbstractPlugin {
 			return;
 		}
 		
-		tracer ().log (Tracer.Level.Info, "onEvent {0}, target {1}", event, target.getClass ().getSimpleName ());
-		
 		ApiSpace space = (ApiSpace)target;
 		
 		switch (event) {
@@ -119,11 +116,9 @@ public class OrientDatabasePlugin extends AbstractPlugin {
 				createPools (space);
 				break;
 			case AddFeature:
-				// if it's database and provider is 'platform or orientdb' create factory
 				createPools (space);
 				break;
 			case DeleteFeature:
-				// if it's database and provider is 'platform or orientdb' stop factory
 				dropPools (space);
 				break;
 			default:

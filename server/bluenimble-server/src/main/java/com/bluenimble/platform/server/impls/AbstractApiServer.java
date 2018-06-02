@@ -224,7 +224,13 @@ public abstract class AbstractApiServer implements ApiServer {
 			describe.set (DescribeOption.Option.features.name (), oFeatures);
 			
 			for (ServerFeature feature : features.values ()) {
-				String name = feature.type ().getAnnotation (Feature.class).name ();
+				Class<?> fType = feature.type ();
+				String name = null;
+				if (customFeatures.containsKey (fType)) {
+					name = customFeatures.get (fType);
+				} else {
+					name = feature.type ().getAnnotation (Feature.class).name ();
+				}
 				
 				JsonArray aVendors = Json.getArray (oFeatures, name);
 				if (aVendors == null) {

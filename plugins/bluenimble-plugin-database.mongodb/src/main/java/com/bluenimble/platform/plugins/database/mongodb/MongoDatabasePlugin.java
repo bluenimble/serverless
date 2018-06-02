@@ -31,7 +31,6 @@ import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.Recyclable;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.Manageable;
-import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.Plugin;
@@ -85,12 +84,8 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 	
 	private String				feature;
 	
-	//private int 				weight;
-	
 	@Override
 	public void init (final ApiServer server) throws Exception {
-		
-		//weight = server.weight ();
 		
 		Feature aFeature = Database.class.getAnnotation (Feature.class);
 		if (aFeature == null || Lang.isNullOrEmpty (aFeature.name ())) {
@@ -137,8 +132,6 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 			return;
 		}
 		
-		tracer ().log (Tracer.Level.Info, "onEvent {0}, target {1}", event, target.getClass ().getSimpleName ());
-		
 		ApiSpace space = (ApiSpace)target;
 		
 		switch (event) {
@@ -146,11 +139,9 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 				createClients (space);
 				break;
 			case AddFeature:
-				// if it's database and provider is 'mongodb' create clients
 				createClients (space);
 				break;
 			case DeleteFeature:
-				// if it's database and provider is 'mongodb' stop factory
 				dropClients (space);
 				break;
 			default:

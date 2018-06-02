@@ -25,7 +25,7 @@ import com.bluenimble.platform.server.ApiServer;
 
 public interface PluginsRegistry extends ClassLoaderRegistry {
 
-	void				init		(ApiServer server, File root) 	throws PluginRegistryException;
+	void				install		(ApiServer server, File root) 	throws PluginRegistryException;
 	void				start		() 								throws PluginRegistryException;
 	void				shutdown	();
 	

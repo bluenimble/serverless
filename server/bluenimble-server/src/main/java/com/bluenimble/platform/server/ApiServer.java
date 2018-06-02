@@ -80,7 +80,6 @@ public interface ApiServer extends Traceable, Manageable {
 	
 	String 					id 						();
 	String 					type 					();
-	int 					weight 					();
 	String 					version 				();
 	
 	InstanceDescriber		getInstanceDescriber 	();

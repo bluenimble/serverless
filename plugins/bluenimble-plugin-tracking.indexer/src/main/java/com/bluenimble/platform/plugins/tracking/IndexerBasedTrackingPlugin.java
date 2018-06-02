@@ -17,7 +17,6 @@
 package com.bluenimble.platform.plugins.tracking;
 
 import com.bluenimble.platform.Json;
-import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.impls.AbstractPlugin;
 import com.bluenimble.platform.server.ApiServer;
@@ -29,17 +28,22 @@ public class IndexerBasedTrackingPlugin extends AbstractPlugin {
 	
 	interface Spec {
 		String Name 			= "name";
-		String KeepAliveTime 	= "keepAliveTime";
 		String Capacity 		= "capacity";
+		String MinThreads 		= "minThreads";
+		String MaxThreads 		= "maxThreads";
+		String KeepAliveTime 	= "keepAliveTime";
 	}
 	
 	private JsonObject tracker;
 
 	@Override
 	public void init (ApiServer server) throws Exception {
-		tracer ().log (Tracer.Level.Info, "server.weight: [{0}]", server.weight ());
-		IndexerApiRequestTracker rTracker = new IndexerApiRequestTracker (server.weight ());
-		rTracker.setKeepAliveTime (Json.getInteger (tracker, Spec.KeepAliveTime, 10));
+		IndexerApiRequestTracker rTracker = new IndexerApiRequestTracker (
+			Json.getInteger (tracker, Spec.Capacity, 100),
+			Json.getInteger (tracker, Spec.MinThreads, 5),
+			Json.getInteger (tracker, Spec.MaxThreads, 10),
+			Json.getInteger (tracker, Spec.KeepAliveTime, 30)
+		);
 		server.addRequestTracker (Json.getString (tracker, Spec.Name), rTracker);
 	}
 

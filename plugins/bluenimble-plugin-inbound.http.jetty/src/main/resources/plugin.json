@@ -18,8 +18,12 @@
 			
 			"port": "[ this.port | '9090' ]",
 			"idleTimeout": "[ this.idleTimeout | '30' ]",
+			"monitor": "[ this.monitor | 'false' ]",
 			
 			"pool": {
+				"min": "[ this.pool.min | '10' ]",
+				"max": "[ this.pool.max | '200' ]",
+				"capacity": "[ this.pool.capacity | '500' ]",
 				"idleTimeout": "[ this.pool.idleTimeout | '300' ]"
 			},
 			

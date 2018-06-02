@@ -73,6 +73,8 @@ public class DefaultPluginsRegistry implements PluginsRegistry, ClassLoaderRegis
 									classLoaders
 												= new HashMap<String, PackageClassLoader> ();
 	
+	private Map<String, JsonObject> tracers 	= new HashMap<String, JsonObject>();
+	
 	private static String OsFamily;
 	private static String OsArc;
 	
@@ -104,7 +106,7 @@ public class DefaultPluginsRegistry implements PluginsRegistry, ClassLoaderRegis
 	private ApiServer 	server;
 	
 	@Override
-	public void init (final ApiServer server, File home) throws PluginRegistryException {
+	public void install (final ApiServer server, File home) throws PluginRegistryException {
 		this.server = server;
 		
 		server.tracer ().log (Tracer.Level.Info, "Operating System: {0}", OsFamily);
@@ -144,7 +146,7 @@ public class DefaultPluginsRegistry implements PluginsRegistry, ClassLoaderRegis
 				if (plugin.isInitOnInstall ()) {
 					continue;
 				}
-				server.tracer ().log (Tracer.Level.Info, "\t Initialize {0}", plugin.getNamespace ());
+				server.tracer ().log (Tracer.Level.Info, "Initialize plugin {0}", plugin.getNamespace ());
 				
 				if (plugin.isAsync ()) {
 					new Thread () {
@@ -293,20 +295,11 @@ public class DefaultPluginsRegistry implements PluginsRegistry, ClassLoaderRegis
 		
 		classLoaders.put (pluginNs, pcl);
 		
-		// init tracer
-		Tracer plTracer = null;
 		JsonObject oTracer = Json.getObject (descriptor, ConfigKeys.Tracer);
 		if (!Json.isNullOrEmpty (oTracer)) {
-			plTracer = (Tracer)BeanUtils.create (pcl, oTracer, this);
-		}
-		if (plTracer == null) {
-			plTracer = server.tracer ();
-		} else {
-			plTracer.onInstall (plugin);
+			tracers.put (pluginNs, oTracer);
 		}
 		
-		plugin.setTracer (plTracer);
-
 		return plugin;
 	}
 	
@@ -316,6 +309,26 @@ public class DefaultPluginsRegistry implements PluginsRegistry, ClassLoaderRegis
 			return;
 		}
 		
+		// set plugin tracer
+		Tracer plTracer = null;
+		
+		JsonObject oTracer = tracers.get (plugin.getNamespace ());
+		
+		// remove from map
+		tracers.remove (plugin.getNamespace ());
+		
+		if (!Json.isNullOrEmpty (oTracer)) {
+			plTracer = (Tracer)BeanUtils.create (classLoaders.get (plugin.getNamespace ()), oTracer, this);
+		}
+		if (plTracer == null) {
+			plTracer = server.tracer ();
+		} else {
+			plTracer.onInstall (plugin);
+		}
+		
+		plugin.setTracer (plTracer);
+
+		// call plugin.init spi
 		if (plugin.isIsolated ()) {
 			ClassLoader serverClassLoader = Thread.currentThread ().getContextClassLoader ();
 			

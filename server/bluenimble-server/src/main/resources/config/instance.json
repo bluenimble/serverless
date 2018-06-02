@@ -2,15 +2,13 @@
 
 	"id": "[vars.id | 'bnb']",
 	"type": "[vars.type | 'standard']",
-	"name": "BlueNimble Serverless",
+	"name": "[ vars.name | 'BlueNimble Hybrid Serverless' ]",
 	"version": "[version]",
 
 	"debug": "[ vars.debug | 'true' ]",
 	
 	"spaces": "[ vars.spaces | '' ]",
 	"deleteInstalledSpaces": "[ vars.deleteInstalledSpaces | 'true' ]",
-	
-	"weight": "[vars.weight | '10']",
 	
 	"pluginsRegistry": {
 		"class": "com.bluenimble.platform.plugins.impls.DefaultPluginsRegistry"

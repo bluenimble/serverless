@@ -28,17 +28,22 @@ public class DatabaseBasedTrackingPlugin extends AbstractPlugin {
 	
 	interface Spec {
 		String Name 			= "name";
-		String Size 			= "size";
-		String KeepAliveTime 	= "keepAliveTime";
 		String Capacity 		= "capacity";
+		String MinThreads 		= "minThreads";
+		String MaxThreads 		= "maxThreads";
+		String KeepAliveTime 	= "keepAliveTime";
 	}
 	
 	private JsonObject tracker;
 
 	@Override
 	public void init (ApiServer server) throws Exception {
-		DatabaseApiRequestTracker rTracker = new DatabaseApiRequestTracker (server.weight ());
-		rTracker.setKeepAliveTime (Json.getInteger (tracker, Spec.KeepAliveTime, 10));
+		DatabaseApiRequestTracker rTracker = new DatabaseApiRequestTracker (
+			Json.getInteger (tracker, Spec.Capacity, 100),
+			Json.getInteger (tracker, Spec.MinThreads, 5),
+			Json.getInteger (tracker, Spec.MaxThreads, 10),
+			Json.getInteger (tracker, Spec.KeepAliveTime, 30)
+		);
 		server.addRequestTracker (Json.getString (tracker, Spec.Name), rTracker);
 	}
 

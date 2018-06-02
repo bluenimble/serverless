@@ -56,6 +56,7 @@ import com.bluenimble.platform.api.tracing.impls.NoTracing;
 import com.bluenimble.platform.api.validation.ApiServiceValidatorException;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.plugins.PluginRegistryException;
 import com.bluenimble.platform.reflect.BeanUtils;
 import com.bluenimble.platform.regex.WildcardCompiler;
 import com.bluenimble.platform.regex.WildcardMatcher;
@@ -223,7 +224,9 @@ public class ApiImpl implements Api {
 		
 		space.tracer ().log (Tracer.Level.Info, "\t  Namespace: {0}", getNamespace ());
 		space.tracer ().log (Tracer.Level.Info, "\t       Name: {0}", getName ());
-		space.tracer ().log (Tracer.Level.Info, "\tDescription: {0}", getDescription ());
+		if (getDescription () != null) {
+			space.tracer ().log (Tracer.Level.Info, "\tDescription: {0}", getDescription ());
+		} 
 		
 		// init tracer
 		JsonObject oTracer = Json.getObject (descriptor, ConfigKeys.Tracer);
@@ -294,6 +297,13 @@ public class ApiImpl implements Api {
 
 	public void stop (boolean saveStatus) {
 		
+		// notify plugins
+		try {
+			space.server.getPluginsRegistry ().onEvent (Event.Stop, this);
+		} catch (PluginRegistryException ex) {
+			space.tracer ().log (Tracer.Level.Error, "notify plugins caused an error", ex);
+		}
+
 		ApiContext context = new DefaultApiContext ();
 		
 		// call services manager onStop 

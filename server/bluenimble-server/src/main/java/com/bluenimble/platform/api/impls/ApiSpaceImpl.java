@@ -373,13 +373,6 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 
 		// start api
 		api.start (false);
-
-		// notify plugins
-		try {
-			server.getPluginsRegistry ().onEvent (Event.Start, api);
-		} catch (PluginRegistryException e) {
-			throw new ApiManagementException (e.getMessage (), e);
-		}
 		
 	}
 
@@ -393,13 +386,6 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 			throw new ApiManagementException ("can't stop api " + apiNs + ". Status=" + api.status ());
 		}
 		
-		// notify plugins
-		try {
-			server.getPluginsRegistry ().onEvent (Event.Stop, api);
-		} catch (PluginRegistryException e) {
-			throw new ApiManagementException (e.getMessage (), e);
-		}
-
 		// stop api
 		api.stop (true);
 
@@ -814,13 +800,6 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 		if (ApiStatus.Running.equals (status) || ApiStatus.Paused.equals (status)) {
 			// start api
 			((ApiImpl)api).start (ApiStatus.Paused.equals (api.status ()));
-			
-			// notify plugins
-			try {
-				server.getPluginsRegistry ().onEvent (Event.Start, api);
-			} catch (PluginRegistryException e) {
-				throw new ApiManagementException (e.getMessage (), e);
-			}
 		}
 
 		return api;

@@ -133,36 +133,13 @@ public class JettyPlugin extends AbstractPlugin {
 		For example, if the webapp can handle 100 requests per second, and if you can allow it one minute to recover from excessive high load, 
 		you can set the queue capability to 60*100=6000. If it is set too low, it will reject requests too soon and can't handle normal load 
 		spike.
-		
-		Below is a sample configuration:
-		
-		<Configure id="Server" class="org.eclipse.jetty.server.Server">
-		    <Set name="ThreadPool">
-		      <New class="org.eclipse.jetty.util.thread.QueuedThreadPool">
-		        <!-- specify a bounded queue -->
-		        <Arg>
-		           <New class="java.util.concurrent.ArrayBlockingQueue">
-		              <Arg type="int">6000</Arg>
-		           </New>
-		      </Arg>
-		        <Set name="minThreads">10</Set>
-		        <Set name="maxThreads">200</Set>
-		        <Set name="detailedDump">false</Set>
-		      </New>
-		    </Set>
-		</Configure>
-		Configure the number of threads according to the webapp. 
-		That is, how many threads it needs in order to achieve the best performance. 
-		Configure with mind to limiting memory usage maximum available. Typically >50 and <500.
 		 */
 		
-		int capacity = server.weight () + 2;
-		
 		QueuedThreadPool tp = new QueuedThreadPool (
-			capacity, 
-			capacity, 
+			Json.getInteger (pool, Pool.Max, 200), 
+			Json.getInteger (pool, Pool.Min, 10), 
 			poolIdleTimeout * 1000,
-			new ArrayBlockingQueue<Runnable> (capacity * 2)
+			new ArrayBlockingQueue<Runnable> (Json.getInteger (pool, Pool.Capacity, 500))
 		);
 		tp.setDetailedDump (false);
 		tp.setThreadsPriority (Thread.NORM_PRIORITY);

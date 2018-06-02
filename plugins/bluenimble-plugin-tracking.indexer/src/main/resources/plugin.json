@@ -14,7 +14,10 @@
 			},
 			"tracker": {
 				"name": "indexer",
-				"keepAliveTime": "5"
+				"capacity": "[ this.tracker.capacity | '100' ]",
+				"min": "[ this.tracker.minThreads | '5' ]",
+				"max": "[ this.tracker.maxThreads | '10' ]",
+				"keepAliveTime": "[ this.tracker.keepAliveTime | '30' ]"
 			}
 		}
 	}

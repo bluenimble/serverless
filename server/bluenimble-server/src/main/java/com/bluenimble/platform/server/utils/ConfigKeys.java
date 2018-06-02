@@ -35,7 +35,6 @@ public interface ConfigKeys {
 	
 	String Id				= "id";
 	String Type				= "type";
-	String Weight			= "weight";
 
 	String Debug			= "debug";
 	String DeleteInstalledSpaces

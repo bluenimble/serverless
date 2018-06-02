@@ -9,6 +9,9 @@ import com.bluenimble.platform.api.tracing.Tracer.Level;
 
 public class JettyLogger extends AbstractLogger {
 
+	private static final String MsgParam 	= "{}";
+	private static final String MsgToken 	= "%s";
+	
 	private String name;
 	private Tracer tracer;
 	
@@ -29,41 +32,65 @@ public class JettyLogger extends AbstractLogger {
 
 	@Override
 	public void debug (String message, Object... args) {
-		tracer.log (Level.Debug, message, args);
+		if (!tracer.isEnabled (Level.Debug)) {
+			return;
+		}
+		tracer.log (Level.Debug, message (message, args));
 	}
 
 	@Override
 	public void debug (String message, Throwable th) {
+		if (!tracer.isEnabled (Level.Debug)) {
+			return;
+		}
 		tracer.log (Level.Debug, message, th);
 	}
 
 	@Override
 	public void info (Throwable th) {
+		if (!tracer.isEnabled (Level.Info)) {
+			return;
+		}
 		tracer.log (Level.Info, Lang.BLANK, th);
 	}
 
 	@Override
 	public void info (String message, Object... args) {
-		tracer.log (Level.Info, message, args);
+		if (!tracer.isEnabled (Level.Info)) {
+			return;
+		}
+		tracer.log (Level.Info, message (message, args));
 	}
 
 	@Override
 	public void info (String message, Throwable th) {
+		if (!tracer.isEnabled (Level.Info)) {
+			return;
+		}
 		tracer.log (Level.Info, message, th);
 	}
 
 	@Override
 	public void warn (Throwable th) {
+		if (!tracer.isEnabled (Level.Warning)) {
+			return;
+		}
 		tracer.log (Level.Info, Lang.BLANK, th);
 	}
 
 	@Override
 	public void warn (String message, Object... args) {
-		tracer.log (Level.Info, message, args);
+		if (!tracer.isEnabled (Level.Warning)) {
+			return;
+		}
+		tracer.log (Level.Info, message (message, args));
 	}
 
 	@Override
 	public void warn (String message, Throwable th) {
+		if (!tracer.isEnabled (Level.Warning)) {
+			return;
+		}
 		tracer.log (Level.Info, message, th);
 	}
 
@@ -85,6 +112,10 @@ public class JettyLogger extends AbstractLogger {
 	@Override
 	public void setDebugEnabled (boolean enabled) {
 		// ignore
+	}
+	
+	private String message (String message, Object... args) {
+		return String.format (message.replace (MsgParam, MsgToken), args);
 	}
 
 }

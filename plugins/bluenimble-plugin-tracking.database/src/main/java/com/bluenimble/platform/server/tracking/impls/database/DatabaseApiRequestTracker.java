@@ -32,9 +32,10 @@ public class DatabaseApiRequestTracker implements ServerRequestTracker {
 
 	private static final long serialVersionUID = 393416228007740651L;
 	
-	protected int size 			= 20;
-	protected int keepAliveTime = 5;
 	protected int capacity 		= 100;
+	protected int minThreads 	= 5;
+	protected int maxThreads 	= 10;
+	protected int keepAliveTime = 30;
 	
 	private ThreadGroup threadGroup = new ThreadGroup ("RequestTracker");
 	
@@ -63,16 +64,19 @@ public class DatabaseApiRequestTracker implements ServerRequestTracker {
 	
 	private TrackingExecutor executor;
 
-	public DatabaseApiRequestTracker (int size) {
+	public DatabaseApiRequestTracker (int capacity, int minThreads, int maxThreads, int keepAliveTime) {
 		threadGroup.setMaxPriority (Thread.MIN_PRIORITY);
-		this.size = size;
-		this.capacity = 2 * this.size;
+		this.capacity 		= capacity;
+		this.minThreads 	= minThreads;
+		this.maxThreads 	= maxThreads;
+		this.keepAliveTime 	= keepAliveTime;
+		
 		executor = new TrackingExecutor ();
 	}
 	
 	class TrackingExecutor extends ThreadPoolExecutor {
 		public TrackingExecutor () {
-			super (size, size, keepAliveTime, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable> (capacity), new ThreadFactory () {
+			super (minThreads, maxThreads, keepAliveTime, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable> (capacity), new ThreadFactory () {
 				@Override
 				public Thread newThread (Runnable r) {
 					return new Thread (threadGroup, r);
@@ -86,27 +90,6 @@ public class DatabaseApiRequestTracker implements ServerRequestTracker {
 		return new DatabaseApiRequestTrack (this, api, request);
 	}
 	
-	public int getSize () {
-		return size;
-	}
-	public void setSize (int size) {
-		this.size = size;
-	}
-
-	public int getKeepAliveTime () {
-		return keepAliveTime;
-	}
-	public void setKeepAliveTime (int keepAliveTime) {
-		this.keepAliveTime = keepAliveTime;
-	}
-
-	public int getCapacity () {
-		return capacity;
-	}
-	public void setCapacity (int capacity) {
-		this.capacity = capacity;
-	}
-
 	TrackingExecutor executor () {
 		return executor;
 	}
