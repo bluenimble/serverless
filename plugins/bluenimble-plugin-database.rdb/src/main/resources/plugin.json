@@ -1,0 +1,19 @@
+{
+
+	"namespace": "database.rdb",
+	"name": "Database Implementation - Major RDBMSs (Oracle, MySQL, MariaDB, DB2, SqlServer, ...)",
+	
+	"spi": {
+		"class": "com.bluenimble.platform.plugins.database.rdb.RdbPlugin",
+		"properties": {
+			"version": "[version]",
+			"vendor": {
+				"name": "BlueNimble, Inc",
+				"links": [{
+					"Read More": "https://www.bluenimble.com"
+				}]
+			}
+		}
+	}
+	
+}

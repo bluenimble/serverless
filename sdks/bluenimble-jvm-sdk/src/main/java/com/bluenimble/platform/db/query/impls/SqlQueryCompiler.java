@@ -38,7 +38,7 @@ public class SqlQueryCompiler extends EventedQueryCompiler {
 	
 	private static final String					ParamPrefix		= "p";
 	
-	private interface Sql {
+	protected interface Sql {
 		String OrderBy 	= "order by";
 		String GroupBy 	= "group by";
 		String From 	= "from";
@@ -67,7 +67,7 @@ public class SqlQueryCompiler extends EventedQueryCompiler {
 	
 	private int						counter;
 		
-	private Query.Construct			dml;
+	protected Query.Construct		dml;
 	private Query 					query;
 
 	public SqlQueryCompiler (Query.Construct dml) {
@@ -101,7 +101,7 @@ public class SqlQueryCompiler extends EventedQueryCompiler {
 		if (!Query.Construct.select.equals (dml)) {
 			return;
 		}
-		buff.append (Lang.SPACE).append (field);
+		buff.append (Lang.SPACE); field (field);
 		if (count == (index + 1)) {
 			return;
 		}
@@ -144,7 +144,8 @@ public class SqlQueryCompiler extends EventedQueryCompiler {
 			buff.append (Lang.SPACE).append (filter.conjunction ().name ()).append (Lang.SPACE);
 		}
 
-		buff.append (condition.field ()).append (Lang.SPACE).append (operatorFor (condition.operator ())).append (Lang.SPACE);
+		field (condition.field ());
+		buff.append (Lang.SPACE).append (operatorFor (condition.operator ())).append (Lang.SPACE);
 		if (Operator.nil.equals (condition.operator ()) || Operator.nnil.equals (condition.operator ())) {
 			return;
 		}
@@ -218,7 +219,8 @@ public class SqlQueryCompiler extends EventedQueryCompiler {
 	@Override
 	protected void onOrderByField (OrderByField orderBy, int count, int index)
 			throws DatabaseException {
-		buff.append (Lang.SPACE).append (orderBy.field ()).append (Lang.SPACE).append (orderBy.direction ().name ());
+		buff.append (Lang.SPACE); field (orderBy.field ());
+		buff.append (Lang.SPACE).append (orderBy.direction ().name ());
 		if (count == (index + 1)) {
 			return;
 		}
@@ -240,7 +242,7 @@ public class SqlQueryCompiler extends EventedQueryCompiler {
 	@Override
 	protected void onGroupByField (String field, int count, int index)
 			throws DatabaseException {
-		buff.append (Lang.SPACE).append (field);
+		buff.append (Lang.SPACE); field (field);
 		if (count == (index + 1)) {
 			return;
 		}
@@ -294,6 +296,10 @@ public class SqlQueryCompiler extends EventedQueryCompiler {
 	
 	protected void entity () {
 		buff.append (query.entity ());
+	}
+	
+	protected void field (String field) {
+		buff.append (field);
 	}
 
 }

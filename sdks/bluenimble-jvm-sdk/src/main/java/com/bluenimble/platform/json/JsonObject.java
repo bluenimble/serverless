@@ -145,7 +145,7 @@ public class JsonObject extends JsonAbstractEntity implements Map {
 	}
 	
 	private Object duplicate (Object value) {
-		if (value.equals (NULL)) {
+		if (value.equals (Lang.Null)) {
 			return value;
 		}
 		if (value instanceof JsonObject) {
@@ -205,7 +205,7 @@ public class JsonObject extends JsonAbstractEntity implements Map {
 			return null;
 		}
 		Object v = values.get (name);
-		if (v == NULL) {
+		if (Lang.Null.equals (v)) {
 			return null;
 		}
 		return v;
@@ -281,11 +281,11 @@ public class JsonObject extends JsonAbstractEntity implements Map {
         Object value = getTypedValue (name);
         if (Boolean.FALSE.equals (value) ||
                 (value instanceof String &&
-                ((String)value).equalsIgnoreCase (FALSE))) {
+                ((String)value).equalsIgnoreCase (Lang.FALSE))) {
             return false;
         } else if (Boolean.TRUE.equals (value) ||
                 (value instanceof String &&
-                ((String)value).equalsIgnoreCase(TRUE))) {
+                ((String)value).equalsIgnoreCase(Lang.TRUE))) {
             return true;
         }
         return false;
@@ -341,7 +341,7 @@ public class JsonObject extends JsonAbstractEntity implements Map {
     
     public boolean isNull (String name) {
     	Object value = get (name);
-        return value == null || NULL.equals (value);
+        return value == null || Lang.Null.equals (value);
 	}
 
 	public String toString () {

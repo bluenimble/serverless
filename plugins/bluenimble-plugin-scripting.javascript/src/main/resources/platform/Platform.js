@@ -33,6 +33,9 @@ var JC_FeaturesUtils 		= Java.type ('com.bluenimble.platform.server.plugins.scri
 
 var JC_CodeExec_Mode 		= Java.type ('com.bluenimble.platform.api.CodeExecutor.Mode');
 
+var JC_BeanSerializer		= Java.type ('com.bluenimble.platform.reflect.beans.BeanSerializer');
+var JC_DefaultBeanSerializer= Java.type ('com.bluenimble.platform.reflect.beans.impls.DefaultBeanSerializer');
+
 var JC_Tracer_Level 		= Java.type ('com.bluenimble.platform.api.tracing.Tracer.Level');
 
 var JC_ApiConsumer_Fields 	= Java.type ('com.bluenimble.platform.api.security.ApiConsumer.Fields');
@@ -52,10 +55,6 @@ var JC_Database 			= Java.type ('com.bluenimble.platform.db.Database');
 var JC_Database_Fields 		= Java.type ('com.bluenimble.platform.db.Database.Fields');
 var JC_Database_IndexType 	= Java.type ('com.bluenimble.platform.db.Database.IndexType');
 var JC_DatabaseObject 		= Java.type ('com.bluenimble.platform.db.DatabaseObject');
-var JC_DatabaseObjectSerializer		
-							= Java.type ('com.bluenimble.platform.db.DatabaseObjectSerializer');
-var JC_DefaultDatabaseObjectSerializer	
-							= Java.type ('com.bluenimble.platform.db.impls.DefaultDatabaseObjectSerializer');
 
 var JC_Query_Visitor		= Java.type ('com.bluenimble.platform.db.Database.Visitor');
 var JC_JsonQuery			= Java.type ('com.bluenimble.platform.db.query.impls.JsonQuery');

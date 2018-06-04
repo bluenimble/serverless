@@ -85,6 +85,8 @@ public interface Database extends Recyclable {
 		void onMessage (String message);
 	} 
 
+	Object 					proprietary (String name);
+
 	void 					trx 		();
 	void 					commit 		() 														throws DatabaseException;
 	void 					rollback 	()														throws DatabaseException;

@@ -19,8 +19,8 @@ package com.bluenimble.platform.plugins.database.orientdb.tests;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseException;
 import com.bluenimble.platform.db.DatabaseObject;
-import com.bluenimble.platform.db.impls.DefaultDatabaseObjectSerializer;
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.reflect.beans.impls.DefaultBeanSerializer;
 
 public class Update {
 	
@@ -41,7 +41,7 @@ public class Update {
 		
 		employee.save ();
 		
-		System.out.println (employee.toJson (new DefaultDatabaseObjectSerializer (2, 2)));
+		System.out.println (employee.toJson (new DefaultBeanSerializer (2, 2)));
 		
 	}
 	

@@ -18,17 +18,7 @@ package com.bluenimble.platform.json;
 
 import java.io.Serializable;
 
-import com.bluenimble.platform.Null;
-
 public interface JsonEntity extends Serializable {
-
-	public static final Null		NULL 			= new Null ();
-	
-	public static final String 	 	NULL_VALUE 		= "null";
-	public static final String 	 	FALSE 			= "false";
-	public static final String 	 	TRUE 			= "true";
-	public static final String 	 	EMPTY_OBJECT 	= "{}";
-	public static final String 	 	EMPTY_ARRAY 	= "{}";
 	
 	public static final String 		FIND_SEP 		= "/";
 	

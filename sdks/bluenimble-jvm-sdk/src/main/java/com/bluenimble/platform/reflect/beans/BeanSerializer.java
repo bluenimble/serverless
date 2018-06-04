@@ -14,17 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.plugins.datasource;
+package com.bluenimble.platform.reflect.beans;
 
-import java.net.URL;
+import java.io.Serializable;
 
-import com.bluenimble.platform.PackageClassLoader;
-import com.bluenimble.platform.server.ApiServer;
+import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.reflect.beans.impls.DefaultBeanSerializer;
 
-public class VendorClassLoader extends PackageClassLoader {
+public interface BeanSerializer extends Serializable {
 	
-	public VendorClassLoader (String name, URL [] urls) {
-		super (name, ApiServer.class.getClassLoader (), urls, (ClassLoader [])null);
+	enum Fields {
+		All,
+		Min,
+		None
 	}
+	
+	BeanSerializer Default = new DefaultBeanSerializer (0, 1);
 
+	Fields		fields	(int level);
+	
+	JsonObject 	create 	(String type, int level);
+	
+	void		set		(String type, JsonObject json, String key, Object value);
+	
+	void		end 	(String type, JsonObject json);
+	
 }

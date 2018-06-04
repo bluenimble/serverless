@@ -48,6 +48,8 @@ import jdk.nashorn.api.scripting.NashornException;
 @SuppressWarnings("restriction")
 public class Lang {
 	
+	public static final Null		Null 					= new Null ();
+	
 	private static final String 	ExpStart				= "{";
 	private static final String 	ExpEnd					= "}";
 	
@@ -95,6 +97,9 @@ public class Lang {
 	public static final String 		APOS					= "'";
 	public static final String 		QUESTION				= "?";
 	
+	public static final String 	 	FALSE 					= "false";
+	public static final String 	 	TRUE 					= "true";
+
 	public static final String 		EMTPY_OBJECT			= "{}";
 	public static final String 		EMTPY_ARRAY				= "[]";
 	public static final String 		EMTPY_DATA 				= "{\"items\": []}";

@@ -28,7 +28,7 @@ public final class Null implements Serializable {
         return this;
     }
 
-    public boolean equals(Object object) {
+    public boolean equals (Object object) {
         return object == null || object == this;
     }
 

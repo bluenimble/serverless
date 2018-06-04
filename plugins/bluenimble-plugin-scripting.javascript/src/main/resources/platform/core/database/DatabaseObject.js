@@ -79,11 +79,11 @@ var DatabaseObject = function (database, proxy) {
 	this.toJson		= function (allStopLevel, minStopLevel) {
 		var serializer;
 		if (typeof allStopLevel == 'undefined' && typeof minStopLevel == 'undefined') {
-			serializer = JC_DatabaseObjectSerializer.Default;
+			serializer = JC_BeanSerializer.Default;
 		} else if (typeof minStopLevel == 'undefined') {
-			serializer = new JC_DefaultDatabaseObjectSerializer (allStopLevel, allStopLevel);
+			serializer = new JC_DefaultBeanSerializer (allStopLevel, allStopLevel);
 		} else {
-			serializer = new JC_DefaultDatabaseObjectSerializer (allStopLevel, minStopLevel);
+			serializer = new JC_DefaultBeanSerializer (allStopLevel, minStopLevel);
 		}
 		return proxy.toJson (serializer);
 	};

@@ -14,15 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.db.impls;
+package com.bluenimble.platform.reflect.beans.impls;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import com.bluenimble.platform.db.DatabaseObjectSerializer;
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.reflect.beans.BeanSerializer;
 
-public class DefaultDatabaseObjectSerializer implements DatabaseObjectSerializer {
+public class DefaultBeanSerializer implements BeanSerializer {
 
 	private static final long serialVersionUID = -3195816029341762129L;
 	
@@ -31,12 +31,12 @@ public class DefaultDatabaseObjectSerializer implements DatabaseObjectSerializer
 		Protected.add ("password");
 	}
 	
-	public static final DatabaseObjectSerializer Instance = new DefaultDatabaseObjectSerializer (0, 1);
+	public static final BeanSerializer Instance = new DefaultBeanSerializer (0, 1);
 	
 	protected int 		allStopLevel = 0;
 	protected int 		minStopLevel = 1;
 	
-	public DefaultDatabaseObjectSerializer (int allStopLevel, int minStopLevel) {
+	public DefaultBeanSerializer (int allStopLevel, int minStopLevel) {
 		if (allStopLevel < 0) {
 			allStopLevel = 0;
 		}

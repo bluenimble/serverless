@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 
 import com.bluenimble.platform.IOUtils;
+import com.bluenimble.platform.Lang;
 
 public class JsonParser implements Serializable {
 
@@ -357,14 +358,14 @@ public class JsonParser implements Serializable {
         if (s.equals("")) {
             throw syntaxError("Missing value");
         }
-        if (s.equalsIgnoreCase(JsonObject.TRUE)) {
+        if (s.equalsIgnoreCase(Lang.TRUE)) {
             return Boolean.TRUE;
         }
-        if (s.equalsIgnoreCase(JsonObject.FALSE)) {
+        if (s.equalsIgnoreCase(Lang.FALSE)) {
             return Boolean.FALSE;
         }
-        if (s.equalsIgnoreCase (JsonObject.NULL_VALUE)) {
-            return JsonObject.NULL;
+        if (s.equalsIgnoreCase (Lang.NULL)) {
+            return Lang.Null;
         }
 
         /*

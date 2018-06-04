@@ -20,9 +20,9 @@ import java.util.List;
 
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseObject;
-import com.bluenimble.platform.db.impls.DefaultDatabaseObjectSerializer;
 import com.bluenimble.platform.db.query.impls.JsonQuery;
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.reflect.beans.impls.DefaultBeanSerializer;
 
 public class FindAllWithSelect {
 	
@@ -39,7 +39,7 @@ public class FindAllWithSelect {
 		);
 		
 		for (DatabaseObject employee : employees) {
-			System.out.println (employee.toJson (new DefaultDatabaseObjectSerializer (2, 2)));
+			System.out.println (employee.toJson (new DefaultBeanSerializer (2, 2)));
 		}
 		
 	}

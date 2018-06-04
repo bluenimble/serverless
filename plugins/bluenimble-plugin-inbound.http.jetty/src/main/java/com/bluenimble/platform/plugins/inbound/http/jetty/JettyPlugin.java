@@ -345,5 +345,13 @@ public class JettyPlugin extends AbstractPlugin {
 	public void setIdleTimeout(int idleTimeout) {
 		this.idleTimeout = idleTimeout;
 	}
+	
+	public boolean isMonitor () {
+		return monitor;
+	}
+
+	public void setMonitor (boolean monitor) {
+		this.monitor = monitor;
+	}
 
 }

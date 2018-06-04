@@ -19,9 +19,9 @@ package com.bluenimble.platform.plugins.database.orientdb.tests;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseException;
 import com.bluenimble.platform.db.DatabaseObject;
-import com.bluenimble.platform.db.impls.DefaultDatabaseObjectSerializer;
 import com.bluenimble.platform.db.query.impls.JsonQuery;
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.reflect.beans.impls.DefaultBeanSerializer;
 
 public class FindOne {
 	
@@ -31,7 +31,7 @@ public class FindOne {
 		
 		DatabaseObject city = db.findOne ("Cities", new JsonQuery (new JsonObject ()));
 		if (city != null) {
-			System.out.println (city.toJson (new DefaultDatabaseObjectSerializer (2, 2)));
+			System.out.println (city.toJson (new DefaultBeanSerializer (2, 2)));
 		}		
 		
 	}

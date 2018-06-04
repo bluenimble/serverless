@@ -16,6 +16,8 @@
  */
 package com.bluenimble.platform.json;
 
+import com.bluenimble.platform.Lang;
+
 public abstract class JsonAbstractEntity implements JsonEntity {
 	
 	private static final long serialVersionUID = -6420102827706235701L;
@@ -105,7 +107,7 @@ public abstract class JsonAbstractEntity implements JsonEntity {
 
 	protected String numberToString (Number n) {
 		if (n == null) {
-			return NULL_VALUE;
+			return Lang.NULL;
 		}
 		
 		validate (n);
@@ -123,8 +125,8 @@ public abstract class JsonAbstractEntity implements JsonEntity {
 	}
 	
 	protected String valueToString (Object value) {
-		if (value == null || NULL.equals(value)) {
-			return NULL_VALUE;
+		if (value == null || Lang.Null.equals (value)) {
+			return Lang.NULL;
 		}
 		if (value instanceof Number) {
 			return numberToString((Number) value);

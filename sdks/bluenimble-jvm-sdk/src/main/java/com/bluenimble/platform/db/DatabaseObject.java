@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.Iterator;
 
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.reflect.beans.BeanSerializer;
 
 public interface DatabaseObject extends Serializable {
 
@@ -42,7 +43,7 @@ public interface DatabaseObject extends Serializable {
 	Iterator<String>	
 				keys 			();
 	
-	JsonObject 	toJson 			(DatabaseObjectSerializer serializer);
+	JsonObject 	toJson 			(BeanSerializer serializer);
 	
 	boolean		has 			(String key);
 	

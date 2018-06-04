@@ -29,10 +29,10 @@ import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseException;
 import com.bluenimble.platform.db.DatabaseObject;
-import com.bluenimble.platform.db.DatabaseObjectSerializer;
-import com.bluenimble.platform.db.DatabaseObjectSerializer.Fields;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.reflect.beans.BeanSerializer;
+import com.bluenimble.platform.reflect.beans.BeanSerializer.Fields;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import jdk.nashorn.internal.runtime.Undefined;
@@ -43,7 +43,6 @@ public class DatabaseObjectImpl implements DatabaseObject {
 	private static final long serialVersionUID = 3836351496281551423L;
 	
 	public static final String []	MinimalFields 	= new String [] { Database.Fields.Id, Database.Fields.Timestamp };
-	public static final Object 		Null 			= new Object ();
 
 	private Database 	database;
 	ODocument 			document;
@@ -98,7 +97,7 @@ public class DatabaseObjectImpl implements DatabaseObject {
 			return;
 		}
 
-		if (value == null || value.equals (Null) || Undefined.class.equals (value.getClass ())) {
+		if (value == null || value.equals (Lang.Null) || Undefined.class.equals (value.getClass ())) {
 			document.removeField (key);
 			return;
 		}
@@ -193,13 +192,6 @@ public class DatabaseObjectImpl implements DatabaseObject {
 		Iterator<String> keys = data.keys ();
 		while (keys.hasNext ()) {
 			String key = keys.next ();
-			Object value = data.get (key);
-			
-			if (value == null || value.equals (Null) || Undefined.class.equals (value.getClass ())) {
-				document.removeField (key);
-				continue;
-			}
-			
 			set (key, data.get (key));
 		}
 	}
@@ -236,7 +228,7 @@ public class DatabaseObjectImpl implements DatabaseObject {
 	}
 
 	@Override
-	public JsonObject toJson (DatabaseObjectSerializer serializer) {
+	public JsonObject toJson (BeanSerializer serializer) {
 		return toJson (this, serializer, 0);
 	}
 	
@@ -278,9 +270,9 @@ public class DatabaseObjectImpl implements DatabaseObject {
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private JsonObject toJson (DatabaseObjectImpl dbo, DatabaseObjectSerializer serializer, int level) {
+	private JsonObject toJson (DatabaseObjectImpl dbo, BeanSerializer serializer, int level) {
 		if (serializer == null) {
-			serializer = DatabaseObjectSerializer.Default;
+			serializer = BeanSerializer.Default;
 		}
 
 		String entity = dbo.entity ();

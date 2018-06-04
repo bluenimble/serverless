@@ -19,7 +19,7 @@ package com.bluenimble.platform.plugins.database.mongodb.tests;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseException;
 import com.bluenimble.platform.db.DatabaseObject;
-import com.bluenimble.platform.db.impls.DefaultDatabaseObjectSerializer;
+import com.bluenimble.platform.reflect.beans.impls.DefaultBeanSerializer;
 
 public class Get {
 	
@@ -29,7 +29,7 @@ public class Get {
 		
 		DatabaseObject employee = db.get ("Employees", "5aa4192e5e6726413c7db45a");
 		
-		System.out.println (employee.toJson (new DefaultDatabaseObjectSerializer (2, 2)));
+		System.out.println (employee.toJson (new DefaultBeanSerializer (2, 2)));
 		
 	}
 	

@@ -15,11 +15,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.bluenimble.serverless</groupId>
-	<artifactId>bluenimble-plugin-datasource.default</artifactId>
+	<artifactId>bluenimble-plugin-database.rdb</artifactId>
 	<version>1.8.0-SNAPSHOT</version><!--bn.version-->
 	
 	<packaging>jar</packaging>
-	<name>bluenimble-plugin-datasource.default</name>
+	<name>bluenimble-plugin-database.rdb</name>
 	
 	<properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

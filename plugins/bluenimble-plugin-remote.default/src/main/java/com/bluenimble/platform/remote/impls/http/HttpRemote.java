@@ -290,7 +290,7 @@ public class HttpRemote extends BaseRemote {
 					}
 				}
 			} else if (contentType.startsWith (ContentTypes.Json)) {
-				body = RequestBody.create (mediaType, rdata == null ? JsonObject.EMPTY_OBJECT : rdata.toString ());
+				body = RequestBody.create (mediaType, rdata == null ? Lang.EMTPY_OBJECT : rdata.toString ());
 			} else {
 				if (!Json.isNullOrEmpty (rdata)) {
 					

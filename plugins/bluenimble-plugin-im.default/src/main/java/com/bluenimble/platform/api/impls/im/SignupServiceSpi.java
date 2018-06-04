@@ -41,7 +41,6 @@ import com.bluenimble.platform.api.impls.im.LoginServiceSpi.Spec;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseObject;
-import com.bluenimble.platform.db.impls.DefaultDatabaseObjectSerializer;
 import com.bluenimble.platform.db.query.Query;
 import com.bluenimble.platform.db.query.impls.JsonQuery;
 import com.bluenimble.platform.json.JsonObject;
@@ -50,6 +49,7 @@ import com.bluenimble.platform.messaging.impls.JsonActor;
 import com.bluenimble.platform.messaging.impls.JsonRecipient;
 import com.bluenimble.platform.messaging.impls.JsonSender;
 import com.bluenimble.platform.plugins.im.SecurityUtils;
+import com.bluenimble.platform.reflect.beans.impls.DefaultBeanSerializer;
 
 public class SignupServiceSpi extends SimpleApiServiceSpi {
 
@@ -149,7 +149,7 @@ public class SignupServiceSpi extends SimpleApiServiceSpi {
 		
 		payload.remove (Spec.Password);
 		
-		JsonObject result = account.toJson (DefaultDatabaseObjectSerializer.Default);
+		JsonObject result = account.toJson (DefaultBeanSerializer.Default);
 		
 		String email = Json.getString (payload, Spec.Email); 
 		if (Lang.isNullOrEmpty (email)) {

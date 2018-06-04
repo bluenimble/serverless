@@ -14,29 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.db;
+package com.bluenimble.platform.plugins.database.rdb;
 
-import java.io.Serializable;
+import java.net.URL;
 
-import com.bluenimble.platform.db.impls.DefaultDatabaseObjectSerializer;
-import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.PackageClassLoader;
+import com.bluenimble.platform.server.ApiServer;
 
-public interface DatabaseObjectSerializer extends Serializable {
+public class VendorClassLoader extends PackageClassLoader {
 	
-	enum Fields {
-		All,
-		Min,
-		None
+	public VendorClassLoader (String name, URL [] urls) {
+		super (name, ApiServer.class.getClassLoader (), urls, (ClassLoader [])null);
 	}
-	
-	DatabaseObjectSerializer Default = new DefaultDatabaseObjectSerializer (0, 1);
 
-	Fields		fields	(int level);
-	
-	JsonObject 	create 	(String type, int level);
-	
-	void		set		(String type, JsonObject json, String key, Object value);
-	
-	void		end 	(String type, JsonObject json);
-	
 }

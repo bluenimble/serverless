@@ -19,7 +19,7 @@ package com.bluenimble.platform.plugins.database.mongodb.tests;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseException;
 import com.bluenimble.platform.db.DatabaseObject;
-import com.bluenimble.platform.db.impls.DefaultDatabaseObjectSerializer;
+import com.bluenimble.platform.reflect.beans.impls.DefaultBeanSerializer;
 
 public class GetWithId {
 	
@@ -31,7 +31,7 @@ public class GetWithId {
 		
 		System.out.println ("Object Id: " + dbo.getId ());
 		
-		System.out.println (dbo.toJson (new DefaultDatabaseObjectSerializer (2, 2)));
+		System.out.println (dbo.toJson (new DefaultBeanSerializer (2, 2)));
 		
 	}
 	

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.plugins.datasource;
+package com.bluenimble.platform.plugins.database.rdb;
 
 import java.io.File;
 import java.util.HashMap;
@@ -22,13 +22,13 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.sql.DataSource;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
+import com.bluenimble.platform.Feature;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.Recyclable;
@@ -36,11 +36,13 @@ import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.Manageable;
 import com.bluenimble.platform.api.tracing.Tracer;
+import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.Plugin;
 import com.bluenimble.platform.plugins.PluginRegistryException;
-import com.bluenimble.platform.plugins.datasource.impls.CustomEntityManager;
+import com.bluenimble.platform.plugins.database.rdb.impls.JpaDatabase;
+import com.bluenimble.platform.plugins.database.rdb.impls.JpaMetadata;
 import com.bluenimble.platform.plugins.impls.AbstractPlugin;
 import com.bluenimble.platform.server.ApiServer;
 import com.bluenimble.platform.server.ApiServer.Event;
@@ -48,7 +50,7 @@ import com.bluenimble.platform.server.ServerFeature;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-public class DataSourcePlugin extends AbstractPlugin {
+public class RdbPlugin extends AbstractPlugin {
 
 	private static final long serialVersionUID = -8982987236755823201L;
 	
@@ -56,7 +58,7 @@ public class DataSourcePlugin extends AbstractPlugin {
 	
 	private static final String 	DataSources		= "datasources";
 
-	private String					feature 		= "datasource";
+	private String feature;
 	
 	interface Spec {
 		
@@ -85,29 +87,35 @@ public class DataSourcePlugin extends AbstractPlugin {
 	@Override
 	public void init (ApiServer server) throws Exception {
 		
+		Feature aFeature = Database.class.getAnnotation (Feature.class);
+		if (aFeature == null || Lang.isNullOrEmpty (aFeature.name ())) {
+			return;
+		}
+		feature = aFeature.name ();
+		
 		// add features
 		server.addFeature (new ServerFeature () {
 			private static final long serialVersionUID = 2626039344401539390L;
 			@Override
 			public String id () {
-				return feature;
+				return null;
 			}
 			@Override
 			public Class<?> type () {
-				return EntityManager.class;
+				return Database.class;
 			}
 			@Override
 			public Object get (ApiSpace space, String name) {
 				// get registered factory and create an EntityManager instance
-				return entityManager (space, name);
+				return newDatabase (space, name);
 			}
 			@Override
 			public Plugin implementor () {
-				return DataSourcePlugin.this;
+				return RdbPlugin.this;
 			}
 			@Override
 			public String provider () {
-				return DataSourcePlugin.this.getNamespace ();
+				return RdbPlugin.this.getNamespace ();
 			}
 		});
 		
@@ -329,11 +337,13 @@ public class DataSourcePlugin extends AbstractPlugin {
 
 	class RecyclableEntityManagerFactory implements Recyclable {
 		private static final long serialVersionUID = 50882416501226306L;
-
+		
 		private EntityManagerFactory factory;
+		private JpaMetadata metadata;
 		
 		public RecyclableEntityManagerFactory (EntityManagerFactory factory) {
 			this.factory = factory;
+			metadata = new JpaMetadata (factory);
 		}
 		
 		@Override
@@ -352,12 +362,17 @@ public class DataSourcePlugin extends AbstractPlugin {
 			return factory;
 		}
 
+		public JpaMetadata metadata () {
+			return metadata;
+		}
+
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		@Override
 		public void set (ApiSpace space, ClassLoader classLoader, Object... args) {
+			
 			ClassLoader currentClassLoader = Thread.currentThread ().getContextClassLoader ();
 			
-			Thread.currentThread ().setContextClassLoader (DataSourcePlugin.class.getClassLoader ());
+			Thread.currentThread ().setContextClassLoader (RdbPlugin.class.getClassLoader ());
 			try {
 				String dsName = (String)args [0];
 				Map properties = new HashMap ();
@@ -372,11 +387,11 @@ public class DataSourcePlugin extends AbstractPlugin {
 		
 	}
 
-	public DataSource datasource (ApiSpace space, String name) {
+	private DataSource datasource (ApiSpace space, String name) {
 		return ((RecyclableDataSource)space.getRecyclable (dataSourceKey (name, space))).get ();
 	}
 	
-	public EntityManager entityManager (ApiSpace space, String name) {
+	private JpaDatabase newDatabase (ApiSpace space, String name) {
 		
 		RecyclableEntityManagerFactory recyclable = (RecyclableEntityManagerFactory)space.getRecyclable (factoryKey (name, space));
 		tracer ().log (Tracer.Level.Debug, "\tEntityManager -> Recyclable = {0}", recyclable);
@@ -385,7 +400,7 @@ public class DataSourcePlugin extends AbstractPlugin {
 		
 		tracer ().log (Tracer.Level.Debug, "\tEntityManager ->    Factory = {0}", factory);
 		
-		return new CustomEntityManager (factory.createEntityManager ());
+		return new JpaDatabase (this.tracer (), factory.createEntityManager (), recyclable.metadata ());
 	}
 	
 }

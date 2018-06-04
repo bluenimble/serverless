@@ -107,6 +107,10 @@ public class MongoDatabaseImpl implements Database {
 		String Limit 	= "$limit";
 	}
 	
+	interface Proprietary {
+		String Database = "database";
+	}
+	
 	private static final FilterAppender DefaultFilterAppender = new DefaultFilterAppender ();
 	
 	private static final Map<Operator, FilterAppender> FilterAppenders = new HashMap<Operator, FilterAppender> ();
@@ -706,6 +710,14 @@ $jsonSchema: {
 
 	public MongoDatabase getInternal () {
 		return db;
+	}
+
+	@Override
+	public Object proprietary (String name) {
+		if (!Proprietary.Database.equalsIgnoreCase (name)) {
+			return null;
+		}
+		return getInternal ();
 	}
 	
 }

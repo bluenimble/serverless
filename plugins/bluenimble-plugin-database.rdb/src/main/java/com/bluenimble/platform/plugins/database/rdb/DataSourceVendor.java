@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.plugins.datasource;
+package com.bluenimble.platform.plugins.database.rdb;
 
 import java.io.File;
 import java.util.HashSet;
@@ -62,13 +62,13 @@ public class DataSourceVendor {
 	public String url (String host, int port, String database) {
 		
 		if (port <= 0) {
-			port = Json.getInteger (descriptor, DataSourcePlugin.Spec.Port, 0);
+			port = Json.getInteger (descriptor, RdbPlugin.Spec.Port, 0);
 		}
 		
 		final JsonObject data = (JsonObject)new JsonObject ()
-				.set (DataSourcePlugin.Spec.Host, host)
-				.set (DataSourcePlugin.Spec.Port, port)
-				.set (DataSourcePlugin.Spec.Database, database);
+				.set (RdbPlugin.Spec.Host, host)
+				.set (RdbPlugin.Spec.Port, port)
+				.set (RdbPlugin.Spec.Database, database);
 		
 		VariableResolver vr = new VariableResolver () {
 			private static final long serialVersionUID = -485939153491337463L;

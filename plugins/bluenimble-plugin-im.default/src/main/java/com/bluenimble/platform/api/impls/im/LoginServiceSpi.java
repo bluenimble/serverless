@@ -32,11 +32,11 @@ import com.bluenimble.platform.api.impls.SimpleApiServiceSpi;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseObject;
-import com.bluenimble.platform.db.impls.DefaultDatabaseObjectSerializer;
 import com.bluenimble.platform.db.query.Query;
 import com.bluenimble.platform.db.query.impls.JsonQuery;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.im.SecurityUtils;
+import com.bluenimble.platform.reflect.beans.impls.DefaultBeanSerializer;
 
 public class LoginServiceSpi extends SimpleApiServiceSpi {
 
@@ -145,7 +145,7 @@ public class LoginServiceSpi extends SimpleApiServiceSpi {
 			active = false;
 		}
 		
-		JsonObject oAccount = account.toJson (DefaultDatabaseObjectSerializer.Default);
+		JsonObject oAccount = account.toJson (DefaultBeanSerializer.Default);
 		
 		oAccount.remove (Json.getString (config, Config.PasswordProperty, Spec.Password));
 

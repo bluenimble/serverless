@@ -84,10 +84,14 @@ public class OrientDatabase implements Database {
 		String Value 		= "{value}";
 	}
 	
-	private interface Sql {
+	private interface ODBSql {
 		String Skip			= "skip";
 		String Limit		= "limit";
 		String ReturnBefore	= "return before";
+	}
+	
+	interface Proprietary {
+		String Database = "database";
 	}
 	
 	private static final Map<IndexType, INDEX_TYPE> IndexTypes = new HashMap<IndexType, INDEX_TYPE> ();
@@ -322,7 +326,6 @@ public class OrientDatabase implements Database {
 
 	@Override
 	public DatabaseObject findOne (String type, Query query) throws DatabaseException {
-		
 		// force count to 1
 		query.count (1);
 		
@@ -797,10 +800,10 @@ public class OrientDatabase implements Database {
 				}
 				
 				if (query.start () > 0) {
-					buff.append (Lang.SPACE).append (Sql.Skip).append (Lang.SPACE).append (query.start ());
+					buff.append (Lang.SPACE).append (ODBSql.Skip).append (Lang.SPACE).append (query.start ());
 				}
 				if (query.count () > 0) {
-					buff.append (Lang.SPACE).append (Sql.Limit).append (Lang.SPACE).append (query.count ());
+					buff.append (Lang.SPACE).append (ODBSql.Limit).append (Lang.SPACE).append (query.count ());
 				}
 			}
 			
@@ -808,7 +811,7 @@ public class OrientDatabase implements Database {
 			protected void onSelect (Timing timing, Select select) throws DatabaseException {
 				super.onSelect (timing, select);
 				if (Timing.end.equals (timing) && returnBefore) {
-					buff.append (Lang.SPACE).append (Sql.ReturnBefore);
+					buff.append (Lang.SPACE).append (ODBSql.ReturnBefore);
 				}
 			}
 			
@@ -880,6 +883,15 @@ public class OrientDatabase implements Database {
 		return options.get (option);
 	}
 
+
+	@Override
+	public Object proprietary (String name) {
+		if (!Proprietary.Database.equalsIgnoreCase (name)) {
+			return null;
+		}
+		return db;
+	}
+	
 	@Override
 	public Object get () {
 		return null;

@@ -21,7 +21,7 @@ import java.io.File;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseObject;
-import com.bluenimble.platform.db.impls.DefaultDatabaseObjectSerializer;
+import com.bluenimble.platform.reflect.beans.impls.DefaultBeanSerializer;
 
 public class Load {
 	
@@ -35,7 +35,7 @@ public class Load {
 		
 		spa.save ();
 		
-		System.out.println (spa.toJson (new DefaultDatabaseObjectSerializer (2, 2)));
+		System.out.println (spa.toJson (new DefaultBeanSerializer (2, 2)));
 		
 	}
 }

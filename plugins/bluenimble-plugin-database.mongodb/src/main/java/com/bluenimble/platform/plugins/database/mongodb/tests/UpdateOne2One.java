@@ -19,7 +19,7 @@ package com.bluenimble.platform.plugins.database.mongodb.tests;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseException;
 import com.bluenimble.platform.db.DatabaseObject;
-import com.bluenimble.platform.db.impls.DefaultDatabaseObjectSerializer;
+import com.bluenimble.platform.reflect.beans.impls.DefaultBeanSerializer;
 
 public class UpdateOne2One {
 	
@@ -42,7 +42,7 @@ public class UpdateOne2One {
 		System.out.println ("+===============================================================================+");
 		System.out.println ();
 				
-		System.out.println (employee.toJson (new DefaultDatabaseObjectSerializer (2, 2)));
+		System.out.println (employee.toJson (new DefaultBeanSerializer (2, 2)));
 		
 	}
 	

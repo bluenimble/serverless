@@ -77,7 +77,7 @@ public class JsonArray extends JsonAbstractEntity implements List<Object> {
 		for (;;) {
 			if (jt.nextClean() == ',') {
 				jt.back();
-				add (JsonObject.NULL);
+				add (Lang.Null);
 			} else {
 				jt.back();
 				add (jt.nextValue());
@@ -133,7 +133,7 @@ public class JsonArray extends JsonAbstractEntity implements List<Object> {
 			return null;
 		}
 		Object v = values.get (index);
-		if (v == NULL) {
+		if (Lang.Null.equals (v)) {
 			return null;
 		}
 		return v;
@@ -172,7 +172,7 @@ public class JsonArray extends JsonAbstractEntity implements List<Object> {
 	}
 	
 	public boolean isNull (int index) {
-		return JsonObject.NULL.equals (get (index));
+		return Lang.Null.equals (get (index));
 	}
 
     public String toString () {

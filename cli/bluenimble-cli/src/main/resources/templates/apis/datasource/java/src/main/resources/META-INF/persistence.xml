@@ -12,7 +12,12 @@
 		<!-- classes go here -->
 			
 		<properties>
+			<property name="eclipselink.persistence-context.flush-mode" value="COMMIT" />
+			<property name="eclipselink.cache.size.default" value="1000" />
+			<property name="eclipselink.ddl-generation" value="drop-and-create-tables" />
+			
 			<!-- custom properties go here -->
+			
 		</properties>	
 				
 	</persistence-unit>
