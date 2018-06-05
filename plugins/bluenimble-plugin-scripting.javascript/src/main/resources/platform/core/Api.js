@@ -271,10 +271,10 @@ function Api (proxy) {
 		if (!feature) {
 			feature = 'default';
 		}
-		if (!this.features || !this.features.defaults) {
+		if (!this.features || !this.features [featureType]) {
 			return feature;
 		}
-		return this.features.defaults [featureType] || feature;
+		return this.features[featureType][feature] || feature;
 	};
 
 };

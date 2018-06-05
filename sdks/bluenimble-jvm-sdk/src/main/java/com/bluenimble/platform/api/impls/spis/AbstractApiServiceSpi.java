@@ -16,6 +16,7 @@
  */
 package com.bluenimble.platform.api.impls.spis;
 
+import com.bluenimble.platform.Feature;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
@@ -30,8 +31,6 @@ public abstract class AbstractApiServiceSpi implements ApiServiceSpi {
 
 	private static final long serialVersionUID = 920163706776702151L;
 	
-	private static final String Defaults = "defaults";
-	
 	@Override
 	public void onStart (Api api, ApiService service, ApiContext context) throws ApiManagementException {
 	}
@@ -45,9 +44,16 @@ public abstract class AbstractApiServiceSpi implements ApiServiceSpi {
 			feature = ApiSpace.Features.Default;
 		}
 		
-		JsonObject defautls = Json.getObject (api.getFeatures (), Defaults);
-		if (!Json.isNullOrEmpty (defautls)) {
-			feature = Json.getString (defautls, feature);
+		String featureType = null;
+		Feature aFeature = type.getAnnotation (Feature.class);
+		if (aFeature != null) {
+			featureType = aFeature.name ();
+		}
+		if (!Lang.isNullOrEmpty (featureType)) {
+			JsonObject defautls = Json.getObject (api.getFeatures (), featureType);
+			if (!Json.isNullOrEmpty (defautls)) {
+				feature = Json.getString (defautls, feature, feature);
+			}
 		}
 		
 		return api.space ().feature (type, feature, context);
