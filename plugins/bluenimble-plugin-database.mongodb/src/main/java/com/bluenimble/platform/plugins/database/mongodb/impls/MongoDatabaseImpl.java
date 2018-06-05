@@ -18,14 +18,11 @@ package com.bluenimble.platform.plugins.database.mongodb.impls;
 
 import static com.mongodb.client.model.Filters.eq;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bson.Document;
@@ -73,22 +70,13 @@ import com.mongodb.client.result.DeleteResult;
  * 	- handle and / or in queries
  * 	- search on relations 
  * 	- applyBindings
- * 	- pop, popOne
- * 	- remove, add to lists
  * 	- near and within operators
- * 	- create entity
- * 	- create index
- * 	- drop index
  * 
  **/
 public class MongoDatabaseImpl implements Database {
 
 	private static final long serialVersionUID = 3547537996525908902L;
 	
-	//private static final String 	DateFormat 			= "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-	
-	public static final String		CacheQueriesBucket	= "__plugin/database/mongo/QueriesBucket__";
-
 	interface Describe {
 		String Size 		= "size";
 		String Entities 	= "entities";
@@ -131,15 +119,17 @@ public class MongoDatabaseImpl implements Database {
 	
 	private MongoDatabase		db;
 	private Tracer				tracer;
+	private boolean 			allowProprietaryAccess;
 	
-	public MongoDatabaseImpl (MongoDatabase db, Tracer tracer) {
-		this.db 		= db;
-		this.tracer 	= tracer;
+	public MongoDatabaseImpl (MongoDatabase db, Tracer tracer, boolean allowProprietaryAccess) {
+		this.db 					= db;
+		this.tracer 				= tracer;
+		this.allowProprietaryAccess = allowProprietaryAccess;
 	}
 
 	@Override
-	public DatabaseObject create (String name) throws DatabaseException {
-		return new DatabaseObjectImpl (this, name);
+	public DatabaseObject create (String entity) throws DatabaseException {
+		return new DatabaseObjectImpl (this, entity);
 	}
 
 	@Override
@@ -157,91 +147,28 @@ public class MongoDatabaseImpl implements Database {
 		// Not Supported
 	}
 
-/*	
-$jsonSchema: {
-  bsonType: "object",
-  required: [ "phone" ],
-  properties: {
-	 phone: {
-		bsonType: "string",
-		description: "must be a string and is required"
-	 },
-	 email: {
-		bsonType : "string",
-		pattern : "@mongodb\.com$",
-		description: "must be a string and match the regular expression pattern"
-	 },
-	 status: {
-		enum: [ "Unknown", "Incomplete" ],
-		description: "can only be one of the enum values"
-	 }
-  }
-}
-*/	
-	@Override
-	public void createEntity (String eType, Field... fields) throws DatabaseException {
-		eType = checkNotNull (eType);
-		
-		throw new UnsupportedOperationException ("MongoDB - createEntity not supported");
-		
-		/*
-		ValidationOptions vops = new ValidationOptions ();
-		vops.validator (validator);
-		
-		db.createCollection (
-			eType, 
-			new CreateCollectionOptions ()
-				.validationOptions ()
-		);
-		*/	
-		
-	}
-
-	@Override
-	public void createIndex (String eType, IndexType type, String name,
-			Field... fields) throws DatabaseException {
-		
-		eType = checkNotNull (eType);
-		
-		if (fields == null || fields.length == 0) {
-			throw new DatabaseException ("entity " + eType + ". fields required to create an index");
-		}
-		
-		throw new UnsupportedOperationException ("MongoDB - createIndex not supported");
-		
-	}
-
-	@Override
-	public void dropIndex (String eType, String name) throws DatabaseException {
-
-		eType = checkNotNull (eType);
-		
-		throw new UnsupportedOperationException ("MongoDB - dropIndex not supported");
-		
-	}
-
 	@Override
 	public int increment (DatabaseObject object, String field, int value) throws DatabaseException {
 		throw new UnsupportedOperationException ("MongoDB - increment not supported");
 	}
 
 	@Override
-	public DatabaseObject get (String eType, Object id) throws DatabaseException {
-		Document document = _get (eType, id);
+	public DatabaseObject get (String entity, Object id) throws DatabaseException {
+		Document document = _get (entity, id);
 	    if (document == null) {
 		    return null;
 	    }
 		
-		return new DatabaseObjectImpl (this, eType, document);
+		return new DatabaseObjectImpl (this, entity, document);
 
 	}
 	
-	Document _get (String eType, Object id) {
+	Document _get (String entity, Object id) {
 		if (id == null) {
 			return null;
 		}
 		
-		MongoCollection<Document> collection = db.getCollection (eType);
+		MongoCollection<Document> collection = db.getCollection (entity);
 		if (collection == null) {
 			return null;
 		}
@@ -256,11 +183,11 @@ $jsonSchema: {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<DatabaseObject> find (String name, Query query, Visitor visitor) throws DatabaseException {
+	public List<DatabaseObject> find (String entity, Query query, Visitor visitor) throws DatabaseException {
 		
 		FindIterable<Document> result;
 		try {
-			result = (FindIterable<Document>)_query (name, Query.Construct.select, query);
+			result = (FindIterable<Document>)_query (entity, Query.Construct.select, query);
 		} catch (Exception e) {
 			throw new DatabaseException (e.getMessage (), e);
 		}
@@ -268,16 +195,16 @@ $jsonSchema: {
 			return null;
 		}
 		
-		return toList (name, result, visitor, query.select () != null);
+		return toList (entity, result, visitor, query.select () != null);
 	}
 
 	@Override
-	public DatabaseObject findOne (String type, Query query) throws DatabaseException {
+	public DatabaseObject findOne (String entity, Query query) throws DatabaseException {
 		
 		// force count to 1
 		query.count (1);
 		
-		List<DatabaseObject> result = find (type, query, null);
+		List<DatabaseObject> result = find (entity, query, null);
 		if (result == null || result.isEmpty ()) {
 			return null;
 		}
@@ -286,15 +213,15 @@ $jsonSchema: {
 	}
 
 	@Override
-	public int delete (String eType, Object id) throws DatabaseException {
+	public int delete (String entity, Object id) throws DatabaseException {
 		
-		checkNotNull (eType);
+		checkNotNull (entity);
 		
 		if (id == null) {
 			throw new DatabaseException ("can't delete object (missing object id)");
 		}
 		
-		MongoCollection<Document> collection = db.getCollection (eType);
+		MongoCollection<Document> collection = db.getCollection (entity);
 		if (collection == null) {
 			return 0;
 		}
@@ -306,24 +233,23 @@ $jsonSchema: {
 	}
 
 	@Override
-	public void drop (String eType) throws DatabaseException {
+	public void clear (String entity) throws DatabaseException {
+		checkNotNull (entity);
 		
-		eType = checkNotNull (eType);
-		
-		MongoCollection<Document> collection = db.getCollection (eType);
+		MongoCollection<Document> collection = db.getCollection (entity);
 		if (collection == null) {
 			return;
 		}
 		
-		collection.drop ();
+		collection.deleteMany (new Document ());
 	}
 
 	@Override
-	public long count (String eType) throws DatabaseException {
+	public long count (String entity) throws DatabaseException {
 		
-		eType = checkNotNull (eType);
+		checkNotNull (entity);
 		
-		MongoCollection<Document> collection = db.getCollection (eType);
+		MongoCollection<Document> collection = db.getCollection (entity);
 		if (collection == null) {
 			return 0;
 		}
@@ -332,33 +258,22 @@ $jsonSchema: {
 	}
 
 	@Override
-	public int delete (String type, Query query) throws DatabaseException {
+	public int delete (String entity, Query query) throws DatabaseException {
+		
 		if (query == null) {
 			return 0;
 		}
-		Object result = _query (type, Query.Construct.delete, query);
+		
+		Object result = _query (entity, Query.Construct.delete, query);
 		if (result == null) {
 			return 0;
 		}
+		
 		return (Integer)result;
 	}
 
 	@Override
 	public void recycle () {
-	}
-	
-	@Override
-	public void add (DatabaseObject parent, String collection, DatabaseObject child)
-			throws DatabaseException {
-		//addRemove (CollectionAddQuery, parent, collection, child);
-		throw new UnsupportedOperationException ("MongoDB - add child to parent not supported");
-	}
-
-	@Override
-	public void remove (DatabaseObject parent, String collection, DatabaseObject child)
-			throws DatabaseException {
-		//addRemove (CollectionRemoveQuery, parent, collection, child);
-		throw new UnsupportedOperationException ("MongoDB - add child to parent not supported");
 	}
 
 	@Override
@@ -394,29 +309,6 @@ $jsonSchema: {
 		return describe;
 	}
 	
-	/*
-	private void addRemove (String queryTpl, DatabaseObject parent, String collection, DatabaseObject child)
-			throws DatabaseException {
-		
-		if (parent == null || child == null) {
-			return;
-		}
-		
-		Document parentDoc = ((DatabaseObjectImpl)parent).document;
-		Document childDoc 	= ((DatabaseObjectImpl)child).document;
-		
-		if (!((DatabaseObjectImpl)parent).persistent) {
-			throw new DatabaseException ("Parent Object " + parent.entity () + " is not a persistent object");
-		}
-		
-		if (!((DatabaseObjectImpl)child).persistent) {
-			throw new DatabaseException ("Child Object " + child.entity () + " is not a persistent object");
-		}
-		
-		// TODO
-	}
-	*/
-	
 	@Override
 	public boolean isEntity (Object value) throws DatabaseException {
 		if (value == null) {
@@ -442,74 +334,38 @@ $jsonSchema: {
 	}
 
 	@Override
-	public DatabaseObject popOne (String name, Query query) throws DatabaseException {
+	public DatabaseObject popOne (String entity, Query query) throws DatabaseException {
+		DatabaseObject dbo = findOne (entity, query);
 		
-		// force count to 1
-		query.count (1);
-		
-		List<DatabaseObject> result = (List<DatabaseObject>)pop (name, query, null);
-		if (result == null || result.isEmpty ()) {
-			return null;
+		if (dbo != null) {
+			dbo.delete ();
 		}
 		
-		return result.get (0);
+		return dbo;
 	}
 
 	@Override
-	public List<DatabaseObject> pop (String name, Query query, Visitor visitor) throws DatabaseException {
-		if (query == null) {
-			return null;
-		}
-		
-		// TODO
-		throw new UnsupportedOperationException ("MongoDB - bulk not supported");
-		
-		//return null;
+	public List<DatabaseObject> pop (String entity, Query query, Visitor visitor) throws DatabaseException {
+		List<DatabaseObject> list = find (entity, query, visitor);
+		delete (entity, query);
+		return list;
 	}
-
-	@Override
-	public void schedule (String event, Query query, String cron) throws DatabaseException {
-		if (query == null || Lang.isNullOrEmpty (query.entity ()) || query.construct () == null) {
-			throw new DatabaseException ("query to schedule should provide the entity name and the construct [insert, update or delete]");
-		}
-		
-		// TODO
-		
-	}
-
-	@Override
-	public void unschedule (String event) throws DatabaseException {
-		
-	}
-	
-	@Override
-	public void exp (Set<String> entities, OutputStream out, Map<ExchangeOption, Boolean> options, final ExchangeListener listener) throws DatabaseException {
-		
-		// TODO
-        
-	}
-
-	@Override
-	public void imp (Set<String> entities, InputStream in, Map<ExchangeOption, Boolean> options, final ExchangeListener listener) throws DatabaseException {
-		// TODO
-	}
-	
-	private List<DatabaseObject> toList (String type, FindIterable<Document> documents, Visitor visitor, boolean partial) {
+	private List<DatabaseObject> toList (String entity, FindIterable<Document> documents, Visitor visitor, boolean partial) {
 		
 		if (visitor == null) {
-			return new DatabaseObjectList<DatabaseObject> (this, documents.into (new ArrayList<Document> ()), type, partial);
+			return new DatabaseObjectList<DatabaseObject> (this, documents.into (new ArrayList<Document> ()), entity, partial);
 		}
 		
 		DatabaseObjectImpl dbo = null;
 		if (visitor.optimize ()) {
-			dbo = new DatabaseObjectImpl (this, type);
+			dbo = new DatabaseObjectImpl (this, entity);
 		}
 		
 		for (Document document : documents) {
 			if (visitor.optimize ()) {
 				dbo.document = document;
 			} else {
-				dbo = new DatabaseObjectImpl (this, type, document);
+				dbo = new DatabaseObjectImpl (this, entity, document);
 			}
 			boolean cancel = visitor.onRecord (dbo);
 			if (cancel) {
@@ -519,7 +375,7 @@ $jsonSchema: {
 		return null;
 	}
 
-	private Object _query (String type, Query.Construct construct, final Query query) throws DatabaseException {
+	private Object _query (String entity, Query.Construct construct, final Query query) throws DatabaseException {
 		
 		if (query == null) {
 			return null;
@@ -527,14 +383,13 @@ $jsonSchema: {
 		
 		boolean queryHasEntity = true;
 		
-		String entity = query.entity ();
-		
-		if (Lang.isNullOrEmpty (entity)) {
+		if (Lang.isNullOrEmpty (query.entity ())) {
 			queryHasEntity = false;
-			entity = type;
+		} else {
+			entity = query.entity ();
 		}
 		
-		entity = checkNotNull (entity);
+		checkNotNull (entity);
 		
 		tracer.log (Tracer.Level.Debug, "Query Entity {0}", entity);
 		
@@ -691,11 +546,10 @@ $jsonSchema: {
 		
 	}
 	
-	private String checkNotNull (String eType) throws DatabaseException {
-		if (Lang.isNullOrEmpty (eType)) {
+	private void checkNotNull (String entity) throws DatabaseException {
+		if (Lang.isNullOrEmpty (entity)) {
 			throw new DatabaseException ("entity name is null");
 		}
-		return eType;
 	}
 	
 	@Override
@@ -714,7 +568,7 @@ $jsonSchema: {
 
 	@Override
 	public Object proprietary (String name) {
-		if (!Proprietary.Database.equalsIgnoreCase (name)) {
+		if (!allowProprietaryAccess || !Proprietary.Database.equalsIgnoreCase (name)) {
 			return null;
 		}
 		return getInternal ();

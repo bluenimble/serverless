@@ -354,118 +354,15 @@ var Database = function (api, proxy) {
 	};
 	
 	/**	
-	  Drop or Remove an entity and its associated data<br /> 
+	  Delete all records of an entity<br /> 
 	  <strong>Use with precaution!</strong>
 	  @param {string} - the entity name
 	*/
-	this.drop = function (entity) {
+	this.clear = function (entity) {
 		if (!entity) {
 			throw "missing entity argument";
 		}
 		proxy.drop (entity);
-	};
-
-	/**	
-	  Create an index on an entity. Supported index types<br />
-	  <ul>
-	  	<li>Unique</li>
-	  	<li>NotUnique</li>
-	  	<li>Text</li>
-	  	<li>Spatial</li>
-	  </ul> 
-	  @param {string} - the entity name
-	  @param {type} - the index type
-	  @param {name} - the index name. Should be unique by entity
-	  @param {varray} - properties names
-	*/
-	this.createIndex = function () {
-		var args 	= Array.prototype.slice.call (arguments);
-		var entity 	= args [0];
-		var type 	= args [1];
-		var name 	= args [2];
-		
-		var jtype = JC_Database_IndexType.NotUnique;
-		if (type) {
-			try {
-				jtype = JC_Database_IndexType.valueOf (type);
-			} catch (e) {
-				throw 'unsupported index type ' + type;
-			}
-		} 
-		
-		proxy.createIndex (entity, jtype, name, Array.prototype.slice.call (args, 3));
-	};
-
-	/**	
-	  Drop or delete an index by name
-	  @param {string} - the entity name
-	  @param {name} - the index name. Should be unique by entity
-	*/
-	this.dropIndex = function (entity, name) {
-		proxy.dropIndex (entity, name);
-	};
-	
-	/**	
-	  Schedule a event/task to run based on an expression
-	  @param {string} - the event name
-	  @param {string} - the cron expression (read more at https://en.wikipedia.org/wiki/Cron#CRON_expression)
-	  @param {string} - the entity/table name
-	  @param {JsonObject} - the query to run<br/>
-	  @example
-	  
-	  db.schedule ('DeleteInvalidOrders', 'Orders', {
-	  	construct: 'delete',
-	  	where: {
-	  		status: 'pending',
-	  		when: { op: 'lte', value: 'sysdate() - 3153600' }
-	  	}
-	  });
-	  
-	  @param {JsonObject} [bindings] - the query parameters
-	  
-	*/
-	this.schedule = function (event, cronExpression, entity, query, bindings) {
-		
-		if (!event) {
-			throw "missing event argument";
-		}
-
-		if (!cronExpression) {
-			throw "missing cron expression argument";
-		}
-
-		if (!entity) {
-			throw "missing entity argument";
-		}
-
-		if (!query) {
-			throw "missing query argument";
-		}
-		
-		query [JC_Database_Fields.Entity] = entity;
-		
-		proxy.schedule (
-			event,
-			new JC_JsonQuery (JC_Converters.convert (query), bindings ? JC_Converters.convert (bindings) : null)
-		);
-	};
-	
-	/**	
-	  Unschedule an event
-	  @param {string} - the event name
-	  @example
-	  
-	  db.unschedule ('DeleteInvalidOrders');
-	  
-	  @param {JsonObject} [bindings] - the query parameters
-	  
-	*/
-	this.unschedule = function (event) {
-		
-		if (!event) {
-			throw "missing event argument";
-		}
-		proxy.unschedule (event);
 	};
 	
 	/**	
@@ -505,12 +402,6 @@ var Database = function (api, proxy) {
 
 };
 
-Database.prototype.IndexType = {
-	Unique: 	'Unique',
-	NotUnique: 	'NotUnique',
-	Text:		'Text',
-	Spacial:	'Spacial'
-};
 Database.prototype.Fields = {
 	Entity: 	JC_Database_Fields.Entity,
 	Id: 		JC_Database_Fields.Id,

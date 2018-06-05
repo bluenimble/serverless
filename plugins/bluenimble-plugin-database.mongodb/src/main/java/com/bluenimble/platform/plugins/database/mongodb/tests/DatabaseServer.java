@@ -73,7 +73,7 @@ public class DatabaseServer {
 				return true;
 			}
 			
-		});
+		}, true);
 	}
 	
 }

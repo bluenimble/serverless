@@ -17,8 +17,6 @@
 package com.bluenimble.platform.plugins.database.orientdb.impls;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,21 +42,12 @@ import com.bluenimble.platform.db.query.Select;
 import com.bluenimble.platform.db.query.impls.SqlQueryCompiler;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
-import com.orientechnologies.orient.core.command.OCommandOutputListener;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
-import com.orientechnologies.orient.core.db.tool.ODatabaseExport;
-import com.orientechnologies.orient.core.db.tool.ODatabaseImport;
 import com.orientechnologies.orient.core.intent.OIntentMassiveInsert;
-import com.orientechnologies.orient.core.metadata.function.OFunction;
-import com.orientechnologies.orient.core.metadata.function.OFunctionLibrary;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.schedule.OScheduledEvent;
-import com.orientechnologies.orient.core.schedule.OScheduledEventBuilder;
-import com.orientechnologies.orient.core.schedule.OScheduler;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.core.sql.query.OResultSet;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
@@ -69,19 +58,18 @@ public class OrientDatabase implements Database {
 	
 	private static final String 	DateFormat 			= "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 	
-	public static final String		CacheQueriesBucket	= "__plugin/database/odb/QueriesBucket__";
 	private static final String 	Lucene 				= "LUCENE";
 	private static final String 	Maches 				= "MACHES";
 	
-	private static final String 	FunctionPostfix		= "_fct";
+	//private static final String 	FunctionPostfix		= "_fct";
 	
 	private interface Tokens {
 		String Type 		= "{Type}";
 		String Field 		= "{field}";
-		String Parent 		= "{parent}";
-		String Child 		= "{child}";
-		String Collection 	= "{collection}";
 		String Value 		= "{value}";
+		//String Parent 		= "{parent}";
+		//String Child 		= "{child}";
+		//String Collection 	= "{collection}";
 	}
 	
 	private interface ODBSql {
@@ -134,12 +122,14 @@ public class OrientDatabase implements Database {
 	private static final String DeleteQuery 			= "DELETE FROM " + Tokens.Type + " WHERE " + Fields.Id + " = :" + Fields.Id;
 	private static final String GetQuery 				= "SELECT FROM " + Tokens.Type + " WHERE " + Fields.Id + " = :" + Fields.Id;
 
+	private static final String IncrementQuery 			= "UPDATE " + Tokens.Type + " INCREMENT " + Tokens.Field + " = " + Tokens.Value + " RETURN AFTER WHERE " + Fields.Id + " = :" + Fields.Id + 
+														  " LOCK RECORD";
+	
+	/*
 	private static final String CollectionAddQuery 		= "UPDATE " + Tokens.Parent + " ADD " + Tokens.Collection + " = " + Tokens.Child;
 	private static final String CollectionRemoveQuery 	= "UPDATE " + Tokens.Parent + " REMOVE " + Tokens.Collection + " = " + Tokens.Child;
+	*/
 
-	private static final String IncrementQuery 			= "UPDATE " + Tokens.Type + " INCREMENT " + Tokens.Field + " = " + Tokens.Value + " RETURN AFTER WHERE " + Fields.Id + " = :" + Fields.Id + 
-															" LOCK RECORD";
-	
 	interface Describe {
 		String Size 		= "size";
 		String Entities 	= "entities";
@@ -151,24 +141,26 @@ public class OrientDatabase implements Database {
 	
 	private ODatabaseDocumentTx db;
 	private Tracer				tracer;
+	private boolean				allowProprietaryAccess;
 	
-	public OrientDatabase (ODatabaseDocumentTx db, Tracer tracer) {
+	public OrientDatabase (ODatabaseDocumentTx db, Tracer tracer, boolean allowProprietaryAccess) {
 		this.db 		= db;
 		this.tracer 	= tracer;
 		this.db.getStorage ().getConfiguration ().dateTimeFormat = DateFormat;
+		this.allowProprietaryAccess = allowProprietaryAccess;
 	}
 
 	@Override
-	public DatabaseObject create (String name) throws DatabaseException {
-		if (Lang.isNullOrEmpty (name)) {
+	public DatabaseObject create (String entity) throws DatabaseException {
+		if (Lang.isNullOrEmpty (entity)) {
 			throw new DatabaseException ("Entity is null");
 		}
 		// Temporary
-		if (name.indexOf (Lang.DASH) >= 0 || name.indexOf (Lang.DOT) >= 0) {
+		if (entity.indexOf (Lang.DASH) >= 0 || entity.indexOf (Lang.DOT) >= 0) {
 			throw new DatabaseException ("Temporary - Entity contains (dash) or (dot) character");
 		}
 		
-		return new DatabaseObjectImpl (this, name);
+		return new DatabaseObjectImpl (this, entity);
 	}
 
 	@Override
@@ -184,94 +176,6 @@ public class OrientDatabase implements Database {
 	@Override
 	public void rollback () throws DatabaseException {
 		db.rollback ();
-	}
-
-	@Override
-	public void createEntity (String eType, Field... fields) throws DatabaseException {
-		eType = checkNotNull (eType);
-		
-		if (fields == null || fields.length == 0) {
-			throw new DatabaseException ("entity " + eType + ". fields missing");
-		}
-		
-		OClass oClass = db.getMetadata ().getSchema ().getClass (eType);
-		if (oClass != null) {
-			throw new DatabaseException ("entity " + eType + " already exists");
-		}
-		
-		oClass = db.getMetadata ().getSchema ().createClass (eType);
-		
-		String [] props = new String [fields.length];
-		
-		for (int i = 0; i < fields.length; i++) {
-			Field f = fields [i];
-			props [i] = f.name ();
-			if (f.type () != null) {
-				OProperty property = oClass.createProperty (f.name (), FieldTypes.get (f.type ()));
-				property.setNotNull (f.required ());
-				if (f.unique ()) {
-					property.createIndex (INDEX_TYPE.UNIQUE);
-				}
-			}
-		}
-		
-		db.getMetadata ().getSchema ().save ();
-	}
-
-	@Override
-	public void createIndex (String eType, IndexType type, String name,
-			Field... fields) throws DatabaseException {
-		
-		eType = checkNotNull (eType);
-		
-		if (fields == null || fields.length == 0) {
-			throw new DatabaseException ("entity " + eType + ". fields required to create an index");
-		}
-		
-		boolean save = false;
-		
-		OClass oClass = db.getMetadata ().getSchema ().getClass (eType);
-		if (oClass == null) {
-			oClass = db.getMetadata ().getSchema ().createClass (eType);
-			save = true;
-		}
-		
-		String [] props = new String [fields.length];
-		
-		for (int i = 0; i < fields.length; i++) {
-			Field f = fields [i];
-			props [i] = f.name ();
-			if (f.type () != null) {
-				oClass.createProperty (f.name (), FieldTypes.get (f.type ()));
-			}
-		}
-		
-		switch (type) {
-			case Text:
-				oClass.createIndex (eType + Lang.DOT + name, "FULLTEXT", null, null, Lucene, props);
-				break;
-			case Spacial:
-				oClass.createIndex (eType + Lang.DOT + name, "SPATIAL", null, null, Lucene, props);
-				break;
-			default:
-				oClass.createIndex (eType + Lang.DOT + name, IndexTypes.get (type), props);
-				break;
-		}
-		if (save) {
-			db.getMetadata ().getSchema ().save ();
-		}
-	}
-
-	@Override
-	public void dropIndex (String eType, String name) throws DatabaseException {
-
-		eType = checkNotNull (eType);
-		
-		if (!db.getMetadata ().getSchema ().existsClass (eType)) {
-			return;
-		}
-		
-		db.getMetadata ().getIndexManager (). dropIndex (eType + Lang.DOT + name);
 	}
 
 	@Override
@@ -293,13 +197,13 @@ public class OrientDatabase implements Database {
 	}
 
 	@Override
-	public DatabaseObject get (String eType, Object id) throws DatabaseException {
+	public DatabaseObject get (String entity, Object id) throws DatabaseException {
 		
 		if (id == null) {
 			return null;
 		}
 		
-		ODocument doc = _get (eType, id);
+		ODocument doc = _get (entity, id);
 		if (doc == null) {
 			return null;
 		}
@@ -310,10 +214,10 @@ public class OrientDatabase implements Database {
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<DatabaseObject> find (String type, Query query, Visitor visitor) throws DatabaseException {
+	public List<DatabaseObject> find (String entity, Query query, Visitor visitor) throws DatabaseException {
 		List<ODocument> result;
 		try {
-			result = (List<ODocument>)_query (type, Query.Construct.select, query, false);
+			result = (List<ODocument>)_query (entity, Query.Construct.select, query, false);
 		} catch (Exception e) {
 			throw new DatabaseException (e.getMessage (), e);
 		}
@@ -321,15 +225,15 @@ public class OrientDatabase implements Database {
 			return null;
 		}
 		
-		return toList (type, result, visitor);
+		return toList (entity, result, visitor);
 	}
 
 	@Override
-	public DatabaseObject findOne (String type, Query query) throws DatabaseException {
+	public DatabaseObject findOne (String entity, Query query) throws DatabaseException {
 		// force count to 1
 		query.count (1);
 		
-		List<DatabaseObject> result = find (type, query, null);
+		List<DatabaseObject> result = find (entity, query, null);
 		if (result == null || result.isEmpty ()) {
 			return null;
 		}
@@ -338,19 +242,19 @@ public class OrientDatabase implements Database {
 	}
 
 	@Override
-	public int delete (String eType, Object id) throws DatabaseException {
+	public int delete (String entity, Object id) throws DatabaseException {
 		
-		checkNotNull (eType);
+		checkNotNull (entity);
 		
 		if (id == null) {
 			throw new DatabaseException ("can't delete object (missing object id)");
 		}
 		
-		if (!db.getMetadata ().getSchema ().existsClass (eType)) {
+		if (!db.getMetadata ().getSchema ().existsClass (entity)) {
 			return 0;
 		}
 		
-		OCommandSQL command = new OCommandSQL (format (DeleteQuery, eType));
+		OCommandSQL command = new OCommandSQL (format (DeleteQuery, entity));
 		
 		Map<String, Object> params = new HashMap<String, Object> ();
 		params.put (Fields.Id, id);
@@ -360,37 +264,40 @@ public class OrientDatabase implements Database {
 	}
 
 	@Override
-	public void drop (String eType) throws DatabaseException {
+	public void clear (String entity) throws DatabaseException {
 		
-		eType = checkNotNull (eType);
+		checkNotNull (entity);
 		
-		if (!db.getMetadata ().getSchema ().existsClass (eType)) {
+		if (!db.getMetadata ().getSchema ().existsClass (entity)) {
 			return;
 		}
 		
-		db.getMetadata ().getSchema ().dropClass (eType);
+		try {
+			db.getMetadata ().getSchema ().getClass (entity).truncate ();
+		} catch (IOException ex) {
+			throw new DatabaseException (ex.getMessage (), ex);
+		}
 		
-		db.getMetadata ().getSchema ().reload ();
 	}
 
 	@Override
-	public long count (String eType) throws DatabaseException {
+	public long count (String entity) throws DatabaseException {
 		
-		eType = checkNotNull (eType);
+		checkNotNull (entity);
 		
-		if (!db.getMetadata ().getSchema ().existsClass (eType)) {
+		if (!db.getMetadata ().getSchema ().existsClass (entity)) {
 			return 0;
 		}
 		
-		return db.getMetadata ().getSchema ().getClass (eType).count ();
+		return db.getMetadata ().getSchema ().getClass (entity).count ();
 	}
 
 	@Override
-	public int delete (String type, Query query) throws DatabaseException {
+	public int delete (String entity, Query query) throws DatabaseException {
 		if (query == null) {
 			return 0;
 		}
-		Object result = _query (type, Query.Construct.delete, query, false);
+		Object result = _query (entity, Query.Construct.delete, query, false);
 		if (result == null) {
 			return 0;
 		}
@@ -404,18 +311,6 @@ public class OrientDatabase implements Database {
 			db.activateOnCurrentThread ();
 			db.close ();
 		}
-	}
-	
-	@Override
-	public void add (DatabaseObject parent, String collection, DatabaseObject child)
-			throws DatabaseException {
-		addRemove (CollectionAddQuery, parent, collection, child);
-	}
-
-	@Override
-	public void remove (DatabaseObject parent, String collection, DatabaseObject child)
-			throws DatabaseException {
-		addRemove (CollectionRemoveQuery, parent, collection, child);
 	}
 
 	@Override
@@ -446,45 +341,17 @@ public class OrientDatabase implements Database {
 		return describe;
 	}
 	
-	private void addRemove (String queryTpl, DatabaseObject parent, String collection, DatabaseObject child)
-			throws DatabaseException {
+	private ODocument _get (String entity, Object id) {
 		
-		if (parent == null || child == null) {
-			return;
-		}
-		
-		ODocument parentDoc = ((DatabaseObjectImpl)parent).document;
-		ODocument childDoc 	= ((DatabaseObjectImpl)child).document;
-		
-		if (parentDoc.getIdentity () == null || !parentDoc.getIdentity ().isPersistent ()) {
-			throw new DatabaseException ("Parent Object " + parent.entity () + " is not a persistent object");
-		}
-		
-		if (childDoc.getIdentity () == null || !childDoc.getIdentity ().isPersistent ()) {
-			throw new DatabaseException ("Child Object " + child.entity () + " is not a persistent object");
-		}
-		
-		String query = format (
-			queryTpl, 
-			parentDoc.getIdentity ().toString (), 
-			collection, 
-			childDoc.getIdentity ().toString ()
-		);
-		
-		db.command (new OCommandSQL (query)).execute ();
-	}
-
-	private ODocument _get (String type, Object id) {
-		
-		if (Lang.isNullOrEmpty (type)) {
+		if (Lang.isNullOrEmpty (entity)) {
 			return null;
 		}
 		
-		if (!db.getMetadata ().getSchema ().existsClass (type)) {
+		if (!db.getMetadata ().getSchema ().existsClass (entity)) {
 			return null;
 		}
 		
-		String query = format (GetQuery, type);
+		String query = format (GetQuery, entity);
 		
 		OSQLSynchQuery<ODocument> q = 
 				new OSQLSynchQuery<ODocument> (query, 1);
@@ -587,6 +454,306 @@ public class OrientDatabase implements Database {
 		}
 		
 		return toList (null, result, visitor);
+	}
+
+	@Override
+	public Object proprietary (String name) {
+		if (!allowProprietaryAccess || !Proprietary.Database.equalsIgnoreCase (name)) {
+			return null;
+		}
+		return db;
+	}
+	
+	@Override
+	public Object get () {
+		return null;
+	}
+
+	@Override
+	public void set (ApiSpace space, ClassLoader classLoader, Object... args) {
+		
+	}
+
+	private List<DatabaseObject> toList (String type, List<ODocument> documents, Visitor visitor) {
+		if (visitor == null) {
+			return new DatabaseObjectList<DatabaseObject> (this, documents);
+		}
+		
+		DatabaseObjectImpl entity = null;
+		if (visitor.optimize ()) {
+			entity = new DatabaseObjectImpl (this, type);
+		}
+		
+		for (ODocument document : documents) {
+			if (visitor.optimize ()) {
+				entity.document = document;
+			} else {
+				entity = new DatabaseObjectImpl (this, document);
+			}
+			boolean cancel = visitor.onRecord (entity);
+			if (cancel) {
+				return null;
+			}
+		}
+		return null;
+	}
+
+	private Object _query (String entity, Query.Construct construct, final Query query, boolean returnBefore) throws DatabaseException {
+		
+		if (query == null) {
+			return null;
+		}
+		
+		if (Query.Construct.select.equals (construct)) {
+			returnBefore = false;
+		}
+		
+		boolean queryHasEntity = true;
+		
+		if (Lang.isNullOrEmpty (query.entity ())) {
+			queryHasEntity = false;
+		} else {
+			entity = query.entity ();
+		}
+		
+		checkNotNull (entity);
+		
+		tracer.log (Tracer.Level.Debug, "Query Entity {0}", entity);
+		
+		if (!db.getMetadata ().getSchema ().existsClass (entity)) {
+			tracer.log (Tracer.Level.Debug, "Entity {0} not found", entity);
+			return null;
+		}
+		
+		String cacheKey = construct.name () + query.name ();
+		
+		String 				sQuery 		= null;
+		Map<String, Object> bindings 	= query.bindings ();
+		
+		if (queryHasEntity && query.caching ().cache (Target.meta) && !Lang.isNullOrEmpty (query.name ())) {
+			sQuery 		= (String)QueriesCache.get (cacheKey);
+			tracer.log (Tracer.Level.Debug, "Query meta loaded from cache {0}", sQuery);
+		} 
+		
+		if (sQuery == null) {
+			
+			CompiledQuery cQuery = compile (entity, construct, query, returnBefore);
+			
+			sQuery 		= (String)cQuery.query 		();
+			bindings	= cQuery.bindings 	();
+			
+			if (queryHasEntity && query.caching ().cache (Target.meta) && !Lang.isNullOrEmpty (query.name ())) {
+				QueriesCache.put (cacheKey, sQuery);
+				tracer.log (Tracer.Level.Debug, "Query meta stored in cache {0}", sQuery);
+			} 
+		}
+		
+		tracer.log (Tracer.Level.Debug, "\tQuery {0}", sQuery);
+		tracer.log (Tracer.Level.Debug, "\tBindings: {0}", bindings);
+		
+		if (Query.Construct.select.equals (construct)) {
+			OSQLSynchQuery<ODocument> q = new OSQLSynchQuery<ODocument> (sQuery);
+			List<ODocument> result = db.command (q).execute (bindings);
+			if (result == null || result.isEmpty ()) {
+				return null;
+			}
+			return result;
+		} else {
+			return db.command (new OCommandSQL (sQuery)).execute (bindings);
+		}
+	}
+	
+	private CompiledQuery compile (String entity, Query.Construct construct, final Query query, final boolean returnBefore) throws DatabaseException {
+		final String fEntity = entity;
+		QueryCompiler compiler = new SqlQueryCompiler (construct) {
+			private static final long serialVersionUID = -1248971549807669897L;
+			
+			@Override
+			protected void onQuery (Timing timing, Query query)
+					throws DatabaseException {
+				super.onQuery (timing, query);
+				
+				if (Timing.start.equals (timing)) {
+					return;
+				}
+				
+				if (query.start () > 0) {
+					buff.append (Lang.SPACE).append (ODBSql.Skip).append (Lang.SPACE).append (query.start ());
+				}
+				if (query.count () > 0) {
+					buff.append (Lang.SPACE).append (ODBSql.Limit).append (Lang.SPACE).append (query.count ());
+				}
+			}
+			
+			@Override
+			protected void onSelect (Timing timing, Select select) throws DatabaseException {
+				super.onSelect (timing, select);
+				if (Timing.end.equals (timing) && returnBefore) {
+					buff.append (Lang.SPACE).append (ODBSql.ReturnBefore);
+				}
+			}
+			
+			@Override
+			protected String operatorFor (Operator operator) {
+				if (Operator.ftq.equals (operator)) {
+					return Lucene;
+				} else if (Operator.regex.equals (operator)) {
+					return Maches;
+				}
+				return super.operatorFor (operator);
+			}
+			
+			@Override
+			protected void entity () {
+				buff.append (fEntity);
+			}
+		}; 
+		
+		return compiler.compile (query);
+		
+	}
+
+	private String format (String query, String type) {
+		return Lang.replace (query, Tokens.Type, type);
+	}
+	
+	private void checkNotNull (String eType) throws DatabaseException {
+		if (Lang.isNullOrEmpty (eType)) {
+			throw new DatabaseException ("entity name is null");
+		}
+	}
+
+	private String format (String query, String type, String field) {
+		return Lang.replace (format (query, type), Tokens.Field, field);
+	}
+	
+
+	/*
+	@Override
+	public void createEntity (String eType, Field... fields) throws DatabaseException {
+		eType = checkNotNull (eType);
+		
+		if (fields == null || fields.length == 0) {
+			throw new DatabaseException ("entity " + eType + ". fields missing");
+		}
+		
+		OClass oClass = db.getMetadata ().getSchema ().getClass (eType);
+		if (oClass != null) {
+			throw new DatabaseException ("entity " + eType + " already exists");
+		}
+		
+		oClass = db.getMetadata ().getSchema ().createClass (eType);
+		
+		String [] props = new String [fields.length];
+		
+		for (int i = 0; i < fields.length; i++) {
+			Field f = fields [i];
+			props [i] = f.name ();
+			if (f.type () != null) {
+				OProperty property = oClass.createProperty (f.name (), FieldTypes.get (f.type ()));
+				property.setNotNull (f.required ());
+				if (f.unique ()) {
+					property.createIndex (INDEX_TYPE.UNIQUE);
+				}
+			}
+		}
+		
+		db.getMetadata ().getSchema ().save ();
+	}
+
+	@Override
+	public void createIndex (String eType, IndexType type, String name,
+			Field... fields) throws DatabaseException {
+		
+		eType = checkNotNull (eType);
+		
+		if (fields == null || fields.length == 0) {
+			throw new DatabaseException ("entity " + eType + ". fields required to create an index");
+		}
+		
+		boolean save = false;
+		
+		OClass oClass = db.getMetadata ().getSchema ().getClass (eType);
+		if (oClass == null) {
+			oClass = db.getMetadata ().getSchema ().createClass (eType);
+			save = true;
+		}
+		
+		String [] props = new String [fields.length];
+		
+		for (int i = 0; i < fields.length; i++) {
+			Field f = fields [i];
+			props [i] = f.name ();
+			if (f.type () != null) {
+				oClass.createProperty (f.name (), FieldTypes.get (f.type ()));
+			}
+		}
+		
+		switch (type) {
+			case Text:
+				oClass.createIndex (eType + Lang.DOT + name, "FULLTEXT", null, null, Lucene, props);
+				break;
+			case Spacial:
+				oClass.createIndex (eType + Lang.DOT + name, "SPATIAL", null, null, Lucene, props);
+				break;
+			default:
+				oClass.createIndex (eType + Lang.DOT + name, IndexTypes.get (type), props);
+				break;
+		}
+		if (save) {
+			db.getMetadata ().getSchema ().save ();
+		}
+	}
+
+	@Override
+	public void dropIndex (String eType, String name) throws DatabaseException {
+
+		eType = checkNotNull (eType);
+		
+		if (!db.getMetadata ().getSchema ().existsClass (eType)) {
+			return;
+		}
+		
+		db.getMetadata ().getIndexManager (). dropIndex (eType + Lang.DOT + name);
+	}
+
+	@Override
+	public void add (DatabaseObject parent, String collection, DatabaseObject child)
+			throws DatabaseException {
+		addRemove (CollectionAddQuery, parent, collection, child);
+	}
+
+	@Override
+	public void remove (DatabaseObject parent, String collection, DatabaseObject child)
+			throws DatabaseException {
+		addRemove (CollectionRemoveQuery, parent, collection, child);
+	}
+	private void addRemove (String queryTpl, DatabaseObject parent, String collection, DatabaseObject child)
+			throws DatabaseException {
+		
+		if (parent == null || child == null) {
+			return;
+		}
+		
+		ODocument parentDoc = ((DatabaseObjectImpl)parent).document;
+		ODocument childDoc 	= ((DatabaseObjectImpl)child).document;
+		
+		if (parentDoc.getIdentity () == null || !parentDoc.getIdentity ().isPersistent ()) {
+			throw new DatabaseException ("Parent Object " + parent.entity () + " is not a persistent object");
+		}
+		
+		if (childDoc.getIdentity () == null || !childDoc.getIdentity ().isPersistent ()) {
+			throw new DatabaseException ("Child Object " + child.entity () + " is not a persistent object");
+		}
+		
+		String query = format (
+			queryTpl, 
+			parentDoc.getIdentity ().toString (), 
+			collection, 
+			childDoc.getIdentity ().toString ()
+		);
+		
+		db.command (new OCommandSQL (query)).execute ();
 	}
 
 	@Override
@@ -694,164 +861,9 @@ public class OrientDatabase implements Database {
         _import.importDatabase ();
         _import.close ();
 	}
-	
-	private List<DatabaseObject> toList (String type, List<ODocument> documents, Visitor visitor) {
-		if (visitor == null) {
-			return new DatabaseObjectList<DatabaseObject> (this, documents);
-		}
-		
-		DatabaseObjectImpl entity = null;
-		if (visitor.optimize ()) {
-			entity = new DatabaseObjectImpl (this, type);
-		}
-		
-		for (ODocument document : documents) {
-			if (visitor.optimize ()) {
-				entity.document = document;
-			} else {
-				entity = new DatabaseObjectImpl (this, document);
-			}
-			boolean cancel = visitor.onRecord (entity);
-			if (cancel) {
-				return null;
-			}
-		}
-		return null;
-	}
 
-	private Object _query (String type, Query.Construct construct, final Query query, boolean returnBefore) throws DatabaseException {
-		
-		if (query == null) {
-			return null;
-		}
-		
-		if (Query.Construct.select.equals (construct)) {
-			returnBefore = false;
-		}
-		
-		boolean queryHasEntity = true;
-		
-		String entity = query.entity ();
-		
-		if (Lang.isNullOrEmpty (entity)) {
-			queryHasEntity = false;
-			entity = type;
-		}
-		
-		entity = checkNotNull (entity);
-		
-		tracer.log (Tracer.Level.Debug, "Query Entity {0}", entity);
-		
-		if (!db.getMetadata ().getSchema ().existsClass (entity)) {
-			tracer.log (Tracer.Level.Debug, "Entity {0} not found", entity);
-			return null;
-		}
-		
-		String cacheKey = construct.name () + query.name ();
-		
-		String 				sQuery 		= null;
-		Map<String, Object> bindings 	= query.bindings ();
-		
-		if (queryHasEntity && query.caching ().cache (Target.meta) && !Lang.isNullOrEmpty (query.name ())) {
-			sQuery 		= (String)QueriesCache.get (cacheKey);
-			tracer.log (Tracer.Level.Debug, "Query meta loaded from cache {0}", sQuery);
-		} 
-		
-		if (sQuery == null) {
-			
-			CompiledQuery cQuery = compile (entity, construct, query, returnBefore);
-			
-			sQuery 		= (String)cQuery.query 		();
-			bindings	= cQuery.bindings 	();
-			
-			if (queryHasEntity && query.caching ().cache (Target.meta) && !Lang.isNullOrEmpty (query.name ())) {
-				QueriesCache.put (cacheKey, sQuery);
-				tracer.log (Tracer.Level.Debug, "Query meta stored in cache {0}", sQuery);
-			} 
-		}
-		
-		tracer.log (Tracer.Level.Debug, "\tQuery {0}", sQuery);
-		tracer.log (Tracer.Level.Debug, "\tBindings: {0}", bindings);
-		
-		if (Query.Construct.select.equals (construct)) {
-			OSQLSynchQuery<ODocument> q = new OSQLSynchQuery<ODocument> (sQuery);
-			List<ODocument> result = db.command (q).execute (bindings);
-			if (result == null || result.isEmpty ()) {
-				return null;
-			}
-			return result;
-		} else {
-			return db.command (new OCommandSQL (sQuery)).execute (bindings);
-		}
-	}
-	
-	private CompiledQuery compile (String entity, Query.Construct construct, final Query query, final boolean returnBefore) throws DatabaseException {
-		final String fEntity = entity;
-		QueryCompiler compiler = new SqlQueryCompiler (construct) {
-			private static final long serialVersionUID = -1248971549807669897L;
-			
-			@Override
-			protected void onQuery (Timing timing, Query query)
-					throws DatabaseException {
-				super.onQuery (timing, query);
-				
-				if (Timing.start.equals (timing)) {
-					return;
-				}
-				
-				if (query.start () > 0) {
-					buff.append (Lang.SPACE).append (ODBSql.Skip).append (Lang.SPACE).append (query.start ());
-				}
-				if (query.count () > 0) {
-					buff.append (Lang.SPACE).append (ODBSql.Limit).append (Lang.SPACE).append (query.count ());
-				}
-			}
-			
-			@Override
-			protected void onSelect (Timing timing, Select select) throws DatabaseException {
-				super.onSelect (timing, select);
-				if (Timing.end.equals (timing) && returnBefore) {
-					buff.append (Lang.SPACE).append (ODBSql.ReturnBefore);
-				}
-			}
-			
-			@Override
-			protected String operatorFor (Operator operator) {
-				if (Operator.ftq.equals (operator)) {
-					return Lucene;
-				} else if (Operator.regex.equals (operator)) {
-					return Maches;
-				}
-				return super.operatorFor (operator);
-			}
-			
-			@Override
-			protected void entity () {
-				buff.append (fEntity);
-			}
-		}; 
-		
-		return compiler.compile (query);
-		
-	}
-
-	private String format (String query, String type) {
-		return Lang.replace (query, Tokens.Type, type);
-	}
-	
-	private String format (String query, String type, String field) {
-		return Lang.replace (format (query, type), Tokens.Field, field);
-	}
-	
 	private String format (String query, String parent, String collection, String child) {
 		return Lang.replace (Lang.replace (Lang.replace (query, Tokens.Collection, collection), Tokens.Parent, parent), Tokens.Child, child);
-	}
-	
-	private String checkNotNull (String eType) throws DatabaseException {
-		if (Lang.isNullOrEmpty (eType)) {
-			throw new DatabaseException ("entity name is null");
-		}
-		return eType;
 	}
 	
 	private OFunction newFunction (String event, Query query) throws DatabaseException {
@@ -882,24 +894,5 @@ public class OrientDatabase implements Database {
 		}
 		return options.get (option);
 	}
-
-
-	@Override
-	public Object proprietary (String name) {
-		if (!Proprietary.Database.equalsIgnoreCase (name)) {
-			return null;
-		}
-		return db;
-	}
-	
-	@Override
-	public Object get () {
-		return null;
-	}
-
-	@Override
-	public void set (ApiSpace space, ClassLoader classLoader, Object... args) {
-		
-	}
-
+*/
 }

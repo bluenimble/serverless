@@ -1,0 +1,5 @@
+{
+	"template": "jdbc:redshift://[host][:port][/database]",
+	"port": "5439",
+	"driver": "com.amazon.redshift.jdbc.Driver"
+}

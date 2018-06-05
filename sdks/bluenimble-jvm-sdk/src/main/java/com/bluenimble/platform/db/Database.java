@@ -16,11 +16,7 @@
  */
 package com.bluenimble.platform.db;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import com.bluenimble.platform.Feature;
 import com.bluenimble.platform.Recyclable;
@@ -91,36 +87,36 @@ public interface Database extends Recyclable {
 	void 					commit 		() 														throws DatabaseException;
 	void 					rollback 	()														throws DatabaseException;
 
-	void 					createEntity(String entity, Field... fields) 						throws DatabaseException;
+//	void 					createEntity(String entity, Field... fields) 						throws DatabaseException;
 	DatabaseObject 			create 		(String entity) 										throws DatabaseException;
 
-	void 					drop 		(String entity) 										throws DatabaseException;
+	void 					clear 		(String entity) 										throws DatabaseException;
 
-	void 					createIndex (String entity, IndexType type, String name, Field... fileds) 
-																								throws DatabaseException;
-	void 					dropIndex 	(String entity, String name) 
-																								throws DatabaseException;
+//	void 					createIndex (String entity, IndexType type, String name, Field... fileds) 
+//																								throws DatabaseException;
+//	void 					dropIndex 	(String entity, String name) 
+//																								throws DatabaseException;
 
 	DatabaseObject			get 		(String entity, Object id) 								throws DatabaseException;
 	
 	int 					delete 		(String entity, Object id) 								throws DatabaseException;
 	int 					delete 		(String entity, Query query) 							throws DatabaseException;
 
-	void 					add 		(DatabaseObject parent, String collection, DatabaseObject child) 		
-																								throws DatabaseException;
-	void 					remove 		(DatabaseObject parent, String collection, DatabaseObject child) 		
-																								throws DatabaseException;
+//	void 					add 		(DatabaseObject parent, String collection, DatabaseObject child) 		
+//																								throws DatabaseException;
+//	void 					remove 		(DatabaseObject parent, String collection, DatabaseObject child) 		
+//																								throws DatabaseException;
 	
 	JsonObject 				bulk 		(JsonObject data) 										throws DatabaseException;
 
-	void 					imp 		(Set<String> entities, 
-		InputStream source, Map<ExchangeOption, Boolean> options, ExchangeListener listener) 	throws DatabaseException;
-	void 					exp 		(Set<String> entities, 
-			OutputStream source, Map<ExchangeOption, Boolean> options, ExchangeListener listener) 	
-																								throws DatabaseException;
+//	void 					imp 		(Set<String> entities, 
+//		InputStream source, Map<ExchangeOption, Boolean> options, ExchangeListener listener) 	throws DatabaseException;
+//	void 					exp 		(Set<String> entities, 
+//			OutputStream source, Map<ExchangeOption, Boolean> options, ExchangeListener listener) 	
+//																								throws DatabaseException;
 
-	void 					schedule 	(String event, Query query, String cron) 				throws DatabaseException;
-	void 					unschedule 	(String event) 											throws DatabaseException;
+//	void 					schedule 	(String event, Query query, String cron) 				throws DatabaseException;
+//	void 					unschedule 	(String event) 											throws DatabaseException;
 	
 	boolean 				isEntity 	(Object value) 											throws DatabaseException;
 
@@ -128,7 +124,7 @@ public interface Database extends Recyclable {
 	DatabaseObject 			findOne 	(String entity, Query query) 							throws DatabaseException;
 	
 	List<DatabaseObject> 	pop 		(String entity, Query query, Visitor visitor) 			throws DatabaseException;
-	DatabaseObject 			popOne 		(String entity, Query query) 								throws DatabaseException;
+	DatabaseObject 			popOne 		(String entity, Query query) 							throws DatabaseException;
 	
 	int						increment 	(DatabaseObject obj, String field, int value) 			throws DatabaseException;
 	

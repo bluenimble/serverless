@@ -1,5 +1,5 @@
 {
-	"template": "jdbc:jdbc:mariadb://[host][:port][/database]",
+	"template": "jdbc:mariadb://[host][:port][/database]",
 	"port": "3306",
 	"driver": "org.mariadb.jdbc.Driver"
 }

@@ -8,9 +8,10 @@ import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.metamodel.ManagedType;
+import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 
+import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.reflect.beans.BeanMetadata;
 
 public class JpaMetadata {
@@ -28,10 +29,14 @@ public class JpaMetadata {
 
 	public JpaMetadata (EntityManagerFactory factory) {
 		Metamodel mm = factory.getMetamodel ();
-		Set<ManagedType<?>> types = mm.getManagedTypes ();
-		for (ManagedType<?> type : types) {
-			metadata.put (type.getJavaType (), new BeanMetadata (type.getJavaType (), MinimalFieldsSelector));
-			entities.put (type.getJavaType ().getSimpleName ().toLowerCase (), type.getJavaType ());
+		Set<EntityType<?>> mEntities = mm.getEntities ();
+		for (EntityType<?> entity : mEntities) {
+			metadata.put (entity.getJavaType (), new BeanMetadata (entity.getJavaType (), MinimalFieldsSelector));
+			String name = entity.getName ();
+			if (Lang.isNullOrEmpty (name)) {
+				name = entity.getJavaType ().getSimpleName ();
+			}
+			entities.put (name.toLowerCase (), entity.getJavaType ());
 		}
 	}
 	

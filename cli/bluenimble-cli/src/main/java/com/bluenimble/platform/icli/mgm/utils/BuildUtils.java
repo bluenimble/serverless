@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.bluenimble.platform.ArchiveUtils;
 import com.bluenimble.platform.IOUtils;
@@ -55,6 +56,17 @@ public class BuildUtils {
 	
 	private static final String DefaultType 	= "string";
 	private static final String DefaultImport 	= "javax.persistence.*";
+	
+	private static final String DoNotApply 		= "DoNotApply";
+	
+	private static final Map<String, String> 
+								GlobalProperties 
+												= new HashMap<String, String> ();
+	static {
+		GlobalProperties.put ("eclipselink.persistence-context.flush-mode", "COMMIT");
+		GlobalProperties.put ("eclipselink.cache.size.default", "1000");
+		GlobalProperties.put ("eclipselink.ddl-generation", "drop-and-create-tables");
+	}
 
 	private static final Map<String, String> Types = new HashMap<String, String> ();
 	static {
@@ -155,9 +167,22 @@ public class BuildUtils {
 				File properties = new File (dataSourcesFolder, ds.getName () + Lang.SLASH + Properties);
 				if (properties.exists ()) {
 					JsonObject oProperties = Json.load (properties);
+					
+					// add global properties if missing
+					Set<String> globalKeys = GlobalProperties.keySet ();
+					for (String key : globalKeys) {
+						if (!oProperties.containsKey (key)) {
+							if (DoNotApply.equals (oProperties.get (key))) {
+								oProperties.remove (key);
+							} else {
+								oProperties.set (key, GlobalProperties.get (key));
+							}
+						}
+					}
+					
 					if (!Json.isNullOrEmpty (oProperties)) {
 						writer.write ("\t\t<properties>\n");
-						
+
 						Iterator<String> keys = oProperties.keys ();
 						while (keys.hasNext ()) {
 							String key = keys.next ();

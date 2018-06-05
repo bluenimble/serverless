@@ -72,6 +72,9 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 			String Type 	= "type";
 			String User 	= "user";
 			String Password = "password";
+			
+		String AllowProprietaryAccess
+						= "allowProprietaryAccess";
 	}
 	
 	enum AuthType {
@@ -106,7 +109,11 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 			}
 			@Override
 			public Object get (ApiSpace space, String name) {
-				return new MongoDatabaseImpl (MongoDatabasePlugin.this.acquire (space, name), tracer ());
+				Object oAllowProprietaryAccess = 
+					Json.find (space.getFeatures (), feature, name, ApiSpace.Features.Spec, Spec.AllowProprietaryAccess);
+				boolean allowProprietaryAccess = 
+						oAllowProprietaryAccess == null || String.valueOf (oAllowProprietaryAccess).equalsIgnoreCase (Lang.TRUE);
+				return new MongoDatabaseImpl (MongoDatabasePlugin.this.acquire (space, name), tracer (), allowProprietaryAccess);
 				
 			}
 			@Override

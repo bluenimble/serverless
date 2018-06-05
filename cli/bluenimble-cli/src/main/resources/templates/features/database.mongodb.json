@@ -10,7 +10,9 @@
 			"type": "sha",
 			"user": "database username",
 			"password": "password"
-		}
+		},
+		
+		"allowProprietaryAccess": "true"
 	}
 	
 }

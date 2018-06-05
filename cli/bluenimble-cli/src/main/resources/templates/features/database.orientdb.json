@@ -10,7 +10,9 @@
 		"auth": {
 			"user": "database username",
 			"password": "password"
-		}
+		},
+		
+		"allowProprietaryAccess": "true"
 	}
 	
 }

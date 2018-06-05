@@ -67,9 +67,11 @@ public class RdbPlugin extends AbstractPlugin {
 		String Port 		= "port";
 		String Database 	= "database";
 		
-		String User 		= "user";
-		String Password 	= "password";
-
+		interface Auth {
+			String User 		= "user";
+			String Password 	= "password";
+		}
+		
 		String Properties 	= "properties";
 		
 		interface Pool {
@@ -79,6 +81,9 @@ public class RdbPlugin extends AbstractPlugin {
 			String ConnectionTimeout 	= "connectionTimeout";
 			String IdleTimeout 			= "idleTimeout";
 		}	
+		
+		String AllowProprietaryAccess
+							= "allowProprietaryAccess";
 		
 	}
 	
@@ -220,15 +225,21 @@ public class RdbPlugin extends AbstractPlugin {
 			config.setPoolName (dataSourceKey);
 			config.setDriverClassName (vendor.driver ());
 			config.setJdbcUrl (vendor.url (Json.getString (spec, Spec.Host), Json.getInteger (spec, Spec.Port, 0), Json.getString (spec, Spec.Database)));
-			config.setUsername (Json.getString (spec, Spec.User));
-			config.setPassword (Json.getString (spec, Spec.Password));
+			
+			JsonObject auth = Json.getObject (spec, Spec.Auth.class.getSimpleName ().toLowerCase ());
+			if (!Json.isNullOrEmpty (auth)) {
+				config.setUsername (Json.getString (auth, Spec.Auth.User));
+				config.setPassword (Json.getString (auth, Spec.Auth.Password));
+			}
+			
 			config.setAutoCommit (false);
 			
-			config.setMaximumPoolSize 	(Json.getInteger (spec, Spec.Pool.MaximumPoolSize, 10));
-			config.setMaxLifetime		(Json.getLong (spec, Spec.Pool.MaxLifeTime, 30) * 60 * 1000);
-			config.setMinimumIdle 		(Json.getInteger (spec, Spec.Pool.MinimumIdle, -1));
-			config.setConnectionTimeout	(Json.getLong (spec, Spec.Pool.ConnectionTimeout, 30) * 60 * 1000);
-			config.setIdleTimeout		(Json.getLong (spec, Spec.Pool.IdleTimeout, 10) * 60 * 1000);
+			JsonObject pool = Json.getObject (spec, Spec.Pool.class.getSimpleName ().toLowerCase ());
+			config.setMaximumPoolSize 	(Json.getInteger (pool, Spec.Pool.MaximumPoolSize, 10));
+			config.setMaxLifetime		(Json.getLong (pool, Spec.Pool.MaxLifeTime, 30) * 60 * 1000);
+			config.setMinimumIdle 		(Json.getInteger (pool, Spec.Pool.MinimumIdle, -1));
+			config.setConnectionTimeout	(Json.getLong (pool, Spec.Pool.ConnectionTimeout, 30) * 60 * 1000);
+			config.setIdleTimeout		(Json.getLong (pool, Spec.Pool.IdleTimeout, 10) * 60 * 1000);
 			
 			JsonObject props = Json.getObject (spec, Spec.Properties);
 			if (!Json.isNullOrEmpty (props)) {
@@ -400,7 +411,11 @@ public class RdbPlugin extends AbstractPlugin {
 		
 		tracer ().log (Tracer.Level.Debug, "\tEntityManager ->    Factory = {0}", factory);
 		
-		return new JpaDatabase (this.tracer (), factory.createEntityManager (), recyclable.metadata ());
+		Object oAllowProprietaryAccess = 
+				Json.find (space.getFeatures (), feature, name, ApiSpace.Features.Spec, Spec.AllowProprietaryAccess);
+		boolean allowProprietaryAccess = 
+				oAllowProprietaryAccess == null || String.valueOf (oAllowProprietaryAccess).equalsIgnoreCase (Lang.TRUE);
+		return new JpaDatabase (this.tracer (), factory.createEntityManager (), recyclable.metadata (), allowProprietaryAccess);
 	}
 	
 }

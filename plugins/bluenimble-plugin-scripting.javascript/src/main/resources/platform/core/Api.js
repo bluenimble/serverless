@@ -138,23 +138,6 @@ function Api (proxy) {
 	};
 	
 	/**	
-	  Create a new DataSource feature object.
-	  If called from the service execute function, the context parameter should be the ApiRequest argument of the execute method
-	  If called from the api findCosumer, the context parameter should be the ApiContext
-	  @param {ApiContext|ApiRequest} [context] the context or the request in which the database handle will be associated with
-	  @param {string} [feature=default] the name of the database feature
-	  
-	  @returns {Database} an instance of a database object
-	*/
-	this.datasource = function (context, feature) {
-		if (!context) {
-			throw "missing argument context";
-		}
-		feature = this._feature ('datasource', feature);
-		return JC_FeaturesUtils.feature (proxy.space (), JC_FeaturesUtils.Features.DataSource, context.proxy, feature);
-	};
-	
-	/**	
 	  Create a new Storage feature object.
 	  If called from the service execute function, the context parameter should be the ApiRequest argument of the execute method
 	  If called from the api findCosumer, the context parameter should be the ApiContext
@@ -285,10 +268,13 @@ function Api (proxy) {
 
 	// private
 	this._feature = function (featureType, feature) {
-		if (feature || !this.features || !this.features.defaults) {
+		if (!feature) {
+			feature = 'default';
+		}
+		if (!this.features || !this.features.defaults) {
 			return feature;
 		}
-		return this.features.defaults [featureType] || 'default';
+		return this.features.defaults [featureType] || feature;
 	};
 
 };

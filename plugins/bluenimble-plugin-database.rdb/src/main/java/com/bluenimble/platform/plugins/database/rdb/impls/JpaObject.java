@@ -75,6 +75,10 @@ public class JpaObject implements DatabaseObject {
 
 	@Override
 	public void set (String key, Object value) throws DatabaseException {
+		
+		// if jsonobject, check for ref entity
+		// if list or property is OneToMany/MamyToMany
+		
 		try {
 			metadata.set (bean, key, value);
 		} catch (Exception ex) {

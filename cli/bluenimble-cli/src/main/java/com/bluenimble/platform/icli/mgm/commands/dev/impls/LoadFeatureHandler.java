@@ -113,6 +113,8 @@ public class LoadFeatureHandler implements CommandHandler {
 			});
 		}
 		
+		oFeature.shrink ();
+		
 		@SuppressWarnings("unchecked")
 		Map<String, Object> vars = (Map<String, Object>)tool.currentContext ().get (ToolContext.VARS);
 		vars.put (fKey, oFeature);

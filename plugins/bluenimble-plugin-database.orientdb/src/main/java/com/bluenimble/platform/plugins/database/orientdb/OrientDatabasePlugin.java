@@ -53,6 +53,9 @@ public class OrientDatabasePlugin extends AbstractPlugin {
 		String Auth 	= "auth";
 			String User 	= "user";
 			String Password = "password";
+			
+		String AllowProprietaryAccess
+						= "allowProprietaryAccess";	
 	}
 	
 	interface Protocol {
@@ -84,7 +87,11 @@ public class OrientDatabasePlugin extends AbstractPlugin {
 			}
 			@Override
 			public Object get (ApiSpace space, String name) {
-				return new OrientDatabase (OrientDatabasePlugin.this.acquire (space, name), tracer ());
+				Object oAllowProprietaryAccess = 
+					Json.find (space.getFeatures (), feature, name, ApiSpace.Features.Spec, Spec.AllowProprietaryAccess);
+				boolean allowProprietaryAccess = 
+						oAllowProprietaryAccess == null || String.valueOf (oAllowProprietaryAccess).equalsIgnoreCase (Lang.TRUE);
+				return new OrientDatabase (OrientDatabasePlugin.this.acquire (space, name), tracer (), allowProprietaryAccess);
 				
 			}
 			@Override

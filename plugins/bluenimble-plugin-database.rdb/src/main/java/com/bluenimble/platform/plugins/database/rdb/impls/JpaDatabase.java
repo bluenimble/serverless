@@ -1,11 +1,8 @@
 package com.bluenimble.platform.plugins.database.rdb.impls;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.persistence.Entity;
@@ -49,13 +46,15 @@ public class JpaDatabase implements Database {
 	
 	EntityManager 				entityManager;
 	Tracer						tracer;
+	private boolean 			allowProprietaryAccess;
 
 	private EntityTransaction 	transaction;
 	
-	public JpaDatabase (Tracer tracer, EntityManager entityManager, JpaMetadata metadata) {
-		this.tracer = tracer;
-		this.entityManager = entityManager;
-		this.metadata = metadata;
+	public JpaDatabase (Tracer tracer, EntityManager entityManager, JpaMetadata metadata, boolean allowProprietaryAccess) {
+		this.tracer 				= tracer;
+		this.entityManager 			= entityManager;
+		this.metadata 				= metadata;
+		this.allowProprietaryAccess = allowProprietaryAccess;
 	}
 
 	@Override
@@ -81,11 +80,6 @@ public class JpaDatabase implements Database {
 	}
 
 	@Override
-	public void createEntity (String entity, Field... fields) throws DatabaseException {
-		throw new UnsupportedOperationException ("createEntity is not supported by JpaDatabase");
-	}
-
-	@Override
 	public DatabaseObject create (String entity) throws DatabaseException {
 		try {
 			return new JpaObject (this, resolve (entity).newInstance ());
@@ -96,7 +90,10 @@ public class JpaDatabase implements Database {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void drop (String entity) throws DatabaseException {
+	public void clear (String entity) throws DatabaseException {
+		
+		checkNotNull (entity);
+		
 		try {
 			Class<?> entitycls = resolve (entity);
 			CriteriaBuilder builder = entityManager.getCriteriaBuilder ();
@@ -111,6 +108,9 @@ public class JpaDatabase implements Database {
 
 	@Override
 	public DatabaseObject get (String entity, Object id) throws DatabaseException {
+		
+		checkNotNull (entity);
+		
 		Object bean = null;
 		try {
 			bean = entityManager.find (resolve (entity), id);
@@ -125,6 +125,9 @@ public class JpaDatabase implements Database {
 
 	@Override
 	public int delete (String entity, Object id) throws DatabaseException {
+		
+		checkNotNull (entity);
+		
 		Object bean = null;
 		try {
 			bean = entityManager.find (resolve (entity), id);
@@ -176,6 +179,9 @@ public class JpaDatabase implements Database {
 
 	@Override
 	public long count (String entity) throws DatabaseException {
+		
+		checkNotNull (entity);
+		
 		CriteriaBuilder qb = entityManager.getCriteriaBuilder ();
 		CriteriaQuery<Long> cq = qb.createQuery (Long.class);
 		try {
@@ -193,31 +199,34 @@ public class JpaDatabase implements Database {
 
 	@Override
 	public List<DatabaseObject> pop (String entity, Query query, Visitor visitor) throws DatabaseException {
-		// TODO 
-		return null;
+		List<DatabaseObject> list = find (entity, query, visitor);
+		
+		delete (entity, query);
+		
+		return list;
 	}
 
 	@Override
 	public DatabaseObject popOne (String entity, Query query) throws DatabaseException {
-		// TODO 
-		return null;
-	}
-
-	@Override
-	public int increment (DatabaseObject obj, String field, int value) throws DatabaseException {
-		// TODO 
-		return 0;
-	}
-
-	@Override
-	public void add (DatabaseObject parent, String collection, DatabaseObject child) throws DatabaseException {
-		// TODO 
-	}
-
-	@Override
-	public void remove (DatabaseObject parent, String collection, DatabaseObject child) throws DatabaseException {
-		// TODO 
+		DatabaseObject dbo = findOne (entity, query);
 		
+		dbo.delete ();
+		
+		return dbo;
+	}
+
+	@Override
+	public int increment (DatabaseObject dbo, String field, int value) throws DatabaseException {
+		
+		Integer current = (Integer)dbo.get (field);
+		if (current == null) {
+			current = 0;
+		}
+		int next = current + value;
+		
+		dbo.set (field, next); 
+		
+		return next;
 	}
 
 	@Override
@@ -230,42 +239,6 @@ public class JpaDatabase implements Database {
 	public JsonObject describe () throws DatabaseException {
 		// TODO 
 		return null;
-	}
-
-	// should be removed from spec
-	
-	@Override
-	public void imp (Set<String> entities, InputStream source, Map<ExchangeOption, Boolean> options,
-			ExchangeListener listener) throws DatabaseException {
-		// TODO 
-		
-	}
-
-	@Override
-	public void exp (Set<String> entities, OutputStream source, Map<ExchangeOption, Boolean> options,
-			ExchangeListener listener) throws DatabaseException {
-		// TODO 
-		
-	}
-
-	@Override
-	public void schedule (String event, Query query, String cron) throws DatabaseException {
-		// TODO 
-	}
-
-	@Override
-	public void unschedule (String event) throws DatabaseException {
-		// TODO 
-	}
-
-	@Override
-	public void createIndex (String entity, IndexType type, String name, Field... fileds) throws DatabaseException {
-		throw new UnsupportedOperationException ("createIndex is not supported by JpaDatabase");
-	}
-
-	@Override
-	public void dropIndex (String entity, String name) throws DatabaseException {
-		throw new UnsupportedOperationException ("dropIndex is not supported by JpaDatabase");
 	}
 
 	@Override
@@ -284,6 +257,10 @@ public class JpaDatabase implements Database {
 
 	@Override
 	public Object proprietary (String name) {
+		if (!allowProprietaryAccess) {
+			return null;
+		} 
+		
 		if (Proprietary.EntityManager.equalsIgnoreCase (name)) {
 			return entityManager;
 		} else if (Proprietary.Connection.equalsIgnoreCase (name)) {
@@ -304,14 +281,13 @@ public class JpaDatabase implements Database {
 		return type;
 	}
 
-	private String checkNotNull (String eType) throws DatabaseException {
+	private void checkNotNull (String eType) throws DatabaseException {
 		if (Lang.isNullOrEmpty (eType)) {
 			throw new DatabaseException ("entity name is null");
 		}
-		return eType;
 	}
 	
-	private Object _query (String type, Query.Construct construct, final Query query) throws DatabaseException {
+	private Object _query (String entity, Query.Construct construct, final Query query) throws DatabaseException {
 		
 		if (query == null) {
 			return null;
@@ -319,14 +295,13 @@ public class JpaDatabase implements Database {
 		
 		boolean queryHasEntity = true;
 		
-		String entity = query.entity ();
-		
-		if (Lang.isNullOrEmpty (entity)) {
+		if (Lang.isNullOrEmpty (query.entity ())) {
 			queryHasEntity = false;
-			entity = type;
+		} else {
+			entity = query.entity ();
 		}
 		
-		entity = checkNotNull (entity);
+		checkNotNull (entity);
 		
 		tracer.log (Tracer.Level.Debug, "Query Entity {0}", entity);
 		
