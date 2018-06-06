@@ -1,0 +1,8 @@
+{
+	"template.hsql": "jdbc:hsqldb:hsql://[host][:port][/database]",
+	"template.file": "jdbc:hsqldb:file:[DataFolder][/database]",
+	"template.memory": "jdbc:hsqldb:mem[:database]",
+	"port": "9001",
+	"type": "hsql",
+	"driver": "org.hsqldb.jdbc.JDBCDriver"
+}

@@ -1,0 +1,6 @@
+{
+	"template.file": "jdbc:h2:[DataFolder][/database]",
+	"template.memory": "jdbc:h2:mem:[database]",
+	"type": "memory",
+	"driver": "org.h2.Driver"
+}

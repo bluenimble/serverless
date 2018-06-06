@@ -1,0 +1,31 @@
+{
+
+	"feature": "database",
+
+	"spec": {
+		"vendor": "hsqldb",
+		"type": "hsql, file or memory",
+		"host": "where hsqldb database is running if type is hsql",
+		"port": "",
+		"database": "database name",
+		
+		"auth": {
+			"user": "username",
+			"password": "password"
+		},
+
+		"pool": {
+			"maximumPoolSize": "10",
+			"maxLifeTime": "30",
+			"minimumIdle": "-1",
+			"connectionTimeout": "30",
+			"idleTimeout": "10"
+		},
+		
+		"properties": {
+		},
+		
+		"allowProprietaryAccess": "true"
+	}
+	
+}

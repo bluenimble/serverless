@@ -59,7 +59,7 @@ public class DataSourceVendor {
 		
 	}
 	
-	public String url (String host, int port, String database) {
+	public String url (String host, int port, String database, String type, File dataFolder) {
 		
 		if (port <= 0) {
 			port = Json.getInteger (descriptor, RdbPlugin.Spec.Port, 0);
@@ -68,7 +68,9 @@ public class DataSourceVendor {
 		final JsonObject data = (JsonObject)new JsonObject ()
 				.set (RdbPlugin.Spec.Host, host)
 				.set (RdbPlugin.Spec.Port, port)
-				.set (RdbPlugin.Spec.Database, database);
+				.set (RdbPlugin.Spec.Database, database)
+				.set (RdbPlugin.Spec.Type, type)
+				.set (RdbPlugin.DataFolder, dataFolder.getAbsolutePath ());
 		
 		VariableResolver vr = new VariableResolver () {
 			private static final long serialVersionUID = -485939153491337463L;
@@ -89,7 +91,7 @@ public class DataSourceVendor {
 			}
 			
 		};
-		return (String)Compiler.compile (Json.getString (descriptor, Template), null).eval (vr);
+		return (String)Compiler.compile (Json.getString (descriptor, type == null ? Template : Template + Lang.DOT + type), null).eval (vr);
 	}
 	
 	public String driver () {

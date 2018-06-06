@@ -1,0 +1,8 @@
+{
+	"template.remote": "jdbc:derby://[host][:port][/database]",
+	"template.memory": "jdbc:derby:memory[:database];create=true",
+	"template.file": "jdbc:derby:[DataFolder][/database]",
+	"port": "1527",
+	"type": "remote",
+	"driver": "org.apache.derby.jdbc.ClientDriver"
+}

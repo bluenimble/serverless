@@ -1,0 +1,6 @@
+{
+	"template.file": "jdbc:sqlite:[DataFolder]/[database].db",
+	"template.memory": "jdbc:sqlite::memory",
+	"type": "memory",
+	"driver": "org.sqlite.JDBC"
+}

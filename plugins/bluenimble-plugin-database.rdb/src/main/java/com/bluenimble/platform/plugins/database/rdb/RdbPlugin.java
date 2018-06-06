@@ -57,8 +57,12 @@ public class RdbPlugin extends AbstractPlugin {
 	private static final String 	Vendors 		= "vendors";
 	
 	private static final String 	DataSources		= "datasources";
+	
+	public static final String 		DataFolder		= "DataFolder";
 
-	private String feature;
+	private String 	feature;
+	
+	private File 	dataFolder;
 	
 	interface Spec {
 		
@@ -66,6 +70,7 @@ public class RdbPlugin extends AbstractPlugin {
 		String Host 		= "host";
 		String Port 		= "port";
 		String Database 	= "database";
+		String Type 	= "type";
 		
 		interface Auth {
 			String User 		= "user";
@@ -224,7 +229,15 @@ public class RdbPlugin extends AbstractPlugin {
 			HikariConfig config = new HikariConfig ();
 			config.setPoolName (dataSourceKey);
 			config.setDriverClassName (vendor.driver ());
-			config.setJdbcUrl (vendor.url (Json.getString (spec, Spec.Host), Json.getInteger (spec, Spec.Port, 0), Json.getString (spec, Spec.Database)));
+			config.setJdbcUrl (
+				vendor.url (
+					Json.getString (spec, Spec.Host), 
+					Json.getInteger (spec, Spec.Port, 0), 
+					Json.getString (spec, Spec.Database),
+					Json.getString (spec, Spec.Type),
+					new File (dataFolder, space.getNamespace () + Lang.UNDERSCORE + name)
+				)
+			);
 			
 			JsonObject auth = Json.getObject (spec, Spec.Auth.class.getSimpleName ().toLowerCase ());
 			if (!Json.isNullOrEmpty (auth)) {
@@ -416,6 +429,17 @@ public class RdbPlugin extends AbstractPlugin {
 		boolean allowProprietaryAccess = 
 				oAllowProprietaryAccess == null || String.valueOf (oAllowProprietaryAccess).equalsIgnoreCase (Lang.TRUE);
 		return new JpaDatabase (this.tracer (), factory.createEntityManager (), recyclable.metadata (), allowProprietaryAccess);
+	}
+
+	public String getDataFolder () {
+		return null;
+	}
+
+	public void setDataFolder (String dataFolder) {
+		if (Lang.isNullOrEmpty (dataFolder) || Lang.DOT.equals (dataFolder)) {
+			this.dataFolder = home;
+		}
+		this.dataFolder = new File (dataFolder);
 	}
 	
 }

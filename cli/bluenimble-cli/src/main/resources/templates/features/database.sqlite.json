@@ -1,0 +1,24 @@
+{
+
+	"feature": "database",
+
+	"spec": {
+		"vendor": "sqlite",
+		"type": "memory or file",
+		"database": "database name if type is file",
+		
+		"pool": {
+			"maximumPoolSize": "10",
+			"maxLifeTime": "30",
+			"minimumIdle": "-1",
+			"connectionTimeout": "30",
+			"idleTimeout": "10"
+		},
+		
+		"properties": {
+		},
+		
+		"allowProprietaryAccess": "true"
+	}
+	
+}

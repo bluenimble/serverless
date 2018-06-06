@@ -12,7 +12,8 @@
 				"links": [{
 					"Read More": "https://www.bluenimble.com"
 				}]
-			}
+			},
+			"dataFolder": "."
 		}
 	}
 	
