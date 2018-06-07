@@ -16,6 +16,7 @@
  */
 package com.bluenimble.platform.cli.command.impls.handlers;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.bluenimble.platform.Json;
@@ -26,13 +27,34 @@ import com.bluenimble.platform.cli.command.CommandExecutionException;
 import com.bluenimble.platform.cli.command.CommandHandler;
 import com.bluenimble.platform.cli.command.CommandResult;
 import com.bluenimble.platform.cli.command.impls.DefaultCommandResult;
+import com.bluenimble.platform.cli.command.impls.handlers.json.DefaultPropertyValueResolver;
+import com.bluenimble.platform.cli.command.impls.handlers.json.FileBase64PropertyValueResolver;
+import com.bluenimble.platform.cli.command.impls.handlers.json.FilePropertyValueResolver;
+import com.bluenimble.platform.cli.command.impls.handlers.json.JsonPropertyValueResolver;
+import com.bluenimble.platform.cli.command.impls.handlers.json.VariablePropertyValueResolver;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
-import com.bluenimble.platform.json.JsonParser;
 
 public class JsonSetHandler implements CommandHandler {
 
 	private static final long serialVersionUID = 7185236990672693349L;
+	
+	interface ValueProtocol {
+		String Variable 	= "var://";
+		String Json 		= "json://";
+		String File 		= "file://";
+		String FileBase64 	= "file.b64://";
+	}
+	
+	private static final PropertyValueResolver DefaultPropertyValueResolver = new DefaultPropertyValueResolver ();
+	
+	private static final Map<String, PropertyValueResolver> PropertyValueResolvers = new HashMap<String, PropertyValueResolver> ();
+	static {
+		PropertyValueResolvers.put (ValueProtocol.Variable, new VariablePropertyValueResolver ());
+		PropertyValueResolvers.put (ValueProtocol.Json, new JsonPropertyValueResolver ());
+		PropertyValueResolvers.put (ValueProtocol.File, new FilePropertyValueResolver ());
+		PropertyValueResolvers.put (ValueProtocol.FileBase64, new FileBase64PropertyValueResolver ());
+	}
 	
 	@Override
 	public CommandResult execute (Tool tool, String... args) throws CommandExecutionException {
@@ -66,38 +88,25 @@ public class JsonSetHandler implements CommandHandler {
 		int indexOfDot = prop.indexOf (Lang.DOT);
 		String value = args [2];
 		
-		boolean isJson 	= false;
-		boolean isVar 	= false;
-		
 		Object oValue = null;
 		
-		if (value.startsWith ("j\\")) {
-			value = value.substring (3);
-			isJson = true;
+		PropertyValueResolver vr = DefaultPropertyValueResolver;
+		
+		if (value.startsWith (ValueProtocol.Json)) {
+			vr = PropertyValueResolvers.get (ValueProtocol.Json);
+			value = value.substring (ValueProtocol.Json.length ());
+		} else if (value.startsWith (ValueProtocol.Variable)) {
+			vr = PropertyValueResolvers.get (ValueProtocol.Variable);
+			value = value.substring (ValueProtocol.Variable.length ());
+		} else if (value.startsWith (ValueProtocol.File)) {
+			vr = PropertyValueResolvers.get (ValueProtocol.File);
+			value = value.substring (ValueProtocol.File.length ());
+		} else if (value.startsWith (ValueProtocol.FileBase64)) {
+			vr = PropertyValueResolvers.get (ValueProtocol.FileBase64);
+			value = value.substring (ValueProtocol.FileBase64.length ());
 		}
 		
-		if (value.startsWith ("v\\")) {
-			value = value.substring (3);
-			isVar = true;
-		}
-		
-		if (Lang.isNullOrEmpty (value)) {
-			isJson = false;
-		}
-		
-		oValue = value;
-		
-		if (isJson) {
-			try {
-				oValue = JsonParser.parse (value);
-			} catch (Exception ex) {
-				throw new CommandExecutionException (ex.getMessage (), ex);
-			}
-		}
-		
-		if (isVar) {
-			oValue = vars.get (value);
-		}
+		oValue = vr.lookup (tool, value);
 		
 		if (indexOfDot <= 0) {
 			json.set (prop, oValue);
@@ -134,7 +143,12 @@ public class JsonSetHandler implements CommandHandler {
 			} 
 		}
 		
-		return new DefaultCommandResult (CommandResult.OK, json);
+		tool.printer ().content (
+			"__PS__ GREEN:" + var + "_|_ -> _|_YELLOW:" + prop, 
+			oValue == null ? "Removed" : oValue.toString ()
+		);
+		
+		return new DefaultCommandResult (CommandResult.OK, null);
 	}
 
 

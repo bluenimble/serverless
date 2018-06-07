@@ -62,6 +62,10 @@ public class LoadKeysHandler implements CommandHandler {
 				throw new CommandExecutionException ("variable " + name + " is empty");
 			}
 		} else {
+			if (path.startsWith (Lang.TILDE + File.separator)) {
+				path = System.getProperty ("user.home") + path.substring (1);
+			}
+			
 			keysFile = new File (path);
 			if (!keysFile.exists () || !keysFile.isFile ()) {
 				throw new CommandExecutionException ("invalid file path > " + path);
