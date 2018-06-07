@@ -66,7 +66,7 @@ This command will build both BlueNimble Server and the CLI
 
 ### Check Server startup and install security keys
 #### Check Server startup
-Type in http://server-ip:8080 (server-ip is where you installed bluenimble) or localhost if you're in your laptop. If you see a page similar to the one below, then BlueNimble is up and running.   
+Type in http://server-ip:9090 (server-ip is where you installed bluenimble) or localhost if you're in your laptop. If you see a page similar to the one below, then BlueNimble is up and running.   
 
 ![BlueNimble Server Install Page](https://github.com/bluenimble/serverless/blob/master/assets/images/2-server.png)
 
@@ -95,14 +95,14 @@ This command will create 5 services (endpoints) and their functions for the mode
 By using the CLI default template, apis are secure by default, only IM services could be called without providing required authentication information (Token for example). 
 First, call the 'Signup' service, simulating a user signing up to your 'uber' web/mobile application. Here if a CURL example:
     ```
-    curl -H "Content-Type: application/json" -X POST -d '{"user":"alien@uranus.space","password":"Alien!2025"}' http://server-ip:8080/playground/uber/security/signup
+    curl -H "Content-Type: application/json" -X POST -d '{"user":"alien@uranus.space","password":"Alien!2025"}' http://server-ip:9090/playground/uber/security/signup
     ```
 You should get a token back in response.
 
 Now, call the 'CreateCar' service using this token. Here is a CURL example: 
 
     
-    curl -H "Authorization: Token TheToken" -H "Content-Type: application/json" -X POST -d '{"name":"SpiralOrbit","scope":"SolarSystem"}' http://server-ip:8080/playground/uber/cars
+    curl -H "Authorization: Token TheToken" -H "Content-Type: application/json" -X POST -d '{"name":"SpiralOrbit","scope":"SolarSystem"}' http://server-ip:9090/playground/uber/cars
     
     
 * Using the default CLI api template, services already storing and reading data from the default database feature added to the current space. Visit the documentation to change it or add a new one database. 
