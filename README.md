@@ -145,17 +145,17 @@ Even if developers can use any external library in their functions code. We reco
 
 Here is the list of the out-of-the-box features:
 
-- Database: For document databases. Mongodb, Couchdb and Orientdb are supported out-of-the-box. You can add other vendors by implementing the **Database Feature** plugin. 
+- Database: All major NoSql and RDBMS databases supprted You can add other vendors by implementing the **Database Feature** plugin. 
 
-- Datasource: Includes most known relational databases, cassandra, salesforce. Hive and Hbase could be added by adding a new vendor to the plugin.
+![Out-Of-The-Box Database Vendors](https://github.com/bluenimble/serverless/blob/master/assets/images/database-vendors.png)
 
 - Storage: Supports FileSystem - S3 and other blob storage services could be used through a posix compliant interface.
 
 - Messenger: Supports Mail and Mobile Push Notifications and STOMP. Other vendors such as APMQ and Kafka could be added by implementing the Messenger plugin.
 
-- Indexer: Only ElasticSearch is supported. You can implement your own Indexer using feature plugin.
+- Indexer: Only ElasticSearch is supported. You can implement your own Indexer feature plugin.
 
-- Remoting: Supports only the HTTP protocol to integrate with REST/SOAP services. To support additional protocols, such as COAP, You can extend or implement a new Remoting plugin.
+- Remoting: Supports HTTP and Binary protocols to integrate with REST/SOAP services and Runtimes in Kubernetes and Swarm. To support additional protocols, such as COAP, You can extend or implement a new Remoting plugin.
 
 ## Documentation
 - [Developer Guide](https://www.bluenimble.com/docs/guides/developer.html)
