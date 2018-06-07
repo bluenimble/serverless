@@ -12,21 +12,23 @@ RUN apk update && apk add ca-certificates wget && update-ca-certificates
 #   docker build -t mybnb --build-arg BLUENIMBLE_DOWNLOAD_SERVER=http://downloads.bluenimble.com/platform .
 ARG BLUENIMBLE_DOWNLOAD_SERVER
 
-ENV BLUENIMBLE_DOWNLOAD_URL ${BLUENIMBLE_DOWNLOAD_SERVER:-http://downloads.bluenimble.com/platform}/bluenimble-server.tar.gz
+ENV BLUENIMBLE_DOWNLOAD_URL ${BLUENIMBLE_DOWNLOAD_SERVER:-https://github.com/bluenimble/serverless/releases/download/v[version]/bluenimble-[version]-bin.tar.gz
 
 # Download distribution tar, untar
-RUN mkdir -p /opt/bluenimble/platform
+RUN mkdir -p /opt/bluenimble
 RUN wget --no-cache $BLUENIMBLE_DOWNLOAD_URL && \
-  tar -xvzf bluenimble-server.tar.gz -C /opt/bluenimble/platform && \
-  rm bluenimble-server.tar.gz
+  tar -xvzf bluenimble-[version]-bin.tar.gz -C /opt/bluenimble && \
+  rm bluenimble-[version]-bin.tar.gz
 
-RUN chmod 755 /opt/bluenimble/platform/bn.sh
-RUN chmod 755 /opt/bluenimble/platform/bn.stop.sh
+RUN chmod 755 /opt/bluenimble/bnb.sh
+RUN chmod 755 /opt/bluenimble/bnb.stop.sh
 
-COPY boot.lf /opt/bluenimble/platform/boot.lf
+[[#if plugins.remove]]
+RUN rm -rf /opt/bluenimble/plugins/[[this]]
+[[/if]]
 
 # expose ports
-EXPOSE 80 90
+EXPOSE 9090 7070
 
 # Start server
-CMD ["/opt/bluenimble/platform/bn.sh"]
+CMD ["/opt/bluenimble/bnb.sh"]

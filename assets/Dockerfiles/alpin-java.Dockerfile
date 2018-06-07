@@ -1,5 +1,5 @@
 # AlpineLinux with a glibc-2.23, curl and Oracle Java 8
-FROM alpine:3.4
+FROM alpine:3.7
 
 MAINTAINER BlueNimble, Inc. <community@bluenimble.com>
 
