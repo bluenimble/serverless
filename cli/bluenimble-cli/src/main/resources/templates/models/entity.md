@@ -9,7 +9,7 @@
 	
 	# direct fields
 	[[#each ModelSpec.fields]]
-	[[@key]] [[type]]
+	[[@key]] [[#eq type 'json']]json @Convert(converter = JsonConverter.class)[[else]][[type]][[/eq]]
 	[[/each]]
 	
 	[[#if ModelSpec.refs]]# relationships

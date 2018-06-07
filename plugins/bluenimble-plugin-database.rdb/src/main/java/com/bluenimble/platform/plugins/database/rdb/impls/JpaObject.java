@@ -1,10 +1,18 @@
 package com.bluenimble.platform.plugins.database.rdb.impls;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
@@ -73,23 +81,48 @@ public class JpaObject implements DatabaseObject {
 		return (Date)get (Database.Fields.Timestamp);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void set (String key, Object value) throws DatabaseException {
-		
-		// if jsonobject, check for ref entity
-		// if list or property is OneToMany/MamyToMany
-		
 		try {
+			if (value instanceof JpaObject) {
+				value = ((JpaObject)value).bean;
+			} else if (value instanceof JpaObjectList) {
+				value = ((JpaObjectList<JpaObject>)value).objects;
+			} else if (value instanceof JsonObject) {
+				
+				JsonObject ref 	= (JsonObject)value;
+				
+				String refEntity 	= ref.getString (Database.Fields.Entity);
+				Object refId 	= ref.get (Database.Fields.Entity);
+				
+				if (refEntity != null && refId != null) {
+					value = database.lookup (refEntity, refId);
+				}
+			}
+		
 			metadata.set (bean, key, value);
 		} catch (Exception ex) {
-			throw new RuntimeException (ex.getMessage (), ex);
+			throw new DatabaseException (ex.getMessage (), ex);
 		}
 	}
 
 	@Override
 	public Object get (String key) {
 		try {
-			return metadata.get (bean, key);
+			Object value = metadata.get (bean, key);
+			if (value == null) {
+				return null;
+			}
+			
+			Field field = metadata.field (key);
+			if (field.isAnnotationPresent (OneToOne.class)) {
+				return new JpaObject (database, value);
+			} else if (field.isAnnotationPresent (OneToMany.class) || field.isAnnotationPresent (ManyToMany.class)) {
+				return new JpaObjectList<DatabaseObject> (database, createList (value));
+			}
+			
+			return value;
 		} catch (Exception ex) {
 			throw new RuntimeException (ex.getMessage (), ex);
 		}
@@ -115,17 +148,18 @@ public class JpaObject implements DatabaseObject {
 	}
 
 	@Override
-	public void remove (String key) {
+	public void remove (String key) throws DatabaseException {
 		try {
 			set (key, null);
 		} catch (Exception ex) {
-			throw new RuntimeException (ex.getMessage (), ex);
+			throw new DatabaseException (ex.getMessage (), ex);
 		}
 	}
 
 	@Override
 	public void clear () {
 		try {
+			database.entityManager.detach (bean);
 			for (String key : metadata.allFields ()) {
 				set (key, null);
 			}
@@ -254,6 +288,18 @@ public class JpaObject implements DatabaseObject {
 		} catch (Exception ex) {
 			throw new DatabaseException (ex.getMessage (), ex);
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<Object> createList (Object value) {
+		if (value instanceof List) {
+			return (List<Object>)value;
+		} else if (value instanceof Set) {
+			return new ArrayList<Object> ((Set<?>)value);
+		} else if (value instanceof Collection) {
+			return new ArrayList<Object> ((Collection<?>)value);
+		}
+		return null;
 	}
 
 }

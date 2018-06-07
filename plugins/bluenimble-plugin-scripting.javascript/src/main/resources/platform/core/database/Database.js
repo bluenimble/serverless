@@ -58,6 +58,14 @@ var Database = function (api, proxy) {
 	},
 
 	/**	
+	  Create a database object list store one2many and many2many reference objects
+	  @return {List} - the database object list
+	*/
+	this.createList = function () {
+		return proxy.createList ();
+	},
+
+	/**	
 	  Create or update a database object<br/>
 	  If the database object id is present and it's found in the database, an update will be performed
 	  @param {DatabaseObject} - the database object

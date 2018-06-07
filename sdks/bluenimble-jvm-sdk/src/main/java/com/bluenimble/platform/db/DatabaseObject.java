@@ -32,12 +32,12 @@ public interface DatabaseObject extends Serializable {
 	
 	Date 		getTimestamp 	();
 	
-	void 		set 			(String key, Object value) 	throws DatabaseException;
+	void 		set 			(String key, Object value)	throws DatabaseException;
 	Object 		get 			(String key);
 	
 	void 		load 			(JsonObject values)			throws DatabaseException;
 
-	void 		remove 			(String key);
+	void 		remove 			(String key)				throws DatabaseException;
 	void 		clear 			();
 	
 	Iterator<String>	

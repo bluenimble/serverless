@@ -80,6 +80,19 @@ public class HandlebarsTemplateEngine implements TemplateEngine {
 				}
 			}
 		});
+		engine.registerHelper ("neq", new Helper<Object>() {
+			public CharSequence apply (Object right, Options options) throws IOException {
+				Object left = options.param (0);
+				if (right == null && left == null) {
+					return options.inverse ();
+				} else {
+					if (right == null) {
+						return options.fn ();
+					}
+			        return !right.equals (left) ? options.fn () : options.inverse ();
+				}
+			}
+		});
 	}
 	
 	@Override

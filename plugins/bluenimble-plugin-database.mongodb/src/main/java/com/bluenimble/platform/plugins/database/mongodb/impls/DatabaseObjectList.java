@@ -35,14 +35,18 @@ public class DatabaseObjectList<T> implements List<T> {
 	private boolean 			partial;
 	
 	public DatabaseObjectList (MongoDatabaseImpl database, List<Document> documents, String entity, boolean partial) {
-		this.entity 	= entity;
 		this.database 	= database;
 		this.documents 	= documents;
+		this.entity 	= entity;
 		this.partial 	= partial;
 	}
 	
 	public DatabaseObjectList (MongoDatabaseImpl database, List<Document> documents) {
 		this (database, documents, null, false);
+	}
+	
+	public DatabaseObjectList (MongoDatabaseImpl database) {
+		this (database, null);
 	}
 	
 	@Override

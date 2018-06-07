@@ -88,6 +88,11 @@ public class JpaDatabase implements Database {
 		}
 	}
 
+	@Override
+	public List<DatabaseObject> createList () {
+		return new JpaObjectList<DatabaseObject> (this);
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void clear (String entity) throws DatabaseException {
@@ -149,11 +154,12 @@ public class JpaDatabase implements Database {
 		return value.getClass ().isAnnotationPresent (Entity.class);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<DatabaseObject> find (String entity, Query query, Visitor visitor) throws DatabaseException {
-		List<?> result;
+		List<Object> result;
 		try {
-			result = (List<?>)_query (entity, Query.Construct.select, query);
+			result = (List<Object>)_query (entity, Query.Construct.select, query);
 		} catch (Exception e) {
 			throw new DatabaseException (e.getMessage (), e);
 		}
@@ -260,13 +266,16 @@ public class JpaDatabase implements Database {
 		if (!allowProprietaryAccess) {
 			return null;
 		} 
-		
 		if (Proprietary.EntityManager.equalsIgnoreCase (name)) {
 			return entityManager;
 		} else if (Proprietary.Connection.equalsIgnoreCase (name)) {
 			return entityManager.unwrap (Connection.class);
 		}
 		return null;
+	}
+	
+	Object lookup (String entity, Object id) throws Exception {
+		return entityManager.find (resolve (entity), id);
 	}
 
 	private Class<?> resolve (String entity) throws Exception {
@@ -391,7 +400,7 @@ public class JpaDatabase implements Database {
 		
 	}
 
-	private List<DatabaseObject> toList (String type, List<?> objects, Visitor visitor) throws DatabaseException {
+	private List<DatabaseObject> toList (String type, List<Object> objects, Visitor visitor) throws DatabaseException {
 		if (visitor == null) {
 			return new JpaObjectList<DatabaseObject> (this, objects);
 		}

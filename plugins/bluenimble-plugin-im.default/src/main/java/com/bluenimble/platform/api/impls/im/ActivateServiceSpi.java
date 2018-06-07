@@ -76,11 +76,11 @@ public class ActivateServiceSpi extends SimpleApiServiceSpi {
 		
 		Date now = new Date ();
 
-		// remove activationCode
-		account.remove (Json.getString (config, Config.ActivationCodeProperty, Defaults.ActivationCode));
-		
-		// update lastLogin
 		try {
+			// remove activationCode
+			account.remove (Json.getString (config, Config.ActivationCodeProperty, Defaults.ActivationCode));
+			
+			// update lastLogin
 			account.set (Json.getString (config, Config.LastLoginProperty, Fields.LastLogin), now);
 			account.save ();
 		} catch (Exception ex) {

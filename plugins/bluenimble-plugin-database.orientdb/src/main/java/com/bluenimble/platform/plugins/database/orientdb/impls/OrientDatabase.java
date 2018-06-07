@@ -164,6 +164,11 @@ public class OrientDatabase implements Database {
 	}
 
 	@Override
+	public List<DatabaseObject> createList () {
+		return new DatabaseObjectList<DatabaseObject> (this);
+	}
+
+	@Override
 	public void trx () {
 		db.begin ();
 	}

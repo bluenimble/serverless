@@ -4,6 +4,7 @@ import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -84,6 +85,10 @@ public class BeanMetadata implements Serializable {
 	
 	public PropertyDescriptor property (String name) {
 		return properties.get (name);
+	}
+	
+	public Field field (String name) throws Exception {
+		return type.getField (name);
 	}
 	
 	public boolean isEmpty () {

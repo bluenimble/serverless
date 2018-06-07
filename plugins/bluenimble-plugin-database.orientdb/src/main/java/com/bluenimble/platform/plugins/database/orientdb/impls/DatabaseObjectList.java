@@ -35,6 +35,10 @@ public class DatabaseObjectList<T> implements List<T> {
 		this.documents = documents;
 	}
 	
+	public DatabaseObjectList (Database database) {
+		this (database, null);
+	}
+	
 	@Override
 	public int size () {
 		if (documents == null) {

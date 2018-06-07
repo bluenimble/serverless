@@ -16,6 +16,7 @@
  */
 package com.bluenimble.platform.plugins.database.rdb.impls;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -24,13 +25,17 @@ import java.util.ListIterator;
 import com.bluenimble.platform.iterators.EmptyIterator;
 
 public class JpaObjectList<T> implements List<T> {
-
-	private List<?> objects;
-	private JpaDatabase database;
 	
-	public JpaObjectList (JpaDatabase database, List<?> objects) {
+	private JpaDatabase 	database;
+			List<Object> 	objects;
+	
+	public JpaObjectList (JpaDatabase database, List<Object> objects) {
 		this.database = database;
 		this.objects = objects;
+	}
+	
+	public JpaObjectList (JpaDatabase database) {
+		this (database, null);
 	}
 	
 	@Override
@@ -48,7 +53,11 @@ public class JpaObjectList<T> implements List<T> {
 
 	@Override
 	public boolean contains (Object o) {
-		throw new UnsupportedOperationException ("contains not supported");
+		if (objects == null || objects.isEmpty () || o == null || !isJpaObject (o)) {
+			return false;
+		}
+		
+		return objects.contains (((JpaObject)o).bean);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -77,7 +86,121 @@ public class JpaObjectList<T> implements List<T> {
 	}
 
 	@Override
-	public Object[] toArray () {
+	public boolean add (T e) {
+		if (e == null || !isJpaObject (e)) {
+			return false;
+		}
+		if (objects == null) {
+			objects = new ArrayList<Object> ();
+		}
+		
+		return objects.add (((JpaObject)e).bean);
+	}
+
+	@Override
+	public boolean remove (Object o) {
+		if (objects == null || objects.isEmpty () || o == null || !isJpaObject (o)) {
+			return false;
+		}
+		
+		return objects.remove (((JpaObject)o).bean);
+	}
+
+	@Override
+	public void clear () {
+		if (objects == null) {
+			return;
+		}
+		objects.clear ();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public T get (int index) {
+		if (objects == null) {
+			return null;
+		}
+		return (T)new JpaObject (database, objects.get (index));
+	}
+
+	@Override
+	public T set (int index, T o) {
+		if (objects == null) {
+			objects = new ArrayList<Object> ();
+		}
+		if (o == null) {
+			objects.set (index, null);
+		}
+		if (!isJpaObject (o)) {
+			return o;
+		}
+		
+		objects.set (index, ((JpaObject)o).bean);
+		return o;
+	}
+
+	@Override
+	public void add (int index, T o) {
+		if (objects == null) {
+			objects = new ArrayList<Object> ();
+		}
+		if (o == null) {
+			objects.set (index, null);
+		}
+		if (!isJpaObject (o)) {
+			return;
+		}
+		
+		objects.set (index, ((JpaObject)o).bean);
+	}
+
+	@Override
+	public T remove (int index) {
+		if (objects == null) {
+			return null;
+		}
+		objects.remove (index);
+		return null;
+	}
+
+	@Override
+	public int indexOf (Object o) {
+		if (objects == null) {
+			return -1;
+		}
+		if (o == null || !isJpaObject (o)) {
+			return -1;
+		}
+		return objects.indexOf (((JpaObject)o).bean);
+	}
+
+	@Override
+	public int lastIndexOf (Object o) {
+		if (objects == null) {
+			return -1;
+		}
+		if (o == null || !isJpaObject (o)) {
+			return -1;
+		}
+		return objects.lastIndexOf (((JpaObject)o).bean);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public ListIterator<T> listIterator () {
+		if (objects == null) {
+			return JpaListIterator.Empty;
+		}
+		return new JpaListIterator<T> (database, objects.listIterator ());
+	}
+
+	@Override
+	public ListIterator<T> listIterator (int index) {
+		throw new UnsupportedOperationException ("listIterator (int index) not supported");
+	}
+
+	@Override
+	public Object [] toArray () {
 		throw new UnsupportedOperationException ("toArray not supported");
 	}
 
@@ -85,16 +208,6 @@ public class JpaObjectList<T> implements List<T> {
 	@Override
 	public <T> T[] toArray (T[] a) {
 		throw new UnsupportedOperationException ("toArray not supported");
-	}
-
-	@Override
-	public boolean add (T e) {
-		throw new UnsupportedOperationException ("add not supported");
-	}
-
-	@Override
-	public boolean remove (Object o) {
-		throw new UnsupportedOperationException ("remove not supported");
 	}
 
 	@Override
@@ -123,64 +236,12 @@ public class JpaObjectList<T> implements List<T> {
 	}
 
 	@Override
-	public void clear () {
-		if (objects == null) {
-			return;
-		}
-		objects.clear ();
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public T get (int index) {
-		if (objects == null) {
-			return null;
-		}
-		return (T)new JpaObject (database, objects.get (index));
-	}
-
-	@Override
-	public T set (int index, T element) {
-		throw new UnsupportedOperationException ("set not supported");
-	}
-
-	@Override
-	public void add (int index, T element) {
-		throw new UnsupportedOperationException ("add not supported");
-	}
-
-	@Override
-	public T remove (int index) {
-		if (objects == null) {
-			return null;
-		}
-		objects.remove (index);
-		return null;
-	}
-
-	@Override
-	public int indexOf (Object o) {
-		throw new UnsupportedOperationException ("indexOf not supported");
-	}
-
-	@Override
-	public int lastIndexOf (Object o) {
-		throw new UnsupportedOperationException ("lastIndexOf not supported");
-	}
-
-	@Override
-	public ListIterator<T> listIterator () {
-		throw new UnsupportedOperationException ("listIterator not supported");
-	}
-
-	@Override
-	public ListIterator<T> listIterator (int index) {
-		throw new UnsupportedOperationException ("listIterator not supported");
-	}
-
-	@Override
 	public List<T> subList (int fromIndex, int toIndex) {
 		throw new UnsupportedOperationException ("subList not supported");
+	}
+	
+	private boolean isJpaObject (Object object) {
+		return object instanceof JpaObject;
 	}
 
 }
