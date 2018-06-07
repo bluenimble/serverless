@@ -22,6 +22,9 @@
 		},
 		
 		"properties": {
+			"javax.net.ssl.trustStore": "",
+			"javax.net.ssl.trustStoreType": "",
+			"javax.net.ssl.trustStorePassword": ""
 		},
 		
 		"allowProprietaryAccess": "true"

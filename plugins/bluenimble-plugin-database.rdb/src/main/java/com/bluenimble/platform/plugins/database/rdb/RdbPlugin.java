@@ -16,7 +16,10 @@
  */
 package com.bluenimble.platform.plugins.database.rdb;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -29,6 +32,7 @@ import javax.sql.DataSource;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.bluenimble.platform.Feature;
+import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.Recyclable;
@@ -37,6 +41,7 @@ import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.Manageable;
 import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.db.Database;
+import com.bluenimble.platform.encoding.Base64;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.Plugin;
@@ -60,9 +65,16 @@ public class RdbPlugin extends AbstractPlugin {
 	
 	public static final String 		DataFolder		= "DataFolder";
 
+	interface SSLProperties {
+		String TrustStore 			= "javax.net.ssl.trustStore";
+		String TrustStoreType 		= "javax.net.ssl.trustStoreType";
+		String TrustStorePassword 	= "javax.net.ssl.trustStorePassword";
+	}
+	
 	private String 	feature;
 	
 	private File 	dataFolder;
+	private File 	certsFolder;
 	
 	interface Spec {
 		
@@ -256,6 +268,27 @@ public class RdbPlugin extends AbstractPlugin {
 			
 			JsonObject props = Json.getObject (spec, Spec.Properties);
 			if (!Json.isNullOrEmpty (props)) {
+				// SSL
+				String trustStore = props.getString (SSLProperties.TrustStore);
+				if (Lang.isNullOrEmpty (trustStore)) {
+					props.remove (SSLProperties.TrustStore, SSLProperties.TrustStoreType, SSLProperties.TrustStorePassword);
+				} else {
+					byte [] storeBytes = Base64.decodeBase64 (props.getString (SSLProperties.TrustStore));
+					
+					// create store file
+					File storeFile = new File (certsFolder, space.getNamespace () + Lang.UNDERSCORE + name);
+					OutputStream os = null;
+					try {
+						os = new FileOutputStream (storeFile);
+						IOUtils.copy (new ByteArrayInputStream (storeBytes), os);
+					} catch (Exception ex) {
+						throw new PluginRegistryException (ex.getMessage (), ex);
+					} finally {
+						IOUtils.closeQuietly (os);
+					}
+					props.set (SSLProperties.TrustStore, storeFile.getAbsolutePath ());
+				}
+
 				Iterator<String> keys = props.keys ();
 				while (keys.hasNext ()) {
 					String key = keys.next ();
@@ -288,13 +321,18 @@ public class RdbPlugin extends AbstractPlugin {
 				continue;
 			}
 			String name = r.substring ((feature + Lang.DOT).length ());
-			if (dbFeature == null || dbFeature.containsKey (name)) {
+			if (dbFeature == null || !dbFeature.containsKey (name)) {
 				// it's deleted
 				RecyclableDataSource rf = (RecyclableDataSource)space.getRecyclable (r);
 				// remove from recyclables
 				space.removeRecyclable (r);
 				// recycle
 				rf.recycle ();
+				// remove used trust store if any
+				File storeFile = new File (certsFolder, space.getNamespace () + Lang.UNDERSCORE + name);
+				if (storeFile.exists ()) {
+					storeFile.delete ();
+				}
 			}
 		}
 		
@@ -440,6 +478,17 @@ public class RdbPlugin extends AbstractPlugin {
 			this.dataFolder = home;
 		}
 		this.dataFolder = new File (dataFolder);
+	}
+
+	public String getCertsFolder () {
+		return null;
+	}
+
+	public void setCertsFolder (String certsFolder) {
+		if (Lang.isNullOrEmpty (certsFolder) || Lang.DOT.equals (certsFolder)) {
+			this.certsFolder = home;
+		}
+		this.dataFolder = new File (certsFolder);
 	}
 	
 }
