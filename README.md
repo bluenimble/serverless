@@ -151,7 +151,7 @@ Here is the list of the out-of-the-box features:
 
 - Storage: Supports FileSystem - S3 and other blob storage services could be used through a posix compliant interface.
 
-- Messenging: Supports Mail and Mobile Push Notifications and STOMP. Other vendors such as APMQ and Kafka could be added by implementing the Messenging plugin.
+- Messenger: Supports Mail and Mobile Push Notifications and STOMP. Other vendors such as APMQ and Kafka could be added by implementing the Messenger plugin.
 
 - Indexer: Only ElasticSearch is supported. You can implement your own Indexer using feature plugin.
 
