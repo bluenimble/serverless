@@ -161,7 +161,7 @@ Here is the list of the out-of-the-box features:
 - [Developer Guide](https://www.bluenimble.com/docs/guides/developer.html)
 - [CLI Guide](https://www.bluenimble.com/docs/guides/icli.html) 
 - [Javascript SDK](https://www.bluenimble.com/docs/sdks/javascript/index.html)
-- [Java, Scla & Kotlin SDK](https://www.bluenimble.com/docs/sdks/jvm/javadoc/index.html)
+- [Java, Scala & Kotlin SDK](https://www.bluenimble.com/docs/sdks/jvm/javadoc/index.html)
 
 Note: Documentation for python and ruby still on the works. 
 
