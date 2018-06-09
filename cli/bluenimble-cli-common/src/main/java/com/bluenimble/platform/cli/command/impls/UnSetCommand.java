@@ -60,7 +60,7 @@ public class UnSetCommand extends AbstractCommand {
 			throw new CommandExecutionException (e.getMessage (), e);
 		}
 		
-		tool.printer ().content (cmd, "variable " + varName + " removed");
+		tool.printer ().content ("__PS__ GREEN:" + varName, "variable removed");
 		
 		return null;
 	}

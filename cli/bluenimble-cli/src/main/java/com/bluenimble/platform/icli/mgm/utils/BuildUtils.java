@@ -242,7 +242,9 @@ public class BuildUtils {
 		} catch (IOException ex) {
 			throw new CommandExecutionException (ex.getMessage (), ex);
 		}
-		System.out.println ("Command exitValue " + exitValue);
+		if (exitValue != 0) {
+			throw new CommandExecutionException ("mvn " + args + " error : Exit value is " + exitValue);
+		}
 		return exitValue;
 	}
 	

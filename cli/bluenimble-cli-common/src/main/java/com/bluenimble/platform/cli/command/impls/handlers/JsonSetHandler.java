@@ -160,8 +160,8 @@ public class JsonSetHandler implements CommandHandler {
 	@Override
 	public String getDescription () {
 		return "set a property/value pair. set aJsonVar address.city Sunnyvale\n" + 
-				"Setting a property of type (json objbect or array)\n\tset aJsonVar user j\\{ \"name\": \"James\", \"age\": \"32\"}" +
-				"\n\tset aJsonVar geoloc j\\[48.8566140, 2.3522220]";
+				"Setting a property of type (json objbect or array)\n\tset aJsonVar user json://{ \"name\": \"James\", \"age\": \"32\"}" +
+				"\n\tset aJsonVar geoloc json://[48.8566140, 2.3522220]";
 	}
 
 	@Override
