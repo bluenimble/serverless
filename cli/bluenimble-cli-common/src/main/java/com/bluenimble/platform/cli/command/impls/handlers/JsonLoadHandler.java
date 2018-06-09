@@ -17,8 +17,12 @@
 package com.bluenimble.platform.cli.command.impls.handlers;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Map;
 
+import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.cli.Tool;
@@ -32,6 +36,11 @@ import com.bluenimble.platform.json.JsonObject;
 public class JsonLoadHandler implements CommandHandler {
 
 	private static final long serialVersionUID = 7185236990672693349L;
+	
+	interface Protocol {
+		String Http 	= "http://";
+		String Https 	= "https://";
+	}
 	
 	@Override
 	public CommandResult execute (Tool tool, String... args) throws CommandExecutionException {
@@ -66,29 +75,39 @@ public class JsonLoadHandler implements CommandHandler {
 			return new DefaultCommandResult (CommandResult.OK, json);
 		}
 		
-		if (sFile.startsWith (Lang.TILDE + File.separator)) {
-			sFile = System.getProperty ("user.home") + sFile.substring (1);
-		}
-		
-		File file = new File (sFile);
-		
-		if (!file.exists ()) {
-			throw new CommandExecutionException ("file " + sFile + " not found!");
-		}
-		
-		if (!file.isFile ()) {
-			throw new CommandExecutionException ("invalid file " + sFile + ". Are you sure is a file not a folder?");
-		}
+		InputStream is = null;
 		
 		try {
-			json = Json.load (file);
+			if (sFile.startsWith (Protocol.Http) || sFile.startsWith (Protocol.Https)) {
+				is = new URL (sFile).openStream ();
+			} else {
+				if (sFile.startsWith (Lang.TILDE + File.separator)) {
+					sFile = System.getProperty ("user.home") + sFile.substring (1);
+				}
+				
+				File file = new File (sFile);
+				
+				if (!file.exists ()) {
+					throw new CommandExecutionException ("file " + sFile + " not found!");
+				}
+				
+				if (!file.isFile ()) {
+					throw new CommandExecutionException ("invalid file " + sFile + ". Are you sure is a file not a folder?");
+				}
+				is = new FileInputStream (file);
+			}
+
+			json = Json.load (is);
+			
 		} catch (Exception e) {
 			throw new CommandExecutionException (e.getMessage (), e);
+		} finally {
+			IOUtils.closeQuietly (is);
 		}
 		
 		vars.put (var, json);
 		
-		return new DefaultCommandResult (CommandResult.OK, "Json load " + var + " <- " + file.getAbsolutePath ());
+		return new DefaultCommandResult (CommandResult.OK, "Json load " + var + " <- " + sFile);
 	}
 
 

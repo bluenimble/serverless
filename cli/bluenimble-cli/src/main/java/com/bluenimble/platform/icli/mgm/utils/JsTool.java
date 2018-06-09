@@ -72,4 +72,8 @@ public class JsTool {
 		return new JsonArray ();
 	}
 	
+	public Tool proxy () {
+		return tool;
+	}
+	
 }

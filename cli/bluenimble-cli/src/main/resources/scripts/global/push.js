@@ -1,8 +1,19 @@
 /*
-	
-	TODO: How to get the change log
-
-*/
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements. See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 // native imports 
 var System 			= native ('java.lang.System');
@@ -129,6 +140,10 @@ function validate (apiFolder, folderOrFile) {
 // Start Of Script
 var startTime = System.currentTimeMillis ();
 
+if (typeof Keys === 'undefined') {
+	throw 'Security Keys not found. Load some keys in order to push your api';
+}
+
 // check if valid command args
 if (typeof Command === 'undefined') {
 	throw 'missing command arguments. eg. push [ApiNs required] [Version optional]';
@@ -146,8 +161,6 @@ if (tokens [0] != 'api') {
 
 // api namespace
 var apiNs = tokens [1];
-
-Tool.note ('Validating api ' + apiNs);
 
 // Create the build folder if it doesn't exist
 var buildFolder = new File (Home, 'build');
@@ -167,13 +180,46 @@ if (!Vars ['build.release.nocopy'] || Vars ['build.release.nocopy'] != 'true') {
 	if (!apiSrcPath) {
 		apiSrcPath = apiNs;
 	}
-	FileUtils.copy (new File (Config.workspace + '/' + apiSrcPath), buildFolder, true);
 	
-	apiFolder = new File (buildFolder, apiSrcPath);
+	var apiSrc = new File (Config.workspace + '/' + apiSrcPath);
+	// mavenized project
+	if (new File (apiSrc, "pom.xml").exists ()) {
+		// run maven
+		var apiMvnBuild = new File (apiSrc, "build");
+		if (!apiMvnBuild.exists ()) {
+			throw apiMvnBuild.getAbsolutePath () + ' not found';
+		}
+		
+		Tool.note ('Building api - (mvn clean install) ' + apiNs);
+
+		// call maven
+		BuildUtils.mvn (Tool.proxy (), apiSrc, "clean install");
+		
+		var apiMvnBuildFiles = apiMvnBuild.listFiles ();
+		if (apiMvnBuildFiles == null || apiMvnBuildFiles.legth == 0) {
+			throw 'api build folder not found. run maven first. mvn clean install';
+		}
+		if (apiMvnBuildFiles.legth > 1) {
+			throw 'there is more than 1 api in the build folder';
+		}
+		apiSrc = apiMvnBuildFiles [0];
+	}
+	
+	FileUtils.copy (apiSrc, buildFolder, true);
+	
+	apiFolder = new File (buildFolder, apiSrc.getName ());
+	
+	// assemblies if any
+	var assemblies = new File (apiFolder, "assemblies"); 
+	if (assemblies.exists ()) {
+		FileUtils.delete (assemblies);
+	}
 	
 	// convert yaml to json
 	SpecUtils.y2j (apiFolder, true);
 }
+
+Tool.note ('Validating api ' + apiNs);
 
 // read api spec and set installDate, version, user id and stamp
 var apiSpecFile = new File (apiFolder, 'api.json');
@@ -197,7 +243,7 @@ if (tokens.length > 2 && tokens [2]) {
 }
 
 // set user stamp (this will change the api namespace) from apiNs to apiNs-version-stamp. eg travel-v1-john
-if (Keys.user && Keys.user.stamp && Vars ['api.release.stamp'] == 'true') {
+if (Keys && Keys.user && Keys.user.stamp && Vars ['api.release.stamp'] == 'true') {
 	apiNs += ('-' + Keys.user.stamp.toLowerCase ());
 }
 
@@ -210,7 +256,7 @@ if (!Pattern.matches ("^[a-zA-Z0-9_-]*$", apiNs)) {
 apiSpec.set (Api.Spec.Namespace, apiNs);
 
 // set pusher (user id, email) this is part of the keys
-if (Keys.user && Keys.user.id) {
+if (Keys && Keys.user && Keys.user.id) {
 	release.set ('pushedBy', Keys.user.id);
 }
 

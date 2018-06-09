@@ -18,11 +18,13 @@ package com.bluenimble.platform.api.impls.media.engines.handlebars;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Json;
+import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.api.ApiRequest;
@@ -67,6 +69,49 @@ public class HandlebarsTemplateEngine implements TemplateEngine {
 				return new Handlebars.SafeString (data.toString ());
 			}
 		});
+		engine.registerHelper ("truncate", new Helper<String>() {
+			public CharSequence apply (String data, Options options) {
+				Integer from 	= options.param (0, 0);
+				Integer to 		= options.param (1, data.length ());
+				return new Handlebars.SafeString (data.substring (from, to));
+			}
+		});
+		engine.registerHelper ("uppercase", new Helper<String>() {
+			public CharSequence apply (String data, Options options) {
+				return new Handlebars.SafeString (data.toUpperCase ());
+			}
+		});
+		engine.registerHelper ("lowercase", new Helper<String>() {
+			public CharSequence apply (String data, Options options) {
+				return new Handlebars.SafeString (data.toLowerCase ());
+			}
+		});
+		engine.registerHelper ("formatDate", new Helper<Date>() {
+			public CharSequence apply (Date date, Options options) {
+				String format 	= options.param (0, Lang.UTC_DATE_FORMAT);
+				return new Handlebars.SafeString (Lang.toString (date, format));
+			}
+		});
+		engine.registerHelper ("now", new Helper<String>() {
+			public CharSequence apply (String format, Options options) {
+				if (Lang.isNullOrEmpty (format)) {
+					format = Lang.UTC_DATE_FORMAT;
+				};
+				return new Handlebars.SafeString (Lang.toString (new Date (), format));
+			}
+		});
+		engine.registerHelper ("set", new Helper<String>() {
+			public CharSequence apply (String key, Options options) throws IOException {
+				String value 	= options.param (0);
+				if (value != null) {
+					options.context.data (key, value);
+				} 
+				return options.fn ();
+			}
+		});
+		
+		// TODO: Numbers & Math helpers
+		
 		engine.registerHelper ("eq", new Helper<Object>() {
 			public CharSequence apply (Object right, Options options) throws IOException {
 				Object left = options.param (0);
@@ -90,6 +135,94 @@ public class HandlebarsTemplateEngine implements TemplateEngine {
 						return options.fn ();
 					}
 			        return !right.equals (left) ? options.fn () : options.inverse ();
+				}
+			}
+		});
+		engine.registerHelper ("lt", new Helper<Object>() {
+			public CharSequence apply (Object right, Options options) throws IOException {
+				Object left = options.param (0);
+				if (right == null || left == null) {
+					return options.inverse ();
+				} else {
+					Double dRight = null;
+					try {
+						dRight = Double.valueOf (String.valueOf (right));
+					} catch (NumberFormatException nfex) {
+						return options.inverse ();
+					}
+					Double dLeft = null;
+					try {
+						dLeft = Double.valueOf (String.valueOf (left));
+					} catch (NumberFormatException nfex) {
+						return options.inverse ();
+					}
+					return dLeft < dRight ? options.fn () : options.inverse ();
+				}
+			}
+		});
+		engine.registerHelper ("lte", new Helper<Object>() {
+			public CharSequence apply (Object right, Options options) throws IOException {
+				Object left = options.param (0);
+				if (right == null || left == null) {
+					return options.inverse ();
+				} else {
+					Double dRight = null;
+					try {
+						dRight = Double.valueOf (String.valueOf (right));
+					} catch (NumberFormatException nfex) {
+						return options.inverse ();
+					}
+					Double dLeft = null;
+					try {
+						dLeft = Double.valueOf (String.valueOf (left));
+					} catch (NumberFormatException nfex) {
+						return options.inverse ();
+					}
+					return dLeft <= dRight ? options.fn () : options.inverse ();
+				}
+			}
+		});
+		engine.registerHelper ("gt", new Helper<Object>() {
+			public CharSequence apply (Object right, Options options) throws IOException {
+				Object left = options.param (0);
+				if (right == null || left == null) {
+					return options.inverse ();
+				} else {
+					Double dRight = null;
+					try {
+						dRight = Double.valueOf (String.valueOf (right));
+					} catch (NumberFormatException nfex) {
+						return options.inverse ();
+					}
+					Double dLeft = null;
+					try {
+						dLeft = Double.valueOf (String.valueOf (left));
+					} catch (NumberFormatException nfex) {
+						return options.inverse ();
+					}
+					return dLeft > dRight ? options.fn () : options.inverse ();
+				}
+			}
+		});
+		engine.registerHelper ("gte", new Helper<Object>() {
+			public CharSequence apply (Object right, Options options) throws IOException {
+				Object left = options.param (0);
+				if (right == null || left == null) {
+					return options.inverse ();
+				} else {
+					Double dRight = null;
+					try {
+						dRight = Double.valueOf (String.valueOf (right));
+					} catch (NumberFormatException nfex) {
+						return options.inverse ();
+					}
+					Double dLeft = null;
+					try {
+						dLeft = Double.valueOf (String.valueOf (left));
+					} catch (NumberFormatException nfex) {
+						return options.inverse ();
+					}
+					return dLeft >= dRight ? options.fn () : options.inverse ();
 				}
 			}
 		});

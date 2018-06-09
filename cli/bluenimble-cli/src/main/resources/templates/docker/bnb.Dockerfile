@@ -23,7 +23,7 @@ RUN wget --no-cache $BLUENIMBLE_DOWNLOAD_URL && \
 RUN chmod 755 /opt/bluenimble/bnb.sh
 RUN chmod 755 /opt/bluenimble/bnb.stop.sh
 
-[[#if plugins.remove]]
+[[#if plugins.discard]]
 RUN rm -rf /opt/bluenimble/plugins/[[this]]
 [[/if]]
 

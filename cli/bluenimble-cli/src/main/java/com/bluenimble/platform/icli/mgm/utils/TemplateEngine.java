@@ -5,10 +5,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
+import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.bluenimble.platform.IOUtils;
+import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.json.JsonObject;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Helper;
@@ -31,6 +33,49 @@ public class TemplateEngine {
 				return new Handlebars.SafeString (data.toString ());
 			}
 		});
+		Engine.registerHelper ("truncate", new Helper<String>() {
+			public CharSequence apply (String data, Options options) {
+				Integer from 	= options.param (0, 0);
+				Integer to 		= options.param (1, data.length ());
+				return new Handlebars.SafeString (data.substring (from, to));
+			}
+		});
+		Engine.registerHelper ("uppercase", new Helper<String>() {
+			public CharSequence apply (String data, Options options) {
+				return new Handlebars.SafeString (data.toUpperCase ());
+			}
+		});
+		Engine.registerHelper ("lowercase", new Helper<String>() {
+			public CharSequence apply (String data, Options options) {
+				return new Handlebars.SafeString (data.toLowerCase ());
+			}
+		});
+		Engine.registerHelper ("formatDate", new Helper<Date>() {
+			public CharSequence apply (Date date, Options options) {
+				String format 	= options.param (0, Lang.UTC_DATE_FORMAT);
+				return new Handlebars.SafeString (Lang.toString (date, format));
+			}
+		});
+		Engine.registerHelper ("now", new Helper<String>() {
+			public CharSequence apply (String format, Options options) {
+				if (Lang.isNullOrEmpty (format)) {
+					format = Lang.UTC_DATE_FORMAT;
+				};
+				return new Handlebars.SafeString (Lang.toString (new Date (), format));
+			}
+		});
+		Engine.registerHelper ("set", new Helper<String>() {
+			public CharSequence apply (String key, Options options) throws IOException {
+				String value 	= options.param (0);
+				if (value != null) {
+					options.context.data (key, value);
+				} 
+				return options.fn ();
+			}
+		});
+		
+		// Numbers helpers
+		
 		Engine.registerHelper ("eq", new Helper<Object>() {
 			public CharSequence apply (Object right, Options options) throws IOException {
 				Object left = options.param (0);
@@ -54,6 +99,94 @@ public class TemplateEngine {
 						return options.fn ();
 					}
 			        return !right.equals (left) ? options.fn () : options.inverse ();
+				}
+			}
+		});
+		Engine.registerHelper ("lt", new Helper<Object>() {
+			public CharSequence apply (Object right, Options options) throws IOException {
+				Object left = options.param (0);
+				if (right == null || left == null) {
+					return options.inverse ();
+				} else {
+					Double dRight = null;
+					try {
+						dRight = Double.valueOf (String.valueOf (right));
+					} catch (NumberFormatException nfex) {
+						return options.inverse ();
+					}
+					Double dLeft = null;
+					try {
+						dLeft = Double.valueOf (String.valueOf (left));
+					} catch (NumberFormatException nfex) {
+						return options.inverse ();
+					}
+					return dLeft < dRight ? options.fn () : options.inverse ();
+				}
+			}
+		});
+		Engine.registerHelper ("lte", new Helper<Object>() {
+			public CharSequence apply (Object right, Options options) throws IOException {
+				Object left = options.param (0);
+				if (right == null || left == null) {
+					return options.inverse ();
+				} else {
+					Double dRight = null;
+					try {
+						dRight = Double.valueOf (String.valueOf (right));
+					} catch (NumberFormatException nfex) {
+						return options.inverse ();
+					}
+					Double dLeft = null;
+					try {
+						dLeft = Double.valueOf (String.valueOf (left));
+					} catch (NumberFormatException nfex) {
+						return options.inverse ();
+					}
+					return dLeft <= dRight ? options.fn () : options.inverse ();
+				}
+			}
+		});
+		Engine.registerHelper ("gt", new Helper<Object>() {
+			public CharSequence apply (Object right, Options options) throws IOException {
+				Object left = options.param (0);
+				if (right == null || left == null) {
+					return options.inverse ();
+				} else {
+					Double dRight = null;
+					try {
+						dRight = Double.valueOf (String.valueOf (right));
+					} catch (NumberFormatException nfex) {
+						return options.inverse ();
+					}
+					Double dLeft = null;
+					try {
+						dLeft = Double.valueOf (String.valueOf (left));
+					} catch (NumberFormatException nfex) {
+						return options.inverse ();
+					}
+					return dLeft > dRight ? options.fn () : options.inverse ();
+				}
+			}
+		});
+		Engine.registerHelper ("gte", new Helper<Object>() {
+			public CharSequence apply (Object right, Options options) throws IOException {
+				Object left = options.param (0);
+				if (right == null || left == null) {
+					return options.inverse ();
+				} else {
+					Double dRight = null;
+					try {
+						dRight = Double.valueOf (String.valueOf (right));
+					} catch (NumberFormatException nfex) {
+						return options.inverse ();
+					}
+					Double dLeft = null;
+					try {
+						dLeft = Double.valueOf (String.valueOf (left));
+					} catch (NumberFormatException nfex) {
+						return options.inverse ();
+					}
+					return dLeft >= dRight ? options.fn () : options.inverse ();
 				}
 			}
 		});

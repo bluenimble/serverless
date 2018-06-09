@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -27,10 +28,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
+
 import com.bluenimble.platform.ArchiveUtils;
 import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
+import com.bluenimble.platform.cli.Tool;
+import com.bluenimble.platform.cli.command.CommandExecutionException;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 
@@ -225,6 +231,21 @@ public class BuildUtils {
 
 	}
 
+	public static int mvn (Tool tool, File workingDir, String args) throws CommandExecutionException {
+		CommandLine cmdLine = CommandLine.parse ("mvn " + args);
+		DefaultExecutor executor = new DefaultExecutor ();
+		executor.setWorkingDirectory (workingDir);
+
+		int exitValue = 0;
+		try {
+			exitValue = executor.execute (cmdLine);
+		} catch (IOException ex) {
+			throw new CommandExecutionException (ex.getMessage (), ex);
+		}
+		System.out.println ("Command exitValue " + exitValue);
+		return exitValue;
+	}
+	
 	private static void loadEntities (DataSource ds, File dsf, File mdf, File javaSrc) throws Exception {
 		
 		if (mdf.isDirectory ()) {

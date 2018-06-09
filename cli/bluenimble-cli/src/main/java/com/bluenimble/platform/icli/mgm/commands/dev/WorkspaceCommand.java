@@ -57,7 +57,7 @@ public class WorkspaceCommand extends AbstractCommand {
 				if (BlueNimble.Workspace == null) {
 					tool.printer ().warning ("No workspace found!\nUse command 'ws [Your Workspace Foler Path]'.\nExample: ws /applications/bluenimble"); 
 				} else {
-					tool.printer ().content ("Workspace", BlueNimble.Workspace.getAbsolutePath ()); 
+					tool.printer ().content ("__PS__ GREEN:Workspace", BlueNimble.Workspace.getAbsolutePath ()); 
 					
 					String currentApi = Json.getString (BlueNimble.Config, CliSpec.Config.CurrentApi);
 					JsonObject apis = Json.getObject (BlueNimble.Config, CliSpec.Config.Apis);
@@ -72,10 +72,10 @@ public class WorkspaceCommand extends AbstractCommand {
 							} 
 							sApis.append (prefix + api).append (Lang.ENDLN); 
 						}
-						tool.printer ().content ("Apis", sApis.toString ());
+						tool.printer ().content ("__PS__ GREEN:Apis", sApis.toString ());
 						sApis.setLength (0);
 					} else {
-						tool.printer ().content ("Apis", "No apis found in this workspace"); 
+						tool.printer ().content ("__PS__ GREEN:Apis", "No apis found in this workspace"); 
 					}
 				}
 				return null;
