@@ -49,7 +49,7 @@ public class ChangePasswordSpi extends SimpleApiServiceSpi {
 		
 		DatabaseObject account = null;
 		try {
-			account = db.get (Json.getString (config, Config.UsersEntity, Defaults.Users), (String)consumer.get (ApiConsumer.Fields.Id));
+			account = db.get (Json.getString (config, Config.UsersEntity, Defaults.User), (String)consumer.get (ApiConsumer.Fields.Id));
 			account.set (Json.getString (config, Config.PasswordProperty, Spec.Password), Lang.md5 ((String)request.get (Spec.Password)));
 			account.save ();
 		} catch (Exception ex) {

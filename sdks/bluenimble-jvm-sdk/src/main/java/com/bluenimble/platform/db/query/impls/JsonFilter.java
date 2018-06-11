@@ -87,6 +87,11 @@ public class JsonFilter implements Filter {
 	}
 
 	@Override
+	public void set (String field, Operator operator, Object value) {
+		source.set (field, new JsonObject ().set (JsonQuery.Spec.Operator, operator.name ()).set (JsonQuery.Spec.Value, value));
+	}
+
+	@Override
 	public int count () {
 		if (source == null) {
 			return 0;

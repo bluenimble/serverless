@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.Iterator;
 
 import com.bluenimble.platform.db.query.Query.Conjunction;
+import com.bluenimble.platform.db.query.Query.Operator;
 
 public interface Filter extends Serializable {
 
@@ -29,6 +30,8 @@ public interface Filter extends Serializable {
 	
 	Iterator<String> 	conditions 	();
 	Object 				get 		(String field);
+	void 				set (String field, Operator operator, Object value);
+
 	
 	int					count 		();
 	boolean				isEmpty 	();

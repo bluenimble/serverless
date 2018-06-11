@@ -32,8 +32,8 @@ return {
 		// write to database
 		var db = api.database (request);
 			
-		var [[model]] = db.create ('[[Models]]')[[#eq ModelSpec.addDefaults 'true']]// set the current user as the creator of this [[Model]]
-			.ref ('createdBy', 'Users', consumer.id)[[/eq]];
+		var [[model]] = db.create ('[[Model]]')[[#eq ModelSpec.addDefaults 'true']]// set the current user as the creator of this [[Model]]
+			.ref ('createdBy', 'User', consumer.id)[[/eq]];
 		
 		[[#if ModelSpec.refs]]// resolve references [[#each ModelSpec.refs]][[#neq multiple 'true']]
 		if (payload.[[@key]]) {

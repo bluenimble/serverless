@@ -190,6 +190,24 @@ public class TemplateEngine {
 				}
 			}
 		});
+		Engine.registerHelper ("has", new Helper<JsonObject>() {
+			public CharSequence apply (JsonObject target, Options options) throws IOException {
+				Object key = options.param (0);
+				if (target == null || key == null) {
+					return options.inverse ();
+				} 
+		        return target.containsKey (key) ? options.fn () : options.inverse ();
+			}
+		});
+		Engine.registerHelper ("hasnt", new Helper<JsonObject>() {
+			public CharSequence apply (JsonObject target, Options options) throws IOException {
+				Object key = options.param (0);
+				if (target == null || key == null) {
+					return options.inverse ();
+				} 
+		        return target.containsKey (key) ? options.inverse () : options.fn ();
+			}
+		});
 		
 	}
 

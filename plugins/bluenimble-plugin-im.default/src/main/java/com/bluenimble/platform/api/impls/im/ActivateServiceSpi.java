@@ -64,7 +64,7 @@ public class ActivateServiceSpi extends SimpleApiServiceSpi {
 				where.set (Json.getString (config, Config.ActivationCodeProperty, Defaults.ActivationCode), request.get (Spec.ActivationCode));
 			}
 			
-			account = db.findOne (Json.getString (config, Config.UsersEntity, Defaults.Users), new JsonQuery (query));
+			account = db.findOne (Json.getString (config, Config.UsersEntity, Defaults.User), new JsonQuery (query));
 			
 		} catch (Exception ex) {
 			throw new ApiServiceExecutionException (ex.getMessage (), ex);

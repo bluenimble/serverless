@@ -33,7 +33,7 @@ return {
 		var db = api.database (request);
 
 		// lookup [[Model]] by :[[model]]
-		var [[model]] = db.get ('[[Models]]', [[model]]Id);
+		var [[model]] = db.get ('[[Model]]', [[model]]Id);
 		if (![[model]]) {
 			throw new ApiServiceExecutionException (
 				api.message (request.lang, 'NotFound', '[[model]]', [[model]]Id)
@@ -48,11 +48,17 @@ return {
 			).status (ApiResponse.NOT_FOUND);
 		}
 		
-		// add link
-		return db.create ('[[Model]][[Refs]]', {
-			[[model]]: [[model]]Id,
-			[[ref]]: [[ref]]Id
-		}).save ().toJson (0, 0);
+		var [[refs]] = [[model]].get ("[[refs]]");
+		if ([[refs]] == null) {
+			[[refs]] = db.createList ();
+			[[model]].set ('[[refs]]', [[refs]]);
+		}
+
+		// add [[ref]] to [[model]].[[refs]]
+		[[refs]].add ([[ref]]);
+		
+		// save
+		return [[model]].save ().toJson (0, 0);
 		
 	}
 

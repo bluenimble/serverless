@@ -57,7 +57,7 @@ public class Get[[Model]][[Ref]] extends AbstractApiServiceSpi {
 		DatabaseObject [[model]] = null;
 		try {
 			// get [[Model]] by :[[model]]
-			[[model]] = db.get ("[[Models]]", request.get ("[[model]]") );
+			[[model]] = db.get ("[[Model]]", request.get ("[[model]]") );
 		} catch (DatabaseException dbex) {
 			throw new ApiServiceExecutionException (dbex.getMessage (), dbex);
 		}

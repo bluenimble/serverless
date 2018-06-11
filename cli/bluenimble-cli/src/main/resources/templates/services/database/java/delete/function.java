@@ -56,7 +56,7 @@ public class Delete[[Model]] extends AbstractApiServiceSpi {
 		
 		DatabaseObject [[model]] = null;
 		try {
-			[[model]] = db.get ("[[Models]]", request.get ("[[model]]"));
+			[[model]] = db.get ("[[Model]]", request.get ("[[model]]"));
 		} catch (DatabaseException dbex) {
 			throw new ApiServiceExecutionException (dbex.getMessage (), dbex);
 		}

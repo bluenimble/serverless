@@ -25,33 +25,31 @@ return {
 	 **/
 	execute: function (api, consumer, request, response) {
 		
-		// List [[Model]] [[Refs]] by :filter
+		// List [[Model]] [[Refs]]
 		
-		var [[model]]Id = request.get ('[[model]]');
+		var [[model]]Id =  request.get ('[[model]]');
 		
-		// build query
+		var db = api.database (request);
 
-		var filter = request.get ('filter');
+		var [[model]] = db.get ( '[[Model]]', [[model]]Id );
 		
-		var where = {
-			[[model]]: [[model]]Id
-		};
-		if (filter) {
-			for (var k in filter) {
-				where [k] = filter [k];
-			}
-		}
-
+		if (![[model]]) {
+			throw new ApiServiceExecutionException (
+				api.message (request.lang, 'NotFound', '[[model]]', [[model]]Id)
+			).status (ApiResponse.NOT_FOUND);
+		}			
+		
 		// run query
 		var result = { [[refs]]: Json.array () };
 		
-		var db = api.database (request);
+		var [[refs]] = [[model]].get ('[[refs]]');
+		if ([[refs]] == null || [[refs]].isEmpty ()) {
+			return result;
+		}
 		
-		db.find ('[[Model]][[Refs]]', { 
-			where: where
-		}, function ([[model]][[Ref]]) {
-			result.[[refs]].push ([[model]][[Ref]].get ('[[ref]]').toJson (0, 0));
-		});
+		for (var i = 0; i < [[refs]].size (); i++) {
+			result.[[refs]].push ([[refs]].get (i).toJson (0, 0));
+		}
 		
 		return result;
 		

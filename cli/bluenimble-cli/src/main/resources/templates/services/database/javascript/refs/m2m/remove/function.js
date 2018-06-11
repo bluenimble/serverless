@@ -25,31 +25,41 @@ return {
 	 **/
 	execute: function (api, consumer, request, response) {
 		
+		// Remove [[model]][[Ref]] by :[[model]] and :[[ref]]
+		
 		var [[model]]Id = request.get ('[[model]]');
 		var [[ref]]Id 	= request.get ('[[ref]]');
 		
 		var db = api.database (request);
 
 		// lookup [[Model]] by :[[model]]
-		var [[model]] = db.get ('[[Models]]', [[model]]Id);
+		var [[model]] = db.get ('[[Model]]', [[model]]Id);
 		if (![[model]]) {
 			throw new ApiServiceExecutionException (
 				api.message (request.lang, 'NotFound', '[[model]]', [[model]]Id)
 			).status (ApiResponse.NOT_FOUND);
 		}
 		
-		// lookup [[Ref]] by :[[ref]]
-		var [[ref]] = db.get ('[[RefSpec.entity]]', [[ref]]Id);
-		if (![[ref]]) {
-			throw new ApiServiceExecutionException (
-				api.message (request.lang, 'NotFound', '[[ref]]', [[ref]]Id)
-			).status (ApiResponse.NOT_FOUND);
+		var [[refs]] = [[model]].get ('[[refs]]');
+		if (![[refs]] || [[refs]].isEmpty ()) {
+			return { removed: false };
 		}
 		
-		// remove [[model]] - [[ref]] link
-		[[model]][[Ref]].delete ();
+		var found;
+		for (var i = 0; i < [[ref]].size (); i++) {
+			var [[ref]] = [[refs]].get (i);
+			if ([[ref]].getId () == [[ref]]Id) {
+				found = [[ref]];
+			}
+		}
 		
-		return { removed: true };
+		if (!found) {
+			[[refs]].remove (found);
+			// save [[model]]
+			[[model]].save ();
+		}
+		
+		return { removed: (typeof found != 'undefined') };
 		
 	}
 

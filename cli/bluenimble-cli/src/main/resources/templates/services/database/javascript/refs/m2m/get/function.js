@@ -32,20 +32,31 @@ return {
 		
 		var db = api.database (request);
 
-		// find link
-		var [[model]][[Ref]] = db.findOne ('[[Model]][[Refs]]', { 
-			where: {
-				[[model]]: [[model]]Id,
-				[[ref]]: [[ref]]Id
-			}
-		});
-		if (![[model]][[Ref]]) {
+		// lookup [[Model]] by :[[model]]
+		var [[model]] = db.get ('[[Model]]', [[model]]Id);
+		if (![[model]]) {
 			throw new ApiServiceExecutionException (
-				api.message (request.lang, 'LinkNotFound', '[[model]][[Ref]]', '[[model]]', [[model]]Id, '[[ref]]', [[ref]]Id)
+				api.message (request.lang, 'NotFound', '[[model]]', [[model]]Id)
 			).status (ApiResponse.NOT_FOUND);
 		}
 		
-		return [[model]][[Ref]].get ('[[ref]]').toJson (0, 0);
+		var [[refs]] = [[model]].get ('[[refs]]');
+		if (![[refs]] || [[refs]].isEmpty ()) {
+			throw new ApiServiceExecutionException (
+				api.message (request.lang, 'NotFound', '[[ref]]', [[ref]]Id)
+			).status (ApiResponse.NOT_FOUND);
+		}
+		
+		for (var i = 0; i < [[ref]].size (); i++) {
+			var [[ref]] = [[refs]].get (i);
+			if ([[ref]].getId () == [[ref]]Id) {
+				return new JsonApiOutput ([[ref]].toJson (null));
+			}
+		}
+		
+		throw new ApiServiceExecutionException (
+			api.message (request.lang, 'NotFound', '[[ref]]', [[ref]]Id)
+		).status (ApiResponse.NOT_FOUND);
 		
 	}
 

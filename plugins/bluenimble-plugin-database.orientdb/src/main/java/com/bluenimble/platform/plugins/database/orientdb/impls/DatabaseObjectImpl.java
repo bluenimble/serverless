@@ -170,8 +170,15 @@ public class DatabaseObjectImpl implements DatabaseObject {
 		}
 		return v;
 	}
-	
 
+	/*
+	@Override
+	public List<DatabaseObject> find (String field, Query query, Visitor visitor) throws DatabaseException {
+		// TODO
+		return null;
+	}
+	*/
+	
 	@Override
 	public void remove (String key) {
 		document.removeField (key);

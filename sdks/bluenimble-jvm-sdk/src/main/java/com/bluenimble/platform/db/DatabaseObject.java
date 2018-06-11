@@ -35,6 +35,11 @@ public interface DatabaseObject extends Serializable {
 	void 		set 			(String key, Object value)	throws DatabaseException;
 	Object 		get 			(String key);
 	
+	/*
+	List<DatabaseObject> 	
+				find 			(String field, Query query, Visitor visitor) 			
+															throws DatabaseException;
+	*/
 	void 		load 			(JsonObject values)			throws DatabaseException;
 
 	void 		remove 			(String key)				throws DatabaseException;

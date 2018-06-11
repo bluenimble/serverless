@@ -32,7 +32,7 @@ return {
 		var db = api.database (request);
 
 		// lookup [[Model]] by :[[model]]
-		var [[model]] = db.get ('[[Models]]', [[model]]Id);
+		var [[model]] = db.get ('[[Model]]', [[model]]Id);
 		if (![[model]]) {
 			throw new ApiServiceExecutionException (
 				api.message (request.lang, 'NotFound', '[[model]]', [[model]]Id)

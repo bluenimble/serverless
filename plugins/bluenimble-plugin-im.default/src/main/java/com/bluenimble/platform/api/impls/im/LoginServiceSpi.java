@@ -49,7 +49,7 @@ public class LoginServiceSpi extends SimpleApiServiceSpi {
 	}
 	
 	interface Defaults {
-		String 	Users 			= "Users";
+		String 	User 			= "User";
 		String 	ActivationCode	= "activationCode";
 	}
 
@@ -127,7 +127,7 @@ public class LoginServiceSpi extends SimpleApiServiceSpi {
 				);
 			}
 						
-			account = db.findOne (Json.getString (config, Config.UsersEntity, Defaults.Users), new JsonQuery (query));
+			account = db.findOne (Json.getString (config, Config.UsersEntity, Defaults.User), new JsonQuery (query));
 			
 		} catch (Exception ex) {
 			throw new ApiServiceExecutionException (ex.getMessage (), ex);

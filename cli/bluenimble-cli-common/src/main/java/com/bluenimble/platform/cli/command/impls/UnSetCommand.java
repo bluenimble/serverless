@@ -49,7 +49,7 @@ public class UnSetCommand extends AbstractCommand {
 		String varName = cmd.trim ();
 		
 		if (varName.equals (Tool.ParaPhraseVar)) {
-			throw new CommandExecutionException ("can't remove paraphrase");
+			throw new CommandExecutionException ("Access denied. Can't remove paraphrase");
 		}
 		
 		vars.remove (varName);

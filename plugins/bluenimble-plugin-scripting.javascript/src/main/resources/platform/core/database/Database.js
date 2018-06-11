@@ -14,6 +14,16 @@
 var Database = function (api, proxy) {
 
 	this.proxy = proxy;
+	
+	/**	
+	  Get proprietary object by name
+	  @param {string} - the object name
+	  
+	  @return {object} - the proprietary object
+	*/
+	this.proprietary = function (name) {
+		return proxy.proprietary (name);
+	};
 
 	/**	
 	  Start a database transaction
@@ -58,11 +68,11 @@ var Database = function (api, proxy) {
 	},
 
 	/**	
-	  Create a database object list store one2many and many2many reference objects
-	  @return {List} - the database object list
+	  Create a database object list for one2many and many2many reference objects
+	  @return {DatabaseObjectList} - the database object list
 	*/
 	this.createList = function () {
-		return proxy.createList ();
+		return new DatabaseObjectList (this, proxy.createList ());
 	},
 
 	/**	

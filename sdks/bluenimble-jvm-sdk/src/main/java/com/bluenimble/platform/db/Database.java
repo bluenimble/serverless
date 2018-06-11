@@ -77,10 +77,6 @@ public interface Database extends Recyclable {
 		String Total 		= "totalCount";
 	}
 	
-	interface ExchangeListener {
-		void onMessage (String message);
-	} 
-
 	Object 					proprietary (String name);
 
 	void 					trx 		();

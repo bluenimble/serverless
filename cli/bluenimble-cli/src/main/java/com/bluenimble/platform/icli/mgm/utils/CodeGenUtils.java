@@ -55,15 +55,14 @@ public class CodeGenUtils {
 	
 	private static final String Custom			= "custom";
 	
-	public static final String ServicesCreated	= "services.created";
+	public static final String EntityModel		= "entity.md";
 	
-	private static final String Refs 		= "refs";
-	private static final String TypeRef 	= "Ref";
-	private static final String Entity 		= "entity";
-	private static final String Multiple 	= "multiple";
-	private static final String Exists 		= "exists";
-	private static final String MarkAsDeleted 	
-											= "markAsDeleted";
+	private static final String Refs 			= "refs";
+	private static final String TypeRef 		= "Ref";
+	private static final String Entity 			= "entity";
+	private static final String Multiple 		= "multiple";
+	private static final String Exists 			= "exists";
+	private static final String MarkAsDeleted 	= "markAsDeleted";
 
 	public interface Tokens {
 		String api			= "api";
@@ -360,10 +359,17 @@ public class CodeGenUtils {
 		tool.printer ().node (1, "function file 'functions/" + underline (tool, (printFolder ? modelFunctionFolder.getName () + "/" : "" ) + (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + extension) + "'"); 
 		
 		if (ApiVerb.POST.name ().equalsIgnoreCase (verb) && !Json.isNullOrEmpty (serviceModelSpec)) {
+			// write model file
+			if (!Json.isNullOrEmpty (serviceModelSpec)) {
+				writeFile (
+					new File (BlueNimble.Home, Templates.class.getSimpleName ().toLowerCase () + Lang.SLASH + Templates.Models + Lang.SLASH + EntityModel),
+					new File (specsFolder.getParentFile (), "datasources/default/" + Model + ".md"), 
+					data, 
+					specLang
+				);
+			}
 			writeRefsServices (tool, templateFolder, modelSpecFolder, modelFunctionFolder, data, extension, specLang);
 		}
-		
-		return;
 		
 	}
 
@@ -427,7 +433,7 @@ public class CodeGenUtils {
 		tool.printer ().node (1, "function file 'functions/" + underline (tool, modelSpecFolder.getName () + Lang.SLASH + (verb.equals (RefVerbs.List) ? Lang.pluralize (refName) : refName) + extension, true) + "'"); 
 		
 	}
-
+	
 	private static JsonObject transformSpec (JsonObject spec) {
 		if (spec == null) {
 			return null;
@@ -542,9 +548,7 @@ public class CodeGenUtils {
 	}
 	
 	private static String entity (String name) {
-		String Model = Lang.BLANK.equals (name) ? Lang.BLANK : name.substring (0, 1).toUpperCase () + name.substring (1);
-		
-		return (Model.endsWith ("y") ? (Model.substring (0, Model.length () - 1) + "ies") : Model + "s");
+		return Lang.BLANK.equals (name) ? Lang.BLANK : name.substring (0, 1).toUpperCase () + name.substring (1);
 	}
 	
 	public static String highlight (Tool tool, String text) {

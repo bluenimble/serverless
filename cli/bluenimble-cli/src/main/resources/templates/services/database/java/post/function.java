@@ -56,9 +56,9 @@ public class Create[[Model]] extends AbstractApiServiceSpi {
 		
 		DatabaseObject [[model]] = null;
 		try {
-			[[model]] = db.create ("[[Models]]");
+			[[model]] = db.create ("[[Model]]");
 			[[#eq ModelSpec.addDefaults 'true']]// set the current user as the creator of this [[Model]]
-			[[model]].set ('createdBy', new JsonObject ().set (Database.Fields.Entity, "Users").set (Database.Fields.Id, consumer.get (ApiConsumer.Fields.Id));[[/eq]]
+			[[model]].set ('createdBy', new JsonObject ().set (Database.Fields.Entity, "User").set (Database.Fields.Id, consumer.get (ApiConsumer.Fields.Id));[[/eq]]
 			
 			[[#if ModelSpec.refs]][[#each ModelSpec.refs]][[#neq multiple 'true']]
 			if (payload.containsKey ("[[@key]]")) {

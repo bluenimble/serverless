@@ -34,7 +34,7 @@ return {
 		
 		var result = { [[models]]: Json.array () };
 		
-		api.database (request).find ('[[Models]]', query, function ([[model]]) {
+		api.database (request).find ('[[Model]]', query, function ([[model]]) {
 			result.[[models]].push ([[model]].toJson ());
 		});
 		

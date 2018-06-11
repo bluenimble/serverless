@@ -223,6 +223,14 @@ public class DatabaseObjectImpl implements DatabaseObject {
 		return v;
 	}
 
+	/*
+	@Override
+	public List<DatabaseObject> find (String field, Query query, Visitor visitor) throws DatabaseException {
+		// TODO
+		return null;
+	}
+	*/
+	
 	private Object getSetRelationship (String key, Object v) {
 		
 		if (!Document.class.isAssignableFrom (v.getClass ())) {

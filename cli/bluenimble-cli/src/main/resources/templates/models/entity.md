@@ -3,16 +3,19 @@
 	[[#if ModelSpec.refs]]import java.util.*[[/if]]
 	@Entity(name="[[Model]]")
 	
-	[[#eq ModelSpec.addDefaults 'true']]# defaults
-	id long @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-	timestamp date[[/eq]]
+	id long @Id @Column(name = "ID") @GeneratedValue(strategy = GenerationType.IDENTITY)
+	timestamp date
 	
 	# direct fields
 	[[#each ModelSpec.fields]]
-	[[@key]] [[#eq type 'json']]json @Convert(converter = JsonConverter.class)[[else]][[type]][[/eq]]
+	[[#hasnt ModelSpec.refs @key]][[@key]] [[#eq type 'Object']]json @Convert(converter = JsonConverter.class)[[else]][[type]][[/eq]][[/hasnt]]
 	[[/each]]
 	
 	[[#if ModelSpec.refs]]# relationships
 	[[#each ModelSpec.refs]]
-	[[@key]] [[type]]
+	[[#eq multiple 'true']]
+	[[@key]] List<[[entity]]> @OneToMany @JoinColumn(name="[[Model]]ID", referencedColumnName="ID")
+	[[else]]
+	[[@key]] [[entity]] @OneToOne(fetch=FetchType.LAZY) @JoinColumn(name="ID")
+	[[/eq]]
 	[[/each]][[/if]]

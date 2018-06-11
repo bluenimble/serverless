@@ -34,7 +34,7 @@ return {
 		var db = api.database (request);
 
 		// check existence of the [[Model]] given by :[[model]]Id
-		var [[model]] = db.get ('[[Models]]', [[model]]Id);
+		var [[model]] = db.get ('[[Model]]', [[model]]Id);
 		
 		if (![[model]]) {
 			throw new ApiServiceExecutionException (
@@ -42,7 +42,7 @@ return {
 			).status (ApiResponse.NOT_FOUND);
 		}
 		[[#eq ModelSpec.addDefaults 'true']]// set the current user as the updater of this [[Model]]
-		[[model]].ref ('updatedBy', 'Users', consumer.id);[[/eq]]
+		[[model]].ref ('updatedBy', 'User', consumer.id);[[/eq]]
 		
 		[[#if ModelSpec.refs]]// resolve references [[#each ModelSpec.refs]][[#neq multiple 'true']]
 		if (payload.[[@key]]) {

@@ -89,10 +89,10 @@ public class JpaObject implements DatabaseObject {
 				value = ((JpaObject)value).bean;
 			} else if (value instanceof JpaObjectList) {
 				value = ((JpaObjectList<JpaObject>)value).objects;
+			} else if (value instanceof List) {
+				value = new JpaObjectList<JpaObject>(database, (List<Object>)value);
 			} else if (value instanceof JsonObject) {
-				
 				JsonObject ref 	= (JsonObject)value;
-				
 				String refEntity 	= ref.getString (Database.Fields.Entity);
 				Object refId 	= ref.get (Database.Fields.Entity);
 				
@@ -107,6 +107,7 @@ public class JpaObject implements DatabaseObject {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Object get (String key) {
 		try {
@@ -117,9 +118,17 @@ public class JpaObject implements DatabaseObject {
 			
 			Field field = metadata.field (key);
 			if (field.isAnnotationPresent (OneToOne.class)) {
-				return new JpaObject (database, value);
+				if (value instanceof JpaObject) {
+					return (JpaObject)value;
+				} else {
+					return new JpaObject (database, value);
+				}
 			} else if (field.isAnnotationPresent (OneToMany.class) || field.isAnnotationPresent (ManyToMany.class)) {
-				return new JpaObjectList<DatabaseObject> (database, createList (value));
+				if (value instanceof JpaObjectList) {
+					return (JpaObjectList<JpaObject>)value;
+				} else {
+					return new JpaObjectList<DatabaseObject> (database, createList (value));
+				}
 			}
 			
 			return value;
@@ -128,6 +137,93 @@ public class JpaObject implements DatabaseObject {
 		}
 	}
 
+	/*
+	@Override
+	public List<DatabaseObject> find (String field, Query query, Visitor visitor) throws DatabaseException {
+		Field tField;
+		try {
+			tField = metadata.field (field);
+		} catch (Exception ex) {
+			throw new DatabaseException (ex.getMessage (), ex);
+		}
+		if (!tField.isAnnotationPresent (OneToMany.class) && !tField.isAnnotationPresent (ManyToMany.class)) {
+			throw new DatabaseException ("field " + field + " isn't a One2Many nor a Many2Many relationship");
+		} 
+		
+		// if @OneToMany(targetEntity=ChildClass.class)
+	    // @JoinColumn(name="CUST_ID") // join column is in child table
+		if (tField.isAnnotationPresent (OneToMany.class)) {
+			OneToMany o2m = tField.getAnnotation (OneToMany.class);
+			Class<?> childClass = o2m.targetEntity ();
+			if (childClass == null) {
+				throw new DatabaseException ("field " + field + " One2Many mapping, targetEntity not present");
+			}
+			JoinColumn jc = tField.getAnnotation (JoinColumn.class);
+			if (jc == null) {
+				throw new DatabaseException ("field " + field + " One2Many mapping, JoinColumn annotation not present");
+			}
+			
+			// set joinColumn in query
+			query.where ().set (jc.name (), Operator.eq, getId ());
+			
+			return database.find (childClass.getAnnotation (Entity.class).name (), query, visitor);
+		}
+		
+		// it's a many to many
+		/*
+		@ManyToMany(targetEntity=ChildClass.class, cascade = { 
+	        CascadeType.PERSIST, 
+	        CascadeType.MERGE
+	    })
+	    @JoinTable(name = "parent_child",
+	        joinColumns = @JoinColumn(name = "parent_id"),
+	        inverseJoinColumns = @JoinColumn(name = "child_id")
+	    )
+		
+		
+		ManyToMany m2m = tField.getAnnotation (ManyToMany.class);
+		Class<?> childClass = m2m.targetEntity ();
+		if (childClass == null) {
+			throw new DatabaseException ("field " + field + " Many2Many mapping, targetEntity not present");
+		}
+		
+		JoinTable jt = tField.getAnnotation (JoinTable.class);
+		if (jt == null) {
+			throw new DatabaseException ("field " + field + " Many2Many mapping, JoinTable annotation not present");
+		}
+		
+		String jtName = jt.name ();
+		
+		JoinColumn [] jColumns = jt.joinColumns ();
+		if (jColumns == null || jColumns.length == 0) {
+			throw new DatabaseException ("field " + field + " Many2Many mapping, joinColumns not present");
+		}
+		
+		JoinColumn [] ijColumns = jt.inverseJoinColumns ();
+		if (ijColumns == null || ijColumns.length == 0) {
+			throw new DatabaseException ("field " + field + " Many2Many mapping, inverseJoinColumns not present");
+		}
+		
+		// id in ( select child_id from JoinTable where parent_id = ThisObjectId )
+		Query joinQuery = new JsonQuery (
+			(JsonObject)new JsonObject ()
+				.set (Construct.select.name (), new JsonArray ().set (null, ijColumns [0].name ()))
+				.set (Construct.where.name (), new JsonObject ())
+		);
+		
+		joinQuery.entity (jtName);
+		
+		query.where ().set (
+			Database.Fields.Id, Operator.in, 
+			joinQuery
+		);
+		
+		joinQuery.where ().set (jColumns [0].name (), Operator.eq, getId ());
+		
+		return database.find (childClass.getAnnotation (Entity.class).name (), query, visitor);
+	}
+	*/
+	
 	@Override
 	public void load (JsonObject data) throws DatabaseException {
 		if (data == null) {

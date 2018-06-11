@@ -87,7 +87,7 @@ public class SignupServiceSpi extends SimpleApiServiceSpi {
 				where = Json.getObject (query, Query.Construct.where.name ());
 			}
 			
-			query.set (Database.Fields.Entity, Json.getString (config, Config.UsersEntity, Defaults.Users));
+			query.set (Database.Fields.Entity, Json.getString (config, Config.UsersEntity, Defaults.User));
 
 			where.set (Json.getString (config, Config.UserProperty, Fields.Email), Json.getString (payload, Spec.User));
 			
@@ -103,7 +103,7 @@ public class SignupServiceSpi extends SimpleApiServiceSpi {
 		boolean requiresActivation = Json.getBoolean (config, Config.RequiresActivation, false);
 		
 		try {
-			account = db.create (Json.getString (config, Config.UsersEntity, Defaults.Users));
+			account = db.create (Json.getString (config, Config.UsersEntity, Defaults.User));
 			
 			account.load (payload);
 			

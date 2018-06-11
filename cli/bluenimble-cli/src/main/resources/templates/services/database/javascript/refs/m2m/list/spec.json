@@ -45,8 +45,7 @@
 	
 	"spec": {
 		"fields": {
-			"[[model]]": { },
-			"filter": { "required": "false", "type": "Object" }
+			"[[model]]": { }
 		}
 	},
 	

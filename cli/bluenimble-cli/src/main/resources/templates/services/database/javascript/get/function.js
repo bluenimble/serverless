@@ -27,8 +27,10 @@ return {
 		
 		// get a [[Model]] by id (':[[model]]')
 		
+		var [[model]]Id =  request.get ('[[model]]');
+
 		var [[model]] = api.database (request)
-						 .get ( '[[Models]]', request.get ('[[model]]') );
+						 .get ( '[[Model]]', [[model]]Id );
 		
 		if (![[model]]) {
 			throw new ApiServiceExecutionException (

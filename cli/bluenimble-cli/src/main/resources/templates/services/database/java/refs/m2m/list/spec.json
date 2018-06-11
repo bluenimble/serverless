@@ -41,12 +41,11 @@
 	
 	    "verb": "get",
 	"endpoint": "/[[models]]/:[[model]]/[[refs]]",
-		"name": "Get [[Model]] [[Refs]] by filter",
+		"name": "Get [[Model]] [[Refs]]",
 	
 	"spec": {
 		"fields": {
-			"[[model]]": { },
-			"filter": { "required": "false", "type": "Object" }
+			"[[model]]": { }
 		}
 	},
 	

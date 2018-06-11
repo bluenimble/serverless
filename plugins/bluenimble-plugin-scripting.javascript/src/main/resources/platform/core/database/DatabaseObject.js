@@ -47,7 +47,7 @@ var DatabaseObject = function (database, proxy) {
 	  Clear all data in this database object to be reused
 	  @returns {DatabaseObject} this database object
 	*/
-	this.clear 		= function (values) {
+	this.clear 		= function () {
 		this.proxy.clear ();
 		return this;
 	};
@@ -208,30 +208,6 @@ var DatabaseObject = function (database, proxy) {
 	*/
 	this.increment = function (field, value) {
 		return database.proxy.increment (this.proxy, field, value);
-	};
-
-	/**	
-	  Add this database object to a parent database object collection field
-	  @param {DatabaseObject} - parent database object
-	  @param {collection} - the field in the parent object representing a collection (Array)
-	  
-	  @returns {DatabaseObject} this database object
-	*/
-	this.appendTo = function (parent, collection) {
-		database.proxy.add (parent.proxy, collection, this.proxy);
-		return this;
-	};
-
-	/**	
-	  Remove this database object from a parent database object collection field
-	  @param {DatabaseObject} - parent database object
-	  @param {collection} - the field in the parent object representing a collection (Array)
-	  
-	  @returns {DatabaseObject} this database object
-	*/
-	this.removeFrom = function (parent, collection) {
-		database.proxy.remove (parent.proxy, collection, this.proxy);
-		return this;
 	};
 	
 };

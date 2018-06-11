@@ -266,15 +266,7 @@ if (Vars ['api.release.notes']) {
 }
 
 //generate datasources 
-var dsList = BuildUtils.generate (apiFolder);
-if (dsList) {
-	var runtime = Json.getObject (apiSpec, 'runtime');
-	if (!runtime) {
-		runtime = new JsonObject ();
-		apiSpec.set ('runtime', runtime);
-	}
-	runtime.set ('datasources', dsList);
-}
+BuildUtils.generate (apiFolder, Json.find (apiSpec, 'runtime', 'datasources'));
 
 // save api.json file
 Json.store (apiSpec, apiSpecFile);

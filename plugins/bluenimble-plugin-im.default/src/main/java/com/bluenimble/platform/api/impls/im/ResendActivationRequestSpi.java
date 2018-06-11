@@ -56,7 +56,7 @@ public class ResendActivationRequestSpi extends SimpleApiServiceSpi {
 		
 		DatabaseObject account = null;
 		try {
-			account = db.get (Json.getString (config, Config.UsersEntity, Defaults.Users), (String)consumer.get (ApiConsumer.Fields.Id));
+			account = db.get (Json.getString (config, Config.UsersEntity, Defaults.User), (String)consumer.get (ApiConsumer.Fields.Id));
 		} catch (Exception ex) {
 			throw new ApiServiceExecutionException (ex.getMessage (), ex);
 		}

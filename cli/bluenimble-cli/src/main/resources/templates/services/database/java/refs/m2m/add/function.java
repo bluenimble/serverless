@@ -1,5 +1,7 @@
 package [[package]].[[models]];
 
+import java.util.List;
+
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.api.ApiRequest;
@@ -57,7 +59,7 @@ public class Add[[Model]][[Ref]] extends AbstractApiServiceSpi {
 		DatabaseObject [[model]] = null;
 		try {
 			// lookup [[Model]] by :[[model]]
-			[[model]] = db.get ("[[Models]]", [[model]]Id);
+			[[model]] = db.get ("[[Model]]", [[model]]Id);
 		} catch (DatabaseException dbex) {
 			throw new ApiServiceExecutionException (dbex.getMessage (), dbex);
 		}	
@@ -79,21 +81,30 @@ public class Add[[Model]][[Ref]] extends AbstractApiServiceSpi {
 				api.message (request.getLang (), "NotFound", "[[ref]]", [[ref]]Id)
 			).status (ApiResponse.NOT_FOUND);
 		}
+		
+		@SuppressWarnings("unchecked")
+		List<DatabaseObject> [[refs]] = (List<DatabaseObject>)[[model]].get ("[[refs]]");
+		
+		if ([[refs]] == null) {
+			try {
+				[[refs]] = db.createList ();
+				[[model]].set ("[[refs]]", [[refs]]);
+			} catch (DatabaseException dbex) {
+				throw new ApiServiceExecutionException (dbex.getMessage (), dbex);
+			}
+		}
 
-		DatabaseObject [[model]][[Ref]] = null;
+		// add [[ref]] to [[Model]].[[refs]]
+		[[refs]].add ([[ref]]);
+		
 		try {
-			// add link
-			[[model]][[Ref]] = db.create ("[[Model]]_[[Refs]]");
-			[[model]][[Ref]].set ("[[model]]", [[model]]Id);
-			[[model]][[Ref]].set ("[[ref]]", [[ref]]Id);
-			
-			// save [[model]][[Ref]]
-			[[model]][[Ref]].save ();
+			// save [[model]]
+			[[model]].save ();
 		} catch (DatabaseException dbex) {
 			throw new ApiServiceExecutionException (dbex.getMessage (), dbex);
 		}
 		
-		return new JsonApiOutput ([[model]][[Ref]].toJson (null));
+		return new JsonApiOutput ([[model]].toJson (null));
 	}
 	
 }

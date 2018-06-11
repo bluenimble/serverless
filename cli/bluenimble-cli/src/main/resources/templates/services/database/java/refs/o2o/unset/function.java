@@ -55,7 +55,7 @@ public class Unset[[Model]][[Ref]] extends AbstractApiServiceSpi {
 		DatabaseObject [[model]] = null;
 		try {
 			// get [[Model]] by :[[model]]
-			[[model]] = db.get ("[[Models]]", [[model]]Id);
+			[[model]] = db.get ("[[Model]]", [[model]]Id);
 		} catch (DatabaseException dbex) {
 			throw new ApiServiceExecutionException (dbex.getMessage (), dbex);
 		}

@@ -37,6 +37,7 @@ public interface CliSpec {
 		String Apis 		= "apis";
 		String Services 	= "services";
 		String Functions 	= "functions";
+		String Models 		= "models";
 	}
 
 	interface Config {

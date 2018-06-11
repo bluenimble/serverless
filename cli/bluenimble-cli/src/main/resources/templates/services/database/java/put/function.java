@@ -59,7 +59,7 @@ public class Update[[Model]] extends AbstractApiServiceSpi {
 		// get [[Model]] by :[[model]]Id
 		DatabaseObject [[model]] = null;
 		try {
-			[[model]] = db.get ("[[Models]]", [[model]]Id);
+			[[model]] = db.get ("[[Model]]", [[model]]Id);
 		} catch (DatabaseException dbex) {
 			throw new ApiServiceExecutionException (dbex.getMessage (), dbex);
 		}
@@ -72,7 +72,7 @@ public class Update[[Model]] extends AbstractApiServiceSpi {
 		
 		try {
 			[[#eq ModelSpec.addDefaults 'true']]// set the current user as the updater of this [[Model]]
-			[[model]].set ('updatedBy', new JsonObject ().set (Database.Fields.Entity, "Users").set (Database.Fields.Id, consumer.get (ApiConsumer.Fields.Id));[[/eq]]
+			[[model]].set ('updatedBy', new JsonObject ().set (Database.Fields.Entity, "User").set (Database.Fields.Id, consumer.get (ApiConsumer.Fields.Id));[[/eq]]
 			
 			[[#if ModelSpec.refs]][[#each ModelSpec.refs]][[#neq multiple 'true']]
 			if (payload.containsKey ("[[@key]]")) {[[#eq exists 'true']]

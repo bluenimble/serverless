@@ -80,12 +80,15 @@ public class BuildUtils {
 		Types.put ("string", "String");
 		Types.put ("number", "java.math.BigDecimal");
 		Types.put ("int", "Integer");
+		Types.put ("integer", "Integer");
 		Types.put ("long", "Long");
 		Types.put ("short", "Short");
 		Types.put ("float", "Float");
 		Types.put ("double", "Double");
 		Types.put ("boolean", "Boolean");
 		Types.put ("timestamp", "java.sql.Timestamp");
+		Types.put ("json", "com.bluenimble.platform.json.JsonObject");
+		Types.put ("object", "com.bluenimble.platform.json.JsonObject");
 	}
 	
 	interface JavaSpec {
@@ -100,24 +103,11 @@ public class BuildUtils {
 		String Return	= "return";
 	}
 	
-	public static JsonArray generate (File apiFolder) throws Exception {
-		
-		JsonArray dsList = new JsonArray ();
+	public static void generate (File apiFolder, JsonArray datasources) throws Exception {
 		
 		File dataSourcesFolder = new File (apiFolder, Resources + Lang.SLASH + DataSources);
-		if (!dataSourcesFolder.exists () || !dataSourcesFolder.isDirectory ()) {
-			return null;
-		}
-		
-		File [] dataSources = dataSourcesFolder.listFiles (new FileFilter () {
-			@Override
-			public boolean accept (File file) {
-				return file.isDirectory ();
-			}
-		});
-		
-		if (dataSources == null || dataSources.length == 0) {
-			return null;
+		if (Json.isNullOrEmpty (datasources) || !dataSourcesFolder.exists () || !dataSourcesFolder.isDirectory ()) {
+			return;
 		}
 		
 		File javaSrc = new File (apiFolder, JavaSource);
@@ -128,9 +118,12 @@ public class BuildUtils {
 		Persistence persistence = new Persistence ();
 		
 		// generate sources
-		for (File dsf : dataSources) {
+		for (int i = 0; i < datasources.count (); i++) {
+			File dsf = new File (dataSourcesFolder, (String)datasources.get (i));
+			if (!dsf.exists ()) {
+				continue;
+			}
 			DataSource ds = new DataSource (dsf.getName ());
-			dsList.add (ds.getName ());
 			persistence.addDataSource (ds);
 			loadEntities (ds, dsf, dsf, javaSrc);
 		}
@@ -226,9 +219,6 @@ public class BuildUtils {
 		// clean sources and binaries
 		//FileUtils.delete (javaBin);
 		//FileUtils.delete (javaSrc);
-		
-		return dsList;
-
 	}
 
 	public static int mvn (Tool tool, File workingDir, String args) throws CommandExecutionException {

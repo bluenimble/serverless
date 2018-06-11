@@ -1,5 +1,7 @@
 package [[package]].[[models]];
 
+import java.util.List;
+
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.api.ApiRequest;
@@ -12,7 +14,6 @@ import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseObject;
 import com.bluenimble.platform.db.DatabaseException;
-import com.bluenimble.platform.db.query.impls.JsonQuery;
 
 import com.bluenimble.platform.api.impls.JsonApiOutput;
 
@@ -49,38 +50,50 @@ public class Remove[[Model]][[Ref]] extends AbstractApiServiceSpi {
 	public ApiOutput execute (Api api, ApiConsumer consumer, ApiRequest request,
 			ApiResponse response) throws ApiServiceExecutionException {
 		
-		// Delete [[model]][[Ref]] by :[[model]] and :[[ref]]
+		// Remove [[model]][[Ref]] by :[[model]] and :[[ref]]
 		
 		Object [[model]]Id 	= request.get ("[[model]]");
 		Object [[ref]]Id 	= request.get ("[[ref]]");
-		
-		// write to database
+
 		Database db = feature (api, Database.class, null, request);
 		
-		DatabaseObject [[model]][[Ref]] = null;
+		DatabaseObject [[model]] = null;
 		try {
-			// find link
-			[[model]][[Ref]] = db.findOne ("[[Model]]_[[Refs]]", new JsonQuery ( 
-				(JsonObject)new JsonObject ().set ("where", new JsonObject ().set ("[[model]]", [[model]]Id).set ("[[ref]]", [[ref]]Id))
-			));
+			[[model]] = db.get ("[[Model]]", [[model]]Id);
 		} catch (DatabaseException dbex) {
 			throw new ApiServiceExecutionException (dbex.getMessage (), dbex);
 		}
 		
-		if ([[model]][[Ref]] == null) {
+		if ([[model]] == null) {
 			throw new ApiServiceExecutionException (
-				api.message (request.getLang (), "LinkNotFound", "[[model]][[Ref]]", "[[model]]", [[model]]Id, "[[ref]]", [[ref]]Id)
+				api.message (request.getLang (), "NotFound", "[[model]]", [[model]]Id)
 			).status (ApiResponse.NOT_FOUND);
+		}	
+		
+		@SuppressWarnings("unchecked")
+		List<DatabaseObject> [[refs]] = (List<DatabaseObject>)[[model]].get ("[[refs]]");
+		if ([[refs]] == null || [[refs]].isEmpty ()) {
+			return new JsonApiOutput ((JsonObject)new JsonObject ().set ("removed", false));
 		}
 		
-		try {
-			// remove [[model]] - [[ref]] link
-			[[model]][[Ref]].delete ();
-		} catch (DatabaseException dbex) {
-			throw new ApiServiceExecutionException (dbex.getMessage (), dbex);
+		DatabaseObject found = null;
+		for (DatabaseObject [[ref]] : [[refs]]) {
+			if ([[ref]].getId ().equals ([[ref]]Id)) {
+				found = [[ref]];
+			}
 		}
 		
-		return new JsonApiOutput ((JsonObject)new JsonObject ().set ("removed", true));
+		if (found != null) {
+			[[refs]].remove (found);
+			try {
+				// save [[model]]
+				[[model]].save ();
+			} catch (DatabaseException dbex) {
+				throw new ApiServiceExecutionException (dbex.getMessage (), dbex);
+			}
+		}
+		
+		return new JsonApiOutput ((JsonObject)new JsonObject ().set ("removed", found != null));
 	}
 	
 }

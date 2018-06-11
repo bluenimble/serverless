@@ -1,5 +1,7 @@
 package [[package]].[[models]];
 
+import java.util.List;
+
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.api.ApiRequest;
@@ -10,10 +12,8 @@ import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
 import com.bluenimble.platform.api.security.ApiConsumer;
 
 import com.bluenimble.platform.db.Database;
-import com.bluenimble.platform.db.Database.Visitor;
 import com.bluenimble.platform.db.DatabaseObject;
 import com.bluenimble.platform.db.DatabaseException;
-import com.bluenimble.platform.db.query.impls.JsonQuery;
 
 import com.bluenimble.platform.api.impls.JsonApiOutput;
 
@@ -51,39 +51,38 @@ public class List[[Model]][[Refs]] extends AbstractApiServiceSpi {
 	public ApiOutput execute (Api api, ApiConsumer consumer, ApiRequest request,
 			ApiResponse response) throws ApiServiceExecutionException {
 		
-		// List [[Model]] [[Refs]] by :filter
+		// List [[Model]] [[Refs]]
 		
 		Object [[model]]Id 	= request.get ("[[model]]");
-		
-		// build query
 
-		JsonObject filter = (JsonObject)request.get ("filter");
-		
-		JsonObject where = (JsonObject)new JsonObject ().set ("[[model]]", [[model]]Id);
-		
-		if (filter != null) {
-			where.putAll (filter);
-		}
-
-		// run query
-		JsonObject result 		= new JsonObject ();
-		JsonArray [[refs]] 		= new JsonArray ();
-		result.set ("[[refs]]", [[refs]]);
-		
 		Database db = feature (api, Database.class, null, request);
 		
+		DatabaseObject [[model]] = null;
 		try {
-			db.find ("[[Model]]_[[Refs]]", new JsonQuery ((JsonObject)new JsonObject ().set ("where", where)), new Visitor () {
-				@Override
-				public boolean onRecord (DatabaseObject [[model]][[Ref]]) {
-					[[refs]].add (((DatabaseObject)[[model]][[Ref]].get ("[[ref]]")).toJson (null));
-					return false;
-				}
-				@Override
-				public boolean optimize () { return true; }
-			});
+			[[model]] = db.get ("[[Model]]", [[model]]Id);
 		} catch (DatabaseException dbex) {
 			throw new ApiServiceExecutionException (dbex.getMessage (), dbex);
+		}
+		
+		if ([[model]] == null) {
+			throw new ApiServiceExecutionException (
+				api.message (request.getLang (), "NotFound", "[[model]]", [[model]]Id)
+			).status (ApiResponse.NOT_FOUND);
+		}	
+		
+		// get link
+		JsonObject result 		= new JsonObject ();
+		JsonArray a[[Refs]] 		= new JsonArray ();
+		result.set ("[[refs]]", a[[Refs]]);
+		
+		@SuppressWarnings("unchecked")
+		List<DatabaseObject> [[refs]] = (List<DatabaseObject>)[[model]].get ("[[refs]]");
+		if ([[refs]] == null || [[refs]].isEmpty ()) {
+			return new JsonApiOutput (result);
+		}
+		
+		for (DatabaseObject [[ref]] : [[refs]]) {
+			a[[Refs]].add ([[ref]].toJson (null));
 		}
 		
 		return new JsonApiOutput (result);
