@@ -202,8 +202,11 @@ public class TemplateEngine {
 		Engine.registerHelper ("hasnt", new Helper<JsonObject>() {
 			public CharSequence apply (JsonObject target, Options options) throws IOException {
 				Object key = options.param (0);
-				if (target == null || key == null) {
-					return options.inverse ();
+				if (key == null) {
+					return options.fn ();
+				} 
+				if (target == null) {
+					return key != null ? options.fn () : options.inverse ();
 				} 
 		        return target.containsKey (key) ? options.inverse () : options.fn ();
 			}
