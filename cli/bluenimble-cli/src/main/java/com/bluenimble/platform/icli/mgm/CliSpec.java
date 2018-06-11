@@ -38,6 +38,7 @@ public interface CliSpec {
 		String Services 	= "services";
 		String Functions 	= "functions";
 		String Models 		= "models";
+		String Helpers 		= "helpers";
 	}
 
 	interface Config {

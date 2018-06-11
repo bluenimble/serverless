@@ -37,6 +37,8 @@ import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.cli.Tool;
 import com.bluenimble.platform.cli.command.CommandExecutionException;
+import com.bluenimble.platform.icli.mgm.BlueNimble;
+import com.bluenimble.platform.icli.mgm.CliSpec.Templates;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 
@@ -114,6 +116,27 @@ public class BuildUtils {
 		if (!javaSrc.exists ()) {
 			javaSrc.mkdirs ();
 		}
+		
+		// write helpers
+		File helpers = new File (BlueNimble.Home, Templates.class.getSimpleName ().toLowerCase () + Lang.SLASH + Templates.Models + Lang.SLASH + Templates.Helpers);
+		if (helpers.exists ()) {
+			File [] aHelpers = helpers.listFiles ();
+			if (aHelpers != null && aHelpers.length > 0) {
+				File helpersFolder  = new File (javaSrc, Templates.Helpers);
+				if (!helpersFolder.exists ()) {
+					helpersFolder.mkdirs ();
+					for (File h : aHelpers) {
+						CodeGenUtils.writeFile (
+							h,
+							new File (helpersFolder, h.getName ()), 
+							new JsonObject (), 
+							"java"
+						);
+					}
+				}
+			}
+		}
+		
 		
 		Persistence persistence = new Persistence ();
 		

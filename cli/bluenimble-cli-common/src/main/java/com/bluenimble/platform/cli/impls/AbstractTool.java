@@ -431,14 +431,14 @@ public abstract class AbstractTool implements Tool {
 					}
 				} else if (content instanceof ApiStreamSource) {
 					printer ().success (String.valueOf (IOUtils.toString (((ApiStreamSource)content).stream ())));
-					if (printer ().isOn ()) {
-						writeln (Lang.BLANK);
-					}
+					//if (printer ().isOn ()) {
+					//	writeln (Lang.BLANK);
+					//}
 				} else {
 					printer ().success (String.valueOf (content));
-					if (printer ().isOn ()) {
-						writeln (Lang.BLANK);
-					}
+					//if (printer ().isOn ()) {
+					//	writeln (Lang.BLANK);
+					//}
 				}
 			}
 		} else {

@@ -8,7 +8,7 @@
 	
 	# direct fields
 	[[#each ModelSpec.fields]]
-	[[#hasnt ModelSpec.refs @key]][[@key]] [[#eq type 'Object']]json @Convert(converter = JsonConverter.class)[[else]][[type]][[/eq]][[/hasnt]]
+	[[#hasnt ModelSpec.refs @key]][[@key]] [[#eq type 'Object']]json @Convert(converter = [[package]].helpers.JsonConverter.class)[[else]][[type]][[/eq]][[/hasnt]]
 	[[/each]]
 	
 	[[#if ModelSpec.refs]]# relationships

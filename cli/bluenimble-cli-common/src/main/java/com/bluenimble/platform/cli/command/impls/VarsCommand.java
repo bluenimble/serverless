@@ -53,7 +53,7 @@ public class VarsCommand extends AbstractCommand {
 				if (value instanceof JsonObject) {
 					result = value;
 				} else {
-					result = varName + Lang.EQUALS + value;
+					result = varName + " => " + value;
 				}
 			} else {
 				result = "variable " + varName + " not found";

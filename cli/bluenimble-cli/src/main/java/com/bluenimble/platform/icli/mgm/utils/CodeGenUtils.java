@@ -359,8 +359,8 @@ public class CodeGenUtils {
 		tool.printer ().node (1, "function file 'functions/" + underline (tool, (printFolder ? modelFunctionFolder.getName () + "/" : "" ) + (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + extension) + "'"); 
 		
 		if (ApiVerb.POST.name ().equalsIgnoreCase (verb) && !Json.isNullOrEmpty (serviceModelSpec)) {
-			// write model file
 			if (!Json.isNullOrEmpty (serviceModelSpec)) {
+				// write model file
 				writeFile (
 					new File (BlueNimble.Home, Templates.class.getSimpleName ().toLowerCase () + Lang.SLASH + Templates.Models + Lang.SLASH + EntityModel),
 					new File (specsFolder.getParentFile (), "datasources/default/" + Model + ".md"), 

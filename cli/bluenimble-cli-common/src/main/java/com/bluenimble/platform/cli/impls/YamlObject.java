@@ -15,7 +15,7 @@ public class YamlObject {
 	private JsonObject source;
 	
 	public YamlObject (Map<String, Object> o) {
-		source = new JsonObject (o, true);
+		source = new JsonObject (o, true).duplicate ();
 	}
 	
 	public void print (Tool tool, int initialIndent) throws IOException {

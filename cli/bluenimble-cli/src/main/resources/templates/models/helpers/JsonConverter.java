@@ -1,8 +1,9 @@
-package [[package]].converters;
+package helpers;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
+import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.json.JsonException;
 import com.bluenimble.platform.json.JsonObject;
 
@@ -25,6 +26,9 @@ public class JsonConverter implements AttributeConverter<JsonObject, String> {
 	 */
 	@Override
 	public JsonObject convertToEntityAttribute (String jsonString) {
+		if (Lang.isNullOrEmpty (jsonString) {
+			return null;
+		}
 		try {
 			return new JsonObject (jsonString);
 		} catch (JsonException ex) {
