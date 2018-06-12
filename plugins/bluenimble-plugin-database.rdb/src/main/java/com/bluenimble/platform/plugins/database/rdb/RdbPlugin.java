@@ -176,27 +176,31 @@ public class RdbPlugin extends AbstractPlugin {
 	private void createDataSources (ApiSpace space) throws PluginRegistryException {
 		
 		// create factories
-		JsonObject dbFeature = Json.getObject (space.getFeatures (), feature);
-		if (dbFeature == null || dbFeature.isEmpty ()) {
+		JsonObject allFeatures = Json.getObject (space.getFeatures (), feature);
+		if (allFeatures == null || allFeatures.isEmpty ()) {
 			return;
 		}
 		
-		Iterator<String> keys = dbFeature.keys ();
+		Iterator<String> keys = allFeatures.keys ();
 		while (keys.hasNext ()) {
 			String key = keys.next ();
-			JsonObject source = Json.getObject (dbFeature, key);
+			JsonObject feature = Json.getObject (allFeatures, key);
 			
-			if (!this.getNamespace ().equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
+			if (!this.getNamespace ().equalsIgnoreCase (Json.getString (feature, ApiSpace.Features.Provider))) {
 				continue;
 			}
 			
-			JsonObject spec = Json.getObject (source, ApiSpace.Features.Spec);
+			JsonObject spec = Json.getObject (feature, ApiSpace.Features.Spec);
 			
 			if (spec == null) {
 				continue;
 			}
 			
-			createDataSource (key, space, spec);
+			DataSource datasource = createDataSource (key, space, spec);
+			if (datasource != null) {
+				feature.set (ApiSpace.Spec.Installed, true);
+			}
+			
 		}
 	}
 	

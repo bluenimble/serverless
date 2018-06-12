@@ -173,6 +173,9 @@ public class SmtpMessengerPlugin extends AbstractPlugin {
 			);
 			
 			space.addRecyclable (sessionKey, new RecyclableMessenger (new SmtpMessenger (user, session)));
+		
+			feature.set (ApiSpace.Spec.Installed, true);
+			
 		}
 		
 	}

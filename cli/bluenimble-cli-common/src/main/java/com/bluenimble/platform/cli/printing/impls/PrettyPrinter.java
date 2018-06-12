@@ -73,7 +73,7 @@ public class PrettyPrinter extends AbstractPrinter {
 		try {
 			oLabel = Label.valueOf (label);
 		} catch (Exception ex) {
-			// Ignore
+			oLabel = Label.Custom;
 		}
 		if (oLabel != null) {
 			switch (oLabel) {
@@ -90,10 +90,13 @@ public class PrettyPrinter extends AbstractPrinter {
 					fontPrinter.print (label, Attribute.LIGHT, FColor.GREEN, BColor.NONE);
 					break;
 				case Note:
-					fontPrinter.print (label, Attribute.NONE, FColor.GREEN, BColor.NONE);
+					fontPrinter.print (label, Attribute.NONE, FColor.BLUE, BColor.NONE);
 					break;
 				case Warning:
 					fontPrinter.print (label, Attribute.LIGHT, FColor.YELLOW, BColor.NONE);
+					break;
+				case Custom:
+					fontPrinter.print (label, Attribute.LIGHT, FColor.GREEN, BColor.NONE);
 					break;
 				default:
 					break;
@@ -144,6 +147,9 @@ public class PrettyPrinter extends AbstractPrinter {
 			fprint (title);
 			tool.writeln (Lang.BLANK);
 			line (0, title.length () + 2);
+		}
+		if (text == null) {
+			return;
 		}
 		text (2, text, false, null, null, true);
 	}

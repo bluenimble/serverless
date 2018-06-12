@@ -50,7 +50,8 @@ public interface Printer extends Serializable {
 		Note,
 		Warning,
 		Error,
-		Important
+		Important,
+		Custom
 	}
 	
 	FontPrinter getFontPrinter ();

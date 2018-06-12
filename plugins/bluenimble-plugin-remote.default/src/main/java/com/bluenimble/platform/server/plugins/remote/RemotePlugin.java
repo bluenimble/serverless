@@ -135,37 +135,40 @@ public class RemotePlugin extends AbstractPlugin {
 		Iterator<String> keys = remoteFeatures.keys ();
 		while (keys.hasNext ()) {
 			String name = keys.next ();
-			JsonObject featureSpec = Json.getObject (remoteFeatures, name);
-			createFactory (space, name, featureSpec);
+			JsonObject feature = Json.getObject (remoteFeatures, name);
+			boolean installed = createFactory (space, name, feature);
+			if (installed) {
+				feature.set (ApiSpace.Spec.Installed, true);
+			}
 		}
 	}
 	
-	private void createFactory (ApiSpace space, String name, JsonObject featureSpec) {
-		if (!this.getNamespace ().equalsIgnoreCase (Json.getString (featureSpec, ApiSpace.Features.Provider))) {
-			return;
+	private boolean createFactory (ApiSpace space, String name, JsonObject feature) {
+		if (!this.getNamespace ().equalsIgnoreCase (Json.getString (feature, ApiSpace.Features.Provider))) {
+			return false;
 		}
 		
-		JsonObject spec = Json.getObject (featureSpec, ApiSpace.Features.Spec);
+		JsonObject spec = Json.getObject (feature, ApiSpace.Features.Spec);
 
 		String sProtocol = Json.getString (spec, Remote.Spec.Protocol);
 		
 		// only if binary. Http remote is accessible directly from the plugin feature
 		if (!Protocol.binary.name ().equalsIgnoreCase (sProtocol)) {
-			return;
+			return false;
 		}
 		
 		String factoryKey = createKey (name, space);
 		
 		Recyclable recyclable = space.getRecyclable (factoryKey);
 		if (recyclable != null) {
-			return;
+			return false;
 		}
 		
 		String 	host = Json.getString (spec, Remote.Spec.Host);
 		int 	port = Json.getInteger (spec, Remote.Spec.Port, 0);
 		
 		if (Lang.isNullOrEmpty (host) || port == 0) {
-			return;
+			return false;
 		}
 		
 		if (spec == null) {
@@ -178,6 +181,7 @@ public class RemotePlugin extends AbstractPlugin {
 				new NettyBinaryClientFactory (host, port, new PoolConfig (Json.getObject (spec, Remote.Spec.Pool)))
 			)
 		);
+		return true;
 	}
 	
 	private void deleteFactories (ApiSpace space) {

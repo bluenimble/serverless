@@ -32,6 +32,8 @@ import com.bluenimble.platform.cli.command.impls.DefaultCommandResult;
 import com.bluenimble.platform.icli.mgm.CliSpec;
 import com.bluenimble.platform.icli.mgm.BlueNimble;
 import com.bluenimble.platform.json.JsonObject;
+import com.diogonunes.jcdp.color.api.Ansi.Attribute;
+import com.diogonunes.jcdp.color.api.Ansi.FColor;
 
 public class WorkspaceCommand extends AbstractCommand {
 
@@ -68,9 +70,9 @@ public class WorkspaceCommand extends AbstractCommand {
 							String api = keys.next ();
 							String prefix = "    ";
 							if (api.equals (currentApi)) {
-								prefix = "(C) ";
+								prefix = tool.printer ().getFontPrinter ().generate ("(C) ", Attribute.LIGHT, FColor.YELLOW, null);
 							} 
-							sApis.append (prefix + api).append (Lang.ENDLN); 
+							sApis.append (prefix + api).append (Lang.ENDLN);
 						}
 						tool.printer ().content ("__PS__ GREEN:Apis", sApis.toString ());
 						sApis.setLength (0);

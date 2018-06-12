@@ -56,6 +56,7 @@ import com.bluenimble.platform.icli.mgm.commands.mgm.MacroSourceCommand;
 import com.bluenimble.platform.icli.mgm.commands.mgm.RemoteCommand;
 import com.bluenimble.platform.icli.mgm.commands.mgm.ScriptSourceCommand;
 import com.bluenimble.platform.icli.mgm.monitors.KeysMonitor;
+import com.bluenimble.platform.icli.mgm.utils.SpecUtils;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 
@@ -248,24 +249,15 @@ public class BlueNimble extends JLineTool {
 		}
 	}
 
-	private static void readApi (File api, JsonObject oApis) {
+	private static void readApi (File api, JsonObject oApis) throws Exception {
 		String namespace = loadApi (api);
 		if (namespace != null) {
 			oApis.put (namespace, api.getName ());
 		}
 	}
 	
-	public static String loadApi (File api) {
-		File descriptor = new File (api, "api.json");
-		if (!descriptor.exists () || !descriptor.isFile ()) {
-			return null;
-		}
-		JsonObject oDescriptor = null;
-		try {
-			oDescriptor = Json.load (descriptor);
-		} catch (Exception e) {
-			// igmore
-		}
+	public static String loadApi (File api) throws Exception {
+		JsonObject oDescriptor = SpecUtils.read (api);
 		if (oDescriptor == null) {
 			return null;
 		}

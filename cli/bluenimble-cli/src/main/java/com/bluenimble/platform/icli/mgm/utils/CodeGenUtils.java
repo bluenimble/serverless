@@ -230,6 +230,10 @@ public class CodeGenUtils {
 			model = model.substring (indexOfSlash + 1);
 		}
 		
+		if (Lang.isNullOrEmpty (model)) {
+			model = model.substring (0, 1).toLowerCase () + model.substring (1);
+		}
+		
 		@SuppressWarnings("unchecked")
 		Map<String, Object> vars = (Map<String, Object>)tool.getContext (Tool.ROOT_CTX).get (ToolContext.VARS);
 

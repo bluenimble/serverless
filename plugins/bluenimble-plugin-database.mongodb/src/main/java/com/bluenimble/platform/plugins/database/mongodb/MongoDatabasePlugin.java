@@ -159,27 +159,32 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 	private void createClients (ApiSpace space) {
 		
 		// create factories
-		JsonObject dbFeature = Json.getObject (space.getFeatures (), feature);
-		if (dbFeature == null || dbFeature.isEmpty ()) {
+		JsonObject allFeatures = Json.getObject (space.getFeatures (), feature);
+		if (allFeatures == null || allFeatures.isEmpty ()) {
 			return;
 		}
 		
-		Iterator<String> keys = dbFeature.keys ();
+		Iterator<String> keys = allFeatures.keys ();
 		while (keys.hasNext ()) {
 			String key = keys.next ();
-			JsonObject source = Json.getObject (dbFeature, key);
 			
-			if (!MongoDatabasePlugin.this.getNamespace ().equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
+			JsonObject feature = Json.getObject (allFeatures, key);
+			
+			if (!MongoDatabasePlugin.this.getNamespace ().equalsIgnoreCase (Json.getString (feature, ApiSpace.Features.Provider))) {
 				continue;
 			}
 			
-			JsonObject spec = Json.getObject (source, ApiSpace.Features.Spec);
+			JsonObject spec = Json.getObject (feature, ApiSpace.Features.Spec);
 			
 			if (spec == null) {
 				continue;
 			}
 			
-			createClient (key, space, spec);
+			MongoClient client = createClient (key, space, spec);
+			if (client != null) {
+				feature.set (ApiSpace.Spec.Installed, true);
+			}
+			
 		}
 	}
 	

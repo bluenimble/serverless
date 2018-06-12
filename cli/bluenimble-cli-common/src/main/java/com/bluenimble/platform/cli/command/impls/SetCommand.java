@@ -81,7 +81,7 @@ public class SetCommand extends AbstractCommand {
 			throw new CommandExecutionException (e.getMessage (), e);
 		}
 		
-		tool.printer ().content (varName, String.valueOf (vars.get (varName)));
+		tool.printer ().content ("__PS__ GREEN:" + varName, String.valueOf (vars.get (varName)));
 		
 		return null;
 	}

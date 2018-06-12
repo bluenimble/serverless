@@ -164,6 +164,8 @@ public class MemCachedPlugin extends AbstractPlugin {
 				
 				space.addRecyclable (sessionKey, new RecyclableCacheClient (client));
 				
+				feature.set (ApiSpace.Spec.Installed, true);
+				
 			} catch (IOException e) {
 				throw new PluginRegistryException (e.getMessage (), e);
 			}

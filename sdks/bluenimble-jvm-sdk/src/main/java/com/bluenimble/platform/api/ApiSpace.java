@@ -57,6 +57,7 @@ public interface ApiSpace extends Traceable, Manageable {
 		String Description 		= "description";
 		
 		String Features 		= "features";
+		String Installed 		= "installed";
 		String Keys 			= "keys";
 		
 		String Tracer			= "tracer";

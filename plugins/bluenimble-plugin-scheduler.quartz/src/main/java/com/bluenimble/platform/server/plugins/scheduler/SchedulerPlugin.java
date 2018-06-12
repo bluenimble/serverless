@@ -136,28 +136,28 @@ public class SchedulerPlugin extends AbstractPlugin {
 		Iterator<String> keys = schedulerFeature.keys ();
 		while (keys.hasNext ()) {
 			String key = keys.next ();
-			JsonObject source = Json.getObject (schedulerFeature, key);
+			JsonObject feature = Json.getObject (schedulerFeature, key);
 			
-			if (!this.getNamespace ().equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
+			if (!this.getNamespace ().equalsIgnoreCase (Json.getString (feature, ApiSpace.Features.Provider))) {
 				continue;
 			}
 			
-			JsonObject spec = Json.getObject (source, ApiSpace.Features.Spec);
+			JsonObject spec = Json.getObject (feature, ApiSpace.Features.Spec);
 			if (spec == null) {
 				continue;
 			}
 			
-			String expression = Json.getString (source, Spec.Expression);
+			String expression = Json.getString (feature, Spec.Expression);
 			if (Lang.isNullOrEmpty (expression)) {
 				continue;
 			}
 			
-			String api = Json.getString (source, Spec.Api);
+			String api = Json.getString (feature, Spec.Api);
 			if (Lang.isNullOrEmpty (api)) {
 				continue;
 			}
 			
-			String service = Json.getString (source, Spec.Service);
+			String service = Json.getString (feature, Spec.Service);
 			if (Lang.isNullOrEmpty (service)) {
 				continue;
 			}
@@ -182,9 +182,9 @@ public class SchedulerPlugin extends AbstractPlugin {
 			
 			JobDetail job = builder.build ();
 			
-			String timeZone = Json.getString (source, Spec.TimeZone);
+			String timeZone = Json.getString (feature, Spec.TimeZone);
 			
-			CronScheduleBuilder csb = cronSchedule (Json.getString (source, Spec.Expression));
+			CronScheduleBuilder csb = cronSchedule (Json.getString (feature, Spec.Expression));
 			if (!Lang.isNullOrEmpty (timeZone)) {
 				csb.inTimeZone (TimeZone.getTimeZone (timeZone));
 			}
@@ -199,6 +199,8 @@ public class SchedulerPlugin extends AbstractPlugin {
 			} catch (SchedulerException e) {
 				throw new PluginRegistryException (e.getMessage (), e);
 			}
+			
+			feature.set (ApiSpace.Spec.Installed, true);
 			
 		}
 	}

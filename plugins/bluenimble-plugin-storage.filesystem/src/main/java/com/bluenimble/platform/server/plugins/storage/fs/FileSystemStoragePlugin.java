@@ -140,13 +140,13 @@ public class FileSystemStoragePlugin extends AbstractPlugin {
 		Iterator<String> keys = storageFeature.keys ();
 		while (keys.hasNext ()) {
 			String key = keys.next ();
-			JsonObject source = Json.getObject (storageFeature, key);
+			JsonObject feature = Json.getObject (storageFeature, key);
 			
-			if (!this.getNamespace ().equalsIgnoreCase (Json.getString (source, ApiSpace.Features.Provider))) {
+			if (!this.getNamespace ().equalsIgnoreCase (Json.getString (feature, ApiSpace.Features.Provider))) {
 				continue;
 			}
 			
-			JsonObject spec = Json.getObject (source, ApiSpace.Features.Spec);
+			JsonObject spec = Json.getObject (feature, ApiSpace.Features.Spec);
 			if (spec == null) {
 				continue;
 			}
@@ -162,6 +162,9 @@ public class FileSystemStoragePlugin extends AbstractPlugin {
 			}
 			
 			mounts.put (createStorageKey  (key, space), mount);
+			
+			feature.set (ApiSpace.Spec.Installed, true);
+			
 		}
 	}
 	
