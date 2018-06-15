@@ -175,11 +175,14 @@ public class OrientDatabasePlugin extends AbstractPlugin {
 			String name = r.substring ((feature + Lang.DOT).length ());
 			if (dbFeature == null || dbFeature.containsKey (name)) {
 				// it's deleted
-				RecyclablePool rf = (RecyclablePool)space.getRecyclable (r);
+				Recyclable recyclable = space.getRecyclable (r);
+				if (!(recyclable instanceof RecyclablePool)) {
+					continue;
+				}
 				// remove from recyclables
 				space.removeRecyclable (r);
 				// recycle
-				rf.recycle ();
+				recyclable.recycle ();
 			}
 		}
 		

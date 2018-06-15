@@ -49,7 +49,15 @@ public interface Remote extends Recyclable {
 		String Data 		= "data";
 		String Headers 		= "headers";
 		
-		String TrustAll 	= "trustAll";
+		String Ssl			= "ssl";
+			String TrustAll 	= "trustAll";
+			String TrustStore 	= "trustStore";
+			String KeyStore 	= "keyStore";
+				String StoreType 		= "type";
+				String StoreAlgorithm 	= "algorithm";
+				String StoreStream 		= "stream";
+				String StorePassword 	= "password";
+				String KeyParaphrase 	= "paraphrase";
 		
 		String UseStreaming	= "useStreaming";	
 		String Serializer	= "serializer";

@@ -186,11 +186,14 @@ public class MemCachedPlugin extends AbstractPlugin {
 			String name = r.substring ((feature + Lang.DOT).length ());
 			if (cahceFeature == null || cahceFeature.containsKey (name)) {
 				// it's deleted
-				RecyclableCacheClient rm = (RecyclableCacheClient)space.getRecyclable (r);
+				Recyclable recyclable = space.getRecyclable (r);
+				if (!(recyclable instanceof RecyclableCacheClient)) {
+					continue;
+				}
 				// remove from recyclables
 				space.removeRecyclable (r);
 				// recycle
-				rm.recycle ();
+				recyclable.recycle ();
 			}
 		}
 	}

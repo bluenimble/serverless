@@ -16,16 +16,14 @@
  */
 package com.bluenimble.platform.server.plugins.indexer.elasticsearch;
 
-import java.util.Base64;
-
 import com.bluenimble.platform.Feature;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
-import com.bluenimble.platform.PackageClassLoader;
+import com.bluenimble.platform.api.ApiContext;
 import com.bluenimble.platform.api.ApiSpace;
+import com.bluenimble.platform.api.impls.DefaultApiContext;
 import com.bluenimble.platform.indexer.Indexer;
 import com.bluenimble.platform.indexer.impls.ElasticSearchIndexer;
-import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.Plugin;
 import com.bluenimble.platform.plugins.impls.AbstractPlugin;
 import com.bluenimble.platform.remote.Remote;
@@ -35,24 +33,14 @@ import com.bluenimble.platform.server.ServerFeature;
 public class ElasticSearchPlugin extends AbstractPlugin {
 
 	private static final long serialVersionUID = 3203657740159783537L;
-
-	private interface Spec {
-		String 	RemotePlugin 	= "plugin";
-		String 	RemoteObject 	= "object";
-	}
 	
-	private interface SpaceSpec {
-		String 	Host 		= "host";
-		String 	Index 		= "index";
-		
-		String 	Auth 		= "auth";
-			String 	User 		= "user";
-			String 	Password 	= "password";
+	private static final ApiContext Context = new DefaultApiContext ();
+	
+	interface Spec {
+		String Remote = "remote";
 	}
 	
 	private String feature;
-	
-	private JsonObject remote;
 	
 	@Override
 	public void init (final ApiServer server) throws Exception {
@@ -80,41 +68,14 @@ public class ElasticSearchPlugin extends AbstractPlugin {
 			
 			@Override
 			public Object get (ApiSpace space, String name) {
+				String remoteFeature = (String)Json.find (space.getFeatures (), feature, name, ApiSpace.Features.Spec, Spec.Remote);
 				
-				String remotePluginName = Json.getString (remote, Spec.RemotePlugin);
-				String remoteObjectId 	= Json.getString (remote, Spec.RemoteObject);
-				
-				if (Lang.isNullOrEmpty (remotePluginName) || Lang.isNullOrEmpty (remoteObjectId)) {
-					return null;
+				Remote remote = null;
+				if (!Lang.isNullOrEmpty (remoteFeature)) {
+					remote = space.feature (Remote.class, remoteFeature, Context);
 				}
 				
-				Plugin pRemote = server.getPluginsRegistry ().lockup (Json.getString (remote, Spec.RemotePlugin));
-				if (pRemote == null) {
-					return null;
-				}
-				
-				PackageClassLoader pcl = (PackageClassLoader)pRemote.getClass ().getClassLoader ();
-				
-				Remote iRemote = (Remote)pcl.lookupObject (Json.getString (remote, Spec.RemoteObject));
-				if (iRemote == null) {
-					return null;
-				}
-				
-				// build basic auth and url 
-				
-				String token = buildAuthToken (space, name);
-				
-				if (Lang.isNullOrEmpty (token)) {
-					return null;
-				}
-				
-				String url = buildUrl (space, name);
-
-				if (Lang.isNullOrEmpty (url)) {
-					return null;
-				}
-				
-				return new ElasticSearchIndexer (iRemote, url, token, tracer ());
+				return new ElasticSearchIndexer (remote, tracer);
 			}
 			
 			@Override
@@ -129,6 +90,7 @@ public class ElasticSearchPlugin extends AbstractPlugin {
 		});
 	}
 
+	/*
 	public JsonObject getRemote () {
 		return remote;
 	}
@@ -196,4 +158,5 @@ public class ElasticSearchPlugin extends AbstractPlugin {
 		
 		return Json.getObject (indexerFeature, ApiSpace.Features.Spec);
 	}
+	*/
 }

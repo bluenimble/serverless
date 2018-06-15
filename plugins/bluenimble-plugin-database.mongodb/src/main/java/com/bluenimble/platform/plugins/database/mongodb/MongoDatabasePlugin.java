@@ -198,13 +198,17 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 				continue;
 			}
 			String name = r.substring ((feature + Lang.DOT).length ());
-			if (dbFeature == null || dbFeature.containsKey (name)) {
+			
+			if (dbFeature == null || !dbFeature.containsKey (name)) {
 				// it's deleted
-				RecyclableClient rf = (RecyclableClient)space.getRecyclable (r);
+				Recyclable recyclable = space.getRecyclable (r);
+				if (!(recyclable instanceof RecyclableClient)) {
+					continue;
+				}
 				// remove from recyclables
 				space.removeRecyclable (r);
 				// recycle
-				rf.recycle ();
+				recyclable.recycle ();
 			}
 		}
 		

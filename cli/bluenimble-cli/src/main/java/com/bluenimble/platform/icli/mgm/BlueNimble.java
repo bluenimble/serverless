@@ -91,6 +91,9 @@ public class BlueNimble extends JLineTool {
 		String UserMeta			= "user.meta";
 			String UserName		= "name";
 			String UserPackage	= "package";
+			
+		String GenerateSpecComments 	
+								= "codegen.spec.comments";
 	}
 	
 	public interface SpecLangs {
@@ -257,7 +260,13 @@ public class BlueNimble extends JLineTool {
 	}
 	
 	public static String loadApi (File api) throws Exception {
-		JsonObject oDescriptor = SpecUtils.read (api);
+		JsonObject oDescriptor = null;
+		try {
+			oDescriptor = SpecUtils.read (api);
+		} catch (Exception ex) {
+			System.out.println ("Can not load api from " + api.getAbsolutePath () + " due to " + ex.getMessage ());
+			return null;
+		}
 		if (oDescriptor == null) {
 			return null;
 		}
@@ -573,13 +582,17 @@ public class BlueNimble extends JLineTool {
 			}
 		}
 		if (!oVars.containsKey (DefaultVars.SslTrust)) {
-			oVars.set (DefaultVars.SslTrust, "true");
+			oVars.set (DefaultVars.SslTrust, Lang.TRUE);
 		}
 		if (!oVars.containsKey (DefaultVars.ApiSecurityEnabled)) {
-			oVars.set (DefaultVars.ApiSecurityEnabled, "true");
+			oVars.set (DefaultVars.ApiSecurityEnabled, Lang.TRUE);
 		}
 		if (!oVars.containsKey (DefaultVars.RemoteHeadersAccept)) {
 			oVars.set (DefaultVars.RemoteHeadersAccept, ApiContentTypes.Json);
+		}
+		
+		if (!oVars.containsKey (DefaultVars.GenerateSpecComments)) {
+			oVars.set (DefaultVars.GenerateSpecComments, Lang.TRUE);
 		}
 		
 		@SuppressWarnings("unchecked")

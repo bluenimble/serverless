@@ -47,19 +47,21 @@ public class ElasticSearchIndexer implements Indexer {
 		}
 	}
 	
-	private 			String url;
-	private transient 	String authToken;
 	private 			Remote remote;
 	private 			Tracer tracer;
 
-	public ElasticSearchIndexer (Remote remote, String url, String authToken, Tracer tracer) {
+	public ElasticSearchIndexer (Remote remote, Tracer tracer) {
 		this.remote 	= remote;
-		this.url 		= url;
-		this.authToken 	= authToken;
+		this.tracer 	= tracer;
 	}
 	
 	@Override
 	public boolean exists (String entity) throws IndexerException {
+		
+		if (remote == null) {
+			throw new IndexerException ("No Remoting feature attached to this indexer");
+		}
+		
 		if (Lang.isNullOrEmpty (entity)) {
 			throw new IndexerException ("Entity cannot be null nor empty.");
 		}
@@ -69,10 +71,7 @@ public class ElasticSearchIndexer implements Indexer {
 		Error error = new Error ();
 		
 		remote.head (
-			(JsonObject)new JsonObject ().set (Remote.Spec.Endpoint, url + Internal.Elk.Mapping + Lang.SLASH + entity)
-				.set (Remote.Spec.Headers, new JsonObject ()
-					.set (HttpHeaders.AUTHORIZATION, authToken)
-				),
+			(JsonObject)new JsonObject ().set (Remote.Spec.Path, Internal.Elk.Mapping + Lang.SLASH + entity),
 			new Remote.Callback () {
 				@Override
 				public void onStatus (int status, boolean chunked, Map<String, Object> headers) {
@@ -143,6 +142,10 @@ public class ElasticSearchIndexer implements Indexer {
 	
 	@Override
 	public JsonObject create (String entity, JsonObject definition) throws IndexerException {
+		if (remote == null) {
+			throw new IndexerException ("No Remoting feature attached to this indexer");
+		}
+		
 		if (Lang.isNullOrEmpty (entity)) {
 			throw new IndexerException ("Entity cannot be null nor empty.");
 		}
@@ -153,10 +156,9 @@ public class ElasticSearchIndexer implements Indexer {
 		Error error = new Error ();
 		
 		JsonObject oEntity = (JsonObject)new JsonObject ()
-			.set (Remote.Spec.Endpoint, url + entity + Lang.SLASH + Internal.Elk.Mapping)
+			.set (Remote.Spec.Path, entity + Lang.SLASH + Internal.Elk.Mapping)
 			.set (Remote.Spec.Headers, 
 				new JsonObject ()
-					.set (HttpHeaders.AUTHORIZATION, authToken)
 					.set (HttpHeaders.CONTENT_TYPE, ContentTypes.Json)
 			).set (Remote.Spec.Serializer, Serializer.Name.json);
 		
@@ -195,6 +197,10 @@ public class ElasticSearchIndexer implements Indexer {
 	
 	@Override
 	public JsonObject clear (String entity) throws IndexerException {
+		if (remote == null) {
+			throw new IndexerException ("No Remoting feature attached to this indexer");
+		}
+		
 		if (Lang.isNullOrEmpty (entity)) {
 			throw new IndexerException ("Entity cannot be null nor empty.");
 		}
@@ -206,10 +212,9 @@ public class ElasticSearchIndexer implements Indexer {
 		
 		remote.post (
 			(JsonObject)new JsonObject ()
-				.set (Remote.Spec.Endpoint, url + entity + Lang.SLASH + Internal.Elk.DeleteQ)
+				.set (Remote.Spec.Path, entity + Lang.SLASH + Internal.Elk.DeleteQ)
 				.set (Remote.Spec.Headers, 
 					new JsonObject ()
-						.set (HttpHeaders.AUTHORIZATION, authToken)
 						.set (HttpHeaders.CONTENT_TYPE, ContentTypes.Json)
 				).set (Remote.Spec.Data, 
 					new JsonObject ()
@@ -242,6 +247,10 @@ public class ElasticSearchIndexer implements Indexer {
 	
 	@Override
 	public JsonObject describe (String entity) throws IndexerException {
+		if (remote == null) {
+			throw new IndexerException ("No Remoting feature attached to this indexer");
+		}
+		
 		if (Lang.isNullOrEmpty (entity)) {
 			throw new IndexerException ("Entity cannot be null nor empty.");
 		}
@@ -253,10 +262,9 @@ public class ElasticSearchIndexer implements Indexer {
 		
 		remote.get (
 			(JsonObject)new JsonObject ()
-			.set (Remote.Spec.Endpoint, url + Internal.Elk.Mapping + Lang.SLASH + entity)
+			.set (Remote.Spec.Path, Internal.Elk.Mapping + Lang.SLASH + entity)
 			.set (Remote.Spec.Headers, 
 				new JsonObject ()
-					.set (HttpHeaders.AUTHORIZATION, authToken)
 					.set (HttpHeaders.CONTENT_TYPE, ContentTypes.Json)
 			).set (Remote.Spec.Serializer, Serializer.Name.json), 
 			new Remote.Callback () {
@@ -288,6 +296,10 @@ public class ElasticSearchIndexer implements Indexer {
 	
 	@Override
 	public JsonObject put (String entity, JsonObject doc) throws IndexerException {
+		if (remote == null) {
+			throw new IndexerException ("No Remoting feature attached to this indexer");
+		}
+		
 		if (Lang.isNullOrEmpty (entity)) {
 			throw new IndexerException ("Entity cannot be null nor empty.");
 		}
@@ -312,10 +324,9 @@ public class ElasticSearchIndexer implements Indexer {
 		
 		remote.put (
 			(JsonObject)new JsonObject ()
-				.set (Remote.Spec.Endpoint, url + entity + Lang.SLASH + id)
+				.set (Remote.Spec.Path, entity + Lang.SLASH + id)
 				.set (Remote.Spec.Headers, 
 					new JsonObject ()
-						.set (HttpHeaders.AUTHORIZATION, authToken)
 						.set (HttpHeaders.CONTENT_TYPE, ContentTypes.Json)
 				).set (Remote.Spec.Data, doc)
 				.set (Remote.Spec.Serializer, Serializer.Name.json), 
@@ -348,6 +359,10 @@ public class ElasticSearchIndexer implements Indexer {
 	
 	@Override
 	public JsonObject get (String entity, String id) throws IndexerException {
+		if (remote == null) {
+			throw new IndexerException ("No Remoting feature attached to this indexer");
+		}
+		
 		if (Lang.isNullOrEmpty (id)) {
 			throw new IndexerException ("Document Id cannot be null.");
 		}
@@ -359,8 +374,7 @@ public class ElasticSearchIndexer implements Indexer {
 		
 		remote.get (
 			(JsonObject)new JsonObject ()
-				.set (Remote.Spec.Endpoint, url + entity + Lang.SLASH + id)
-				.set (Remote.Spec.Headers, new JsonObject ().set (HttpHeaders.AUTHORIZATION, authToken))
+				.set (Remote.Spec.Path, entity + Lang.SLASH + id)
 				.set (Remote.Spec.Serializer, Serializer.Name.json), 
 			new Remote.Callback () {
 				@Override
@@ -391,6 +405,10 @@ public class ElasticSearchIndexer implements Indexer {
 	
 	@Override
 	public JsonObject update (String entity, JsonObject doc, boolean partial) throws IndexerException {
+		if (remote == null) {
+			throw new IndexerException ("No Remoting feature attached to this indexer");
+		}
+		
 		if (doc == null || doc.isEmpty ()) {
 			throw new IndexerException ("Document cannot be null nor empty.");
 		}
@@ -419,10 +437,9 @@ public class ElasticSearchIndexer implements Indexer {
 		
 		remote.post (
 			(JsonObject)new JsonObject ()
-				.set (Remote.Spec.Endpoint, url + entity + Lang.SLASH + id + Lang.SLASH + Internal.Elk.Update)
+				.set (Remote.Spec.Path, entity + Lang.SLASH + id + Lang.SLASH + Internal.Elk.Update)
 				.set (Remote.Spec.Headers, 
 					new JsonObject ()
-						.set (HttpHeaders.AUTHORIZATION, authToken)
 						.set (HttpHeaders.CONTENT_TYPE, ContentTypes.Json)
 				).set (Remote.Spec.Data, new JsonObject ().set (Internal.Elk.Doc, doc))
 				.set (Remote.Spec.Serializer, Serializer.Name.json), 
@@ -455,6 +472,10 @@ public class ElasticSearchIndexer implements Indexer {
 	
 	@Override
 	public JsonObject delete (String entity, String id) throws IndexerException {
+		if (remote == null) {
+			throw new IndexerException ("No Remoting feature attached to this indexer");
+		}
+		
 		if (Lang.isNullOrEmpty (id)) {
 			throw new IndexerException ("Document Id cannot be null nor empty.");
 		}
@@ -466,8 +487,7 @@ public class ElasticSearchIndexer implements Indexer {
 		
 		remote.delete (
 			(JsonObject)new JsonObject ()
-				.set (Remote.Spec.Endpoint, url + entity + Lang.SLASH + id)
-				.set (Remote.Spec.Headers, new JsonObject ().set (HttpHeaders.AUTHORIZATION, authToken))
+				.set (Remote.Spec.Path, entity + Lang.SLASH + id)
 				.set (Remote.Spec.Serializer, Serializer.Name.json), 
 			new Remote.Callback () {
 				@Override
@@ -498,6 +518,10 @@ public class ElasticSearchIndexer implements Indexer {
 
 	@Override
 	public JsonObject search (JsonObject query, String [] entities) throws IndexerException {
+		if (remote == null) {
+			throw new IndexerException ("No Remoting feature attached to this indexer");
+		}
+		
 		String types = Lang.BLANK;
 		if (entities == null || entities.length == 0) {
 			types = Lang.join (entities, Lang.COMMA);
@@ -510,10 +534,9 @@ public class ElasticSearchIndexer implements Indexer {
 		
 		remote.get (
 			(JsonObject)new JsonObject ()
-				.set (Remote.Spec.Endpoint, url + types + (types.equals (Lang.BLANK) ? Lang.BLANK : Lang.SLASH) + Internal.Elk.Search)
+				.set (Remote.Spec.Path, types + (types.equals (Lang.BLANK) ? Lang.BLANK : Lang.SLASH) + Internal.Elk.Search)
 				.set (Remote.Spec.Headers, 
 					new JsonObject ()
-						.set (HttpHeaders.AUTHORIZATION, authToken)
 						.set (HttpHeaders.CONTENT_TYPE, ContentTypes.Json)
 				).set (Remote.Spec.Data, new JsonObject ().set (Internal.Elk.Source, Lang.encode (query.toString ())))
 				.set (Remote.Spec.Serializer, Serializer.Name.json), 

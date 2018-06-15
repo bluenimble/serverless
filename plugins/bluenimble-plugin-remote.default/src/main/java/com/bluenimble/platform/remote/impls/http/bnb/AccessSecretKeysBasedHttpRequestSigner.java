@@ -57,10 +57,6 @@ public class AccessSecretKeysBasedHttpRequestSigner implements Serializable {
 	private static final String DefaultSignatureAlgorithm 	= DataSigner.DEFAULT_SIGN_ALGORITHM;
 	private static final String DefaultHashingAlgorithm 	= DataSigner.DEFAULT_HASH_ALGORITHM;
 
-	//private static final String DefaultSignatureName 		= "Signature";
-	//private static final PlaceHolder 		
-	//							DefaultPlaceHolder 			= PlaceHolder.header;
-
 	public Request sign (Request request, List<RequestParameter> params, JsonObject spec) throws Exception {
 		
 		JsonObject replace = Json.getObject (spec, Remote.Spec.SignReplace);
@@ -151,10 +147,6 @@ public class AccessSecretKeysBasedHttpRequestSigner implements Serializable {
 		String toSign = sb.toString ();
 		sb.setLength (0);
 		sb = null;
-		
-		System.out.println ("====SING====");
-		System.out.println (toSign);
-		System.out.println ("====SING====");
 		
         byte [] bsecret = (Lang.isNullOrEmpty (secretKey) ? null : secretKey.getBytes (DataSigner.UTF8));
         

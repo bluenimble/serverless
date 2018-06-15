@@ -192,11 +192,14 @@ public class SmtpMessengerPlugin extends AbstractPlugin {
 			String name = r.substring ((feature + Lang.DOT).length ());
 			if (msgFeature == null || msgFeature.containsKey (name)) {
 				// it's deleted
-				RecyclableMessenger rm = (RecyclableMessenger)space.getRecyclable (r);
+				Recyclable recyclable = space.getRecyclable (r);
+				if (!(recyclable instanceof RecyclableMessenger)) {
+					continue;
+				}
 				// remove from recyclables
 				space.removeRecyclable (r);
 				// recycle
-				rm.recycle ();
+				recyclable.recycle ();
 			}
 		}
 	}

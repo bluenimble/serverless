@@ -14,13 +14,15 @@ import com.bluenimble.platform.Lang;
 
 public class SslUtils {
 	
-	private static final String TLS = "TLS";
+	public static final String TLS 		= "TLS";
+	public static final String PKCS12 	= "PKCS12";
 
 	public interface StoreSource {
 		String		type 		();
 		String		algorithm 	();
 		InputStream stream 		();
 		char [] 	password 	();
+		char [] 	paraphrase 	();
 		void 		close 		();
 	}
 
@@ -39,14 +41,14 @@ public class SslUtils {
 					kalg = KeyManagerFactory.getDefaultAlgorithm ();
 				}
 				KeyManagerFactory kmf = KeyManagerFactory.getInstance (kalg);
-				kmf.init (ks, keystore.password ());
+				kmf.init (ks, keystore.paraphrase ());
 				
 				kms = kmf.getKeyManagers ();
 			}
 			
 			// load truststore
 			if (truststore != null) {
-				KeyStore ts = load (truststore);;
+				KeyStore ts = load (truststore);
 	
 				String talg = truststore.algorithm ();
 				if (Lang.isNullOrEmpty (talg)) {

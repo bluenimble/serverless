@@ -356,7 +356,16 @@ public class CodeGenUtils {
 
 		writeFile (spec, destSpecFile, data, specLang);
 		tool.printer ().node (1, "    spec file 'services/" + underline (tool, (printFolder ? modelSpecFolder.getName () + "/" : "" ) + (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + "." + specLang) + "'"); 
-
+		
+		if (Lang.TRUE.equals (vars.get (BlueNimble.DefaultVars.GenerateSpecComments))) {
+			// add spec comment
+			SpecUtils.comment (
+				destSpecFile, 
+				new File (BlueNimble.Home, Templates.class.getSimpleName ().toLowerCase () + Lang.SLASH + Templates.Comments + Lang.SLASH + "service-spec/" + specLang + ".comment"),
+				data
+			);
+		}
+		
 		File destFuncFile = new File (modelFunctionFolder, (path == null ? Verbs.get (verb) : Lang.BLANK) + (FindVerb.equals (verb) ? Models : Model) + extension);
 		
 		writeFile (function, destFuncFile, data, specLang);

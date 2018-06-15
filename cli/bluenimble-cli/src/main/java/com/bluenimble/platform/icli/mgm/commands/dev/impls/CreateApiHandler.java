@@ -177,6 +177,15 @@ public class CreateApiHandler implements CommandHandler {
 				SpecUtils.write (apiFolder, apiSpec);
 			}
 			
+			if (Lang.TRUE.equals (vars.get (BlueNimble.DefaultVars.GenerateSpecComments)) && !secure) {
+				// add spec comment
+				SpecUtils.comment (
+					SpecUtils.specFile (apiFolder), 
+					new File (BlueNimble.Home, Templates.class.getSimpleName ().toLowerCase () + Lang.SLASH + Templates.Comments + Lang.SLASH + "api-spec/" + specLang + ".comment"),
+					data
+				);
+			}
+			
 			BlueNimble.saveConfig ();
 			
 			tool.printer ().info ("Api '" + namespace + "' created! path: $ws/ " + sApiFolder);
@@ -186,6 +195,14 @@ public class CreateApiHandler implements CommandHandler {
 		
 		if (secure) {
 			SecureApiHandler.execute (tool, new String [] { namespace, "token+signature", Lang.STAR });
+			if (Lang.TRUE.equals (vars.get (BlueNimble.DefaultVars.GenerateSpecComments))) {
+				// add spec comment
+				SpecUtils.comment (
+					SpecUtils.specFile (apiFolder), 
+					new File (BlueNimble.Home, Templates.class.getSimpleName ().toLowerCase () + Lang.SLASH + Templates.Comments + Lang.SLASH + "api-spec/" + specLang + ".comment"),
+					data
+				);
+			}
 		}
 
 		return new DefaultCommandResult (CommandResult.OK, null);

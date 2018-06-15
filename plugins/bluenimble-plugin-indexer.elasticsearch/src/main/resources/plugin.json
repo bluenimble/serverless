@@ -11,10 +11,6 @@
 				"links": [{
 					"Read More": "https://www.bluenimble.com"
 				}]
-			},
-			"remote": {
-				"plugin": "remote.default",
-				"object": "http"
 			}
 		}
 	}

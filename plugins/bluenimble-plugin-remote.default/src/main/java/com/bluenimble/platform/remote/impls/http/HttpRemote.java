@@ -17,25 +17,14 @@
 package com.bluenimble.platform.remote.impls.http;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Json;
@@ -69,6 +58,11 @@ public class HttpRemote extends BaseRemote {
 
 	private static final String DefaultUserAgent 	= "BlueNimble Http Client";
 	
+	public interface Pool {
+		String MaxIdleConnections = "maxIdleConnections";
+		String KeepAliveDuration = "keepAliveDuration";
+	}
+	
 	protected static final Map<String, MediaType> MediaTypes 	= new HashMap<String, MediaType> ();
 	static {
 		// media types
@@ -79,120 +73,27 @@ public class HttpRemote extends BaseRemote {
 		MediaTypes.put (ContentTypes.Text, MediaType.parse (ContentTypes.Text));
 	}
 	
-	private HostnameVerifier TrustAllHostVerifier = new HostnameVerifier () {
-		@Override
-		public boolean verify (String host, SSLSession session) {
-			if (!host.equalsIgnoreCase (session.getPeerHost ())) {
-                System.out.println ("Warning: URL host '" + host + "' is different than SSLSession host '" + session.getPeerHost () + "'.");
-            }
-			return true;
-		}
-	};
+	private static final AccessSecretKeysBasedHttpRequestSigner BnBSigner = new AccessSecretKeysBasedHttpRequestSigner ();
 	
-	private static final X509TrustManager TrustAllManager = new X509TrustManager () {
-        public X509Certificate [] getAcceptedIssuers () { return new java.security.cert.X509Certificate[0]; }
-        public void checkClientTrusted (X509Certificate[] certs, String authType) { }
-        public void checkServerTrusted(X509Certificate[] certs, String authType) { }
-    };
-	
-	private static SSLSocketFactory TrustAllSocketFactory;
-	static {
-		SSLContext sslContext = null;
-		try {
-			sslContext = SSLContext.getInstance ("TLS");
-			sslContext.init (null, new TrustManager[] { TrustAllManager }, new java.security.SecureRandom ());
-		} catch (Exception ex) {
-			throw new RuntimeException (ex.getMessage (), ex);
-		}
-        TrustAllSocketFactory = sslContext.getSocketFactory ();
-	}
-	
-	private static final OkHttpClient DefaultHttpClient = 
-		new OkHttpClient.Builder ()
-				.connectTimeout (10, TimeUnit.SECONDS)
-				.readTimeout (10, TimeUnit.SECONDS)
-				.writeTimeout (10, TimeUnit.SECONDS)
-				.build ();
-	
-	AccessSecretKeysBasedHttpRequestSigner BnBSigner = new AccessSecretKeysBasedHttpRequestSigner ();
-	
-	private OkHttpClient http = DefaultHttpClient;
+	private OkHttpClient http;
 	
 	private JsonObject 	featureSpec;
 	
-	public HttpRemote () {
-	}
-
-	public HttpRemote (ApiSpace space, String feature, JsonObject featureSpec) {
-		this.featureSpec = featureSpec;
-		init (space, feature, featureSpec);
-	}
-
-	private void init (ApiSpace space, String feature, JsonObject featureSpec) {
-		if (Json.isNullOrEmpty (featureSpec)) {
-			return;
-		}
-
-		OkHttpClient.Builder builder = new OkHttpClient.Builder ();
-
-		// ssl trust all
-		if (Json.getBoolean (featureSpec, Spec.TrustAll, false)) {
-			builder	.sslSocketFactory (TrustAllSocketFactory, TrustAllManager)
-					.hostnameVerifier (TrustAllHostVerifier);
-		}
-		
-		JsonObject oProxy = Json.getObject (featureSpec, Spec.Proxy);
-		JsonObject oTimeout = Json.getObject (featureSpec, Spec.Timeout);
-		
-		int connectTimeout = Json.getInteger (oTimeout, Spec.TimeoutConnect, 0);
-		if (connectTimeout > 0) {
-			builder.connectTimeout (connectTimeout, TimeUnit.SECONDS);
-		}
-		
-		int writeTimeout = Json.getInteger (oTimeout, Spec.TimeoutWrite, 0);
-		if (writeTimeout > 0) {
-			builder.connectTimeout (writeTimeout, TimeUnit.SECONDS);
-		}
-		
-		int readTimeout = Json.getInteger (oTimeout, Spec.TimeoutRead, 0);
-		if (readTimeout > 0) {
-			builder.connectTimeout (readTimeout, TimeUnit.SECONDS);
-		}
-		
-		if (Json.isNullOrEmpty (oProxy)) {
-			http = builder.build ();
-			return;
-		}
-		
-		// if proxy
-		
-		Proxy.Type type = null;
-		try {
-			type = Proxy.Type.valueOf (Json.getString (oProxy, Spec.ProxyType, Proxy.Type.HTTP.name ()).toUpperCase ());
-		} catch (Exception ex) {
-			type = Proxy.Type.HTTP;
-		}
-		
-		String host = Json.getString 	(oProxy, Spec.ProxyHost);
-		int port 	= Json.getInteger 	(oProxy, Spec.ProxyPort, 0);
-		if (Lang.isNullOrEmpty (host) || port == 0) {
-			http = builder.build ();
-			return;
-		}
-		
-		http = builder.proxy (new Proxy (type, new InetSocketAddress (host, port))).build ();
-		
-		return;
-		
+	public HttpRemote (ApiSpace space, String feature, JsonObject featureSpec, OkHttpClient http) {
+		this.featureSpec 	= featureSpec;
+		this.http 			= http;
 	}
  
 	@Override
-	public void get (JsonObject spec, Callback callback) {
-		request (ApiVerb.GET, spec, callback);
-	}
-	
-	@Override
 	public void request (ApiVerb verb, JsonObject spec, Callback callback, ApiStreamSource... attachments) {
+	
+		if (http == null) {
+			try {
+				callback.onError (Error.Other, "http client not initialized");
+			} catch (IOException e) {
+				throw new RuntimeException (e.getMessage (), e);
+			}
+		}
 		
 		JsonObject rdata = Json.getObject (spec, Spec.Data);
 		

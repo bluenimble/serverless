@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
@@ -201,6 +202,34 @@ public class SpecUtils {
 		
 	}
 	
+	public static void comment (File specFile, File commentFile, JsonObject data) throws CommandExecutionException {
+		
+		String spec;
+		try {
+			spec = specFile.getName ().endsWith (".json") ? Json.load (specFile).toString (2) : content (specFile);
+		} catch (Exception ex) {
+			throw new CommandExecutionException (ex.getMessage (), ex);
+		}
+		
+		String comment 	= content (commentFile);
+		try {
+			comment = TemplateEngine.apply (comment, data);
+		} catch (Exception ex) {
+			throw new CommandExecutionException (ex.getMessage (), ex);
+		}
+		
+		FileWriter newSpecWriter = null;
+		try {
+			newSpecWriter = new FileWriter (specFile);
+			newSpecWriter.write (comment);
+			newSpecWriter.write (spec);
+		} catch (Exception ex) {
+			throw new CommandExecutionException (ex.getMessage (), ex);
+		} finally {
+			IOUtils.closeQuietly (newSpecWriter);
+		}
+	}
+	
 	public static File servicesFolder (File apiFolder) throws CommandExecutionException {
 		return new File (specFolder (apiFolder), "resources/services");
 	}
@@ -240,6 +269,39 @@ public class SpecUtils {
 		
 		return specFolder;
 		
+	}
+	
+	public static File specFile (File apiFolder) throws CommandExecutionException {
+		
+		apiFolder = specFolder (apiFolder);
+		
+		File fApi = new File (apiFolder, "api.json");
+		if (fApi.exists ()) {
+			return fApi;
+		} 
+		
+		fApi = new File (apiFolder, "api.yaml");
+		
+		if (!fApi.exists () || fApi.isDirectory ()) {
+			throw new CommandExecutionException ("api spec file not found");
+		}
+		
+		return fApi;
+		
+	}
+	
+	public static String content (File file) throws CommandExecutionException {
+		String content = null;
+		InputStream specIs = null;
+		try {
+			specIs = new FileInputStream (file);
+			content = IOUtils.toString (specIs);
+		} catch (Exception ex) {
+			throw new CommandExecutionException (ex.getMessage (), ex);
+		} finally {
+			IOUtils.closeQuietly (specIs);
+		}
+		return content;
 	}
 
 }

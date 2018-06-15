@@ -16,23 +16,42 @@
  */
 package com.bluenimble.platform.server.plugins.remote;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.security.cert.X509Certificate;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import com.bluenimble.platform.Feature;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
-import com.bluenimble.platform.PackageClassLoader;
 import com.bluenimble.platform.Recyclable;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.Manageable;
+import com.bluenimble.platform.api.tracing.Tracer.Level;
+import com.bluenimble.platform.encoding.Base64;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.Plugin;
 import com.bluenimble.platform.plugins.PluginRegistryException;
 import com.bluenimble.platform.plugins.impls.AbstractPlugin;
 import com.bluenimble.platform.pooling.PoolConfig;
 import com.bluenimble.platform.remote.Remote;
+import com.bluenimble.platform.remote.Remote.Spec;
 import com.bluenimble.platform.remote.impls.binary.BinaryRemote;
 import com.bluenimble.platform.remote.impls.http.HttpRemote;
+import com.bluenimble.platform.security.SslUtils;
+import com.bluenimble.platform.security.SslUtils.StoreSource;
 import com.bluenimble.platform.server.ApiServer;
 import com.bluenimble.platform.server.ApiServer.Event;
 import com.bluenimble.platform.server.ServerFeature;
@@ -40,10 +59,41 @@ import com.bluenimble.platform.tools.binary.BinaryClient;
 import com.bluenimble.platform.tools.binary.BinaryClientFactory;
 import com.bluenimble.platform.tools.binary.impls.netty.NettyBinaryClientFactory;
 
+import okhttp3.ConnectionPool;
+import okhttp3.OkHttpClient;
+
 public class RemotePlugin extends AbstractPlugin {
 
 	private static final long serialVersionUID = 3203657740159783537L;
 
+	private HostnameVerifier TrustAllHostVerifier = new HostnameVerifier () {
+		@Override
+		public boolean verify (String host, SSLSession session) {
+			if (!host.equalsIgnoreCase (session.getPeerHost ())) {
+                System.out.println ("Warning: URL host '" + host + "' is different than SSLSession host '" + session.getPeerHost () + "'.");
+            }
+			return true;
+		}
+	};
+	
+	private static final X509TrustManager TrustAllManager = new X509TrustManager () {
+        public X509Certificate [] getAcceptedIssuers () { return new java.security.cert.X509Certificate[0]; }
+        public void checkClientTrusted (X509Certificate[] certs, String authType) { }
+        public void checkServerTrusted(X509Certificate[] certs, String authType) { }
+    };
+	
+	private static SSLSocketFactory TrustAllSocketFactory;
+	static {
+		SSLContext sslContext = null;
+		try {
+			sslContext = SSLContext.getInstance ("TLS");
+			sslContext.init (null, new TrustManager [] { TrustAllManager }, new java.security.SecureRandom ());
+		} catch (Exception ex) {
+			throw new RuntimeException (ex.getMessage (), ex);
+		}
+        TrustAllSocketFactory = sslContext.getSocketFactory ();
+	}
+	
 	enum Protocol {
 		http,
 		binary
@@ -61,10 +111,6 @@ public class RemotePlugin extends AbstractPlugin {
 
 		feature = aFeature.name ();
 
-		PackageClassLoader pcl = (PackageClassLoader)RemotePlugin.class.getClassLoader ();
-		
-		pcl.registerObject (Protocol.http.name (), new HttpRemote ());
-		
 		server.addFeature (new ServerFeature () {
 			private static final long serialVersionUID = -9012279234275100528L;
 			
@@ -78,19 +124,18 @@ public class RemotePlugin extends AbstractPlugin {
 			}
 			@Override
 			public Object get (ApiSpace space, String name) {
-				JsonObject spec = (JsonObject)Json.find (space.getFeatures (), feature, name, ApiSpace.Features.Spec);
-				String protocol = Json.getString (spec, Remote.Spec.Protocol);
-
-				Remote remote = null;
+				Protocol protocol = protocol (name, space);
 				
-				if (Protocol.binary.name ().equalsIgnoreCase (protocol)) {
-					remote = new BinaryRemote (
-						((RecyclableBinaryClientFactory)space.getRecyclable (createKey (name, space))).create ()
+				Recyclable recyclable = space.getRecyclable (createKey (name, space));
+				if (Protocol.binary.equals (protocol)) {
+					return new BinaryRemote (
+						((RecyclableBinaryClientFactory)recyclable).create ()
 					);
 				} else {
-					remote = new HttpRemote (space, name, spec);
+					JsonObject featureSpec = (JsonObject)Json.find (space.getFeatures (), feature, name, ApiSpace.Features.Spec);
+					return new HttpRemote (space, name, featureSpec, (OkHttpClient)((RecyclableHttpClient)recyclable).get ());
 				}
-				return remote;
+				
 			}
 			@Override
 			public String provider () {
@@ -113,57 +158,147 @@ public class RemotePlugin extends AbstractPlugin {
 		
 		switch (event) {
 			case Create:
-				createFactories (space);
+			try {
+				createRemotes (space);
+			} catch (Exception ex) {
+				throw new PluginRegistryException (ex.getMessage (), ex);
+			}
 				break;
 			case AddFeature:
-				createFactories (space);
+				try {
+					createRemotes (space);
+				} catch (Exception ex) {
+					throw new PluginRegistryException (ex.getMessage (), ex);
+				}
 				break;
 			case DeleteFeature:
-				deleteFactories (space);
+				dropRemotes (space);
 				break;
 			default:
 				break;
 		}
 	}
 	
-	private void createFactories (ApiSpace space) {
-		JsonObject remoteFeatures = Json.getObject (space.getFeatures (), feature);
-		if (remoteFeatures == null || remoteFeatures.isEmpty ()) {
+	private void createRemotes (ApiSpace space) throws Exception {
+		JsonObject allFeatures = Json.getObject (space.getFeatures (), feature);
+		
+		if (Json.isNullOrEmpty (allFeatures)) {
 			return;
 		}
 		
-		Iterator<String> keys = remoteFeatures.keys ();
+		Iterator<String> keys = allFeatures.keys ();
 		while (keys.hasNext ()) {
 			String name = keys.next ();
-			JsonObject feature = Json.getObject (remoteFeatures, name);
-			boolean installed = createFactory (space, name, feature);
+			JsonObject feature = Json.getObject (allFeatures, name);
+			
+			if (!this.getNamespace ().equalsIgnoreCase (Json.getString (feature, ApiSpace.Features.Provider))) {
+				continue;
+			}
+			
+			Protocol protocol = protocol (name, space);
+			
+			boolean installed = false;
+			
+			installed = createRemote (space, name, feature, protocol);
+
 			if (installed) {
 				feature.set (ApiSpace.Spec.Installed, true);
 			}
 		}
 	}
 	
-	private boolean createFactory (ApiSpace space, String name, JsonObject feature) {
-		if (!this.getNamespace ().equalsIgnoreCase (Json.getString (feature, ApiSpace.Features.Provider))) {
+	private boolean createRemote (ApiSpace space, String name, JsonObject feature, Protocol protocol) throws Exception {
+		String recyclableKey = createKey (name, space);
+		
+		Recyclable recyclable = space.getRecyclable (recyclableKey);
+		if (recyclable != null) {
 			return false;
 		}
 		
 		JsonObject spec = Json.getObject (feature, ApiSpace.Features.Spec);
 
-		String sProtocol = Json.getString (spec, Remote.Spec.Protocol);
-		
-		// only if binary. Http remote is accessible directly from the plugin feature
-		if (!Protocol.binary.name ().equalsIgnoreCase (sProtocol)) {
-			return false;
+		switch (protocol) {
+			case http:
+				return createHttp (space, name, spec, recyclableKey);
+			case binary:
+				return createBinary (space, name, feature, recyclableKey);
+			default:	
+				return false;
 		}
 		
-		String factoryKey = createKey (name, space);
+	}
+	
+	private boolean createHttp (ApiSpace space, String name, JsonObject spec, String recyclableKey) throws Exception {
 		
-		Recyclable recyclable = space.getRecyclable (factoryKey);
-		if (recyclable != null) {
-			return false;
+		OkHttpClient http = null;
+		
+		OkHttpClient.Builder builder = new OkHttpClient.Builder ();
+
+		// timeouts
+		JsonObject oTimeout = Json.getObject (spec, Spec.Timeout);
+		
+		builder.connectTimeout (Json.getInteger (oTimeout, Spec.TimeoutConnect, 10), TimeUnit.SECONDS);
+		builder.writeTimeout (Json.getInteger (oTimeout, Spec.TimeoutWrite, 10), TimeUnit.SECONDS);
+		builder.readTimeout (Json.getInteger (oTimeout, Spec.TimeoutRead, 10), TimeUnit.SECONDS);
+		
+		// pool
+		JsonObject pool = Json.getObject (spec, Remote.Spec.Pool);
+		builder.connectionPool (
+			new ConnectionPool (
+				Json.getInteger (pool, HttpRemote.Pool.MaxIdleConnections, 10),
+				Json.getLong (pool, HttpRemote.Pool.KeepAliveDuration, 60),
+				TimeUnit.MINUTES
+			)
+		);
+		
+		// ssl
+		JsonObject oSsl = Json.getObject (spec, Remote.Spec.KeyStore);
+		
+		StoreSource keystore 	= loadStore (Json.getObject (oSsl, Remote.Spec.KeyStore));
+		StoreSource truststore 	= loadStore (Json.getObject (oSsl, Remote.Spec.TrustStore));
+		if (keystore != null || truststore != null) {
+			SSLContext sslContext = SslUtils.sslContext (keystore, truststore);
+			builder.sslSocketFactory (sslContext.getSocketFactory (), null);
+		}
+		// trust all - usefull for dev
+		if (Json.getBoolean (oSsl, Remote.Spec.TrustAll, false)) {
+			builder.sslSocketFactory (TrustAllSocketFactory, TrustAllManager)
+					.hostnameVerifier (TrustAllHostVerifier);
 		}
 		
+		// proxy
+		JsonObject oProxy = Json.getObject (spec, Spec.Proxy);
+		
+		if (Json.isNullOrEmpty (oProxy)) {
+			http = builder.build ();
+			space.addRecyclable (recyclableKey, new RecyclableHttpClient (http));
+			return true;
+		}
+		
+		Proxy.Type type = null;
+		try {
+			type = Proxy.Type.valueOf (Json.getString (oProxy, Spec.ProxyType, Proxy.Type.HTTP.name ()).toUpperCase ());
+		} catch (Exception ex) {
+			type = Proxy.Type.HTTP;
+		}
+		
+		String host = Json.getString 	(oProxy, Spec.ProxyHost);
+		int port 	= Json.getInteger 	(oProxy, Spec.ProxyPort, 0);
+		if (Lang.isNullOrEmpty (host) || port == 0) {
+			http = builder.build ();
+			space.addRecyclable (recyclableKey, new RecyclableHttpClient (http));
+			return true;
+		}
+		
+		http = builder.proxy (new Proxy (type, new InetSocketAddress (host, port))).build ();
+		
+		space.addRecyclable (recyclableKey, new RecyclableHttpClient (http));
+		
+		return true;
+		
+	}
+	
+	private boolean createBinary (ApiSpace space, String name, JsonObject spec, String recyclableKey) {
 		String 	host = Json.getString (spec, Remote.Spec.Host);
 		int 	port = Json.getInteger (spec, Remote.Spec.Port, 0);
 		
@@ -172,11 +307,11 @@ public class RemotePlugin extends AbstractPlugin {
 		}
 		
 		if (spec == null) {
-			spec = JsonObject.Blank;
+			spec = new JsonObject ();
 		}
 				
 		space.addRecyclable (
-			factoryKey, 
+				recyclableKey, 
 			new RecyclableBinaryClientFactory (
 				new NettyBinaryClientFactory (host, port, new PoolConfig (Json.getObject (spec, Remote.Spec.Pool)))
 			)
@@ -184,30 +319,88 @@ public class RemotePlugin extends AbstractPlugin {
 		return true;
 	}
 	
-	private void deleteFactories (ApiSpace space) {
-		JsonObject remoteFeatures = Json.getObject (space.getFeatures (), feature);
-		if (remoteFeatures == null || remoteFeatures.isEmpty ()) {
-			return;
-		}
+	private void dropRemotes (ApiSpace space) {
+	
+		JsonObject dbFeature = Json.getObject (space.getFeatures (), feature);
 		
-		Iterator<String> keys = remoteFeatures.keys ();
-		while (keys.hasNext ()) {
-			String name = keys.next ();
-			
-			String factoryKey = createKey (name, space);
-			Recyclable recyclable = space.getRecyclable (factoryKey);
-			if (recyclable == null) {
+		Set<String> recyclables = space.getRecyclables ();
+		for (String r : recyclables) {
+			if (!r.startsWith (feature + Lang.DOT)) {
 				continue;
 			}
-			recyclable.recycle ();
-			space.removeRecyclable (factoryKey);
-			
+			String name = r.substring ((feature + Lang.DOT).length ());
+			if (dbFeature == null || dbFeature.containsKey (name)) {
+				// it's deleted
+				Recyclable recyclable = space.getRecyclable (r);
+				if (!(recyclable instanceof RecyclableBinaryClientFactory) && !(recyclable instanceof RecyclableHttpClient)) {
+					continue;
+				}
+				// remove from recyclables
+				space.removeRecyclable (r);
+				// recycle
+				recyclable.recycle ();
+			}
 		}
 		
 	}
 	
+	private Protocol protocol (String name, ApiSpace space) {
+		String protocol = (String)Json.find (space.getFeatures (), feature, name, ApiSpace.Features.Spec, Remote.Spec.Protocol);
+		if (Lang.isNullOrEmpty (protocol)) {
+			return Protocol.http;
+		}
+		try {
+			return Protocol.valueOf (protocol.toLowerCase ());
+		} catch (Exception ex) {
+			return Protocol.http;
+		}
+	}
+	
 	private String createKey (String name, ApiSpace space) {
 		return feature + Lang.DOT + space.getNamespace () + Lang.DOT + name;
+	}
+	
+	private StoreSource loadStore (JsonObject oStore) {
+		if (Json.isNullOrEmpty (oStore) || !oStore.containsKey (Remote.Spec.StoreStream)) {
+			return null;
+		}
+		
+		final byte [] storeBytes = Base64.decodeBase64 (Json.getString (oStore, Remote.Spec.StoreStream));
+		
+		return new StoreSource () {
+			@Override
+			public String type () {
+				return Json.getString (oStore, Remote.Spec.StoreType, SslUtils.PKCS12);
+			}
+			@Override
+			public String algorithm () {
+				return Json.getString (oStore, Remote.Spec.StoreAlgorithm);
+			}
+			@Override
+			public InputStream stream () {
+				return new ByteArrayInputStream (storeBytes);
+			}
+			@Override
+			public char [] password () {
+				String password = Json.getString (oStore, Remote.Spec.StorePassword);;
+				if (Lang.isNullOrEmpty (password)) {
+					return null;
+				}
+				return password.toCharArray ();
+			}
+			@Override
+			public char [] paraphrase () {
+				String paraphrase = Json.getString (oStore, Remote.Spec.KeyParaphrase);;
+				if (Lang.isNullOrEmpty (paraphrase)) {
+					return password ();
+				}
+				return paraphrase.toCharArray ();
+			}
+			@Override
+			public void close () {
+				// nothing
+			}
+		};
 	}
 	
 	class RecyclableBinaryClientFactory implements Recyclable {
@@ -231,6 +424,38 @@ public class RemotePlugin extends AbstractPlugin {
 		@Override
 		public Object get () {
 			return factory;
+		}
+
+		@Override
+		public void set (ApiSpace space, ClassLoader classLoader, Object... args) {
+			
+		}
+		
+	}
+	
+	class RecyclableHttpClient implements Recyclable {
+		private static final long serialVersionUID = 50882416501226306L;
+
+		private OkHttpClient httpClient;
+		
+		public RecyclableHttpClient (OkHttpClient httpClient) {
+			this.httpClient = httpClient;
+		}
+		
+		@Override
+		public void recycle () {
+			try {
+				httpClient.dispatcher ().executorService ().shutdown ();
+				httpClient.connectionPool().evictAll ();
+				httpClient.cache ().close ();
+			} catch (IOException e) {
+				tracer ().log (Level.Error, e.getMessage (), (Throwable)e);
+			}
+		}
+
+		@Override
+		public Object get () {
+			return httpClient;
 		}
 
 		@Override
