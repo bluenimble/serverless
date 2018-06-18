@@ -35,6 +35,7 @@ import com.bluenimble.platform.api.ApiService;
 import com.bluenimble.platform.api.media.ApiMediaProcessor;
 import com.bluenimble.platform.api.media.DataWriter;
 import com.bluenimble.platform.api.security.ApiConsumer;
+import com.bluenimble.platform.api.tracing.Tracer.Level;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.server.plugins.media.MediaPlugin;
 import com.bluenimble.platform.api.impls.media.engines.TemplateEngine;
@@ -106,6 +107,9 @@ public class PlainMediaProcessor implements ApiMediaProcessor {
 			throws ApiMediaException {
 
 		String contentType = (String)request.get (ApiRequest.SelectedMedia);
+		
+		plugin.tracer ().log (Level.Info, "SelectedMedia resolved to {0}", contentType);
+		
 		if (Lang.isNullOrEmpty (contentType) || ApiMediaProcessor.Any.equals  (contentType)) {
 			contentType = Json.getString (api.getMedia (), Api.Spec.Media.Default, ApiContentTypes.Json);
 		}

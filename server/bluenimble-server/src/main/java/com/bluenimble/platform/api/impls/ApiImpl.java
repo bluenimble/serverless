@@ -52,6 +52,7 @@ import com.bluenimble.platform.api.media.ApiMediaProcessor;
 import com.bluenimble.platform.api.media.MediaTypeUtils;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.tracing.Tracer;
+import com.bluenimble.platform.api.tracing.Tracer.Level;
 import com.bluenimble.platform.api.tracing.impls.NoTracing;
 import com.bluenimble.platform.api.validation.ApiServiceValidatorException;
 import com.bluenimble.platform.json.JsonArray;
@@ -238,6 +239,7 @@ public class ApiImpl implements Api {
 			} 
 		}
 		tracer.onInstall (this);
+		space.tracer ().log (Tracer.Level.Info, "\t     Tracer: {0}", tracer.getClass ().getSimpleName ());
 		
 		ApiContext context = new DefaultApiContext ();
 		
@@ -555,6 +557,8 @@ public class ApiImpl implements Api {
 		
 		String accept = (String)request.get (ApiHeaders.Accept, Scope.Header);
 		
+		space.tracer ().log (Level.Info, ApiHeaders.Accept + " header: {0}", accept);
+		
 		if (Lang.isNullOrEmpty (accept)) {
 			accept = defaultContentType;
 		}
@@ -565,13 +569,17 @@ public class ApiImpl implements Api {
 
 		String processor = (String)Json.find (service.getMedia (), accept, ApiService.Spec.Media.Processor);
 		
+		space.tracer ().log (Level.Info, "Processor: {0}", processor);
+		
 		if (!Lang.isNullOrEmpty (processor)) {
+			space.tracer ().log (Level.Info, "Processor found, Set SelectedMedia to {0}", accept);
 			request.set (ApiRequest.SelectedMedia, accept);
 			return space.getServer ().getMediaProcessorRegistry ().lockup (processor);
 		}
 		
 		// if service has no media spec, get default
 		if (Json.isNullOrEmpty (service.getMedia ())) {
+			space.tracer ().log (Level.Info, "service.getMedia not found, Set SelectedMedia to {0}", accept);
 			request.set (ApiRequest.SelectedMedia, accept);
 			return space.getServer ().getMediaProcessorRegistry ().getDefault ();
 		}
@@ -583,9 +591,9 @@ public class ApiImpl implements Api {
 			null
 		);
 		
-		accept = MediaTypeUtils.bestMatch (candidates, accept);
-		if (accept == null) {
-			accept = defaultContentType;
+		String bestMatch = MediaTypeUtils.bestMatch (candidates, accept);
+		if (bestMatch != null) {
+			accept = bestMatch;
 		}
 		
 		processor = (String)Json.find (service.getMedia (), accept, ApiService.Spec.Media.Processor);
