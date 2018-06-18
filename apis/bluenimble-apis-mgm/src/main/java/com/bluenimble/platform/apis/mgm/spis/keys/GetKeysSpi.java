@@ -158,8 +158,7 @@ public class GetKeysSpi extends AbstractApiServiceSpi {
 		return new ApiByteArrayOutput (
 			keysSpace.getNamespace () + Lang.DOT + Output.KeysExt, Base64.encodeBase64 (out.toByteArray ()), 
 			ApiContentTypes.Stream, Output.KeysExt
-		)
-			.set (ApiOutput.Defaults.Disposition, "attachment");
+		).set (ApiOutput.Defaults.Disposition, "attachment");
 	}
 	
 	private ApiOutput getNotSecure (Api api, ApiRequest request, String accessKey, String paraphrase) throws ApiServiceExecutionException {

@@ -61,7 +61,13 @@ public interface ApiServiceValidator extends Serializable {
 
 	}
 
-	void validate (Api api, JsonObject spec, ApiConsumer consumer, ApiRequest request) 
+	void 			validate (Api api, JsonObject spec, ApiConsumer consumer, ApiRequest request) 
 		throws ApiServiceValidatorException;
 	
+	void 			addTypeValidator (String name, TypeValidator validator);
+	
+	TypeValidator 	getTypeValidator (String name);
+	
+	String 			getMessage (Api api, String lang, String key, Object... args);
+
 }

@@ -31,6 +31,7 @@ import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiContentTypes;
+import com.bluenimble.platform.api.ApiHeaders;
 import com.bluenimble.platform.cli.InstallI18nException;
 import com.bluenimble.platform.cli.Tool;
 import com.bluenimble.platform.cli.ToolClient;
@@ -84,8 +85,8 @@ public class BlueNimble extends JLineTool {
 								= "api.security.enabled";
 		String Paraphrase 		= "paraphrase";
 		String SslTrust 		= "ssl.trust";
-		String RemoteHeadersAccept 		
-								= "remote.headers.accept";
+		String RemoteHeaders 		
+								= "remote.headers";
 		String SpecLanguage 	= "spec.lang";
 		
 		String UserMeta			= "user.meta";
@@ -94,6 +95,9 @@ public class BlueNimble extends JLineTool {
 			
 		String GenerateSpecComments 	
 								= "codegen.spec.comments";
+		
+		String MediaMapping		= "remote.media.mapping";
+		
 	}
 	
 	public interface SpecLangs {
@@ -587,12 +591,22 @@ public class BlueNimble extends JLineTool {
 		if (!oVars.containsKey (DefaultVars.ApiSecurityEnabled)) {
 			oVars.set (DefaultVars.ApiSecurityEnabled, Lang.TRUE);
 		}
-		if (!oVars.containsKey (DefaultVars.RemoteHeadersAccept)) {
-			oVars.set (DefaultVars.RemoteHeadersAccept, ApiContentTypes.Json);
+		if (!oVars.containsKey (DefaultVars.RemoteHeaders)) {
+			oVars.set (DefaultVars.RemoteHeaders, new JsonObject ().set (ApiHeaders.Accept, ApiContentTypes.Json));
 		}
 		
 		if (!oVars.containsKey (DefaultVars.GenerateSpecComments)) {
 			oVars.set (DefaultVars.GenerateSpecComments, Lang.TRUE);
+		}
+		
+		if (!oVars.containsKey (DefaultVars.MediaMapping)) {
+			oVars.set (
+				DefaultVars.MediaMapping, 
+				new JsonObject ()
+					.set ("application/json.bnt", ApiContentTypes.Json)
+					.set ("application/json.gql", ApiContentTypes.Json)
+					.set ("application/json.oas", ApiContentTypes.Json)
+			);
 		}
 		
 		@SuppressWarnings("unchecked")

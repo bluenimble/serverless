@@ -33,6 +33,18 @@ public class DescribeOption implements Serializable {
 	public static final DescribeOption Apis 		= new DescribeOption (Option.apis);
 	public static final DescribeOption All 			= new DescribeOption (Option.all);
 	public static final DescribeOption Services 	= new DescribeOption (Option.services);
+	
+	interface VerboseOptions {
+		DescribeOption Info 		= new DescribeOption (Option.info, true);
+		DescribeOption Keys 		= new DescribeOption (Option.keys, true);
+		DescribeOption Hardware 	= new DescribeOption (Option.hardware, true);
+		DescribeOption Spaces 		= new DescribeOption (Option.spaces, true);
+		DescribeOption Plugins 		= new DescribeOption (Option.plugins, true);
+		DescribeOption Features 	= new DescribeOption (Option.features, true);
+		DescribeOption Apis 		= new DescribeOption (Option.apis, true);
+		DescribeOption All 			= new DescribeOption (Option.all, true);
+		DescribeOption Services 	= new DescribeOption (Option.services, true);
+	}
 
 	public static final Map<DescribeOption.Option, DescribeOption> AllOptions = new HashMap<DescribeOption.Option, DescribeOption> ();
 	static {
@@ -43,6 +55,17 @@ public class DescribeOption implements Serializable {
 		AllOptions.put (Option.features, Features);
 		AllOptions.put (Option.apis, Apis);
 		AllOptions.put (Option.services, Services);
+	} 
+	
+	public static final Map<DescribeOption.Option, DescribeOption> AllVerboseOptions = new HashMap<DescribeOption.Option, DescribeOption> ();
+	static {
+		AllOptions.put (Option.info, VerboseOptions.Info);
+		AllOptions.put (Option.keys, VerboseOptions.Keys);
+		AllOptions.put (Option.spaces, VerboseOptions.Spaces);
+		AllOptions.put (Option.plugins, VerboseOptions.Plugins);
+		AllOptions.put (Option.features, VerboseOptions.Features);
+		AllOptions.put (Option.apis, VerboseOptions.Apis);
+		AllOptions.put (Option.services, VerboseOptions.Services);
 	} 
 	
 	public enum Option {
@@ -92,6 +115,10 @@ public class DescribeOption implements Serializable {
 		this (option, offset, -1);
 	}
 	
+	public DescribeOption (Option option, boolean verbose) {
+		this (option, verbose, 0, -1);
+	}
+
 	public DescribeOption (Option option) {
 		this (option, 0);
 	}

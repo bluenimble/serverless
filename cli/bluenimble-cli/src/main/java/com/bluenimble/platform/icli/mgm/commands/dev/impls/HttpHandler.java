@@ -26,6 +26,7 @@ import com.bluenimble.platform.cli.ToolContext;
 import com.bluenimble.platform.cli.command.CommandExecutionException;
 import com.bluenimble.platform.cli.command.CommandHandler;
 import com.bluenimble.platform.cli.command.CommandResult;
+import com.bluenimble.platform.icli.mgm.BlueNimble.DefaultVars;
 import com.bluenimble.platform.icli.mgm.commands.mgm.RemoteCommand.Spec;
 import com.bluenimble.platform.icli.mgm.remote.RemoteUtils;
 import com.bluenimble.platform.json.JsonObject;
@@ -70,6 +71,8 @@ public class HttpHandler implements CommandHandler {
 		
 		JsonObject request = Json.getObject (spec, Spec.request.class.getSimpleName ());
 		
+		request.set (Spec.request.Method, verb);
+		
 		if (request != null) {
 			if (!request.containsKey (Spec.request.Sign)) {
 				request.set (Spec.request.Sign, false);
@@ -80,7 +83,8 @@ public class HttpHandler implements CommandHandler {
 				request.set (Spec.request.Headers, headers);
 			}
 			if (!headers.containsKey (ApiHeaders.Accept)) {
-				headers.set (ApiHeaders.Accept, "*/*");
+				String accept = Json.getString ((JsonObject)vars.get (DefaultVars.RemoteHeaders), ApiHeaders.Accept);
+				headers.set (ApiHeaders.Accept, accept == null ? "*/*" : accept);
 			}
 		}
 		

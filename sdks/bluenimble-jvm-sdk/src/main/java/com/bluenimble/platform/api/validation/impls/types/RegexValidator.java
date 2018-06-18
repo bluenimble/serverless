@@ -14,27 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.validation.impls;
+package com.bluenimble.platform.api.validation.impls.types;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.text.MessageFormat;
 
+import com.bluenimble.platform.Json;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.security.ApiConsumer;
+import com.bluenimble.platform.api.validation.ApiServiceValidator;
 import com.bluenimble.platform.api.validation.ApiServiceValidator.Spec;
+import com.bluenimble.platform.api.validation.impls.AbstractTypeValidator;
+import com.bluenimble.platform.api.validation.impls.ValidationUtils;
 import com.bluenimble.platform.json.JsonObject;
 
-public class PhoneValidator extends AbstractTypeValidator {
+public class RegexValidator extends AbstractTypeValidator {
 
 	private static final long serialVersionUID = 2430274897113013353L;
 	
-	public static final String Type 				= "Phone";
+	public static final String Type 				= "Regex";
 	
-	public static final String TypeMessage			= "PhoneType";
-	
-	public static final Pattern PhoneRegex = 
-		    Pattern.compile ("^\\d{10}|(?:\\d{3}-){2}\\d{4}|\\(\\d{3}\\)\\d{3}-?\\d{4}", Pattern.CASE_INSENSITIVE);
+	public static final String TypeMessage			= "Regex";
 	
 	@Override
 	public String getName () {
@@ -43,14 +43,27 @@ public class PhoneValidator extends AbstractTypeValidator {
 
 	@Override
 	public Object validate (Api api, ApiConsumer consumer, ApiRequest request, 
-			DefaultApiServiceValidator validator, String name, String label, JsonObject spec, Object value) {
-
-		Matcher matcher = PhoneRegex.matcher (String.valueOf (value));
+			ApiServiceValidator validator, String name, String label, JsonObject spec, Object value) {
 		
-		if (!matcher.find ()) {
+		if (value == null) {
+			return null;
+		}
+		
+		String regex = Json.getString (spec, Spec.Format);
+		if (regex == null) {
+			return null;
+		}
+		
+		if (!String.valueOf (value).matches (regex)) {
+			String msg = null; 
+			if (spec.containsKey (Spec.ErrMsg)) {
+				msg = MessageFormat.format (spec.getString (Spec.ErrMsg), new Object [] { label });
+			} else {
+				msg = validator.getMessage (api, request.getLang (), TypeMessage, label);
+			}
 			return ValidationUtils.feedback (
-				null, spec, Spec.Type, 
-				validator.getMessage (api, request.getLang (), TypeMessage, label)
+				null, spec, Spec.Format, 
+				msg
 			);
 		}
 		

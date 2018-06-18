@@ -30,6 +30,9 @@ public class DescribeUtils {
 		}
 		
 		if (options.length == 1 && options [0].getOption ().equals (Option.all)) {
+			if (options [0].isVerbose ()) {
+				return DescribeOption.AllVerboseOptions;
+			}
 			return DescribeOption.AllOptions;
 		}
 		

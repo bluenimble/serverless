@@ -49,7 +49,8 @@ public class ListKeysSpi extends AbstractApiServiceSpi {
 	}
 	
 	interface Output {
-		String Keys = "keys";
+		String Keys 	= "keys";
+		String Space 	= "space";
 	}
 	
 	private static final String Token = "__";
@@ -194,7 +195,10 @@ public class ListKeysSpi extends AbstractApiServiceSpi {
 		} 
 
 		for (KeyPair keys : list) {
-			aKeys.add (keys.toJson ());
+			JsonObject oKeys = new JsonObject ();
+			oKeys.set (Output.Space, space.getNamespace ());
+			oKeys.putAll (keys.toJson ());
+			aKeys.add (oKeys);
 		}
 		
 	}

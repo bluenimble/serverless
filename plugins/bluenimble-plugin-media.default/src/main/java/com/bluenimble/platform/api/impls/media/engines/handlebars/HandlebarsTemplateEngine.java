@@ -55,14 +55,14 @@ public class HandlebarsTemplateEngine implements TemplateEngine {
 	
 	private Handlebars engine;
 	private Api api;
-	private JsonObject features;
+	private JsonObject config;
 	
 	public HandlebarsTemplateEngine (MediaPlugin plugin, Api api) {
 		this.api = api;
-		features = Json.getObject (api.getFeatures (), plugin.getNamespace ());
-		engine = new Handlebars (new ResourceTemplateLoader (api));
-		engine.startDelimiter (Json.getString (features, StartDelimitter, DefaultStartDelimitter));
-		engine.endDelimiter (Json.getString (features, EndDelimitter, DefaultEndDelimitter));
+		config = (JsonObject)Json.find (api.getFeatures (), plugin.getNamespace (), MediaPlugin.HandlebarsEngine);
+		engine = new Handlebars (new ResourceTemplateLoader (plugin, api));
+		engine.startDelimiter (Json.getString (config, StartDelimitter, DefaultStartDelimitter));
+		engine.endDelimiter (Json.getString (config, EndDelimitter, DefaultEndDelimitter));
 		
 		engine.registerHelper ("json", new Helper<JsonObject>() {
 			public CharSequence apply (JsonObject data, Options options) {
@@ -278,18 +278,18 @@ public class HandlebarsTemplateEngine implements TemplateEngine {
 			
 			JsonObject vars = new JsonObject ();
 			
-			vars.set (Json.getString (features, I18n, I18n), api.i18n (request.getLang ()));
+			vars.set (Json.getString (config, I18n, I18n), api.i18n (request.getLang ()));
 
-			vars.set (Json.getString (features, Request, Request), request.toJson ());
+			vars.set (Json.getString (config, Request, Request), request.toJson ());
 			if (consumer != null) {
-				vars.set (Json.getString (features, Consumer, Consumer), consumer.toJson ());
+				vars.set (Json.getString (config, Consumer, Consumer), consumer.toJson ());
 			}
 			
 			if (output != null) {
-				vars.set (Json.getString (features, Output, Output), output.data ());
-				vars.set (Json.getString (features, Meta, Meta), output.meta ());
+				vars.set (Json.getString (config, Output, Output), output.data ());
+				vars.set (Json.getString (config, Meta, Meta), output.meta ());
 			}
-			vars.set (Json.getString (features, Error, Error), response.getError ());
+			vars.set (Json.getString (config, Error, Error), response.getError ());
 			
 			cTemplate.template.apply (vars, response.toWriter ());
 			

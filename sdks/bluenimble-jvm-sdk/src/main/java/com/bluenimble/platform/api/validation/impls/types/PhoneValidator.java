@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.validation.impls;
+package com.bluenimble.platform.api.validation.impls.types;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,19 +22,22 @@ import java.util.regex.Pattern;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.security.ApiConsumer;
+import com.bluenimble.platform.api.validation.ApiServiceValidator;
 import com.bluenimble.platform.api.validation.ApiServiceValidator.Spec;
+import com.bluenimble.platform.api.validation.impls.AbstractTypeValidator;
+import com.bluenimble.platform.api.validation.impls.ValidationUtils;
 import com.bluenimble.platform.json.JsonObject;
 
-public class UrlValidator extends AbstractTypeValidator {
+public class PhoneValidator extends AbstractTypeValidator {
 
 	private static final long serialVersionUID = 2430274897113013353L;
 	
-	public static final String Type 				= "Url";
+	public static final String Type 				= "Phone";
 	
-	public static final String TypeMessage			= "UrlType";
+	public static final String TypeMessage			= "PhoneType";
 	
-	public static final Pattern UrlRegex = 
-		    Pattern.compile ("^(mailto\\:|(news|(ht|f)tp(s?))\\://)[a-zA-Z0-9\\-\\.]+\\.[a-zA-Z]{2,3}(/\\S*)?$", Pattern.CASE_INSENSITIVE);
+	public static final Pattern PhoneRegex = 
+		    Pattern.compile ("^\\d{10}|(?:\\d{3}-){2}\\d{4}|\\(\\d{3}\\)\\d{3}-?\\d{4}", Pattern.CASE_INSENSITIVE);
 	
 	@Override
 	public String getName () {
@@ -43,9 +46,9 @@ public class UrlValidator extends AbstractTypeValidator {
 
 	@Override
 	public Object validate (Api api, ApiConsumer consumer, ApiRequest request, 
-			DefaultApiServiceValidator validator, String name, String label, JsonObject spec, Object value) {
+			ApiServiceValidator validator, String name, String label, JsonObject spec, Object value) {
 
-		Matcher matcher = UrlRegex.matcher (String.valueOf (value));
+		Matcher matcher = PhoneRegex.matcher (String.valueOf (value));
 		
 		if (!matcher.find ()) {
 			return ValidationUtils.feedback (

@@ -14,21 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.validation.impls;
+package com.bluenimble.platform.api.validation.impls.types;
 
+import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.security.ApiConsumer;
+import com.bluenimble.platform.api.validation.ApiServiceValidator;
 import com.bluenimble.platform.api.validation.ApiServiceValidator.Spec;
+import com.bluenimble.platform.api.validation.impls.AbstractTypeValidator;
+import com.bluenimble.platform.api.validation.impls.ValidationUtils;
 import com.bluenimble.platform.json.JsonObject;
 
-public class AlphaNumericValidator extends AbstractTypeValidator {
+public class BooleanValidator extends AbstractTypeValidator {
 
 	private static final long serialVersionUID = 2430274897113013353L;
 	
-	public static final String Type 				= "AlphaNumeric";
+	public static final String Type 				= "Boolean";
 	
-	public static final String TypeMessage			= "AlphaNumeric";
+	public static final String TypeMessage			= "BooleanType";
 	
 	@Override
 	public String getName () {
@@ -37,23 +41,28 @@ public class AlphaNumericValidator extends AbstractTypeValidator {
 
 	@Override
 	public Object validate (Api api, ApiConsumer consumer, ApiRequest request, 
-			DefaultApiServiceValidator validator, String name, String label, JsonObject spec, Object value) {
+				ApiServiceValidator validator, String name, String label, JsonObject spec, Object value) {
+		
+		JsonObject message = isRequired (validator, api, request.getLang (), label, spec, value);
+		if (message != null) {
+			return message;
+		}
 		
 		if (value == null) {
 			return null;
 		}
 		
-		char [] chars = String.valueOf (value).toCharArray ();
+		String sValue = String.valueOf (value);
 		
-		for (char c : chars) {
-			if (!Character.isLetterOrDigit (c)) {
-				return ValidationUtils.feedback (
-					null, spec, Spec.Type, 
-					validator.getMessage (api, request.getLang (), TypeMessage, label)
-				);
-			}
-		}
-		return null;
+		if (!Lang.BooleanValues.contains (sValue)) {
+			return ValidationUtils.feedback (
+				null, spec, Spec.Type, 
+				validator.getMessage (api, request.getLang (), TypeMessage, label)
+			);
+		} 
+		
+		return Lang.TrueValues.contains (sValue) ? true : false;
+
 	}
 
 }

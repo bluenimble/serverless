@@ -19,10 +19,12 @@ package com.bluenimble.platform.cli.command.impls;
 import com.bluenimble.platform.cli.command.impls.handlers.JsonCountHandler;
 import com.bluenimble.platform.cli.command.impls.handlers.JsonCreateHandler;
 import com.bluenimble.platform.cli.command.impls.handlers.JsonDeleteHandler;
+import com.bluenimble.platform.cli.command.impls.handlers.JsonGetHandler;
 import com.bluenimble.platform.cli.command.impls.handlers.JsonJoinHandler;
 import com.bluenimble.platform.cli.command.impls.handlers.JsonLoadHandler;
 import com.bluenimble.platform.cli.command.impls.handlers.JsonSaveHandler;
 import com.bluenimble.platform.cli.command.impls.handlers.JsonSetHandler;
+import com.bluenimble.platform.cli.command.impls.handlers.JsonShrinkHandler;
 
 public class JsonCommand extends PrefixedCommand {
 
@@ -31,22 +33,26 @@ public class JsonCommand extends PrefixedCommand {
 	interface Subject {
 		String Create 	= "create";
 		String Set 		= "set";
+		String Get 		= "get";
 		String Delete 	= "delete";
 		String Save 	= "save";
 		String Load 	= "load";
 		String Join 	= "join";
 		String Count 	= "count";
+		String Shrink 	= "shrink";
 	}
 	
 	public JsonCommand () {
 		super ("json", "json utility command");
 		addHandler (Subject.Create, new JsonCreateHandler ());
 		addHandler (Subject.Set, new JsonSetHandler ());
+		addHandler (Subject.Get, new JsonGetHandler ());
 		addHandler (Subject.Delete, new JsonDeleteHandler ());
 		addHandler (Subject.Save, new JsonSaveHandler ());
 		addHandler (Subject.Load, new JsonLoadHandler ());
 		addHandler (Subject.Join, new JsonJoinHandler ());
 		addHandler (Subject.Count, new JsonCountHandler ());
+		addHandler (Subject.Shrink, new JsonShrinkHandler ());
 	}
 
 }

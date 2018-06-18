@@ -310,7 +310,7 @@ public abstract class AbstractTool implements Tool {
 				cmd = (Command)cmd.getClass ().newInstance ();
 			} catch (Throwable th) {
 				if (isTestMode ()) {
-					printer ().content (th.getMessage (), Lang.toString (th));
+					printer ().error (th.getMessage (), Lang.toString (th));
 				}
 				onException (cmd, th); return FAILURE;
 			}

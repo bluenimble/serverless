@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.validation.impls;
+package com.bluenimble.platform.api.validation.impls.types;
 
 import com.bluenimble.platform.Lang;
 

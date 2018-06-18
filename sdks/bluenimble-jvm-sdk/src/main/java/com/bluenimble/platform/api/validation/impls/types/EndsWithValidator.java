@@ -14,22 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.validation.impls;
+package com.bluenimble.platform.api.validation.impls.types;
+
+import java.text.MessageFormat;
 
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.security.ApiConsumer;
+import com.bluenimble.platform.api.validation.ApiServiceValidator;
 import com.bluenimble.platform.api.validation.ApiServiceValidator.Spec;
-import com.bluenimble.platform.json.JsonArray;
-import com.bluenimble.platform.json.JsonException;
+import com.bluenimble.platform.api.validation.impls.AbstractTypeValidator;
+import com.bluenimble.platform.api.validation.impls.ValidationUtils;
 import com.bluenimble.platform.json.JsonObject;
 
-public class ArrayValidator extends AbstractTypeValidator {
+public class EndsWithValidator extends AbstractTypeValidator {
 
 	private static final long serialVersionUID = 2430274897113013353L;
 	
-	public static final String Type 				= "Array";
+	public static final String Type 				= "EndsWith";
+	
+	public static final String TypeMessage			= "EndsWith";
 	
 	@Override
 	public String getName () {
@@ -38,56 +43,30 @@ public class ArrayValidator extends AbstractTypeValidator {
 
 	@Override
 	public Object validate (Api api, ApiConsumer consumer, ApiRequest request, 
-			DefaultApiServiceValidator validator, String name, String label, JsonObject spec, Object value) {
-		
-		JsonObject message = isRequired (validator, api, request.getLang (), label, spec, value);
-		if (message != null) {
-			return message;
-		}
+			ApiServiceValidator validator, String name, String label, JsonObject spec, Object value) {
 		
 		if (value == null) {
 			return null;
 		}
 		
-		boolean updateRequest = false;
-		
-		JsonArray array = null;
-		if (value instanceof JsonArray) {
-			array = (JsonArray)value;
-		} else {
-			try {
-				array = new JsonArray (String.valueOf (value));
-			} catch (JsonException e) {
-				return ValidationUtils.feedback (
-					null, spec, Spec.Type, 
-					e.getMessage ()
-				);
-			}
-			updateRequest = true;
+		String token = Json.getString (spec, Spec.Format);
+		if (token == null) {
+			return null;
 		}
 		
-		if (array.isEmpty ()) {
+		if (!String.valueOf (value).endsWith (token)) {
+			String msg = null; 
+			if (spec.containsKey (Spec.ErrMsg)) {
+				msg = MessageFormat.format (spec.getString (Spec.ErrMsg), new Object [] { label, token });
+			} else {
+				msg = validator.getMessage (api, request.getLang (), TypeMessage, label, token);
+			}
 			return ValidationUtils.feedback (
-				null, spec, null, 
-				validator.getMessage (api, request.getLang (), RequiredMessage, label)
+				null, spec, Spec.Format, 
+				msg
 			);
 		}
 		
-		String sType = Json.getString (spec, Spec.SType, MapValidator.Type);
-		
-		TypeValidator tValidator = validator.getValidator (sType);
-		
-		for (int i = 0; i < array.count (); i++) {
-			Object feedback = tValidator.validate (api, consumer, request, validator, name, label + "->index " + i, spec, array.get (i));
-			if (feedback != null) {
-				return feedback;
-			}
-		}
-		
-		if (updateRequest) {
-			request.set (name, array);
-		}
-
 		return null;
 	}
 

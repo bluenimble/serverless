@@ -39,6 +39,7 @@ import com.bluenimble.platform.cli.ToolContext;
 import com.bluenimble.platform.cli.command.CommandExecutionException;
 import com.bluenimble.platform.cli.command.CommandResult;
 import com.bluenimble.platform.cli.command.parser.converters.StreamPointer;
+import com.bluenimble.platform.cli.printing.impls.FriendlyJsonEmitter;
 import com.bluenimble.platform.http.HttpEndpoint;
 import com.bluenimble.platform.http.HttpHeader;
 import com.bluenimble.platform.http.HttpMessageBody;
@@ -122,7 +123,11 @@ public class RemoteUtils {
 	public static CommandResult processRequest (Tool tool, JsonObject source, final Map<String, String> options) throws CommandExecutionException {
 		
 		if (Lang.isDebugMode ()) {
-			tool.printer ().content ("Remote Command", source.toString ());
+			tool.printer ().content ("__PS__ YELLOW:Remote Command", null);
+			if (tool.printer ().isOn ()) {
+				source.write (new FriendlyJsonEmitter (tool));
+				tool.writeln (Lang.BLANK);
+			}
 		}
 		
 		JsonObject oKeys = null;
@@ -162,6 +167,11 @@ public class RemoteUtils {
 			
 			if (indexOfSemi > 0) {
 				contentType = contentType.substring (0, indexOfSemi).trim ();
+			}
+			
+			JsonObject mediaMapping = (JsonObject)vars.get (DefaultVars.MediaMapping);
+			if (mediaMapping != null) {
+				contentType = Json.getString (mediaMapping, contentType, contentType);
 			}
 			
 			ResponseReader reader = Readers.get (contentType);
@@ -217,7 +227,12 @@ public class RemoteUtils {
 						HttpUtils.createEndpoint (new URI (service))
 					);
 		
-		String contentType = Json.getString (spec, Spec.request.ContentType);
+		JsonObject oHeaders = Json.getObject (spec, Spec.request.Headers);
+
+		String contentType = Json.getString (
+			spec, Spec.request.ContentType, 
+			Json.getString (oHeaders, ApiHeaders.ContentType)
+		);
 
 		// set headers
 		List<HttpHeader> headers = request.getHeaders ();
@@ -226,20 +241,21 @@ public class RemoteUtils {
 			request.setHeaders (headers);
 		}
 
-		JsonObject oHeaders = Json.getObject (spec, Spec.request.Headers);
-
-		// add default Accept header application/json
-		if (oHeaders == null || !oHeaders.containsKey (ApiHeaders.Accept)) {
-			String accept = (String)vars.get (DefaultVars.RemoteHeadersAccept);
-			if (Lang.isNullOrEmpty (accept)) {
-				accept = ApiContentTypes.Json;
+		// add default Accept header
+		JsonObject defaultHeaders = (JsonObject)vars.get (DefaultVars.RemoteHeaders);
+		if (!Json.isNullOrEmpty (defaultHeaders)) {
+			Iterator<String> hnames = defaultHeaders.keys ();
+			while (hnames.hasNext ()) {
+				String hn = hnames.next ();
+				if (oHeaders == null || !oHeaders.containsKey (hn)) {
+					headers.add (
+						new HttpHeaderImpl (
+							hn, 
+							defaultHeaders.getString (hn)
+						)
+					);
+				}
 			}
-			headers.add (
-				new HttpHeaderImpl (
-					ApiHeaders.Accept, 
-					accept
-				)
-			);
 		}
 
 		if (oHeaders != null && !oHeaders.isEmpty ()) {
@@ -279,7 +295,7 @@ public class RemoteUtils {
 		
 		// set body
 		JsonObject oBody = Json.getObject (spec, Spec.request.Body);
-		if (oBody != null && !oBody.isEmpty ()) {
+		if (!Json.isNullOrEmpty (oBody)) {
 			HttpMessageBody body = new HttpMessageBodyImpl ();
 			request.setBody (body);
 
@@ -287,7 +303,9 @@ public class RemoteUtils {
 			while (bNames.hasNext ()) {
 				String bName = bNames.next ();
 				
-				Object value = eval (Json.getString (oBody, bName), vars, config, options, oKeys);
+				Object bValue = oBody.get (bName);
+				
+				Object value = bValue instanceof String ? eval (Json.getString (oBody, bName), vars, config, options, oKeys) : bValue;
 				if (value == null) {
 					continue;
 				}
@@ -296,23 +314,28 @@ public class RemoteUtils {
 					
 					Object ov = null;
 					
-					String varName = String.valueOf (value);
-					
-					if (EmptyPayload.equals (varName)) {
-						ov = JsonObject.Blank;
+					if (value instanceof JsonObject) {
+						ov = value;
 					} else {
-						ov = ((Map<String, Object>)tool.getContext (Tool.ROOT_CTX).get (ToolContext.VARS)).get (varName);
-						if (ov == null) {
-							throw new Exception ("variable " + value + " not found");
-						}
-						if (!(ov instanceof JsonObject)) {
-							throw new Exception (value + " isn't a valid json object");
+						String varName = String.valueOf (value);
+						
+						if (EmptyPayload.equals (varName)) {
+							ov = JsonObject.Blank;
+						} else {
+							ov = ((Map<String, Object>)tool.getContext (Tool.ROOT_CTX).get (ToolContext.VARS)).get (varName);
+							if (ov == null) {
+								throw new Exception ("variable " + value + " not found");
+							}
+							if (!(ov instanceof JsonObject)) {
+								throw new Exception (value + " isn't a valid json object");
+							}
 						}
 					}
 					
 					body.add (
 						new StringHttpMessageBodyPart (ov.toString ())
 					);
+					
 					continue;
 				}
 				
@@ -401,7 +424,7 @@ public class RemoteUtils {
 
 		}
 		if (Lang.isDebugMode ()) {
-			tool.printer ().content ("Http Request", request.toString ());
+			tool.printer ().content ("__PS__ YELLOW:Http Request", request.toString ());
 		}
 
 		return request;

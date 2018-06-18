@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.validation.impls;
+package com.bluenimble.platform.api.validation.impls.types;
 
 import java.text.MessageFormat;
 
@@ -22,16 +22,19 @@ import com.bluenimble.platform.Json;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.security.ApiConsumer;
+import com.bluenimble.platform.api.validation.ApiServiceValidator;
 import com.bluenimble.platform.api.validation.ApiServiceValidator.Spec;
+import com.bluenimble.platform.api.validation.impls.AbstractTypeValidator;
+import com.bluenimble.platform.api.validation.impls.ValidationUtils;
 import com.bluenimble.platform.json.JsonObject;
 
-public class StartsWithValidator extends AbstractTypeValidator {
+public class ContainsValidator extends AbstractTypeValidator {
 
 	private static final long serialVersionUID = 2430274897113013353L;
 	
-	public static final String Type 				= "StartsWith";
+	public static final String Type 				= "Contains";
 	
-	public static final String TypeMessage			= "StartsWith";
+	public static final String TypeMessage			= "Contains";
 	
 	@Override
 	public String getName () {
@@ -40,7 +43,7 @@ public class StartsWithValidator extends AbstractTypeValidator {
 
 	@Override
 	public Object validate (Api api, ApiConsumer consumer, ApiRequest request, 
-			DefaultApiServiceValidator validator, String name, String label, JsonObject spec, Object value) {
+			ApiServiceValidator validator, String name, String label, JsonObject spec, Object value) {
 		
 		if (value == null) {
 			return null;
@@ -51,7 +54,7 @@ public class StartsWithValidator extends AbstractTypeValidator {
 			return null;
 		}
 		
-		if (!String.valueOf (value).startsWith (token)) {
+		if (String.valueOf (value).indexOf (token) < 0) {
 			String msg = null; 
 			if (spec.containsKey (Spec.ErrMsg)) {
 				msg = MessageFormat.format (spec.getString (Spec.ErrMsg), new Object [] { label, token });

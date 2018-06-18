@@ -3,6 +3,12 @@
 	    "verb": "delete",
 	"endpoint": "/[[models]]/:[[model]]",
 		"name": "Delete [[Model]]",
+		
+	"spec": {
+		"fields": { 
+			"[[model]]": { }
+		}
+	},	
 	
 	"runtime": {
 		"function": "functions/[[models]]/Delete[[Model]].js"

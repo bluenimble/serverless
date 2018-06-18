@@ -18,20 +18,7 @@
 			"description": "describe your space",
 			
 			"args": [{
-				"name": "options", "desc": "get also information about apis running in this space. Default to true",
-				"required": "false"
-			}],
-		
-			"request": {
-				"method": "get",
-				"service": "[ keys.endpoint ]/space/[ arg.0 | 'info' ]"
-			}
-		},
-		"env": {
-			"description": "describe your environment",
-			
-			"args": [{
-				"name": "options", "desc": "get also information about apis running in this environment. Default to true",
+				"name": "options", "desc": "get also information about apis running in this space. Default to info",
 				"required": "false"
 			}],
 		
@@ -46,7 +33,7 @@
 			"args": [{
 				"name": "api", "desc": "api to describe"
 			}, {
-				"name": "full", "desc": "get also information about services installed in this api. Default to false",
+				"name": "options", "desc": "get also information about services installed in this api. Default to info",
 				"required": "false"
 			}],
 		
@@ -69,22 +56,6 @@
 			"request": {
 				"method": "get",
 				"service": "[ keys.endpoint ]/apis/[arg.0]/services/[arg.1]/[arg.2]"
-			}
-		},
-		"function": {
-			"description": "describe a function",
-			
-			"args": [{
-				"name": "namespace", "desc": "function namespace"
-			}, {
-				"name": "function", "desc": "the function name. Ex. makePayment"
-			}, {
-				"name": "verb", "desc": "the verb attached to this function: get, post, delete, ...", "required": "false"
-			}],
-		
-			"request": {
-				"method": "get",
-				"service": "[ keys.endpoint ]/apis/[arg.0]/services/[arg.2]/[ arg.1 | 'post' ]"
 			}
 		}
 	

@@ -4,6 +4,12 @@
 	"endpoint": "/[[models]]/:[[model]]",
 		"name": "Get [[Model]]",
 	
+	"spec": {
+		"fields": { 
+			"[[model]]": { }
+		}
+	},	
+	
 	"spi": {
 		"class": "[[package]].[[models]].Get[[Model]]"
 	}

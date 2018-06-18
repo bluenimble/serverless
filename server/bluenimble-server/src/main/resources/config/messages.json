@@ -39,8 +39,14 @@
 	"IntegerMax": {
 		"en": "{0} ({2}) should be less than {1}"
 	},
-	"IntegerLov": {
-		"en": "{0} ({2}) value should be one of the following [{1}]" 
+	"LongType": {
+		"en": "{0} must be a valid number" 
+	},
+	"LongMin": {
+		"en": "{0} ({2}) should be greater or equals to {1}"
+	},
+	"LongMax": {
+		"en": "{0} ({2}) should be less than {1}"
 	},
 	"DecimalType": {
 		"en": "{0} must be a valid decimal"

@@ -50,6 +50,7 @@ public interface CliSpec {
 		String Apis				= "apis";
 		String CurrentApi		= "current";
 		String CurrentKeys		= "currentKeys";
+		String ResponseReaders	= "responseReaders";
 	}
 
 }

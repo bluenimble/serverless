@@ -14,24 +14,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.validation.impls;
+package com.bluenimble.platform.api.validation.impls.types;
 
-import java.text.MessageFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import com.bluenimble.platform.Json;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.security.ApiConsumer;
+import com.bluenimble.platform.api.validation.ApiServiceValidator;
 import com.bluenimble.platform.api.validation.ApiServiceValidator.Spec;
+import com.bluenimble.platform.api.validation.impls.AbstractTypeValidator;
+import com.bluenimble.platform.api.validation.impls.ValidationUtils;
 import com.bluenimble.platform.json.JsonObject;
 
-public class RegexValidator extends AbstractTypeValidator {
+public class EmailValidator extends AbstractTypeValidator {
 
 	private static final long serialVersionUID = 2430274897113013353L;
 	
-	public static final String Type 				= "Regex";
+	public static final String Type 				= "Email";
 	
-	public static final String TypeMessage			= "Regex";
+	public static final String TypeMessage			= "EmailType";
+	
+	public static final Pattern EmailRegex = 
+		    Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+	
+	private static final String GuessEmail = "{0}@bluenimble.com";
 	
 	@Override
 	public String getName () {
@@ -40,31 +48,23 @@ public class RegexValidator extends AbstractTypeValidator {
 
 	@Override
 	public Object validate (Api api, ApiConsumer consumer, ApiRequest request, 
-			DefaultApiServiceValidator validator, String name, String label, JsonObject spec, Object value) {
+			ApiServiceValidator validator, String name, String label, JsonObject spec, Object value) {
 		
-		if (value == null) {
-			return null;
-		}
+		Matcher matcher = EmailRegex.matcher (String.valueOf (value));
 		
-		String regex = Json.getString (spec, Spec.Format);
-		if (regex == null) {
-			return null;
-		}
-		
-		if (!String.valueOf (value).matches (regex)) {
-			String msg = null; 
-			if (spec.containsKey (Spec.ErrMsg)) {
-				msg = MessageFormat.format (spec.getString (Spec.ErrMsg), new Object [] { label });
-			} else {
-				msg = validator.getMessage (api, request.getLang (), TypeMessage, label);
-			}
+		if (!matcher.find ()) {
 			return ValidationUtils.feedback (
-				null, spec, Spec.Format, 
-				msg
+				null, spec, Spec.Type, 
+				validator.getMessage (api, request.getLang (), TypeMessage, label)
 			);
 		}
 		
 		return null;
+	}
+	
+	@Override
+	public Object guessValue (ApiServiceValidator validator, String name, JsonObject spec) {
+		return String.format (GuessEmail, name);
 	}
 
 }

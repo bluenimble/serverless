@@ -14,12 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.validation.impls;
+package com.bluenimble.platform.api.validation.impls;
 
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
+import com.bluenimble.platform.api.validation.ApiServiceValidator;
 import com.bluenimble.platform.api.validation.ApiServiceValidator.Spec;
+import com.bluenimble.platform.api.validation.TypeValidator;
 import com.bluenimble.platform.json.JsonObject;
 
 public abstract class AbstractTypeValidator implements TypeValidator {
@@ -30,7 +32,7 @@ public abstract class AbstractTypeValidator implements TypeValidator {
 
 	public static final String RequiredMessage	= "Required";
 	
-	protected JsonObject isRequired (DefaultApiServiceValidator validator, Api api, String lang, String label, JsonObject spec, Object value) {
+	protected JsonObject isRequired (ApiServiceValidator validator, Api api, String lang, String label, JsonObject spec, Object value) {
 		
 		boolean required = Json.getBoolean (spec, Spec.Required, true);
 		
@@ -43,6 +45,11 @@ public abstract class AbstractTypeValidator implements TypeValidator {
 			return ValidationUtils.feedback (null, spec, RequiredFacet, validator.getMessage (api, lang, RequiredMessage, label));
 		}
 		
+		return null;
+	}
+
+	@Override
+	public Object guessValue (ApiServiceValidator validator, String name, JsonObject spec) {
 		return null;
 	}
 	

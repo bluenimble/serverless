@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.validation.impls;
+package com.bluenimble.platform.api.validation.impls.types;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -25,7 +25,10 @@ import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.security.ApiConsumer;
+import com.bluenimble.platform.api.validation.ApiServiceValidator;
 import com.bluenimble.platform.api.validation.ApiServiceValidator.Spec;
+import com.bluenimble.platform.api.validation.impls.AbstractTypeValidator;
+import com.bluenimble.platform.api.validation.impls.ValidationUtils;
 import com.bluenimble.platform.json.JsonObject;
 
 public abstract class AbstractDateValidator extends AbstractTypeValidator {
@@ -40,7 +43,7 @@ public abstract class AbstractDateValidator extends AbstractTypeValidator {
 	
 	@Override
 	public Object validate (Api api, ApiConsumer consumer, ApiRequest request, 
-				DefaultApiServiceValidator validator, String name, String label, JsonObject spec, Object value) {
+				ApiServiceValidator validator, String name, String label, JsonObject spec, Object value) {
 		
 		JsonObject message = isRequired (validator, api, request.getLang (), label, spec, value);
 		if (message != null) {

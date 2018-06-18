@@ -14,16 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.validation.impls;
-
-import java.util.ArrayList;
+package com.bluenimble.platform.api.validation.impls.types;
 
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.security.ApiConsumer;
+import com.bluenimble.platform.api.validation.ApiServiceValidator;
+import com.bluenimble.platform.api.validation.TypeValidator;
 import com.bluenimble.platform.api.validation.ApiServiceValidator.Spec;
+import com.bluenimble.platform.api.validation.impls.AbstractTypeValidator;
+import com.bluenimble.platform.api.validation.impls.ValidationUtils;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 
@@ -37,17 +39,15 @@ public class IntegerValidator extends AbstractTypeValidator {
 	
 	public static final String MinMessage			= "IntegerMin";
 	public static final String MaxMessage			= "IntegerMax";
-	public static final String LovMessage			= "IntegerLov";
 	
 	@Override
 	public String getName () {
 		return Type;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Object validate (Api api, ApiConsumer consumer, ApiRequest request, 
-			DefaultApiServiceValidator validator, String name, String label, JsonObject spec, Object value) {
+			ApiServiceValidator validator, String name, String label, JsonObject spec, Object value) {
 		
 		JsonObject message = isRequired (validator, api, request.getLang (), label, spec, value);
 		if (message != null) {
@@ -105,33 +105,54 @@ public class IntegerValidator extends AbstractTypeValidator {
 			return feedback;
 		}
 		
-		Object lov = spec.get (Spec.ListOfValues);
-		if (lov == null) {
+		String sValue = String.valueOf (value);
+		
+		JsonObject lovFeedback = ValidationUtils.checkListOfValues (api, request, validator, spec, label, sValue, feedback);
+		if (feedback == null) {
+			feedback = lovFeedback;
+		}
+		
+		if (feedback == null) {
 			return iValue;
 		}
 		
-		String sValue = String.valueOf (iValue);
+		return feedback;
+	}
+
+
+	@Override
+	public Object guessValue (ApiServiceValidator validator, String name, JsonObject spec) {
 		
-		boolean lovFailed = false;
+		Object value = null;
 		
-		String lovMessage = null;
-		
-		if (lov instanceof JsonArray) {
-			lovFailed = !((JsonArray)lov).contains (sValue);
-			lovMessage = ((JsonArray)lov).join (Lang.COMMA);
-		} else if (lov instanceof JsonObject) {
-			lovFailed = !((JsonObject)lov).containsKey (sValue);
-			lovMessage = Lang.join (new ArrayList<String> (((JsonObject)lov).keySet ()), Lang.COMMA);
+		Object lov = spec.get (Spec.ListOfValues);
+		if (lov != null) {
+			if (lov instanceof JsonArray) {
+				value = ((JsonArray)lov).get (0);
+			} else if (lov instanceof JsonObject) {
+				value = ((JsonObject)lov).keySet ().toArray () [0];
+			}
+		}
+		if (value != null) {
+			return value;
 		}
 		
-		if (lovFailed) {
-			return ValidationUtils.feedback (
-				feedback, spec, Spec.ListOfValues, 
-				validator.getMessage (api, request.getLang (), LovMessage, label, lovMessage, sValue)
-			);
+		// vType
+		String vType = Json.getString (spec, Spec.VType);
+		
+		if (!Lang.isNullOrEmpty (vType)) {
+			TypeValidator vTypeValiator = validator.getTypeValidator (vType);
+			if (vTypeValiator != null) {
+				value = vTypeValiator.guessValue (validator, name, spec);
+			}
+		}
+		if (value != null) {
+			return value;
 		}
 		
-		return iValue;
+		int min = Json.getInteger (spec, Spec.Min, 1);
+		
+		return ( min + Json.getInteger (spec, Spec.Max, min) ) / 2;
 	}
 
 }

@@ -14,22 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.validation.impls;
+package com.bluenimble.platform.api.validation.impls.types;
 
-import java.io.Serializable;
+import com.bluenimble.platform.Lang;
 
-import com.bluenimble.platform.api.Api;
-import com.bluenimble.platform.api.ApiRequest;
-import com.bluenimble.platform.api.security.ApiConsumer;
-import com.bluenimble.platform.json.JsonObject;
+public class DateValidator extends AbstractDateValidator {
 
-public interface TypeValidator extends Serializable {
+	private static final long serialVersionUID = 2430274897113013353L;
 	
-	String getName ();
+	public static final String Type = "Date";
 	
-	Object validate (
-		Api api, ApiConsumer consumer, ApiRequest request, 
-		DefaultApiServiceValidator validator, String name, String label, JsonObject spec, Object value
-	);
+	@Override
+	public String getName () {
+		return Type;
+	}
+	
+	@Override
+	protected String getDefaultFormat () {
+		return Lang.DEFAULT_DATE_FORMAT;
+	}
 	
 }

@@ -44,6 +44,7 @@ import com.bluenimble.platform.api.security.ApiRequestSigner;
 import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.api.tracing.impls.NoTracing;
 import com.bluenimble.platform.api.validation.ApiServiceValidator;
+import com.bluenimble.platform.api.validation.impls.DefaultApiServiceValidator;
 import com.bluenimble.platform.cluster.ClusterPeerFactory;
 import com.bluenimble.platform.cluster.impls.DefaultClusterPeerFactory;
 import com.bluenimble.platform.json.JsonObject;
@@ -64,7 +65,6 @@ import com.bluenimble.platform.server.utils.ConfigKeys.Folders;
 import com.bluenimble.platform.server.utils.InstallUtils;
 import com.bluenimble.platform.templating.VariableResolver;
 import com.bluenimble.platform.templating.impls.DefaultExpressionCompiler;
-import com.bluenimble.platform.validation.impls.DefaultApiServiceValidator;
 
 public class FileSystemApiServer extends AbstractApiServer {
 

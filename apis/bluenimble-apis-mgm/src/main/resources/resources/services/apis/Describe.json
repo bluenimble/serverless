@@ -13,6 +13,33 @@
 		"roles": ["admin", "developer"]
 	},
 	
+	"media": {
+		"application/json.oas": {
+			"processor": "plain",
+			"success": {
+				"*": {
+					"resource": "templates/apis/describe-oas.tpl", "engine": "jtwig"
+				}
+			}
+		},
+		"application/json.gql": {
+			"processor": "plain",
+			"success": {
+				"*": {
+					"resource": "templates/apis/describe-gql.tpl", "engine": "jtwig"
+				}
+			}
+		},
+		"application/json.bnt": {
+			"processor": "plain",
+			"success": {
+				"*": {
+					"resource": "templates/apis/describe-bnt.tpl", "engine": "jtwig"
+				}
+			}
+		}
+	},
+	
 	"spi": {
 		"class": "com.bluenimble.platform.apis.mgm.spis.apis.DescribeApiSpi"
 	} 

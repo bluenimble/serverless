@@ -6,6 +6,7 @@
 	
 	"spec": {
 		"fields": {
+			"Content-Type": { "scope": "h", "lov": [ "application/json" ] },
 			"payload": { "type": "Map",
 				"fields": {
 					"user": 	{ }, 

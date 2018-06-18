@@ -6,8 +6,8 @@
 	
 	"spec": {
 		"fields": {
-			"payload": { 
-				"type": "Map",
+			"Content-Type": { "scope": "h", "lov": [ "application/json" ] },
+			"payload": { "type": "Map",
 				"fields": {
 					"age": 	{ "required": "false" }
 				}

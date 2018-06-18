@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.validation.impls;
+package com.bluenimble.platform.api.validation.impls;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,6 +28,25 @@ import com.bluenimble.platform.api.ApiRequest.Scope;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.validation.ApiServiceValidator;
 import com.bluenimble.platform.api.validation.ApiServiceValidatorException;
+import com.bluenimble.platform.api.validation.TypeValidator;
+import com.bluenimble.platform.api.validation.impls.types.AlphaNumericValidator;
+import com.bluenimble.platform.api.validation.impls.types.ArrayValidator;
+import com.bluenimble.platform.api.validation.impls.types.BooleanValidator;
+import com.bluenimble.platform.api.validation.impls.types.ContainsValidator;
+import com.bluenimble.platform.api.validation.impls.types.DateTimeValidator;
+import com.bluenimble.platform.api.validation.impls.types.DateValidator;
+import com.bluenimble.platform.api.validation.impls.types.DecimalValidator;
+import com.bluenimble.platform.api.validation.impls.types.EmailValidator;
+import com.bluenimble.platform.api.validation.impls.types.EndsWithValidator;
+import com.bluenimble.platform.api.validation.impls.types.IntegerValidator;
+import com.bluenimble.platform.api.validation.impls.types.LongValidator;
+import com.bluenimble.platform.api.validation.impls.types.MapValidator;
+import com.bluenimble.platform.api.validation.impls.types.PhoneValidator;
+import com.bluenimble.platform.api.validation.impls.types.RegexValidator;
+import com.bluenimble.platform.api.validation.impls.types.StartsWithValidator;
+import com.bluenimble.platform.api.validation.impls.types.StreamValidator;
+import com.bluenimble.platform.api.validation.impls.types.StringValidator;
+import com.bluenimble.platform.api.validation.impls.types.UrlValidator;
 import com.bluenimble.platform.json.JsonObject;
 
 public class DefaultApiServiceValidator implements ApiServiceValidator {
@@ -50,33 +69,31 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 	
 	private Map<String, TypeValidator> validators = new HashMap<String, TypeValidator> ();
 	
-	private Map<String, TypeValidator> vtypes = new HashMap<String, TypeValidator> ();
-	
 	public DefaultApiServiceValidator () {
 		// validators
-		validators.put (StringValidator.Type.toLowerCase (), 		new StringValidator ());
-		validators.put (BooleanValidator.Type.toLowerCase (), 		new BooleanValidator ());
-		validators.put (IntegerValidator.Type.toLowerCase (), 		new IntegerValidator ());
-		validators.put (LongValidator.Type.toLowerCase (), 			new LongValidator ());
-		validators.put (DecimalValidator.Type.toLowerCase (), 		new DecimalValidator ());
-		validators.put (DateValidator.Type.toLowerCase (), 			new DateValidator ());
-		validators.put (DateTimeValidator.Type.toLowerCase (), 		new DateTimeValidator ());
-		validators.put (MapValidator.Type.toLowerCase (), 			new MapValidator ());
-		validators.put (MapValidator.AltType.toLowerCase (), 		new MapValidator ());
-		validators.put (ArrayValidator.Type.toLowerCase (), 		new ArrayValidator ());
-		validators.put (StreamValidator.Type.toLowerCase (), 		new StreamValidator ());
-		validators.put (AlphaNumericValidator.Type.toLowerCase (), 	new AlphaNumericValidator ());
+		addTypeValidator (StringValidator.Type.toLowerCase (), 			new StringValidator ());
+		addTypeValidator (BooleanValidator.Type.toLowerCase (), 		new BooleanValidator ());
+		addTypeValidator (IntegerValidator.Type.toLowerCase (), 		new IntegerValidator ());
+		addTypeValidator (LongValidator.Type.toLowerCase (), 			new LongValidator ());
+		addTypeValidator (DecimalValidator.Type.toLowerCase (), 		new DecimalValidator ());
+		addTypeValidator (DateValidator.Type.toLowerCase (), 			new DateValidator ());
+		addTypeValidator (DateTimeValidator.Type.toLowerCase (), 		new DateTimeValidator ());
+		addTypeValidator (MapValidator.Type.toLowerCase (), 			new MapValidator ());
+		addTypeValidator (MapValidator.AltType.toLowerCase (), 			new MapValidator ());
+		addTypeValidator (ArrayValidator.Type.toLowerCase (), 			new ArrayValidator ());
+		addTypeValidator (StreamValidator.Type.toLowerCase (), 			new StreamValidator ());
+		addTypeValidator (AlphaNumericValidator.Type.toLowerCase (), 	new AlphaNumericValidator ());
 		
 		// vtypes
-		vtypes.put (StartsWithValidator.Type.toLowerCase (), 		new StartsWithValidator ());
-		vtypes.put (EndsWithValidator.Type.toLowerCase (), 			new EndsWithValidator ());
-		vtypes.put (ContainsValidator.Type.toLowerCase (), 			new ContainsValidator ());
+		addTypeValidator (StartsWithValidator.Type.toLowerCase (), 		new StartsWithValidator ());
+		addTypeValidator (EndsWithValidator.Type.toLowerCase (), 		new EndsWithValidator ());
+		addTypeValidator (ContainsValidator.Type.toLowerCase (), 		new ContainsValidator ());
 
-		vtypes.put (EmailValidator.Type.toLowerCase (), 			new EmailValidator ());
-		vtypes.put (UrlValidator.Type.toLowerCase (), 				new UrlValidator ());
-		vtypes.put (PhoneValidator.Type.toLowerCase (), 			new PhoneValidator ());
+		addTypeValidator (EmailValidator.Type.toLowerCase (), 			new EmailValidator ());
+		addTypeValidator (UrlValidator.Type.toLowerCase (), 			new UrlValidator ());
+		addTypeValidator (PhoneValidator.Type.toLowerCase (), 			new PhoneValidator ());
 		
-		vtypes.put (RegexValidator.Type.toLowerCase (), 			new RegexValidator ());
+		addTypeValidator (RegexValidator.Type.toLowerCase (), 			new RegexValidator ());
 	}
 	
 	@Override
@@ -127,7 +144,7 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 				continue;
 			}
 			
-			TypeValidator validator = getValidator (type);
+			TypeValidator validator = getTypeValidator (type);
 			if (validator == null) {
 				if (feedback == null) {
 					feedback = new JsonObject ();
@@ -185,18 +202,21 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 		return title;
 	}
 	
+	@Override
+	public void addTypeValidator (String name, TypeValidator validator) {
+		validators.put (name.toLowerCase (), validator);
+	}
+
+	@Override
+	public TypeValidator getTypeValidator (String name) {
+		return validators.get (name.toLowerCase ());
+	}
+
+	@Override
 	public String getMessage (Api api, String lang, String key, Object... args) {
 		return api.message (lang, key, args);
 	}
 	
-	public TypeValidator getValidator (String name) {
-		return validators.get (name.toLowerCase ());
-	}
-
-	public TypeValidator getVType (String name) {
-		return vtypes.get (name.toLowerCase ());
-	}
-
 	public Object valueOf (String name, JsonObject fieldSpec, ApiRequest request, ApiConsumer consumer, Map<String, Object> data) {
 		
 		if (data != null) {
