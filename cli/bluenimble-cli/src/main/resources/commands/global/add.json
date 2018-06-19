@@ -10,7 +10,7 @@
 		
 			"request": {
 				"method": "put",
-				"service": "[ keys.endpoint ]/space/features",
+				"service": "[ keys.endpoints.management ]/space/features",
 				"contentType": "application/json",
 				"body": {
 					"payload": "[arg.0]"
@@ -26,7 +26,7 @@
 		
 			"request": {
 				"method": "put",
-				"service": "[ keys.endpoint ]/space/secrets/[arg.0]",
+				"service": "[ keys.endpoints.management ]/space/secrets/[arg.0]",
 				"contentType": "application/json",
 				"body": {
 					"payload": "[arg.1]"

@@ -5,7 +5,7 @@
 			
 			"request": {
 				"method": "get",
-				"service": "[ keys.endpoint ]/db/[vars.database.provider]/describe"
+				"service": "[ keys.endpoints.management ]/db/[vars.database.provider]/describe"
 			}
 		}
 	}

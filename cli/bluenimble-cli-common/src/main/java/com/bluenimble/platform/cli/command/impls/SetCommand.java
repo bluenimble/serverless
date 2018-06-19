@@ -48,6 +48,10 @@ public class SetCommand extends AbstractCommand {
 		String [] nameValue = Lang.split (cmd, Lang.SPACE, true);
 		
 		String varName 	= nameValue [0];
+		if (varName.indexOf (Lang.SLASH) > -1) {
+			throw new CommandExecutionException ("invalid variable name '" + name + "'. It contains the slash (/) character which is used as property accessor when dealing with json objects").showUsage ();
+		}
+		
 		Object value = Lang.BLANK;
 		
 		if (nameValue.length > 1) {

@@ -6,7 +6,7 @@
 
 			"request": {
 				"method": "get",
-				"service": "[ keys.endpoint.default ]/keys"
+				"service": "[ keys.endpoints.management.default ]/keys"
 			}
 		}
 	}

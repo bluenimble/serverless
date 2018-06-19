@@ -10,7 +10,7 @@
 			
 			"request": {
 				"method": "get",
-				"service": "[ keys.endpoint.default ]/keys/[arg.0]"
+				"service": "[ keys.endpoints.management.default ]/keys/[arg.0]"
 			}
 		}
 	}

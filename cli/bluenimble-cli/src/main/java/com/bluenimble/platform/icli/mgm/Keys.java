@@ -31,7 +31,8 @@ public class Keys implements Serializable {
 		String Domain 		= "domain";
 		String Issuer 		= "issuer";
 		String WhenIssued 	= "whenIssued";
-		String Endpoint 	= "endpoint";
+		String Endpoints 	= "endpoints";
+		String Management 	= "management";
 		String Space 		= "space";
 		String User 		= "user";
 			String Id 		= "id";
@@ -75,12 +76,10 @@ public class Keys implements Serializable {
 		return (String)Json.find (source, Spec.User, Spec.Stamp);
 	}
 
-	public String endpoint () {
-		return Json.getString (source, Spec.Endpoint);
+	public String endpoint (String target) {
+		return (String)Json.find (source, Spec.Endpoints, target);
 	}
-	public String domain () {
-		return Json.getString (source, Spec.Domain);
-	}
+
 	public String space () {
 		return Json.getString (source, Spec.Space);
 	}

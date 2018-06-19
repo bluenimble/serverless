@@ -118,6 +118,7 @@ public class JsonSetHandler implements CommandHandler {
 			if (child == null) {
 				throw new CommandExecutionException (Lang.join (path, Lang.DOT) + " not found");
 			}
+			prop = Lang.replace (prop, Lang.GREATER, Lang.DOT);
 			if (child instanceof JsonObject) {
 				((JsonObject)child).set (prop, oValue);
 			} else if (child instanceof JsonArray) {

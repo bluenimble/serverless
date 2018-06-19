@@ -20,6 +20,7 @@ import java.util.Map;
 
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
+import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.cli.Tool;
 import com.bluenimble.platform.cli.ToolContext;
 import com.bluenimble.platform.cli.command.CommandExecutionException;
@@ -29,96 +30,88 @@ import com.bluenimble.platform.cli.command.impls.DefaultCommandResult;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 
-public class JsonDeleteHandler implements CommandHandler {
+public class JsonSearchHandler implements CommandHandler {
 
 	private static final long serialVersionUID = 7185236990672693349L;
 	
 	@Override
 	public CommandResult execute (Tool tool, String... args) throws CommandExecutionException {
 		
-		if (args == null || args.length < 1) {
-			throw new CommandExecutionException ("json variable name required");
-		}
-		
-		if (args.length < 2) {
-			throw new CommandExecutionException ("json property required");
+		if (args == null || args.length < 3) {
+			throw new CommandExecutionException ("wrong number of arguments");
 		}
 		
 		String var = args [0];
+		String prop = args [1];
+		String search = args [2];
+		
+		int arraySeparator = prop.indexOf (Lang.SLASH);
+		
+		if (arraySeparator < 0) {
+			throw new CommandExecutionException ("invalid argument '" + prop + "'. It should be in this format YourArray/fruits.banana");
+		}
+		
+		String 		array 		= prop.substring (0, arraySeparator).trim ();
+		String [] 	accessors 	= Lang.split (prop.substring (arraySeparator + 1).trim (), Lang.DOT);
 		
 		@SuppressWarnings("unchecked")
 		Map<String, Object> vars = (Map<String, Object>)tool.getContext (Tool.ROOT_CTX).get (ToolContext.VARS);
 		
-		String prop = args [1];
-		
-		int indexOfDot = prop.indexOf (Lang.DOT);
-
 		Object o = vars.get (var);
 		if (o == null) {
 			throw new CommandExecutionException ("variable '" + var + "' not found");
 		}
-		if (!(o instanceof JsonObject) && !(o instanceof JsonArray)) {
-			throw new CommandExecutionException ("variable '" + var + "' isn't a valid json object or array");
-		}
-		
-		if ((o instanceof JsonArray) && indexOfDot > 0) {
-			throw new CommandExecutionException ("property '" + prop + "' should be a valid integer since the json variable is an array");
-		}
-
-		if (indexOfDot <= 0) {
-			if (o instanceof JsonObject) {
-				((JsonObject)o).remove (prop);
-			} else {
-				((JsonArray)o).remove (Integer.parseInt (prop));
-			}
-			return new DefaultCommandResult (CommandResult.OK, o);
+		if (!(o instanceof JsonObject)) {
+			throw new CommandExecutionException ("variable '" + var + "' isn't a valid json object");
 		}
 		
 		JsonObject json = (JsonObject)o;
 		
-		String [] path = Lang.split (prop, Lang.DOT);
-		prop = path [path.length - 1];
-		path = Lang.moveRight (path, 1);
-		Object child = Json.find (json, path);
-		if (child == null) {
-			throw new CommandExecutionException (Lang.join (path, Lang.DOT) + " not found");
+		Object oArray = json.get (array);
+		if (!(oArray instanceof JsonArray)) {
+			throw new CommandExecutionException ("'" + array + "' isn't a valid json array");
 		}
-		prop = Lang.replace (prop, Lang.GREATER, Lang.DOT);
-		if (child instanceof JsonObject) {
-			((JsonObject)child).remove (prop);
-			return new DefaultCommandResult (CommandResult.OK, json);
-		} else if (child instanceof JsonArray) {
-			int iProp = -1;
-			try {
-				iProp = Integer.valueOf (prop);
-			} catch (Exception ex) {
-				// ignore
-			}
-			JsonArray array = (JsonArray)child;
-			if (iProp > -1 && array.count () > iProp) {
-				((JsonArray)child).remove (iProp);
-				return new DefaultCommandResult (CommandResult.OK, json);
+		
+		JsonObject result 	= new JsonObject ();
+		JsonArray  found 	= new JsonArray ();
+		result.set (ApiOutput.Defaults.Items, found);
+				
+		JsonArray a = (JsonArray)oArray;
+		if (a.count () == 0) {
+			return new DefaultCommandResult (CommandResult.OK, result);
+		}
+		
+		for (int i = 0; i < a.count (); i++) {
+			Object record = a.get (i);
+			if (!(record instanceof JsonObject)) {
+				continue;
 			}
 			
-		} 
+			JsonObject oRecord = (JsonObject)record;
+			
+			Object pValue = Json.find (oRecord, accessors);
+			if (pValue == null) {
+				continue;
+			}
+			
+			String sValue = String.valueOf (pValue);
+			
+			if (search.equals (sValue) || sValue.contains (search) || sValue.matches (search)) {
+				found.add (record);
+			}
+		}
 		
-		tool.printer ().content (
-			"__PS__ GREEN:" + var + "_|_ -> _|_YELLOW:" + prop, 
-			"Removed"
-		);
-		
-		return new DefaultCommandResult (CommandResult.OK, null);
+		return new DefaultCommandResult (CommandResult.OK, result);
 	}
-
 
 	@Override
 	public String getName () {
-		return "delete";
+		return "set";
 	}
 
 	@Override
 	public String getDescription () {
-		return "delete a property. json delete aJsonVariable address.city";
+		return "get all objects in an array in the given json object where a property containts the string in argument. search aJsonVar anArray/address.city New\n";
 	}
 
 	@Override
@@ -141,7 +134,17 @@ public class JsonDeleteHandler implements CommandHandler {
 					}
 					@Override
 					public String desc () {
-						return "property name";
+						return "the property path, ie. array.property";
+					}
+				},
+				new AbstractArg () {
+					@Override
+					public String name () {
+						return "value";
+					}
+					@Override
+					public String desc () {
+						return "the search pattern";
 					}
 				}
 		};

@@ -50,6 +50,7 @@ import com.bluenimble.platform.icli.mgm.commands.dev.FeaturesCommand;
 import com.bluenimble.platform.icli.mgm.commands.dev.HttpCommand;
 import com.bluenimble.platform.icli.mgm.commands.dev.KeysCommand;
 import com.bluenimble.platform.icli.mgm.commands.dev.LoadCommand;
+import com.bluenimble.platform.icli.mgm.commands.dev.SaveCommand;
 import com.bluenimble.platform.icli.mgm.commands.dev.SecureCommand;
 import com.bluenimble.platform.icli.mgm.commands.dev.UseCommand;
 import com.bluenimble.platform.icli.mgm.commands.dev.WorkspaceCommand;
@@ -71,6 +72,7 @@ public class BlueNimble extends JLineTool {
 
 	public static final String ResponseVarName	= "__ResponseVarName__";
 	public static final String GlobalContext	= "global";
+	private static final String DefaultParaphrase = "serverless";
 	
 	public interface DefaultVars {
 		String Endpoint 		= "endpoint";
@@ -127,6 +129,8 @@ public class BlueNimble extends JLineTool {
 		addCommand (new KeysCommand ());
 		addCommand (new LoadCommand ());
 		
+		addCommand (new SaveCommand ());
+
 		addCommand (new WorkspaceCommand ());
 		addCommand (new ApiCommand ());
 		addCommand (new CreateCommand ());
@@ -136,7 +140,7 @@ public class BlueNimble extends JLineTool {
 		addCommand (new FeaturesCommand ());
 		
 		addCommand (new HttpCommand ());
-
+		
 		Home = home;
 		
 		// create bluenimble working home
@@ -182,6 +186,24 @@ public class BlueNimble extends JLineTool {
 			Config.set (CliSpec.Config.Workspace, Workspace.getAbsolutePath ());
 		}
 		
+		@SuppressWarnings("unchecked")
+		Map<String, Object> vars = (Map<String, Object>)getContext (Tool.ROOT_CTX).get (ToolContext.VARS);
+		if (!vars.containsKey (Tool.ParaPhraseVar)) {
+			try {
+				setParaphrase (DefaultParaphrase, true);
+				vars.put (Tool.ParaPhraseVar, getParaphrase (false));
+				JsonObject cVars = Json.getObject (Config, CliSpec.Config.Variables);
+				if (cVars == null) {
+					Config.set (CliSpec.Config.Variables, cVars);
+				}
+				cVars.set (Tool.ParaPhraseVar, vars.get (Tool.ParaPhraseVar));
+			} catch (Exception e) {
+				System.out.println ("ERROR: Can't set default paraphrase. Cause: " + e.getMessage ());
+			}			
+		}
+		
+		loadKeys (this);
+		
 		try {
 			Json.store (Config, ConfigFile);
 		} catch (Exception e) {
@@ -195,18 +217,6 @@ public class BlueNimble extends JLineTool {
 		// load scripts
 		loadScripts (new File (Home, "scripts"));
 		loadScripts (new File (Work, "scripts"));
-		
-		@SuppressWarnings("unchecked")
-		Map<String, Object> vars = (Map<String, Object>)getContext (Tool.ROOT_CTX).get (ToolContext.VARS);
-		if (!vars.containsKey (Tool.ParaPhraseVar)) {
-			try {
-				processCommand ("set paraphrase serverless");
-			} catch (Exception e) {
-				System.out.println ("ERROR: Can't set default paraphrase. Cause: " + e.getMessage ());
-			}			
-		}
-		
-		loadKeys (this);
 		
 		try {
 			new KeysMonitor (1000).start (BlueNimble.this);

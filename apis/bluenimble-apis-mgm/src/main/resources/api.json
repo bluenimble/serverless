@@ -8,6 +8,18 @@
 		}
 	},
 	
+	"features": {
+		"media.default": {
+			"fm": {
+				"objects": {
+					"Guesser": {
+						"class": "com.bluenimble.platform.apis.mgm.utils.ValueGuesser"
+					}
+				}
+			}
+		}
+	},
+	
 	"spi": {
 		"class": "com.bluenimble.platform.apis.mgm.KeyStoreAwareApiSpi"
 	}

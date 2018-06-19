@@ -36,10 +36,10 @@ public class BeanUtils {
 	private static final String 		Is 			= "is";
 	private static final String 		Set 		= "set";
 
-	private static final String 		Clazz 		= "class";
-	private static final String 		Properties 	= "properties";
+	public static final String 			Clazz 		= "class";
+	public static final String 			Properties 	= "properties";
 	
-	private static final String 		Enabled 	= "enabled";
+	public static final String 			Enabled 	= "enabled";
 	
 	public static Object create (JsonObject definition) throws Exception {
 		return create (null, definition);

@@ -20,53 +20,28 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.bluenimble.platform.IOUtils;
-import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiResource;
 import com.bluenimble.platform.api.ApiResourcesManagerException;
-import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.Plugin;
-import com.bluenimble.platform.server.plugins.media.MediaPlugin;
 import com.github.jknack.handlebars.io.TemplateLoader;
 import com.github.jknack.handlebars.io.TemplateSource;
 
-public class ResourceTemplateLoader implements TemplateLoader {
-
-	private static final String Templates 				= "templates";
-	private static final String TemplateExtension 		= "templateExtension";
-	
-	private static final String DotTpl 				= ".tpl";
+public class HandlebarsTemplateLoader implements TemplateLoader {
 
 	private Api 		api;
-	private String 		templatesPath;
-	private String 		templateExt;
 	
-	public ResourceTemplateLoader (Plugin plugin, Api api) {
+	public HandlebarsTemplateLoader (Plugin plugin, Api api) {
 		this.api 			= api;
-		JsonObject config 	= (JsonObject)Json.find (api.getFeatures (), plugin.getNamespace (), MediaPlugin.JtwigEngine);
-		templatesPath 		= Json.getString (config, Templates, Templates);
-		if (templatesPath.startsWith (Lang.SLASH)) {
-			templatesPath = templatesPath.substring (1);
-		}
-		if (templatesPath.endsWith (Lang.SLASH)) {
-			templatesPath = templatesPath.substring (0, templatesPath.length () - 1);
-		}
-		templateExt 		= Json.getString (config, TemplateExtension, DotTpl);
 	}
 	
 	@Override
 	public TemplateSource sourceAt (String name) throws IOException {
 		
-		if (!name.endsWith (templateExt)) {
-			name = name + templateExt;
-		}
-		
-		final String fileName = templatesPath + Lang.SLASH + name;
-
 		ApiResource res;
 		try {
-			res = api.getResourcesManager ().get (Lang.split (fileName, Lang.SLASH));
+			res = api.getResourcesManager ().get (Lang.split (name, Lang.SLASH));
 		} catch (ApiResourcesManagerException e) {
 			throw new IOException (e.getMessage (), e);
 		}
@@ -80,7 +55,7 @@ public class ResourceTemplateLoader implements TemplateLoader {
 			}
 			@Override
 			public String filename () {
-				return fileName;
+				return name;
 			}
 			@Override
 			public String content () throws IOException {

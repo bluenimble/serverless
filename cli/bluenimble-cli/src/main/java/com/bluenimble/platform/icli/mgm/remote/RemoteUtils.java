@@ -218,7 +218,9 @@ public class RemoteUtils {
 		
 		Map<String, Object> vars = (Map<String, Object>)tool.getContext (Tool.ROOT_CTX).get (ToolContext.VARS);
 		
-		String service = (String)eval (Json.getString (spec, Spec.request.Service), vars, config, options, oKeys);
+		JsonObject oParameters = Json.getObject (spec, Spec.request.Parameters);
+
+		String service = (String)eval (Json.getString (spec, Spec.request.Service), vars, config, options, oKeys, oParameters);
 		
 		HttpRequest request = 
 				HttpRequests.get (Json.getString (spec, Spec.request.Method, HttpMethods.GET).toUpperCase ())
@@ -265,7 +267,7 @@ public class RemoteUtils {
 				headers.add (
 					new HttpHeaderImpl (
 						hName, 
-						String.valueOf (eval (Json.getString (oHeaders, hName), vars, config, options, oKeys))
+						String.valueOf (eval (Json.getString (oHeaders, hName), vars, config, options, oKeys, oParameters))
 					)
 				);
 			}
@@ -273,7 +275,6 @@ public class RemoteUtils {
 		
 		
 		// set parameters
-		JsonObject oParameters = Json.getObject (spec, Spec.request.Parameters);
 		if (oParameters != null && !oParameters.isEmpty ()) {
 			List<HttpParameter> parameters = request.getParameters ();
 			if (parameters == null) {
@@ -287,7 +288,7 @@ public class RemoteUtils {
 				parameters.add (
 					new HttpParameterImpl (
 						pName, 
-						String.valueOf (eval (Json.getString (oParameters, pName), vars, config, options, oKeys))
+						String.valueOf (eval (String.valueOf (oParameters.get (pName)), vars, config, options, oKeys, oParameters))
 					)
 				);
 			}
@@ -305,7 +306,7 @@ public class RemoteUtils {
 				
 				Object bValue = oBody.get (bName);
 				
-				Object value = bValue instanceof String ? eval (Json.getString (oBody, bName), vars, config, options, oKeys) : bValue;
+				Object value = bValue instanceof String ? eval (Json.getString (oBody, bName), vars, config, options, oKeys, oParameters) : bValue;
 				if (value == null) {
 					continue;
 				}
@@ -431,7 +432,10 @@ public class RemoteUtils {
 		
 	}
 	
-	private static Object eval (final String expression, final Map<String, Object> vars, final JsonObject config, final Map<String, String> options, final JsonObject keys) {
+	private static Object eval (final String expression, 
+			final Map<String, Object> vars, final JsonObject config, 
+			final Map<String, String> options, final JsonObject keys,
+			final JsonObject parameters) {
 		
 		if (Lang.isNullOrEmpty (expression)) {
 			return expression;
@@ -458,6 +462,13 @@ public class RemoteUtils {
 					value = options.get (prop);
 				} else if ("keys".equals (ns)) {
 					value = Json.find (keys, Lang.split (prop, Lang.DOT));
+				} else if ("params".equals (ns)) {
+					if (parameters != null) {
+						value = parameters.get (prop);
+						parameters.remove (prop);
+					} else {
+						value = Lang.BLANK;
+					} 
 				}
 				if (value == null) {
 					return defaultValue;

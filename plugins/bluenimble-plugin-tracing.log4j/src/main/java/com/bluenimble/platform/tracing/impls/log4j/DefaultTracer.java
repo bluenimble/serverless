@@ -28,6 +28,7 @@ import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.impls.SpaceThread;
 import com.bluenimble.platform.api.tracing.Tracer;
+import com.bluenimble.platform.plugins.tracing.log4j.Log4JTracerPlugin;
 
 public class DefaultTracer implements Tracer {
 
@@ -55,6 +56,10 @@ public class DefaultTracer implements Tracer {
 	
 	@Override
 	public void log (Level level, Object o, Throwable th) {
+		
+		if (Log4JTracerPlugin.ShuttingDown) {
+			return;
+		}
 		
 		// add runtime fields
 		addFields ();
@@ -87,6 +92,10 @@ public class DefaultTracer implements Tracer {
 
 	@Override
 	public void log (Level level, Object o, Object... args) {
+		
+		if (Log4JTracerPlugin.ShuttingDown) {
+			return;
+		}
 		
 		// add runtime fields
 		addFields ();

@@ -31,6 +31,7 @@ import com.bluenimble.platform.cli.printing.Printer.Colors;
 import com.bluenimble.platform.cli.printing.Printer.PrintSpec;
 import com.bluenimble.platform.icli.mgm.BlueNimble;
 import com.bluenimble.platform.icli.mgm.Keys;
+import com.bluenimble.platform.icli.mgm.Keys.Spec;
 
 public class KeysCommand extends AbstractCommand {
 
@@ -71,7 +72,8 @@ public class KeysCommand extends AbstractCommand {
 					//  __PS__YELLOW:(C) _|_keyAlias	
 					current ? PrintSpec.Start + Colors.Yellow + PrintSpec.TextSep + "(C) " + PrintSpec.Split + sname : sname, 
 					(Lang.isNullOrEmpty (s.name ()) ? Lang.BLANK :       "      Name | " + s.name () + Lang.ENDLN) + 
-					(Lang.isNullOrEmpty (s.domain ()) ? Lang.BLANK :     "  Endpoint | " + s.domain () + Lang.ENDLN) + 
+					(Lang.isNullOrEmpty (s.endpoint (Spec.Space)) ? Lang.BLANK :     "  Endpoint | " + s.endpoint (Spec.Space) + Lang.ENDLN) + 
+					(Lang.isNullOrEmpty (s.endpoint (Spec.Management) ) ? Lang.BLANK :     "Management | " + s.endpoint (Spec.Management) + Lang.ENDLN) + 
 					(Lang.isNullOrEmpty (s.issuer ()) ? Lang.BLANK :     "    Issuer | " + s.issuer () + Lang.ENDLN) +
 					(Lang.isNullOrEmpty (s.whenIssued ()) ? Lang.BLANK : "    Issued | " + s.whenIssued () + Lang.ENDLN) + 
 					(Lang.isNullOrEmpty (s.expiresOn ()) ? Lang.BLANK :  "   Expires | " + s.expiresOn () + Lang.ENDLN) + 

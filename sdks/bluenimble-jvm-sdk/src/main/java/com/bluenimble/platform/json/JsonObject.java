@@ -16,7 +16,6 @@
  */
 package com.bluenimble.platform.json;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.Null;
 
@@ -582,11 +580,6 @@ public class JsonObject extends JsonAbstractEntity implements Map {
 		}
     }
     
-    public static void main (String [] args) throws Exception {
-		JsonObject comments = Json.load (new File ("tests/json/comments.json"));
-		System.out.println (comments.toString (2));
-	}
-    
 	public JsonObject merge (JsonObject data) {
 		if (data == null || data.isEmpty ()) {
 			return this;
@@ -625,5 +618,5 @@ public class JsonObject extends JsonAbstractEntity implements Map {
 		}
 		return this;
 	}
-	
+    
 }

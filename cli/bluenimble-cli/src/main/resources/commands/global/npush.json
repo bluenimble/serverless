@@ -12,7 +12,7 @@
 			
 			"request": {
 				"method": "post",
-				"service": "[ keys.endpoint ]/apis",
+				"service": "[ keys.endpoints.management ]/apis",
 				"contentType": "multipart/form-data",
 				"body": {
 					"payload": "[ vars.api.folder | bn.workspace ]/[arg.0]"

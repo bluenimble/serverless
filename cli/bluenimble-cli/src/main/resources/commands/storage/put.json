@@ -12,7 +12,7 @@
 		
 			"request": {
 				"method": "post",
-				"service": "[ keys.endpoint ]/storage/[vars.storage.provider]/objects/[arg.0]",
+				"service": "[ keys.endpoints.management ]/storage/[vars.storage.provider]/objects/[arg.0]",
 				"contentType": "multipart/form-data",
 				"body": {
 					"payload": "[arg.1]"

@@ -13,7 +13,7 @@
 		
 			"request": {
 				"method": "get",
-				"service": "[ keys.endpoint ]/spaces/[arg.0]/[ arg.1 | 'info' ]"
+				"service": "[ keys.endpoints.management ]/spaces/[arg.0]/[ arg.1 | 'info' ]"
 			}
 		}
 	}

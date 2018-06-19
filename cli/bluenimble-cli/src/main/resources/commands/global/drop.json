@@ -10,7 +10,7 @@
 		
 			"request": {
 				"method": "delete",
-				"service": "[ keys.endpoint ]/apis/[arg.0]"
+				"service": "[ keys.endpoints.management ]/apis/[arg.0]"
 			}
 		}
 	}

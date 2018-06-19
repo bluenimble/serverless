@@ -19,6 +19,7 @@ package com.bluenimble.platform.api;
 import com.bluenimble.platform.Traceable;
 import com.bluenimble.platform.api.media.ApiMediaProcessor;
 import com.bluenimble.platform.api.security.ApiConsumer;
+import com.bluenimble.platform.api.validation.ApiServiceValidator;
 import com.bluenimble.platform.api.validation.ApiServiceValidatorException;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.scripting.Scriptable;
@@ -87,6 +88,7 @@ public interface Api extends Traceable, Manageable {
 	
 	JsonObject 			i18n 					(String lang);
 	
+	ApiServiceValidator getServiceValidator 	();
 	ApiResourcesManager getResourcesManager 	();
 	ApiServicesManager 	getServicesManager 		();
 

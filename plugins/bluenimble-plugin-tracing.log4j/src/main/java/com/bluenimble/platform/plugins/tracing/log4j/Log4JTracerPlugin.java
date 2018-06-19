@@ -16,6 +16,10 @@
  */
 package com.bluenimble.platform.plugins.tracing.log4j;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configurator;
+
 import com.bluenimble.platform.PackageClassLoader;
 import com.bluenimble.platform.plugins.impls.AbstractPlugin;
 import com.bluenimble.platform.server.ApiServer;
@@ -29,10 +33,19 @@ public class Log4JTracerPlugin extends AbstractPlugin {
 		String Default 		= "default";
 	}
 	
+	public static boolean ShuttingDown = false;
+	
 	@Override
 	public void init (ApiServer server) throws Exception {
 		PackageClassLoader pcl = (PackageClassLoader)Log4JTracerPlugin.class.getClassLoader ();
 		pcl.addSynonym (Synonyms.Default, DefaultTracer.class.getName ());
+	}
+
+	@Override
+	public void kill () {
+		ShuttingDown = true;
+		LoggerContext context = (LoggerContext) LogManager.getContext ();
+        Configurator.shutdown (context);
 	}
 
 }

@@ -12,7 +12,7 @@
 			
 			"request": {
 				"method": "delete",
-				"service": "[ keys.endpoint ]/space/features/[arg.0]/[arg.1]",
+				"service": "[ keys.endpoints.management ]/space/features/[arg.0]/[arg.1]",
 			}
 		},
 		"secrets": {
@@ -24,7 +24,7 @@
 			
 			"request": {
 				"method": "delete",
-				"service": "[ keys.endpoint ]/space/secrets/[arg.0]",
+				"service": "[ keys.endpoints.management ]/space/secrets/[arg.0]",
 			}
 		}
 	}

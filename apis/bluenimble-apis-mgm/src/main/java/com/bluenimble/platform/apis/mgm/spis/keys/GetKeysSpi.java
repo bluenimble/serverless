@@ -45,11 +45,11 @@ public class GetKeysSpi extends AbstractApiServiceSpi {
 	private static final long serialVersionUID = -3682312790255625219L;
 
 	interface Output {
-		String Name 	= "name";
-		String Endpoint = "endpoint";
-		String Space 	= "space";
-		String Domain 	= "domain";
-		String KeysExt 	= "keys";
+		String Name 		= "name";
+		String Endpoints 	= "endpoints";
+		String Management 	= "management";
+		String Space 		= "space";
+		String KeysExt 		= "keys";
 	}
 	
 	interface Spec {
@@ -131,10 +131,17 @@ public class GetKeysSpi extends AbstractApiServiceSpi {
 		JsonObject oKeys = new JsonObject ();
 		oKeys.set (Output.Name, keysSpace.getName ());
 		oKeys.set (Output.Space, keysSpace.getNamespace ());
-		oKeys.set (Output.Endpoint, request.getScheme () + "://" + request.getEndpoint () + Lang.SLASH + 
-									api.space ().getNamespace () + Lang.SLASH + api.getNamespace ());
-		oKeys.set (Output.Domain, request.getScheme () + "://" + request.getEndpoint () + Lang.SLASH + 
-				keysSpace.getNamespace ());
+		oKeys.set (Output.Endpoints, new JsonObject ()
+			.set (Output.Management, 
+					request.getScheme () + "://" + request.getEndpoint () + Lang.SLASH + 
+								api.space ().getNamespace () + Lang.SLASH + api.getNamespace ()
+				 )
+			.set (Output.Space, 
+					request.getScheme () + "://" + request.getEndpoint () + Lang.SLASH + 
+						keysSpace.getNamespace ()
+				 )
+		);
+
 		if (kp.expiryDate () != null) {
 			oKeys.set (KeyPair.Fields.ExpiryDate, Lang.toUTC (kp.expiryDate ()));
 		}

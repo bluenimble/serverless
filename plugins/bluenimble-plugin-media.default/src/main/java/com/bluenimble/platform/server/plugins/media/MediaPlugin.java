@@ -27,11 +27,13 @@ import com.bluenimble.platform.api.impls.media.PlainMediaProcessor;
 import com.bluenimble.platform.api.impls.media.StreamMediaProcessor;
 import com.bluenimble.platform.api.impls.media.engines.TemplateEngine;
 import com.bluenimble.platform.api.impls.media.engines.TemplateEnginesRegistry;
+import com.bluenimble.platform.api.impls.media.engines.freemarker.FreeMarkerTemplateEngine;
 import com.bluenimble.platform.api.impls.media.engines.handlebars.HandlebarsTemplateEngine;
 import com.bluenimble.platform.api.impls.media.engines.javascript.JavascriptEngine;
 import com.bluenimble.platform.api.impls.media.engines.jtwig.JtwigTemplateEngine;
 import com.bluenimble.platform.api.media.ApiMediaProcessorRegistry;
 import com.bluenimble.platform.api.media.MediaTypeUtils;
+import com.bluenimble.platform.plugins.PluginRegistryException;
 import com.bluenimble.platform.plugins.impls.AbstractPlugin;
 import com.bluenimble.platform.server.ApiServer;
 import com.bluenimble.platform.server.ApiServer.Event;
@@ -40,6 +42,7 @@ public class MediaPlugin extends AbstractPlugin {
 
 	private static final long serialVersionUID = 3203657740159783537L;
 	
+	public static final String FreeMarkerEngine		= "fm";	
 	public static final String JtwigEngine			= "jtwig";	
 	public static final String HandlebarsEngine 	= "hb";
 	public static final String JavascriptEngine 	= "js";
@@ -73,18 +76,24 @@ public class MediaPlugin extends AbstractPlugin {
 	}
 
 	@Override
-	public void onEvent (Event event, Manageable target, Object... args) {
+	public void onEvent (Event event, Manageable target, Object... args) throws PluginRegistryException {
 		if (!Api.class.isAssignableFrom (target.getClass ())) {
 			return;
 		}
 		
 		Api api = (Api)target;
 		
-		if (event.equals (Event.Install)) {
+		if (event.equals (Event.Start)) {
+			try {
+				enginesRegistry.add (api, FreeMarkerEngine, new FreeMarkerTemplateEngine (this, api));
+			} catch (Exception ex) {
+				throw new PluginRegistryException (ex.getMessage (), ex);
+			}
 			enginesRegistry.add (api, HandlebarsEngine, new HandlebarsTemplateEngine (this, api));
 			enginesRegistry.add (api, JtwigEngine, new JtwigTemplateEngine (this, api));
 			enginesRegistry.add (api, JavascriptEngine, new JavascriptEngine (this, api));
 		} else if (event.equals (Event.Uninstall)) {
+			enginesRegistry.remove (api, FreeMarkerEngine);
 			enginesRegistry.remove (api, HandlebarsEngine);
 			enginesRegistry.remove (api, JtwigEngine);
 			enginesRegistry.remove (api, JavascriptEngine);

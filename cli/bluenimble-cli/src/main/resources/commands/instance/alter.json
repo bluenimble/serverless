@@ -12,7 +12,7 @@
 		
 			"request": {
 				"method": "put",
-				"service": "[ keys.endpoint ]/spaces/[arg.0]",
+				"service": "[ keys.endpoints.management ]/spaces/[arg.0]",
 				"contentType": "application/json",
 				"body": {
 					"payload": "[arg.1]"

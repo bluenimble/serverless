@@ -23,6 +23,7 @@ import com.bluenimble.platform.cli.command.impls.handlers.JsonGetHandler;
 import com.bluenimble.platform.cli.command.impls.handlers.JsonJoinHandler;
 import com.bluenimble.platform.cli.command.impls.handlers.JsonLoadHandler;
 import com.bluenimble.platform.cli.command.impls.handlers.JsonSaveHandler;
+import com.bluenimble.platform.cli.command.impls.handlers.JsonSearchHandler;
 import com.bluenimble.platform.cli.command.impls.handlers.JsonSetHandler;
 import com.bluenimble.platform.cli.command.impls.handlers.JsonShrinkHandler;
 
@@ -40,6 +41,7 @@ public class JsonCommand extends PrefixedCommand {
 		String Join 	= "join";
 		String Count 	= "count";
 		String Shrink 	= "shrink";
+		String Search	= "search";
 	}
 	
 	public JsonCommand () {
@@ -53,6 +55,7 @@ public class JsonCommand extends PrefixedCommand {
 		addHandler (Subject.Join, new JsonJoinHandler ());
 		addHandler (Subject.Count, new JsonCountHandler ());
 		addHandler (Subject.Shrink, new JsonShrinkHandler ());
+		addHandler (Subject.Search, new JsonSearchHandler ());
 	}
 
 }

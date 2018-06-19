@@ -4,7 +4,7 @@
 
 	"request": {
 		"method": "get",
-		"service": "[ keys.endpoint ]/storage/[vars.storage.provider]/objects",
+		"service": "[ keys.endpoints.management ]/storage/[vars.storage.provider]/objects",
 		"headers": {
 			"Accept": "application/json"
 		}

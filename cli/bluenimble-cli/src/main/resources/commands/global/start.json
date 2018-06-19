@@ -10,7 +10,7 @@
 			
 			"request": {
 				"method": "put",
-				"service": "[ keys.endpoint ]/apis/[arg.0]/start"
+				"service": "[ keys.endpoints.management ]/apis/[arg.0]/start"
 			}
 		}
 	}

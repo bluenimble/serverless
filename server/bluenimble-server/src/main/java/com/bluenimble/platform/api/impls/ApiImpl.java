@@ -54,6 +54,7 @@ import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.api.tracing.Tracer.Level;
 import com.bluenimble.platform.api.tracing.impls.NoTracing;
+import com.bluenimble.platform.api.validation.ApiServiceValidator;
 import com.bluenimble.platform.api.validation.ApiServiceValidatorException;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
@@ -98,6 +99,7 @@ public class ApiImpl implements Api {
 	
 	private File home;
 
+	private ApiServiceValidator		serviceValidator;
 	private ApiResourcesManager 	resourcesManager;
 	private ApiServicesManager 		servicesManager;
 
@@ -229,6 +231,19 @@ public class ApiImpl implements Api {
 			space.tracer ().log (Tracer.Level.Info, "\tDescription: {0}", getDescription ());
 		} 
 		
+		// set validator
+		JsonObject oValidator = Json.getObject (descriptor, ConfigKeys.ServiceValidator);
+		if (!Json.isNullOrEmpty (oValidator)) {
+			try {
+				serviceValidator = (ApiServiceValidator)BeanUtils.create (this.getClassLoader (), oValidator, space.getServer ().getPluginsRegistry ());
+			} catch (Exception ex) {
+				failed (ex);
+			} 
+		}
+		if (serviceValidator == null) {
+			serviceValidator = space.server.getServiceValidator ();
+		}
+
 		// init tracer
 		JsonObject oTracer = Json.getObject (descriptor, ConfigKeys.Tracer);
 		if (!Json.isNullOrEmpty (oTracer)) {
@@ -371,6 +386,11 @@ public class ApiImpl implements Api {
 	@Override
 	public ApiServicesManager getServicesManager () {
 		return servicesManager;
+	}
+
+	@Override
+	public ApiServiceValidator getServiceValidator () {
+		return serviceValidator;
 	}
 
 	@Override

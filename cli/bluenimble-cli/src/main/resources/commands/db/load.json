@@ -9,7 +9,7 @@
 		
 			"request": {
 				"method": "post",
-				"service": "[ keys.endpoint ]/db/[vars.database.provider]/records",
+				"service": "[ keys.endpoints.management ]/db/[vars.database.provider]/records",
 				"contentType": "application/json",
 				"body": {
 					"payload": "[arg.0]"

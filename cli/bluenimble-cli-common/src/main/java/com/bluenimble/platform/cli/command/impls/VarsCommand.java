@@ -40,6 +40,7 @@ public class VarsCommand extends AbstractCommand {
 	
 	public VarsCommand () {
 		super ("vars", I18nProvider.get (I18N_COMMANDS + "vars.desc"));
+		synonym = "var";
 	}
 
 	@SuppressWarnings("unchecked")

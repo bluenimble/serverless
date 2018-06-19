@@ -18,7 +18,7 @@
 			"processor": "plain",
 			"success": {
 				"*": {
-					"resource": "templates/apis/describe-oas.tpl", "engine": "jtwig"
+					"resource": "templates/apis/describe-oas.ftl", "engine": "fm"
 				}
 			}
 		},
@@ -26,7 +26,7 @@
 			"processor": "plain",
 			"success": {
 				"*": {
-					"resource": "templates/apis/describe-gql.tpl", "engine": "jtwig"
+					"resource": "templates/apis/describe-gql.ftl", "engine": "fm"
 				}
 			}
 		},
@@ -34,7 +34,7 @@
 			"processor": "plain",
 			"success": {
 				"*": {
-					"resource": "templates/apis/describe-bnt.tpl", "engine": "jtwig"
+					"resource": "templates/apis/describe-bnt.ftl", "engine": "fm"
 				}
 			}
 		}

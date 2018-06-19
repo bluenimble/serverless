@@ -60,7 +60,7 @@ public class HandlebarsTemplateEngine implements TemplateEngine {
 	public HandlebarsTemplateEngine (MediaPlugin plugin, Api api) {
 		this.api = api;
 		config = (JsonObject)Json.find (api.getFeatures (), plugin.getNamespace (), MediaPlugin.HandlebarsEngine);
-		engine = new Handlebars (new ResourceTemplateLoader (plugin, api));
+		engine = new Handlebars (new HandlebarsTemplateLoader (plugin, api));
 		engine.startDelimiter (Json.getString (config, StartDelimitter, DefaultStartDelimitter));
 		engine.endDelimiter (Json.getString (config, EndDelimitter, DefaultEndDelimitter));
 		

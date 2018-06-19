@@ -60,13 +60,7 @@ public class PlaygroundPlugin extends AbstractPlugin {
 		oServer = OServerMain.create ();
 		oServer.startup (new File (home, "orientdb-server-config.xml"));
 		oServer.activate ();
-		
+		oServer.removeShutdownHook ();
 	}	
-	
-	public static void main (String [] args) throws Exception {
-		OServer oServer = OServerMain.create ();
-		oServer.startup (new File ("/repos/bluenimble/serverless/plugins/bluenimble-plugin-dev.playground/src/main/resources/orientdb-server-config.xml"));
-		oServer.activate ();
-	}
 
 }
