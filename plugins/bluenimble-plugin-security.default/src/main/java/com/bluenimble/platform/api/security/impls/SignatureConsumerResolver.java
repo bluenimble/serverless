@@ -48,7 +48,7 @@ public class SignatureConsumerResolver implements ApiConsumerResolver {
 	protected static final String MethodName = "signature";
 
 	interface Defaults {
-		String 	Scheme 				= "Bearer";
+		String 	Prefix 				= "BNB-HMAC-SHA256";
 		long 	Validity 			= 300;
 		String 	TimestampHeader 	= ApiHeaders.Timestamp;
 		String	AccessKey			= "uuid";
@@ -56,7 +56,7 @@ public class SignatureConsumerResolver implements ApiConsumerResolver {
 	}
 	
 	interface Spec {
-		String 	Scheme 				= "scheme";
+		String 	Prefix 				= "prefix";
 		String 	Validity 			= "validity";
 		String 	TimestampHeader 	= "timestampHeader";
 		interface Auth {
@@ -73,7 +73,7 @@ public class SignatureConsumerResolver implements ApiConsumerResolver {
 		
 		JsonObject oResolver = Json.getObject (Json.getObject (api.getSecurity (), Api.Spec.Security.Schemes), MethodName);
 		
-		String 	scheme 	= Json.getString 	(oResolver, Spec.Scheme, Defaults.Scheme);
+		String 	scheme 	= Json.getString 	(oResolver, Spec.Prefix, Defaults.Prefix);
 		
 		String auth = (String)request.get (ApiHeaders.Authorization, Scope.Header);
 		

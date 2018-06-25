@@ -17,16 +17,15 @@
 package com.bluenimble.platform.api.validation.impls.types;
 
 import com.bluenimble.platform.Lang;
+import com.bluenimble.platform.api.validation.FieldType;
 
 public class DateTimeValidator extends AbstractDateValidator {
 
 	private static final long serialVersionUID = 2430274897113013353L;
 	
-	public static final String Type = "DateTime";
-	
 	@Override
 	public String getName () {
-		return Type;
+		return FieldType.DateTime;
 	}
 	
 	@Override

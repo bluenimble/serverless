@@ -25,6 +25,7 @@ import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiService;
 import com.bluenimble.platform.api.validation.ApiServiceValidator;
 import com.bluenimble.platform.api.validation.ApiServiceValidator.Spec;
+import com.bluenimble.platform.api.validation.FieldType;
 import com.bluenimble.platform.api.validation.TypeValidator;
 import com.bluenimble.platform.api.validation.impls.types.StringValidator;
 import com.bluenimble.platform.json.JsonArray;
@@ -50,7 +51,7 @@ public class ValidationUtils {
 	}
 	
 	public static Object guessValue (ApiServiceValidator validator, String name, JsonObject spec) {
-		TypeValidator tv = validator.getTypeValidator (Json.getString (spec, ApiServiceValidator.Spec.Type, StringValidator.Type));
+		TypeValidator tv = validator.getTypeValidator (Json.getString (spec, ApiServiceValidator.Spec.Type, FieldType.String));
 		if (tv == null) {
 			return null;
 		}
@@ -58,32 +59,73 @@ public class ValidationUtils {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static JsonObject checkListOfValues (Api api, ApiRequest request, 
+	public static JsonObject checkEnum (Api api, ApiRequest request, 
 			ApiServiceValidator validator, JsonObject spec, String label, String value, JsonObject feedback) {
 		
-		Object lov = spec.get (Spec.ListOfValues);
-		if (lov == null) {
+		Object _enum = spec.get (Spec.Enum);
+		if (_enum == null) {
 			return null;
 		}
 		
-		boolean lovFailed = false;
+		boolean enumFailed = false;
 		
-		String lovMessage = null;
+		String enumMessage = null;
 		
-		if (lov instanceof JsonArray) {
-			lovFailed = !((JsonArray)lov).contains (value);
-			lovMessage = ((JsonArray)lov).join (Lang.COMMA);
-		} else if (lov instanceof JsonObject) {
-			lovFailed = !((JsonObject)lov).containsKey (value);
-			lovMessage = Lang.join (new ArrayList<String> (((JsonObject)lov).keySet ()), Lang.COMMA);
+		if (_enum instanceof JsonArray) {
+			enumFailed = !((JsonArray)_enum).contains (value);
+			enumMessage = ((JsonArray)_enum).join (Lang.COMMA);
+		} else if (_enum instanceof JsonObject) {
+			enumFailed = !((JsonObject)_enum).containsKey (value);
+			enumMessage = Lang.join (new ArrayList<String> (((JsonObject)_enum).keySet ()), Lang.COMMA);
 		}
 		
-		if (lovFailed) {
+		if (enumFailed) {
 			return ValidationUtils.feedback (
-				feedback, spec, Spec.ListOfValues, 
-				validator.getMessage (api, request.getLang (), StringValidator.LovMessage, label, lovMessage, value)
+				feedback, spec, Spec.Enum, 
+				validator.getMessage (api, request.getLang (), StringValidator.EnumMessage, label, enumMessage, value)
 			);
 		}
+		return null;
+	}
+	
+	public static String isValidRestriction (JsonObject spec, double dValue, String restriction) {
+		
+		if (!spec.containsKey (restriction)) {
+			return null;
+		}
+		
+		boolean exclusive = false;
+		String restrictValue = Json.getString (spec, restriction).trim ();
+		if (Lang.isNullOrEmpty (restrictValue)) {
+			return null;
+		}
+		if (restrictValue.startsWith (ApiServiceValidator.Spec.Exclusive)) {
+			exclusive = true;
+			restrictValue = restrictValue.substring (1);
+		}
+
+		// resolve value
+		double dRestriction;
+		try {
+			dRestriction = Double.parseDouble (restrictValue);
+		} catch (NumberFormatException nfex) {
+			return restrictValue;
+		}
+		
+		if (exclusive) {
+			if (Spec.Min.equals (restriction)) {
+				return dValue > dRestriction ? null : restrictValue;
+			} else if (Spec.Max.equals (restriction)) {
+				return dValue < dRestriction ? null : restrictValue;
+			} 
+		} else {
+			if (Spec.Min.equals (restriction)) {
+				return dValue >= dRestriction ? null : restrictValue;
+			} else if (Spec.Max.equals (restriction)) {
+				return dValue <= dRestriction ? null : restrictValue;
+			} 
+		}
+		
 		return null;
 	}
 	

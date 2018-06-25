@@ -384,21 +384,18 @@ public abstract class AbstractTool implements Tool {
 		if (result.getType () == CommandResult.OK) {
 			if (out != null) {
 				if (out.startsWith (FilePrefix)) {
-					out = out.substring (FilePrefix.length ());
+					out = out.substring (FilePrefix.length ()).trim ();
+					if (out.startsWith (Lang.TILDE + File.separator)) {
+						out = System.getProperty ("user.home") + out.substring (1);
+					}
 					InputStream is = null;
 					if (content instanceof ApiStreamSource) {
 						is = ((ApiStreamSource)content).stream ();
 					} else {
-						if (content instanceof YamlObject) {
-							content = ((YamlObject)content).toJson ();
-						}
 						is = new ByteArrayInputStream (content.toString ().getBytes ());
 					}
 					OutputStream os = null;
 					try {
-						if (out.startsWith (Lang.TILDE + File.separator)) {
-							out = System.getProperty ("user.home") + out.substring (1);
-						}
 						os = new FileOutputStream (new File (out));
 						IOUtils.copy (is, os);
 					} catch (Exception e) {

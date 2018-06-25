@@ -7,7 +7,7 @@
 		"fields": {
 			"provider": { "max": "100", "value": "default" },
 			"payload": 	{ 
-				"type": "Map",
+				"type": "Object",
 				"fields": {
 					"key": 		{  },
 					"value": 	{ "type": "Raw" },

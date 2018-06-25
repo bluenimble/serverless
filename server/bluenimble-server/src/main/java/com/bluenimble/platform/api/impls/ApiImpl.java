@@ -75,6 +75,7 @@ public class ApiImpl implements Api {
 	private static final String RuntimeKey			= Spec.Runtime.class.getSimpleName ().toLowerCase ();
 	
 	interface Describe {
+		String Space 			= "space";	
 		String Services 		= "services";	
 		
 		String Failure			= "failure";
@@ -669,6 +670,7 @@ public class ApiImpl implements Api {
 		
 		if (opts.containsKey (DescribeOption.Option.info)) {
 			describe.set (Api.Spec.Namespace, getNamespace ());
+			describe.set (Describe.Space, space.getNamespace ());
 			describe.set (Api.Spec.Name, getName ());
 			describe.set (Api.Spec.Description, getDescription ());
 			describe.set (Api.Spec.Status, status ().name ());

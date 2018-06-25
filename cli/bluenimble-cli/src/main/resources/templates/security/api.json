@@ -3,12 +3,14 @@
 	"security": {
 		"schemes": {
 			"token": {
+				"prefix": "Bearer",
 				"auth": { "secrets": "default" }
 			},
 			"cookie": {
 				"auth": { "secrets": "default" }
 			},
 			"signature": {
+				"prefix": "BNB-HMAC-SHA256",
 				"auth": { 
 					"query": {
 						"entity": "AppKeys", "where": { "accessKey": ":accessKey" }

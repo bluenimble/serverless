@@ -54,6 +54,7 @@ public interface Api extends Traceable, Manageable {
 			String Async		= "async";
 			String Function		= "function";
 		}
+		
 	}
 	
 	ApiSpace 			space 					();

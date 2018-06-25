@@ -6,7 +6,7 @@
 		"contentType": "application/json",
 		"fields": {
 			"space": {  },
-			"payload": { "type": "Map" }
+			"payload": { "type": "Object" }
 		}
 	},
 	

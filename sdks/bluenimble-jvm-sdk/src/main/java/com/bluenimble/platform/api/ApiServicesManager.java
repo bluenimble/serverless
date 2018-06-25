@@ -18,6 +18,8 @@ package com.bluenimble.platform.api;
 
 import java.io.Serializable;
 
+import com.bluenimble.platform.json.JsonObject;
+
 public interface ApiServicesManager extends Serializable {
 
 	interface Selector {
@@ -41,5 +43,7 @@ public interface ApiServicesManager extends Serializable {
 	boolean 			exists 			(ApiVerb verb, String endpoint);
 	
 	boolean				isEmpty			(ApiVerb verb);
+	
+	JsonObject			groupBy			(String property, String groupItemKey);
 	
 }

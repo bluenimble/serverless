@@ -22,6 +22,7 @@ import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.validation.ApiServiceValidator;
+import com.bluenimble.platform.api.validation.FieldType;
 import com.bluenimble.platform.api.validation.TypeValidator;
 import com.bluenimble.platform.api.validation.ApiServiceValidator.Spec;
 import com.bluenimble.platform.api.validation.impls.AbstractTypeValidator;
@@ -33,8 +34,6 @@ public class LongValidator extends AbstractTypeValidator {
 
 	private static final long serialVersionUID = 2430274897113013353L;
 	
-	public static final String Type 				= "Long";
-	
 	public static final String TypeMessage			= "LongType";
 	
 	public static final String MinMessage			= "LongMin";
@@ -42,7 +41,7 @@ public class LongValidator extends AbstractTypeValidator {
 	
 	@Override
 	public String getName () {
-		return Type;
+		return FieldType.Long;
 	}
 
 	@Override
@@ -86,26 +85,26 @@ public class LongValidator extends AbstractTypeValidator {
 		
 		JsonObject feedback = null;
 		
-		long min = Json.getLong (spec, Spec.Min, 1);
-		if (iValue < min) {
+		String min = ValidationUtils.isValidRestriction (spec, iValue, Spec.Min);
+		if (min != null) {
 			feedback = ValidationUtils.feedback (
 				feedback, spec, Spec.Min, 
-				validator.getMessage (api, request.getLang (), MinMessage, label, String.valueOf (min), String.valueOf (value))
+				validator.getMessage (api, request.getLang (), MinMessage, label, min, String.valueOf (value))
 			);
 		}
-		long max = Json.getLong (spec, Spec.Max, Long.MAX_VALUE);
-		if (iValue > max) {
+		String max = ValidationUtils.isValidRestriction (spec, iValue, Spec.Max);
+		if (max != null) {
 			feedback = ValidationUtils.feedback (
 				feedback, spec, Spec.Max, 
-				validator.getMessage (api, request.getLang (), MaxMessage, label, String.valueOf (max), String.valueOf (value))
+				validator.getMessage (api, request.getLang (), MaxMessage, label, max, String.valueOf (value))
 			);
 		}
 
 		String sValue = String.valueOf (value);
 		
-		JsonObject lovFeedback = ValidationUtils.checkListOfValues (api, request, validator, spec, label, sValue, feedback);
+		JsonObject enumFeedback = ValidationUtils.checkEnum (api, request, validator, spec, label, sValue, feedback);
 		if (feedback == null) {
-			feedback = lovFeedback;
+			feedback = enumFeedback;
 		}
 		
 		if (feedback == null) {
@@ -120,12 +119,12 @@ public class LongValidator extends AbstractTypeValidator {
 		
 		Object value = null;
 		
-		Object lov = spec.get (Spec.ListOfValues);
-		if (lov != null) {
-			if (lov instanceof JsonArray) {
-				value = ((JsonArray)lov).get (0);
-			} else if (lov instanceof JsonObject) {
-				value = ((JsonObject)lov).keySet ().toArray () [0];
+		Object _enum = spec.get (Spec.Enum);
+		if (_enum != null) {
+			if (_enum instanceof JsonArray) {
+				value = ((JsonArray)_enum).get (0);
+			} else if (_enum instanceof JsonObject) {
+				value = ((JsonObject)_enum).keySet ().toArray () [0];
 			}
 		}
 		if (value != null) {

@@ -22,6 +22,7 @@ import java.util.Iterator;
 import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.api.Api;
+import com.bluenimble.platform.api.ApiContentTypes;
 import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResponse;
@@ -124,7 +125,7 @@ public class OAuthServiceSpi extends SimpleApiServiceSpi {
 		
 		JsonObject hRequest = (JsonObject)new JsonObject ()
 				.set (OAuth.Endpoint.Url, Json.getString (endpoint, OAuth.Endpoint.Url))
-				.set (OAuth.Endpoint.Headers, new JsonObject ().set (HttpHeaders.ACCEPT, ContentTypes.Json))
+				.set (OAuth.Endpoint.Headers, new JsonObject ().set (HttpHeaders.ACCEPT, ApiContentTypes.Json))
 				.set (OAuth.Endpoint.Data, data);
 		
 		HttpResponse hResponse = null;
@@ -162,7 +163,7 @@ public class OAuthServiceSpi extends SimpleApiServiceSpi {
 		
 		hRequest = (JsonObject)new JsonObject ()
 				.set (OAuth.Endpoint.Url, Json.getString (endpoint, OAuth.Endpoint.Url))
-				.set (OAuth.Endpoint.Headers, new JsonObject ().set (HttpHeaders.ACCEPT, ContentTypes.Json))
+				.set (OAuth.Endpoint.Headers, new JsonObject ().set (HttpHeaders.ACCEPT, ApiContentTypes.Json))
 				.set (OAuth.Endpoint.Data, data);
 		
 		try {
@@ -193,7 +194,7 @@ public class OAuthServiceSpi extends SimpleApiServiceSpi {
 		
 		hRequest = (JsonObject)new JsonObject ()
 				.set (OAuth.Endpoint.Url, Json.getString (endpoint, OAuth.Endpoint.Url))
-				.set (OAuth.Endpoint.Headers, new JsonObject ().set (HttpHeaders.ACCEPT, ContentTypes.Json))
+				.set (OAuth.Endpoint.Headers, new JsonObject ().set (HttpHeaders.ACCEPT, ApiContentTypes.Json))
 				.set (OAuth.Endpoint.Data, data);
 		
 		try {

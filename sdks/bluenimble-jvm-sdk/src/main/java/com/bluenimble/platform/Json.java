@@ -261,6 +261,25 @@ public class Json {
 		return value;
     }
 
+    public static float getFloat (JsonObject source, String name, float defaultValue) {
+    	
+    	float value = defaultValue;
+    	
+    	if (source == null || source.get (name) == null) {
+    		return value;
+    	}
+
+    	String sFloat = String.valueOf (source.get (name));
+		if (!Lang.isNullOrEmpty (sFloat)) {
+			try {
+				value = Float.parseFloat (sFloat.trim ());
+			} catch (NumberFormatException nfex) {
+				// Ignore
+			}
+		}
+		return value;
+    }
+
     public static Date getDate (JsonObject source, String name) throws ParseException {
     	
     	if (source == null || source.get (name) == null) {
@@ -583,5 +602,63 @@ public class Json {
 			return s;
 		}
 	}
+	
+	public static void main (String [] args) throws Exception {
+		
+		// byte [] bytes = Base64.decode (IOUtils.toString (new FileInputStream ("C:\\Users\\LINVI\\bluenimble\\keys\\bnx.keys")));
+		
+		// System.out.println (Json.load (new ByteArrayInputStream (bytes), "alpha00000000000"));
+		
+		//System.out.println (Base64.encode (IOUtils.toByteArray (new FileInputStream (new File ("/tmp/bnx.keys")))));
+		
+		/*
+{
+	"name": "Bluemible Bnx Develepment Environment",
+	"issuer": "Alpha Works",
+	"endpoint": {
+		"default": "http://tempo.bluenimble.space/sys/mgm"
+	},
+	"space": "bnx",
+	"accessKey": "XW3ZCJ+WFRQXMBTNXAB0",
+	"secretKey": "YYX+oxbaTAkTVVYPLkniwp9als6i3ZzzQLBoi2av"
+}
+
+		should become https://sys.bluenimble.space/mgm
+		
+		These are 
+					  https://apis.bluenimble.space/customer
+		
+					  https://apis.bluenimble.space/partner
+		
+					  https://apis.bluenimble.space/partner
+
+		
+		
+		// read the encrypted/encoded keys file
+		byte [] bytes = Base64.decodeBase64 (IOUtils.toString (new FileInputStream ("C:\\Users\\LINVI\\bluenimble\\keys\\lead.keys")));
+			
+		// parse json with an encryption paraphrase
+		JsonObject oKeys = Json.load (new ByteArrayInputStream (bytes), "alpha00000000000");
+		oKeys.set ("endpoint", "https://apis.bluenimble.space/mgm/4d8d38bd-deac-4ad8-a695-a7fbfd087c3b");
+		
+		Json.store (oKeys, new File ("/tmp/lead.keys.bin"), "alpha00000000000");
+		
+		System.out.println (
+			Base64.encodeBase64String (IOUtils.toByteArray (new FileInputStream (new File ("/tmp/lead.keys.bin"))))
+		);
+		*/
+		
+		JsonObject keys = Json.load (new File ("/Users/lilya/Desktop/sensesay-plain.keys"));
+		
+		store (keys, new File ("/Users/lilya/Desktop/sensesay-plain.bin"), "python.123000000");
+		
+		System.out.println (
+			Base64.encodeBase64String (IOUtils.toByteArray (new FileInputStream (new File ("/Users/lilya/Desktop/sensesay-plain.bin"))))
+		);
+		
+		
+	}
+	
+
     
 }

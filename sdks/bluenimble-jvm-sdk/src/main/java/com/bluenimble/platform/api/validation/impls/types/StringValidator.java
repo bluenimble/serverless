@@ -22,6 +22,7 @@ import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.validation.ApiServiceValidator;
+import com.bluenimble.platform.api.validation.FieldType;
 import com.bluenimble.platform.api.validation.ApiServiceValidator.Spec;
 import com.bluenimble.platform.api.validation.TypeValidator;
 import com.bluenimble.platform.api.validation.impls.AbstractTypeValidator;
@@ -35,17 +36,15 @@ public class StringValidator extends AbstractTypeValidator {
 	
 	public static final String SecretValue			= "*******";
 	
-	public static final String Type 				= "String";
-	
 	public static final String MinMessage			= "StringMin";
 	public static final String MaxMessage			= "StringMax";
-	public static final String LovMessage			= "StringLov";
+	public static final String EnumMessage			= "StringEnum";
 	
 	public static final String FormatMessage		= "StringFormat";
 	
 	@Override
 	public String getName () {
-		return Type;
+		return FieldType.String;
 	}
 
 	@Override
@@ -100,9 +99,9 @@ public class StringValidator extends AbstractTypeValidator {
 			}
 		}
 		
-		JsonObject lovFeedback = ValidationUtils.checkListOfValues (api, request, validator, spec, label, sValue, feedback);
-		if (lovFeedback != null) {
-			return lovFeedback;
+		JsonObject enumFeedback = ValidationUtils.checkEnum (api, request, validator, spec, label, sValue, feedback);
+		if (enumFeedback != null) {
+			return enumFeedback;
 		}
 		
 		return null;
@@ -113,12 +112,12 @@ public class StringValidator extends AbstractTypeValidator {
 		
 		Object value = null;
 		
-		Object lov = spec.get (Spec.ListOfValues);
-		if (lov != null) {
-			if (lov instanceof JsonArray) {
-				value = ((JsonArray)lov).get (0);
-			} else if (lov instanceof JsonObject) {
-				value = ((JsonObject)lov).keySet ().toArray () [0];
+		Object _enum = spec.get (Spec.Enum);
+		if (_enum != null) {
+			if (_enum instanceof JsonArray) {
+				value = ((JsonArray)_enum).get (0);
+			} else if (_enum instanceof JsonObject) {
+				value = ((JsonObject)_enum).keySet ().toArray () [0];
 			}
 		}
 		if (value != null) {

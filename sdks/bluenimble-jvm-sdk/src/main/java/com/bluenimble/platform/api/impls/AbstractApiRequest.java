@@ -136,7 +136,10 @@ public abstract class AbstractApiRequest extends AbstractApiContext implements A
 		
 		switch (scope) {
 			case Parameter:
-				if (application == null && value == null) {
+				if (value == null) {
+					if (application != null) {
+						application.remove (name);
+					}
 					return;
 				}
 				
@@ -145,11 +148,6 @@ public abstract class AbstractApiRequest extends AbstractApiContext implements A
 				}
 				
 				++version;
-				
-				if (value == null) {
-					application.remove (name);
-					return;
-				}
 				
 				application.put (name, value);
 				break;

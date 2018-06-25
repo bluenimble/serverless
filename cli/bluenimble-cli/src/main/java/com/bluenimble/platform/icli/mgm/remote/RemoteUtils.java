@@ -413,7 +413,7 @@ public class RemoteUtils {
 			String secretKey 	= Json.getString (oKeys, KeyPair.Fields.SecretKey);
 			
 			AccessSecretKeysBasedHttpRequestSigner signer = 
-					new AccessSecretKeysBasedHttpRequestSigner ("m>h>p>d>k>t", "Bearer", space == null ? accessKey : space + Lang.DOT + accessKey, secretKey);
+					new AccessSecretKeysBasedHttpRequestSigner ("m>h>p>d>k>t", "BNB-HMAC-SHA256", space == null ? accessKey : space + Lang.DOT + accessKey, secretKey);
 			
 			String timestamp = Lang.utc ();
 			

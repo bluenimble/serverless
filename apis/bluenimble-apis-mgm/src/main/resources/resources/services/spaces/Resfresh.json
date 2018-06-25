@@ -4,7 +4,7 @@
 	
 	"spec": {
 		"fields": {
-			"payload": { "type": "Map" }
+			"payload": { "type": "Object" }
 		}
 	},
 	

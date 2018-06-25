@@ -27,6 +27,7 @@ import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiContext;
 import com.bluenimble.platform.api.ApiManagementException;
+import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.api.ApiResource;
 import com.bluenimble.platform.api.ApiResourcesManager;
 import com.bluenimble.platform.api.ApiResourcesManagerException;
@@ -36,6 +37,7 @@ import com.bluenimble.platform.api.ApiServicesManagerException;
 import com.bluenimble.platform.api.ApiStatus;
 import com.bluenimble.platform.api.ApiVerb;
 import com.bluenimble.platform.api.tracing.Tracer;
+import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.reflect.ClassLoaderRegistry;
 import com.bluenimble.platform.server.impls.fs.ApiServiceSet;
@@ -45,10 +47,10 @@ public class DefaultApiServicesManager implements ApiServicesManager {
 
 	private static final long serialVersionUID = 119185947209776190L;
 	
-	protected Map<ApiVerb, ApiServiceSet> services = new LinkedHashMap<ApiVerb, ApiServiceSet> ();
+	protected Map<ApiVerb, ApiServiceSet> 	services 	= new LinkedHashMap<ApiVerb, ApiServiceSet> ();
 	
-	private ApiImpl api;
-	private ClassLoaderRegistry clRegistry;
+	private ApiImpl 						api;
+	private ClassLoaderRegistry 			clRegistry;
 	
 	public DefaultApiServicesManager (ClassLoaderRegistry clRegistry) {
 		this.clRegistry = clRegistry;
@@ -235,6 +237,9 @@ public class DefaultApiServicesManager implements ApiServicesManager {
 				if (isFolder) {
 					load (rmgr, child);
 				} else {
+					if (!child.name ().endsWith (ConfigKeys.JsonExt)) {
+						return false;
+					}
 					try {
 						put (child);
 					} catch (Exception ex) {
@@ -298,6 +303,64 @@ public class DefaultApiServicesManager implements ApiServicesManager {
 
 		stopService (service, null, true);
 	}
+	
+	// group by
+	public JsonObject groupBy (String property, String groupItemKey) {
+		JsonObject groups = new JsonObject ();
+		if (Lang.isNullOrEmpty (property)) {
+			return groups;
+		}
+		
+		String [] path = Lang.split (property, Lang.DOT);
+		
+		for (ApiServiceSet set : services.values ()) {
+			Iterator<String> endpoints = set.endpoints ();
+ 			while (endpoints.hasNext ()) {
+ 				String endpoint = endpoints.next ();
+ 				ApiServiceImpl s = (ApiServiceImpl)set.get (endpoint);
+ 				Object pv = Json.find (s.source, path);
+ 				if (pv == null) {
+ 					continue;
+ 				}
+ 				String groupKey = String.valueOf (pv);
+ 				if (Lang.isNullOrEmpty (groupKey)) {
+ 					continue;
+ 				}
+ 				
+ 				JsonObject group = Json.getObject (groups, groupKey);
+ 				if (group == null) {
+ 					group = new JsonObject ();
+ 					groups.set (groupKey, group);
+ 				}
+ 				
+ 				if (!Lang.isNullOrEmpty (groupItemKey)) {
+ 					Object gikValue = Json.find (s.source, groupItemKey);
+ 					if (gikValue == null) {
+ 						if (ApiService.Spec.Verb.equals (groupItemKey)) {
+ 							gikValue = ApiVerb.GET.name ().toLowerCase ();
+ 						} else {
+ 	 						continue;
+ 						}
+ 					}
+ 					JsonObject oService = s.toJson ().duplicate ();
+ 					oService.remove (property, groupItemKey);
+ 					group.set (String.valueOf (gikValue), oService);
+ 				} else {
+ 					JsonArray items = Json.getArray (group, ApiOutput.Defaults.Items);
+ 					if (items == null) {
+ 						items = new JsonArray ();
+ 						group.set (ApiOutput.Defaults.Items, items);
+ 					}
+ 					JsonObject oService = s.toJson ().duplicate ();
+ 					oService.remove (property);
+ 					items.add (oService);
+ 				}
+			}
+		}
+		
+		return groups;
+	}
+	
 	private void stopService (ApiService service, ApiContext context, boolean saveStatus) throws ApiServicesManagerException {
 		ApiServiceImpl sImpl = (ApiServiceImpl)service;
 		

@@ -613,9 +613,9 @@ public class BlueNimble extends JLineTool {
 			oVars.set (
 				DefaultVars.MediaMapping, 
 				new JsonObject ()
-					.set ("application/json.bnt", ApiContentTypes.Json)
-					.set ("application/json.gql", ApiContentTypes.Json)
-					.set ("application/json.oas", ApiContentTypes.Json)
+					.set ("application/spec.bnb.calls", ApiContentTypes.Json)
+					.set ("application/spec.graphql", ApiContentTypes.Json)
+					.set ("application/spec.openapi", ApiContentTypes.Json)
 			);
 		}
 		

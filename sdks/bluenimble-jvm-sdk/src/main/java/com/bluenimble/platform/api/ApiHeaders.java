@@ -53,11 +53,11 @@ public interface ApiHeaders {
 
 	public static final String 	Location			= "Location";
 
-	public static final String 	NodeID 				= "BN-Node-ID";
-	public static final String 	NodeType 			= "BN-Node-Type";
-	public static final String 	NodeVersion 		= "BN-Node-Version";
-	public static final String 	ExecutionTime 		= "BN-Execution-Time";
-	public static final String 	Timestamp 			= "BN-Timestamp";
-	public static final String 	GeoLocation 		= "BN-GeoLocation";
+	public static final String 	NodeID 				= "BNB-Node-ID";
+	public static final String 	NodeType 			= "BNB-Node-Type";
+	public static final String 	NodeVersion 		= "BNB-Node-Version";
+	public static final String 	ExecutionTime 		= "BNB-Execution-Time";
+	public static final String 	Timestamp 			= "BNB-Timestamp";
+	public static final String 	GeoLocation 		= "BNB-GeoLocation";
 	
 }

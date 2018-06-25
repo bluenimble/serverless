@@ -27,7 +27,7 @@
 	"StringMax": {
 		"en": "{0} ({2}) length should be less or equals to {1}" 
 	},
-	"StringLov": {
+	"StringEnum": {
 		"en": "{0} ({2}) value should be one of the following [{1}]" 
 	},
 	"IntegerType": {
@@ -55,6 +55,15 @@
 		"en": "{0} ({2}) should be greater or equals to {1}"
 	},
 	"DecimalMax": {
+		"en": "{0} ({2}) should be less or equals to {1}"
+	},
+	"FloatType": {
+		"en": "{0} must be a valid floating number"
+	},
+	"FloatMin": {
+		"en": "{0} ({2}) should be greater or equals to {1}"
+	},
+	"FloatMax": {
 		"en": "{0} ({2}) should be less or equals to {1}"
 	},
 	"DateTimeType": {
@@ -96,7 +105,10 @@
 	"StreamType": {
 		"en": "{0} must be a valid stream"
 	},
-	"MapStrict": {
+	"Base64Type": {
+		"en": "{0} must be a valid base64 sequence of characters"
+	},
+	"ObjectStrict": {
 		"en": "{0} contains unnecessary fields ({1})"
 	}
 

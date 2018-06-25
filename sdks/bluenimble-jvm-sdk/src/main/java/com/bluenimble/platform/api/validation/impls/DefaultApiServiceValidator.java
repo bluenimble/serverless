@@ -28,9 +28,12 @@ import com.bluenimble.platform.api.ApiRequest.Scope;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.validation.ApiServiceValidator;
 import com.bluenimble.platform.api.validation.ApiServiceValidatorException;
+import com.bluenimble.platform.api.validation.FieldType;
 import com.bluenimble.platform.api.validation.TypeValidator;
 import com.bluenimble.platform.api.validation.impls.types.AlphaNumericValidator;
 import com.bluenimble.platform.api.validation.impls.types.ArrayValidator;
+import com.bluenimble.platform.api.validation.impls.types.Base64Validator;
+import com.bluenimble.platform.api.validation.impls.types.BinaryValidator;
 import com.bluenimble.platform.api.validation.impls.types.BooleanValidator;
 import com.bluenimble.platform.api.validation.impls.types.ContainsValidator;
 import com.bluenimble.platform.api.validation.impls.types.DateTimeValidator;
@@ -38,6 +41,7 @@ import com.bluenimble.platform.api.validation.impls.types.DateValidator;
 import com.bluenimble.platform.api.validation.impls.types.DecimalValidator;
 import com.bluenimble.platform.api.validation.impls.types.EmailValidator;
 import com.bluenimble.platform.api.validation.impls.types.EndsWithValidator;
+import com.bluenimble.platform.api.validation.impls.types.FloatValidator;
 import com.bluenimble.platform.api.validation.impls.types.IntegerValidator;
 import com.bluenimble.platform.api.validation.impls.types.LongValidator;
 import com.bluenimble.platform.api.validation.impls.types.MapValidator;
@@ -65,35 +69,40 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 	
 	private static final String DefaultScope = "p";
 	
-	private static final String RawType		 = "Raw";
-	
 	private Map<String, TypeValidator> validators = new HashMap<String, TypeValidator> ();
 	
 	public DefaultApiServiceValidator () {
 		// validators
-		addTypeValidator (StringValidator.Type.toLowerCase (), 			new StringValidator ());
-		addTypeValidator (BooleanValidator.Type.toLowerCase (), 		new BooleanValidator ());
-		addTypeValidator (IntegerValidator.Type.toLowerCase (), 		new IntegerValidator ());
-		addTypeValidator (LongValidator.Type.toLowerCase (), 			new LongValidator ());
-		addTypeValidator (DecimalValidator.Type.toLowerCase (), 		new DecimalValidator ());
-		addTypeValidator (DateValidator.Type.toLowerCase (), 			new DateValidator ());
-		addTypeValidator (DateTimeValidator.Type.toLowerCase (), 		new DateTimeValidator ());
-		addTypeValidator (MapValidator.Type.toLowerCase (), 			new MapValidator ());
-		addTypeValidator (MapValidator.AltType.toLowerCase (), 			new MapValidator ());
-		addTypeValidator (ArrayValidator.Type.toLowerCase (), 			new ArrayValidator ());
-		addTypeValidator (StreamValidator.Type.toLowerCase (), 			new StreamValidator ());
-		addTypeValidator (AlphaNumericValidator.Type.toLowerCase (), 	new AlphaNumericValidator ());
+		addTypeValidator (FieldType.String.toLowerCase (), 			new StringValidator ());
+		addTypeValidator (FieldType.AlphaNumeric.toLowerCase (), 	new AlphaNumericValidator ());
+		
+		addTypeValidator (FieldType.Boolean.toLowerCase (), 		new BooleanValidator ());
+		
+		addTypeValidator (FieldType.Integer.toLowerCase (), 		new IntegerValidator ());
+		addTypeValidator (FieldType.Long.toLowerCase (), 			new LongValidator ());
+		addTypeValidator (FieldType.Decimal.toLowerCase (), 		new DecimalValidator ());
+		addTypeValidator (FieldType.Float.toLowerCase (), 			new FloatValidator ());
+		
+		addTypeValidator (FieldType.Date.toLowerCase (), 			new DateValidator ());
+		addTypeValidator (FieldType.DateTime.toLowerCase (), 		new DateTimeValidator ());
+		
+		addTypeValidator (FieldType.Object.toLowerCase (), 			new MapValidator ());
+		addTypeValidator (FieldType.Array.toLowerCase (), 			new ArrayValidator ());
+		
+		addTypeValidator (FieldType.Stream.toLowerCase (), 			new StreamValidator ());
+		addTypeValidator (FieldType.Base64.toLowerCase (), 			new Base64Validator ());
+		addTypeValidator (FieldType.Binary.toLowerCase (), 			new BinaryValidator ());
 		
 		// vtypes
-		addTypeValidator (StartsWithValidator.Type.toLowerCase (), 		new StartsWithValidator ());
-		addTypeValidator (EndsWithValidator.Type.toLowerCase (), 		new EndsWithValidator ());
-		addTypeValidator (ContainsValidator.Type.toLowerCase (), 		new ContainsValidator ());
+		addTypeValidator (FieldType.Facets.StartsWith.toLowerCase (),new StartsWithValidator ());
+		addTypeValidator (FieldType.Facets.EndsWith.toLowerCase (), new EndsWithValidator ());
+		addTypeValidator (FieldType.Facets.Contains.toLowerCase (), new ContainsValidator ());
 
-		addTypeValidator (EmailValidator.Type.toLowerCase (), 			new EmailValidator ());
-		addTypeValidator (UrlValidator.Type.toLowerCase (), 			new UrlValidator ());
-		addTypeValidator (PhoneValidator.Type.toLowerCase (), 			new PhoneValidator ());
+		addTypeValidator (FieldType.Facets.Email.toLowerCase (), 	new EmailValidator ());
+		addTypeValidator (FieldType.Facets.Url.toLowerCase (), 		new UrlValidator ());
+		addTypeValidator (FieldType.Facets.Phone.toLowerCase (), 	new PhoneValidator ());
 		
-		addTypeValidator (RegexValidator.Type.toLowerCase (), 			new RegexValidator ());
+		addTypeValidator (FieldType.Facets.Regex.toLowerCase (), 	new RegexValidator ());
 	}
 	
 	@Override
@@ -137,15 +146,16 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 			
 			String type = fSpec.getString (Spec.Type);
 			if (Lang.isNullOrEmpty (type)) {
-				type = StringValidator.Type;
+				type = FieldType.String;
 			}
 			
-			if (type.equalsIgnoreCase (RawType)) {
+			if (type.equalsIgnoreCase (FieldType.Raw)) {
 				continue;
 			}
 			
 			TypeValidator validator = getTypeValidator (type);
 			if (validator == null) {
+				/*
 				if (feedback == null) {
 					feedback = new JsonObject ();
 				}
@@ -153,7 +163,8 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 					null, spec, Spec.Type, 
 					"type '" + type + "' not supported"
 				));
-				continue;
+				*/
+				validator = getTypeValidator (FieldType.Object);
 			}
 			
 			String label = getLabel (name, fSpec.getString (Spec.Title));
@@ -264,6 +275,11 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 		
 		return value;
 		
+	}
+
+	@Override
+	public boolean isCustomType (String type) {
+		return !validators.containsKey (type);
 	}
 
 }

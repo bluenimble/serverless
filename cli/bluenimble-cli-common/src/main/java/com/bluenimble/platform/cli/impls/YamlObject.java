@@ -8,6 +8,7 @@ import com.bluenimble.platform.cli.Tool;
 import com.bluenimble.platform.cli.printing.impls.Markers;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.json.printers.YamlPrinter;
+import com.bluenimble.platform.json.printers.YamlStringPrinter;
 import com.diogonunes.jcdp.color.api.Ansi.FColor;
 
 public class YamlObject {
@@ -15,7 +16,11 @@ public class YamlObject {
 	private JsonObject source;
 	
 	public YamlObject (Map<String, Object> o) {
-		source = new JsonObject (o, true).duplicate ();
+		if (o instanceof JsonObject ) {
+			source = (JsonObject)o;
+		} else {
+			source = new JsonObject (o, true).duplicate ();
+		}
 	}
 	
 	public void print (Tool tool, int initialIndent) throws IOException {
@@ -65,4 +70,11 @@ public class YamlObject {
 		return source;
 	} 
 	
+	public String toString () {
+		try {
+			return new YamlStringPrinter ().print (source).toString ();
+		} catch (IOException ex) {
+			throw new RuntimeException (ex.getMessage (), ex);
+		}
+	} 
 }

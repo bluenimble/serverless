@@ -24,7 +24,7 @@
 				{
         			"id": "Call-${service?index}",
         			"request": {
-        				"method": "${service.verb}",
+        				"method": "${(service.verb)!'GET'}",
 						"service": "[keys.endpoints.space]/${output.namespace}${endpoint}",
 						"headers": {
 			                <#if (service.spec.fields)??>
@@ -32,12 +32,12 @@
 									<#assign spec = service.spec.fields[key]>
 									<#if (spec.scope)?? && spec.scope == "h">
 										<#if headers gt 0 >,</#if>
-										"${key}": "${(spec.value)!Guesser.guess(key, spec)}"
+										"${key}": "${(spec.value)!TemplateTool.guess(output.space, output.namespace, key, spec)}"
 										<#assign headers++ >
 									</#if>
 									<#if !(service.security.enabled)?? || ((service.security.enabled)?? && service.security.enabled == "true")>
 										<#if headers gt 0 >,</#if>
-										"Authorization": "Token [vars.Token]"
+										"Authorization": "Bearer [vars.Token]"
 										<#assign headers++ >
 									</#if>
 								</#list>
@@ -47,9 +47,10 @@
 			                <#if (service.spec.fields)??>
 			                	<#list (service.spec.fields)?keys as key>
 									<#assign spec = service.spec.fields[key]>
+									<#assign isObjectType = TemplateTool.isObjectType(output.space, output.namespace, spec)>
 									<#if (!(spec.scope)?? || spec.scope == "p") && key != "payload">
 										<#if params gt 0 >,</#if>
-										"${key}": <#if !(spec.type)?? || (spec.type?upper_case != "OBJECT" && spec.type?upper_case != "MAP")>"</#if>${(spec.value)!Guesser.guess(key, spec)}<#if !(spec.type)?? || (spec.type?upper_case != "OBJECT" && spec.type?upper_case != "MAP")>"</#if>
+										"${key}": <#if isObjectType == false>"</#if>${(spec.value)!TemplateTool.guess(output.space, output.namespace, key, spec)}<#if isObjectType == false>"</#if>
 										<#assign params++ >
 									</#if>
 								</#list>
@@ -61,7 +62,7 @@
 									<#assign spec = service.spec.fields[key]>
 									<#if ((spec.scope)?? && spec.scope == "s") || key == "payload">
 										<#if streams gt 0 >,</#if>
-										"${key}": ${(spec.value)!Guesser.guess(key, spec)}
+										"${key}": ${(spec.value)!TemplateTool.guess(output.space, output.namespace, key, spec)}
 										<#assign streams++ >
 									</#if>
 								</#list>

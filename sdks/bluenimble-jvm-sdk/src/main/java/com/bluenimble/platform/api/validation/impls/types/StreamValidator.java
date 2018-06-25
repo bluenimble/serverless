@@ -22,6 +22,7 @@ import com.bluenimble.platform.api.ApiStreamSource;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.validation.ApiServiceValidator;
 import com.bluenimble.platform.api.validation.ApiServiceValidator.Spec;
+import com.bluenimble.platform.api.validation.FieldType;
 import com.bluenimble.platform.api.validation.impls.AbstractTypeValidator;
 import com.bluenimble.platform.api.validation.impls.ValidationUtils;
 import com.bluenimble.platform.json.JsonObject;
@@ -30,12 +31,11 @@ public class StreamValidator extends AbstractTypeValidator {
 
 	private static final long serialVersionUID = 2430274897113013353L;
 	
-	public static final String Type 				= "Stream";
 	public static final String TypeMessage 			= "StreamType";
 	
 	@Override
 	public String getName () {
-		return Type;
+		return FieldType.Stream;
 	}
 
 	@Override
@@ -57,6 +57,8 @@ public class StreamValidator extends AbstractTypeValidator {
 				validator.getMessage (api, request.getLang (), TypeMessage, label)
 			);
 		} 
+		
+		// vaidate contentType
 		
 		return null;
 	}

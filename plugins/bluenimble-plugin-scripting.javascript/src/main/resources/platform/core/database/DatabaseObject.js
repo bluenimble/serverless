@@ -27,7 +27,7 @@ var DatabaseObject = function (database, proxy) {
 	  @type {Date}
 	  @readonly
 	*/
-	this.timestamp 	= proxy.getTimestamp ();	
+	this.timestamp 	= proxy.getTimestamp ();
 	
 	/**	
 	  Load data into this database object

@@ -17,10 +17,12 @@
 package com.bluenimble.platform.plugins.inbound.http.impl;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -30,11 +32,10 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
 
-import com.bluenimble.platform.IOUtils;
-import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.ApiContentTypes;
 import com.bluenimble.platform.api.ApiHeaders;
+import com.bluenimble.platform.api.ApiRequestBodyReader;
 import com.bluenimble.platform.api.ApiStreamSource;
 import com.bluenimble.platform.api.ApiVerb;
 import com.bluenimble.platform.api.impls.AbstractApiRequest;
@@ -43,6 +44,7 @@ import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.iterators.EmptyIterator;
 import com.bluenimble.platform.iterators.EnumerationIterator;
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.plugins.inbound.http.jetty.JettyPlugin;
 import com.bluenimble.platform.scripting.Scriptable;
 
 @Scriptable (name = "ApiRequest")
@@ -56,14 +58,21 @@ public class HttpApiRequest extends AbstractApiRequest {
 	
 	private static final DiskFileItemFactory 	Factory 		= new DiskFileItemFactory ();
 	
+	private static final Set<String>			NonPayloadTypes	= new HashSet<String> ();
+	static {
+		NonPayloadTypes.add (ApiContentTypes.Form);
+	}
+	
 	protected 	HttpServletRequest 				proxy;
 	
 	private 	Map<String, ApiStreamSource> 	streams;
 	private 	Map<String, Object> 			fields;
 	
-	public HttpApiRequest (HttpServletRequest proxy, Tracer tracer) throws Exception {
+	public HttpApiRequest (HttpServletRequest proxy, JettyPlugin plugin) throws Exception {
 		
 		super ();
+		
+		Tracer tracer = plugin.tracer ();
 		
 		this.proxy = proxy;
 		
@@ -84,35 +93,36 @@ public class HttpApiRequest extends AbstractApiRequest {
 		device.set (Fields.Device.Language, locale.getLanguage ());
 		device.set (Fields.Device.Agent, proxy.getHeader (ApiHeaders.UserAgent));
 		
-		if (ApiVerb.POST.equals (getVerb ()) || ApiVerb.PUT.equals (getVerb ())) {
-			if (FileUploadBase.isMultipartContent(new ServletRequestContext (proxy))) {
-				ServletFileUpload upload = new ServletFileUpload (Factory);
-				streams = new HashMap<String, ApiStreamSource> ();
-				fields 	= new HashMap<String, Object> ();
-				List<FileItem> items = upload.parseRequest (proxy);
-				Iterator<FileItem> iter = items.iterator ();
-				while (iter.hasNext ()) {
-				    FileItem item = iter.next ();
-				    tracer.log (Tracer.Level.Debug, "\t Upload Field {0}", item.getFieldName ());
+		if (!ApiVerb.POST.equals (verb) && !ApiVerb.PUT.equals (verb)) {
+			return;
+		}
+		if (FileUploadBase.isMultipartContent (new ServletRequestContext (proxy))) {
+			ServletFileUpload upload = new ServletFileUpload (Factory);
+			streams = new HashMap<String, ApiStreamSource> ();
+			fields 	= new HashMap<String, Object> ();
+			List<FileItem> items = upload.parseRequest (proxy);
+			Iterator<FileItem> iter = items.iterator ();
+			while (iter.hasNext ()) {
+			    FileItem item = iter.next ();
+			    tracer.log (Tracer.Level.Debug, "\t Upload Field {0}", item.getFieldName ());
 
-				    if (item.isFormField ()) {
-				    	fields.put (item.getFieldName (), item.getString ());
-				    } else {
-				    	streams.put (item.getFieldName (), new DefaultApiStreamSource (item.getFieldName (), item.getName (), item.getContentType (), item.getSize (), item.getInputStream ()));
-				    }
-				}
-			} else if (proxy.getContentType () != null) {
-				String ct = proxy.getContentType ().toLowerCase ();
-				Object payload = null;
-				if (ct.startsWith (ApiContentTypes.Json)) {
-					payload = Json.load (proxy.getInputStream ());
-				} else if (ct.startsWith (ApiContentTypes.Text)) {
-					payload = IOUtils.toString (proxy.getInputStream ());
-				}
-				if (payload != null) {
-					set (Payload, payload, Scope.Parameter);
-				}
+			    if (item.isFormField ()) {
+			    	fields.put (item.getFieldName (), item.getString ());
+			    } else {
+			    	streams.put (item.getFieldName (), new DefaultApiStreamSource (item.getFieldName (), item.getName (), item.getContentType (), item.getSize (), item.getInputStream ()));
+			    }
 			}
+			return;
+		} 
+		
+		String contentType = proxy.getContentType ();
+		
+		if (contentType != null && !NonPayloadTypes.contains (contentType)) {
+			ApiRequestBodyReader reader = plugin.getReader (contentType.toLowerCase ());
+			if (reader == null) {
+				reader = plugin.getReader (ApiContentTypes.Stream);
+			}
+			set (Payload, reader.read (proxy.getInputStream ()), Scope.Parameter);
 		}
 	}
 

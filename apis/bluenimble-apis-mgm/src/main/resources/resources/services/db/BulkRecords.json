@@ -5,7 +5,7 @@
 	"spec": {
 		"fields": {
 			"provider": { "max": "100", "value": "default" },
-			"payload": 	{ "type": "Map" }
+			"payload": 	{ "type": "Object" }
 		}
 	},
 	

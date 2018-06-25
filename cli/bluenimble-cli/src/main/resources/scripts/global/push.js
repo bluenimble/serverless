@@ -137,103 +137,6 @@ function validate (apiFolder, folderOrFile) {
 	
 }
 
-function generateTestData (spec, object) {
-	if (!spec || spec.isEmpty () || !spec.fields || spec.fields.isEmpty ()) {
-		return;
-	}
-	if (!object) {
-		object = new JsonObject ();
-	}
-	for (var k in spec.fields) {
-		var f = spec.fields [k];
-		if (f.type == 'Object' || f.type == 'Map') {
-			object [k] = new JsonObject ();
-			generateTestData (f, object [k]);
-		} else {
-			object [k] = '';
-		}
-	}
-	return object;
-}
-
-function generateTests (apiNs, folderOrFile) {
-	if (folderOrFile.getName ().startsWith ('.')) {
-		return;
-	}
-
-	if (folderOrFile.isDirectory ()) {
-		var files = folderOrFile.listFiles ();
-		for (var i = 0; i < files.length; i++) {
-			generateTests (apiNs, files [i]);
-		}
-		return;
-	}
-	
-	var serviceName = folderOrFile.getName ().substring (0, folderOrFile.getName ().lastIndexOf ('.'));
-	
-	// load file
-	var service = Json.load (folderOrFile);
-	
-	// delete original file
-	var test = new JsonObject ().set ('request', new JsonObject ());
-	test.request.service = Keys.endpoint + '/' + apiNs + service.endpoint;
-	test.request.method = service.verb||'get';
-
-	var data = generateTestData (service.spec);
-	
-	// resolve endpoint inline parameters
-	var endpoint = service.endpoint;
-	if (endpoint.startsWith ('/')) {
-		endpoint = endpoint.substring (1);
-	}
-	
-	var params;
-	
-	var tokens = Lang.split (endpoint, '/');
-	for (var i = 0; i < tokens.length; i++) {
-		var token = tokens [i];
-		if (token.startsWith (':')) {
-			tokens [i] = Lang.replace (tokens [i], ':', '');
-			if (!params) {
-				params = new JsonObject ();
-			}
-			params.set (tokens [i], '');
-		}
-	}
-	
-	if (service.spec && service.spec.fields) { 
-		if (service.spec.fields.payload && 
-			(service.spec.fields.payload.type == 'Object' || service.spec.fields.payload.type == 'Map')) {
-			test.request.contentType = 'application/json';
-			test.request.body = new JsonObject ();
-			if (data) {
-				test.request.body.payload = serviceName + '.payload';
-				Json.store (data, new File (folderOrFile.getParentFile (), serviceName + '.payload'));
-			}
-			if (params) {
-				test.request.params = '[ vars.' + serviceName + '.params]';
-				Json.store (params, new File (folderOrFile.getParentFile (), serviceName + '.params'));
-			}
-		} else {
-			var rParams = new JsonObject ();
-			if (data) {
-				rParams.merge (data);
-			}
-			if (params) {
-				rParams.merge (params);
-			}
-			test.request.params = '[ vars.' + serviceName + '.params]';
-			Json.store (rParams, new File (folderOrFile.getParentFile (), serviceName + '.params'));
-		}
-	}
-	
-	Json.store (test, new File (folderOrFile.getParentFile (), serviceName + '.test'));
-	
-	// delete original file
-	folderOrFile.delete ();
-	
-}
-
 // Start Of Script
 var startTime = System.currentTimeMillis ();
 
@@ -324,22 +227,6 @@ if (!apiSpecFile.exists ()) {
 	throw 'api ' + apiNs + ' not found';
 }
 
-// generate test files
-var testFolder = new File (Home, 'tests');
-if (!testFolder.exists ()) {
-	testFolder.mkdir ();
-}		
-var apiTests = new File (testFolder, apiNs);
-if (apiTests.exists ()) {
-	FileUtils.delete (apiTests);
-} 
-apiTests.mkdir ();
-
-FileUtils.copy (new File (apiFolder, 'resources/services'), apiTests, false);
-
-generateTests (apiNs, apiTests);
-// generate test files
-
 var apiSpec = Json.load (apiSpecFile);
 
 var release = new JsonObject ();
@@ -391,13 +278,18 @@ var newApiFolder = new File (buildFolder, apiNs);
 
 apiFolder.renameTo (newApiFolder);
 
-Tool.info ('Push Api: ' + apiNs);
+Tool.command ('echo off');
 
+Tool.info ('Push Api (' + apiNs + ')');
 Tool.command ('set api.folder ' + buildFolder.getAbsolutePath ());
+
+Tool.command ('echo on');
 
 Tool.command ('npush api ' + apiNs);
 
+Tool.command ('echo off');
 Tool.command ('unset api.folder');
+Tool.command ('echo on');
 
 FileUtils.delete (newApiFolder);
 

@@ -4,7 +4,7 @@
 	
 	"spec": {
 		"fields": {
-			"verb": { "lov": [ "get", "post", "delete", "put", "head" ] }
+			"verb": { "enum": [ "get", "post", "delete", "put", "head" ] }
 		}
 	},
 	

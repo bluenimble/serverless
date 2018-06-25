@@ -12,8 +12,8 @@
 		"media.default": {
 			"fm": {
 				"objects": {
-					"Guesser": {
-						"class": "com.bluenimble.platform.apis.mgm.utils.ValueGuesser"
+					"TemplateTool": {
+						"class": "com.bluenimble.platform.apis.mgm.media.TemplateTool"
 					}
 				}
 			}

@@ -34,12 +34,14 @@ import javax.script.SimpleBindings;
 
 import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Lang;
+import com.bluenimble.platform.ValueHolder;
 import com.bluenimble.platform.cli.Tool;
 import com.bluenimble.platform.cli.ToolContext;
 import com.bluenimble.platform.cli.command.CommandExecutionException;
 import com.bluenimble.platform.cli.command.CommandOption;
 import com.bluenimble.platform.cli.command.CommandResult;
 import com.bluenimble.platform.cli.command.impls.AbstractCommand;
+import com.bluenimble.platform.cli.command.impls.DefaultCommandResult;
 import com.bluenimble.platform.icli.mgm.BlueNimble;
 import com.bluenimble.platform.icli.mgm.Keys;
 import com.bluenimble.platform.icli.mgm.utils.JsTool;
@@ -47,7 +49,7 @@ import com.bluenimble.platform.icli.mgm.utils.JsTool;
 public class MacroSourceCommand extends AbstractCommand {
 
 	private static final long serialVersionUID = 3523915768661531476L;
-
+	
 	private static final String JavaClass 	= "JavaClass";
 
 	private static final String Native 		= "var native = function (className) { return JavaClass (className.split ('/').join ('.')).static; };";
@@ -65,6 +67,8 @@ public class MacroSourceCommand extends AbstractCommand {
 	@Override
 	public CommandResult execute (final Tool tool, Map<String, CommandOption> options) throws CommandExecutionException {
 
+		ValueHolder<Object> returnValue = new ValueHolder<Object> ();
+		
 		InputStream input = null;
 		
 		SimpleBindings bindings = new SimpleBindings ();
@@ -79,6 +83,8 @@ public class MacroSourceCommand extends AbstractCommand {
 		bindings.put ("Config", BlueNimble.Config);
 		
 		bindings.put ("Tool", new JsTool (tool));
+		
+		bindings.put ("Return", returnValue);
 		
 		bindings.put (JavaClass, new Function<String, Class<?>> () {
 			@Override
@@ -114,6 +120,10 @@ public class MacroSourceCommand extends AbstractCommand {
 			IOUtils.closeQuietly (input);
 		}
         
+		if (returnValue.get () != null) {
+			return new DefaultCommandResult (CommandResult.OK, returnValue.get ()); 
+		}
+		
 		return null;
 	}
 

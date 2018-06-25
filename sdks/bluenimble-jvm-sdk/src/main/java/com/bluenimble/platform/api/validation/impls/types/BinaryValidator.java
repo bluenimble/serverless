@@ -14,32 +14,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.bluenimble.platform.api.validation.impls.types;
 
-package com.bluenimble.platform.apis.mgm.utils;
-
-import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
+import com.bluenimble.platform.api.ApiRequest;
+import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.validation.ApiServiceValidator;
-import com.bluenimble.platform.api.validation.impls.ValidationUtils;
+import com.bluenimble.platform.api.validation.FieldType;
+import com.bluenimble.platform.api.validation.impls.AbstractTypeValidator;
 import com.bluenimble.platform.json.JsonObject;
 
-public class ValueGuesser {
+public class BinaryValidator extends AbstractTypeValidator {
+
+	private static final long serialVersionUID = 2430274897113013353L;
 	
-	ApiServiceValidator validator;
+	public static final String TypeMessage			= "BinaryType";
 	
-	public void init (Api api) {
-		validator = api.getServiceValidator ();
+	@Override
+	public String getName () {
+		return FieldType.Binary;
 	}
-	
-	public Object guess (String name, JsonObject spec) {
-		Object value = ValidationUtils.guessValue (validator, name, spec);
+
+	@Override
+	public Object validate (Api api, ApiConsumer consumer, ApiRequest request, 
+				ApiServiceValidator validator, String name, String label, JsonObject spec, Object value) {
+		
+		JsonObject message = isRequired (validator, api, request.getLang (), label, spec, value);
+		if (message != null) {
+			return message;
+		}
+		
 		if (value == null) {
-			return Lang.BLANK;
+			return null;
 		}
-		if (value instanceof JsonObject) {
-			return ((JsonObject)value).toString (0);
-		}
-		return String.valueOf (value);
+		
+		return String.valueOf (value).getBytes ();
+		
 	}
-	
+
 }

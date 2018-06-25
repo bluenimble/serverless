@@ -27,10 +27,9 @@ public interface ApiServiceValidator extends Serializable {
 
 	interface Spec {
 		
-		String Fields		= "fields";
-		
-		String Name 		= "name";
 		String Title 		= "title";
+		
+		String Fields		= "fields";
 		
 		String Type 		= "type";
 		
@@ -55,9 +54,11 @@ public interface ApiServiceValidator extends Serializable {
 
 		String Facets		= "facets";
 		
-		String ListOfValues	= "lov";
+		String Enum			= "enum";
 		
 		String Strict		= "strict";
+		
+		String Exclusive	= "!";
 
 	}
 
@@ -69,5 +70,7 @@ public interface ApiServiceValidator extends Serializable {
 	TypeValidator 	getTypeValidator (String name);
 	
 	String 			getMessage (Api api, String lang, String key, Object... args);
+	
+	boolean			isCustomType (String type);
 
 }

@@ -6,8 +6,8 @@
 	
 	"spec": {
 		"fields": {
-			"Content-Type": { "scope": "h", "lov": [ "application/json" ] },
-			"payload": { "type": "Map",
+			"Content-Type": { "scope": "h", "enum": [ "application/json" ] },
+			"payload": { "type": "Object",
 				"fields": {
 					"user": 	{ }, 
 					"password": { }

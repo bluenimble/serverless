@@ -14,27 +14,27 @@
 	},
 	
 	"media": {
-		"application/json.oas": {
+		"application/spec.openapi-3.0": {
 			"processor": "plain",
 			"success": {
 				"*": {
-					"resource": "templates/apis/describe-oas.ftl", "engine": "fm"
+					"resource": "templates/apis/describe-openapi-3.0.ftl", "engine": "fm"
 				}
 			}
 		},
-		"application/json.gql": {
+		"application/spec.graphql": {
 			"processor": "plain",
 			"success": {
 				"*": {
-					"resource": "templates/apis/describe-gql.ftl", "engine": "fm"
+					"resource": "templates/apis/describe-graphql.ftl", "engine": "fm"
 				}
 			}
 		},
-		"application/json.bnt": {
+		"application/spec.bnb.calls": {
 			"processor": "plain",
 			"success": {
 				"*": {
-					"resource": "templates/apis/describe-bnt.ftl", "engine": "fm"
+					"resource": "templates/apis/describe-bnb.calls.ftl", "engine": "fm"
 				}
 			}
 		}

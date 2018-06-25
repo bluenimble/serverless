@@ -24,12 +24,14 @@ public interface ApiContentTypes {
 	String 				Xml			= "application/xml";
 	String 				Html		= "text/html";
 
+	String 				Form		= "application/x-www-form-urlencoded";
+
+	String 				Multipart 	= "multipart/form-data";
+	
 	String 				Css			= "text/css";
 	String 				Javascript	= "application/javascript";
 
 	String 				Pdf         = "application/pdf";
-	
-	String 				Multipart 	= "multipart/form-data";
 	
 	String 				Webp		= "image/webp";
 	String 				Bmp			= "image/bmp";
@@ -48,5 +50,5 @@ public interface ApiContentTypes {
 	String 				Stream		= "application/octet-stream";
 
 	String 				Custom		= "bn/custom";
-
+	
 }

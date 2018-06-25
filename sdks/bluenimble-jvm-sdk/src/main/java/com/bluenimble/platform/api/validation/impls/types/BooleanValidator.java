@@ -22,6 +22,7 @@ import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.validation.ApiServiceValidator;
 import com.bluenimble.platform.api.validation.ApiServiceValidator.Spec;
+import com.bluenimble.platform.api.validation.FieldType;
 import com.bluenimble.platform.api.validation.impls.AbstractTypeValidator;
 import com.bluenimble.platform.api.validation.impls.ValidationUtils;
 import com.bluenimble.platform.json.JsonObject;
@@ -30,13 +31,11 @@ public class BooleanValidator extends AbstractTypeValidator {
 
 	private static final long serialVersionUID = 2430274897113013353L;
 	
-	public static final String Type 				= "Boolean";
-	
 	public static final String TypeMessage			= "BooleanType";
 	
 	@Override
 	public String getName () {
-		return Type;
+		return FieldType.Boolean;
 	}
 
 	@Override

@@ -45,11 +45,11 @@ public class TokenConsumerResolver implements ApiConsumerResolver {
 	protected static final String MethodName = "token";
 
 	interface Defaults {
-		String 	Scheme 			= "Token";
+		String 	Prefix 			= "Bearer";
 	}
 	
 	interface Spec {
-		String 	Scheme 			= "scheme";
+		String 	Prefix 			= "prefix";
 		interface Auth {
 			String 	Secrets 	= "secrets";
 		}
@@ -64,7 +64,7 @@ public class TokenConsumerResolver implements ApiConsumerResolver {
 		
 		JsonObject oResolver = Json.getObject (Json.getObject (api.getSecurity (), Api.Spec.Security.Schemes), MethodName);
 		
-		String 	scheme 	= Json.getString 	(oResolver, Spec.Scheme, Defaults.Scheme);
+		String 	scheme 	= Json.getString 	(oResolver, Spec.Prefix, Defaults.Prefix);
 		
 		String placeholder = Json.getString (service.getSecurity (), ApiService.Spec.Security.Placeholder, Scope.Header.name ());
 		

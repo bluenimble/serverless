@@ -27,6 +27,7 @@ public interface ApiService extends Manageable {
 		String Verb 		= "verb";
 		String Endpoint 	= "endpoint";
 
+		String Id 			= "id";
 		String Name 		= "name";
 		String Description 	= "description";
 		
@@ -42,6 +43,12 @@ public interface ApiService extends Manageable {
 			String Engine		= "engine";
 			String Processor	= "processor";
 			String Extends		= "extends";
+		}
+
+		interface Meta	{
+			String Type		= "type";
+			String SubType	= "subType";
+			String Tags		= "tags";
 		}
 
 		String Status		= "status";

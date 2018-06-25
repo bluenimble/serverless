@@ -6,7 +6,7 @@
 		"contentType": "application/json",
 		"fields": {
 			"payload": 	{ 
-				"type": "Map",
+				"type": "Object",
 				"fields": {
 					"verb": {}, "endpoint": {}
 				}

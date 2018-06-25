@@ -6,7 +6,7 @@
 		"fields": {
 			"provider": { "max": "100", "value": "default" },
 			"entity": 	{ "max": "100" },
-			"payload": 	{ "type": "Map" },
+			"payload": 	{ "type": "Object" },
 			"serializer": 	{ }
 		}
 	},

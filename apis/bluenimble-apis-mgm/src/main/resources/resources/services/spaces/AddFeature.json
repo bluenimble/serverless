@@ -5,9 +5,9 @@
 	"spec": {
 		"contentType": "application/json",
 		"fields": {
-			"payload": { "type": "Map",
+			"payload": { "type": "Object",
 				"fields": {
-					"name": {}, "feature": { }, "provider": { }, "spec": { "required": "false", "type": "Map" }
+					"name": {}, "feature": { }, "provider": { }, "spec": { "required": "false", "type": "Object" }
 				}
 			}
 		}

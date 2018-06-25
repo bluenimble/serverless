@@ -22,6 +22,7 @@ import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.validation.ApiServiceValidator;
 import com.bluenimble.platform.api.validation.ApiServiceValidator.Spec;
+import com.bluenimble.platform.api.validation.FieldType;
 import com.bluenimble.platform.api.validation.TypeValidator;
 import com.bluenimble.platform.api.validation.impls.AbstractTypeValidator;
 import com.bluenimble.platform.api.validation.impls.ValidationUtils;
@@ -33,11 +34,9 @@ public class ArrayValidator extends AbstractTypeValidator {
 
 	private static final long serialVersionUID = 2430274897113013353L;
 	
-	public static final String Type 				= "Array";
-	
 	@Override
 	public String getName () {
-		return Type;
+		return FieldType.Array;
 	}
 
 	@Override
@@ -77,7 +76,7 @@ public class ArrayValidator extends AbstractTypeValidator {
 			);
 		}
 		
-		String sType = Json.getString (spec, Spec.SType, MapValidator.Type);
+		String sType = Json.getString (spec, Spec.SType, FieldType.Object);
 		
 		TypeValidator tValidator = validator.getTypeValidator (sType);
 		

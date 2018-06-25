@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import javax.servlet.DispatcherType;
@@ -51,16 +53,22 @@ import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.ApiRequest;
+import com.bluenimble.platform.api.ApiRequestBodyReader;
 import com.bluenimble.platform.api.CodeExecutor;
+import com.bluenimble.platform.api.impls.readers.StreamApiRequestBodyReader;
+import com.bluenimble.platform.api.impls.readers.JsonApiRequestBodyReader;
+import com.bluenimble.platform.api.impls.readers.TextApiRequestBodyReader;
 import com.bluenimble.platform.api.tracing.Tracer;
+import com.bluenimble.platform.api.tracing.Tracer.Level;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.impls.AbstractPlugin;
-import com.bluenimble.platform.server.ApiServer;
-import com.thetransactioncompany.cors.CORSFilter;
-
 import com.bluenimble.platform.plugins.inbound.http.impl.HttpApiRequest;
 import com.bluenimble.platform.plugins.inbound.http.impl.HttpApiResponse;
+import com.bluenimble.platform.plugins.inbound.http.readers.YamlApiRequestBodyReader;
+import com.bluenimble.platform.reflect.BeanUtils;
+import com.bluenimble.platform.server.ApiServer;
+import com.thetransactioncompany.cors.CORSFilter;
 
 public class JettyPlugin extends AbstractPlugin {
 	
@@ -90,6 +98,8 @@ public class JettyPlugin extends AbstractPlugin {
 			String Exclude = "exclude";
 		}
 	}
+	
+	private Map<String, ApiRequestBodyReader> readers = new HashMap<String, ApiRequestBodyReader> ();
 
 	private int 		port 		= 80;
 	
@@ -250,7 +260,7 @@ public class JettyPlugin extends AbstractPlugin {
 	
 	        	protected void execute (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 	        		try {
-	        			ApiRequest request = new HttpApiRequest (req, tracer ());
+	        			ApiRequest request = new HttpApiRequest (req, JettyPlugin.this);
 	        			request.getNode ().set (ApiRequest.Fields.Node.Id, server.id ());
 	        			request.getNode ().set (ApiRequest.Fields.Node.Type, server.type ());
 	        			request.getNode ().set (ApiRequest.Fields.Node.Version, server.version ());
@@ -268,7 +278,7 @@ public class JettyPlugin extends AbstractPlugin {
         FilterHolder holder = new FilterHolder (CORSFilter.class);
         holder.setName ("CORS");
         holder.setInitParameter ("cors.supportedMethods", "GET, POST, HEAD, PUT, DELETE, PATCH, OPTIONS");
-        holder.setInitParameter ("cors.exposedHeaders", "Accept,Authorization,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,User-Agent,X-Requested-With,BN-Execution-Time,BN-Node-Id,BN-Node-Type");
+        holder.setInitParameter ("cors.exposedHeaders", "Accept,Authorization,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,User-Agent,X-Requested-With,BNB-Execution-Time,BNB-Node-Id,BNB-Node-Type");
         sContext.addFilter (holder, "/*", EnumSet.of (DispatcherType.INCLUDE, DispatcherType.FORWARD, DispatcherType.REQUEST, DispatcherType.ERROR));
         
         // monitor
@@ -278,6 +288,12 @@ public class JettyPlugin extends AbstractPlugin {
 			httpServer.addBean (mbContainer);
 			httpServer.addBean (Log.getLog ());
 		}
+		
+		// init default request body readers
+		addReader (new StreamApiRequestBodyReader ());
+		addReader (new TextApiRequestBodyReader ());
+		addReader (new JsonApiRequestBodyReader ());
+		addReader (new YamlApiRequestBodyReader ());
         
 		// start server
         
@@ -352,6 +368,52 @@ public class JettyPlugin extends AbstractPlugin {
 
 	public void setMonitor (boolean monitor) {
 		this.monitor = monitor;
+	}
+
+	public JsonArray getRequestBodyReaders () {
+		return null;
+	}
+	public void setRequestBodyReaders (JsonArray requestBodyReaders) {
+		if (Json.isNullOrEmpty (requestBodyReaders)) {
+			return;
+		}
+		for (int i = 0; i < requestBodyReaders.count (); i++) {
+			Object o = requestBodyReaders.get (i);
+			if (!(o instanceof JsonObject)) {
+				continue;
+			}
+			Object oReader = null;
+			try {
+				oReader = BeanUtils.create ((JsonObject)o);
+			} catch (Exception ex) {
+				tracer ().log (Level.Error, ex.getMessage (), ex);
+				continue;
+			}
+			
+			if (oReader == null) {
+				continue;
+			}
+			
+			if (!(oReader instanceof ApiRequestBodyReader)) {
+				continue;
+			}
+			
+			addReader ((ApiRequestBodyReader)oReader);
+			
+		}
+	}
+	
+	private void addReader (ApiRequestBodyReader reader) {
+		if (reader.mediaTypes () == null || reader.mediaTypes ().length == 0) {
+			return;
+		}
+		for (String mt : reader.mediaTypes ()) {
+			readers.put (mt, reader);
+		}
+	}
+	
+	public ApiRequestBodyReader getReader (String mediaType) {
+		return readers.get (mediaType);
 	}
 
 }

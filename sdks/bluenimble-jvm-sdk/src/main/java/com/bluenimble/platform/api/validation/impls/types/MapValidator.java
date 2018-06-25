@@ -31,6 +31,7 @@ import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.validation.ApiServiceValidator;
 import com.bluenimble.platform.api.validation.ApiServiceValidator.Spec;
 import com.bluenimble.platform.api.validation.ApiServiceValidatorException;
+import com.bluenimble.platform.api.validation.FieldType;
 import com.bluenimble.platform.api.validation.impls.AbstractTypeValidator;
 import com.bluenimble.platform.api.validation.impls.DefaultApiServiceValidator;
 import com.bluenimble.platform.api.validation.impls.ValidationUtils;
@@ -41,17 +42,14 @@ public class MapValidator extends AbstractTypeValidator {
 
 	private static final long serialVersionUID = 2430274897113013353L;
 	
-	public static final String Type 				= "Map";
-	public static final String AltType 				= "Object";
-	
-	public static final String StrictMessage		= "MapStrict";
+	public static final String StrictMessage		= "ObjectStrict";
 	
 	public static final String GuessKey				= "key";
 	public static final String GuessValue			= "value";
 	
 	@Override
 	public String getName () {
-		return Type;
+		return FieldType.Object;
 	}
 
 	@SuppressWarnings("unchecked")

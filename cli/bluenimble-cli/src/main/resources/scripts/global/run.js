@@ -18,28 +18,42 @@
 // native imports 
 var System 			= native ('java.lang.System');
 var String 			= native ('java.lang.String');
-var File 			= native ('java.io.File');
-var Pattern 		= native ('java.util.regex.Pattern');
-var Api 			= native ('com.bluenimble.platform.api.Api');
 var Lang 			= native ('com.bluenimble.platform.Lang');
-var FileUtils 		= native ('com.bluenimble.platform.FileUtils');
 var Json 			= native ('com.bluenimble.platform.Json');
 var JsonObject 		= native ('com.bluenimble.platform.json.JsonObject');
 var JsonArray 		= native ('com.bluenimble.platform.json.JsonArray');
 
 //check if valid command args
 if (typeof Command === 'undefined') {
-	throw 'missing command arguments. eg. run [CallsJsonVar required] [FlowJsonVar required]';
+	throw 'missing command arguments. eg. run case|api [ApiCallsJsonVar or apiNs required] [FlowJsonVar required]';
 }
 
 var tokens = Lang.split (Command, ' ', true);
 
 if (tokens.length < 2) {
-	throw 'missing command arguments. eg. run CallsJsonVar FlowJsonVar';
+	throw 'missing command arguments. eg. run case|api ApiCallsVar|apiNs FlowJsonVar';
 }
 
-var callsVar 	= tokens [0];
-var caseVar 	= tokens [1];
+var target 		= tokens [0];
+if (target != 'case' && target != 'api') {
+	throw 'invalid target ' + target + '. Possible targets: [case] and [api]';
+}
+
+var callsVar 	= tokens [1];
+var caseVar 	= tokens [2];
+
+if (target == 'api') {
+	var headers = Vars ['remote.headers'];
+	if (!headers) {
+		Vars['remote.headers'] = new JsonObject ();
+		headers = Vars ['remote.headers'];
+	}
+	var currentAccept = headers.Accept;
+	headers.Accept = 'application/spec.calls.bnb';
+	Tool.command ('desc api ' + callsVar + ' all >> ' + callsVar + '_calls');
+	callsVar = callsVar + '_calls';
+	headers.Accept = currentAccept;
+}
 
 var oCalls = Vars [callsVar];
 if (!oCalls) {
@@ -56,7 +70,11 @@ if (!oCalls.calls || !(oCalls.calls instanceof JsonArray)) {
 
 var oCase = Vars [caseVar];
 if (!oCase) {
-	throw 'variable ' + caseVar + ' not found';
+	var aSteps = caseVar.split ('>');
+	oCase = new JsonObject ().set ('flow', new JsonArray ());
+	for (var i = 0; i < aSteps.length; i++) {
+		oCase.flow.add (new JsonObject ().set ('call', aSteps [i].trim ()));
+	}
 }
 
 if (!(oCase instanceof JsonObject)) {
@@ -67,7 +85,7 @@ if (!oCase.flow || !(oCase.flow instanceof JsonArray)) {
 	throw 'property ' + caseVar + ".flow doesn't exist or it isn't a valid json array";
 }
 
-Tool.note ('Execute Test Case: ' + caseVar + ' #flows (' + oCase.flow.count () + ')');
+Tool.note ('Run (' + caseVar + ') ' + (target == 'case' ? ('using spec ' + callsVar) : ('for api ' + tokens [1])) + ' > # flows (' + oCase.flow.count () + ')');
 
 for (var i = 0; i < oCase.flow.count (); i++) {
 	var step = oCase.flow.get (i);
@@ -103,7 +121,7 @@ for (var i = 0; i < oCase.flow.count (); i++) {
 		}
 	}
 	
-	Tool.content ("__PS__Send _|_ YELLOW:" + step.call + '_|_ request', oCall);
+	Tool.content ("__PS__Sending '_|_ YELLOW:" + step.call + "_|_' request ...", oCall);
 	Tool.command ('http ' + oCall.request.method + ' CurrentCall >> CurrentOut');
 	
 	var out = Vars['CurrentOut'];
@@ -131,10 +149,8 @@ for (var i = 0; i < oCase.flow.count (); i++) {
 	}
 }
 
-Tool.command ('echo off');
-
-Tool.command ('unset FoundCalls');
-Tool.command ('unset CurrentCall');
-Tool.command ('unset CurrentOut');
-
-Tool.command ('echo on');
+// remove temporary variables
+Vars.remove (callsVar + '_calls');
+Vars.remove ('FoundCalls');
+Vars.remove ('CurrentCall');
+Vars.remove ('CurrentOut');
