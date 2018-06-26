@@ -16,13 +16,11 @@
 		}],
 	</#if>
 	
-	<#assign components = {} >
-	<#assign bodyFields = {} >
-	<#assign genericObjects = []> 
+	<#assign components = TemplateTool.newMap() >
 	
-	<#assign groups = TemplateTool.groupBy (output.space, output.namespace, 'endpoint', 'verb')>
+	<#assign groups = TemplateTool.groupBy (output.space, output.namespace, 'endpoint', 'verb', 'oas')>
 	
-	<#assign UsualPlaceholders = ['header', 'path', 'query']>
+	<#assign SimplePlaceholders = ['header', 'path', 'query']>
 	<#assign MixedPlaceholders = ['body', 'form']>
 	
 	,"paths": {	
@@ -33,6 +31,7 @@
 				<#assign groupKeys = group?keys>
 				<#list groupKeys as gk>
 					<#assign service = group[gk] >
+					<#assign bodyFields = TemplateTool.newList() >
 					"${gk}": {
 						"description": "${(service.description)!(service.name)!'no description provided'}"
 						<#if (service.id)??>
@@ -62,10 +61,11 @@
 								
 								<#assign firstIter = true>
 								
+								${TemplateTool.log ('Params+Headers ' + gk + ':' + key)}
+								
 								<#list allFields as fk>
 									<#assign field = fields[fk] >
-									
-									<#if SimplePlaceholders?contains(field.placeholder)>
+									<#if SimplePlaceholders?seq_contains(field.placeholder)>
 										<#if firstIter == false>,</#if>
 										{
 											"name": "${fk}",
@@ -73,14 +73,15 @@
 											"description": "${(field.title)!fk}",
 											"required": "${(field.required)!'true'}",
 											<#if (field.value)??>"default": "${field.value}",</#if>
-											"schema": ${TemplateTool.oasSchema(field, components)}
+											${TemplateTool.log ('  Parameter ' + fk)}
+											"schema": ${TemplateTool.oasSchema(output.space, output.namespace, field, components)}
 										}
 										<#assign firstIter = false>
 									<#else>
 										<#if (field.placeholder) == 'form'>
 											<#assign isForm = true>
 										<#elseif (field.placeholder) == 'body'>
-											<#assign bodyFields += field}
+											<#assign nor = TemplateTool.addToList(bodyFields, field)>
 											<#if isSingleBody == true>
 												<#assign isMultiBody = true>
 											</#if>
@@ -95,50 +96,42 @@
 							"requestBody": {
 								"content": {
 									<#if isMultiBody == true>
+										${TemplateTool.log ('isMultiBody ' + gk + ': ' key)}
 										"multipart/form-data": {
 											"schema": {
 												"type": "object",
 												"properties": {
-													<#if firstMixed == true>
-													<#list allFields as fk>
+													<#assign firstMixed = true>
+													<#list fields?keys as fk>
 														<#assign field = fields[fk] >
-														<#if MixedPlaceholders?contains(field.placeholder)>
-															<#if firstIter == false>,</#if>
-															"${fk}": {
-																"description": "${(field.title)!fk}",
-																<#if (field.value)??>"default": "${field.value}",</#if>
-																"schema": ${TemplateTool.oasSchema(field, components)}
-															}
-															<#if firstMixed == false>
-															<#if >
-																<#assign requiredFields += '${fk}'>
-															</#if>
+														<#if MixedPlaceholders?seq_contains(field.placeholder)>
+															<#if firstMixed == false>,</#if>
+															${TemplateTool.log ('  isMultiBody ' + fk)}
+															"${fk}": ${TemplateTool.oasSchema(output.space, output.namespace, field, components)}
+															<#assign firstMixed = false>
 														</#if>
 													</#list>
 												}
 											}
 										}
 									<#elseif isSingleBody == true>
+										${TemplateTool.log ('isSingleBody ' + gk + ': ' + key)}
+										<#assign contentTypes = (service.spec.fields.Accept.enum)!['application/json', 'application/yaml']>
 										<#assign firstCt = true>
-										<#list service.spec.contentTypes as contentType>
+										<#list contentTypes as contentType>
 											<#if firstCt == false>,</#if>
 											"${contentType}": {
-												"schema": {
-													<#if (bodyFields[0].type)??>
-														"$ref": "#/components/schemas/${bodyFields[0].type}"
-													</#else>
-														"$ref": "#/components/schemas/Generic"
-														<#assign components += bodyFields[0]> 
-													</#if>
-												}
+												${TemplateTool.log ('  isSingleBody > ' + contentType)}
+												"schema": ${TemplateTool.oasSchema(output.space, output.namespace, bodyFields?first, components)}
 											}
 											<#assign firstCt = false>
 										</#list>
 									<#elseif isForm == true>
+										${TemplateTool.log ('isForm ' + gk + ': ' + key)}
 										"application/x-www-form-urlencoded": {
 											<#assign allFields = fields?keys>
 											<#assign firstIter = true>
-											<#assign requiredFields = []>
+											<#assign requiredFields = TemplateTool.newList() >
 											"schema": {
 												"type": "object",
 												"properties": {
@@ -146,14 +139,11 @@
 														<#assign field = fields[fk] >
 														<#if (field.placeholder) == 'form'>
 															<#if firstIter == false>,</#if>
-															"${fk}": {
-																"description": "${(field.title)!fk}",
-																<#if (field.value)??>"default": "${field.value}",</#if>
-																"schema": ${TemplateTool.oasSchema(field, components)}
-															}
+															${TemplateTool.log ('  isForm ' + fk)}
+															"${fk}": ${TemplateTool.oasSchema(output.space, output.namespace, field, components)}
 															<#assign firstIter = false>
-															<#if >
-																<#assign requiredFields += '${fk}'>
+															<#if !(field.required)?? || (field.required) == 'true'>
+																<#assign nor = TemplateTool.addToList(requiredFields, fk)>
 															</#if>
 														</#if>
 													</#list>
@@ -179,44 +169,16 @@
 								}
 							},
 							"401": {
-								"description": "Unauthorized action error",
-								"content": {
-									"application/json": {
-										"schema": {
-											"$ref": "#/components/schemas/Error.401"
-										}
-									}
-								}
+								"$ref": "#/components/responses/UnauthorizedError"
 							},
 							"403": {
-								"description": "Forbidden action error",
-								"content": {
-									"application/json": {
-										"schema": {
-											"$ref": "#/components/schemas/Error.403"
-										}
-									}
-								}
+								"$ref": "#/components/responses/ForbiddenError"
 							},
 							"422": {
-								"description": "Data validation error",
-								"content": {
-									"application/json": {
-										"schema": {
-											"$ref": "#/components/schemas/Error.422"
-										}
-									}
-								}
+								"$ref": "#/components/responses/ValidationError"
 							},
 							"default": {
-								"description": "unexpected error",
-								"content": {
-									"application/json": {
-										"schema": {
-											"$ref": "#/components/schemas/Error.500"
-										}
-									}
-								}
+								"$ref": "#/components/responses/OtherError"
 							}
 						}
 						
@@ -226,6 +188,48 @@
 		</#list>
 	},
 	"components": {
+		"responses": {
+			"UnauthorizedError": {
+				"description": "Unauthorized action error",
+				"content": {
+					"application/json": {
+						"schema": {
+							"$ref": "#/components/schemas/Error.401"
+						}
+					}
+				}
+			},
+			"ForbiddenError": {
+				"description": "Forbidden action error",
+				"content": {
+					"application/json": {
+						"schema": {
+							"$ref": "#/components/schemas/Error.403"
+						}
+					}
+				}
+			},
+			"ValidationError": {
+				"description": "Data validation error",
+				"content": {
+					"application/json": {
+						"schema": {
+							"$ref": "#/components/schemas/Error.422"
+						}
+					}
+				}
+			},
+			"OtherError": {
+				"description": "unexpected error",
+				"content": {
+					"application/json": {
+						"schema": {
+							"$ref": "#/components/schemas/Error.500"
+						}
+					}
+				}
+			}
+		},
 		"schemas": {
 			"Error.500": {
 				"required": [
@@ -288,12 +292,10 @@
 				}
 			}
 			<#if components?has_content>
-				<#list components as go>
-					,"Object_${go?index}": {
-						"properties": ${TemplateTool.oasObjectSchema(go)}
-					}
+				<#list components?keys as cmp>
+					,"${cmp}": ${components[cmp]}
 				</#list>
-			</if>
+			</#if>
 		}
 	}
 	

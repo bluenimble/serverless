@@ -194,7 +194,7 @@ public class CreateApiHandler implements CommandHandler {
 		}
 		
 		if (secure) {
-			SecureApiHandler.execute (tool, new String [] { namespace, "token+signature", Lang.STAR });
+			SecureApiHandler.execute (tool, new String [] { namespace, "token+key+signature", Lang.STAR });
 			if (Lang.TRUE.equals (vars.get (BlueNimble.DefaultVars.GenerateSpecComments))) {
 				// add spec comment
 				SpecUtils.comment (

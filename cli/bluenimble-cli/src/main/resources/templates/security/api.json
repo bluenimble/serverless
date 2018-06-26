@@ -6,6 +6,9 @@
 				"prefix": "Bearer",
 				"auth": { "secrets": "default" }
 			},
+			"key": {
+				"prefix": "BNB-API-Key"
+			},
 			"cookie": {
 				"auth": { "secrets": "default" }
 			},

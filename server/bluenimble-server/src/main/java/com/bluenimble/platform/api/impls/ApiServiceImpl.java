@@ -67,20 +67,19 @@ public class ApiServiceImpl implements ApiService {
 		this.source 	= source;
 		
 		// set id if not found
-		String id = Json.getString (source, ApiService.Spec.Id);
-		if (Lang.isNullOrEmpty (id)) {
+		if (Lang.isNullOrEmpty (Json.getString (source, ApiService.Spec.Id))) {
 			String path = this.resource.path ();
 			if (path.startsWith (ConfigKeys.Folders.Services + Lang.SLASH)) {
 				path = path.substring ((ConfigKeys.Folders.Services + Lang.SLASH).length ());
 			}
 			if (path.endsWith (ConfigKeys.JsonExt)) {
-				path = id.substring (0, path.length () - ConfigKeys.JsonExt.length ());
+				path = path.substring (0, path.length () - ConfigKeys.JsonExt.length ());
 			}
 			String [] parts = Lang.split (path, Lang.SLASH);
 			for (int i = 0; i < parts.length; i++) {
 				parts [i] = Lang.capitalizeFirst (parts [i]);
 			}
-			source.set (ApiService.Spec.Id, Lang.join (parts, Lang.BLANK));
+			source.set (ApiService.Spec.Id, Lang.join (parts, Lang.DOT));
 		}
 
 		this.api 		= api;

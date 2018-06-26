@@ -18,6 +18,7 @@ package com.bluenimble.platform.server.plugins.security;
 
 import com.bluenimble.platform.api.security.impls.BasicConsumerResolver;
 import com.bluenimble.platform.api.security.impls.CookieConsumerResolver;
+import com.bluenimble.platform.api.security.impls.KeyConsumerResolver;
 import com.bluenimble.platform.api.security.impls.SignatureConsumerResolver;
 import com.bluenimble.platform.api.security.impls.TokenConsumerResolver;
 import com.bluenimble.platform.plugins.impls.AbstractPlugin;
@@ -32,6 +33,7 @@ public class ApiSecurityPlugin extends AbstractPlugin {
 		server.addConsumerResolver (new TokenConsumerResolver ());
 		server.addConsumerResolver (new CookieConsumerResolver ());
 		server.addConsumerResolver (new SignatureConsumerResolver ());
+		server.addConsumerResolver (new KeyConsumerResolver ());
 		server.addConsumerResolver (new BasicConsumerResolver ());
 	}
 	

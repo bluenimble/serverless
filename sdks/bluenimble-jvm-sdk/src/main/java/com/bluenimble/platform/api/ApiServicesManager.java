@@ -26,6 +26,22 @@ public interface ApiServicesManager extends Serializable {
 		boolean select (ApiService service);
 	}
 	
+	interface GroupingFlow {
+		String 		onGroupKey 	(Api api, String groupKey);
+		JsonObject 	onService 	(Api api, JsonObject spec, boolean isObject);
+	}
+	
+	GroupingFlow NoGroupingFlow = new GroupingFlow () {
+		@Override
+		public String onGroupKey(Api api, String groupKey) {
+			return groupKey;
+		}
+		@Override
+		public JsonObject onService (Api api, JsonObject spec, boolean isObject) {
+			return spec;
+		}
+	};
+	
 	void				load 			(Api api) 							throws ApiServicesManagerException;
 
 	void				onStart 		(ApiContext context) 				throws ApiServicesManagerException;
@@ -44,6 +60,6 @@ public interface ApiServicesManager extends Serializable {
 	
 	boolean				isEmpty			(ApiVerb verb);
 	
-	JsonObject			groupBy			(String property, String groupItemKey);
+	JsonObject			groupBy			(String property, String groupItemKey, GroupingFlow flow);
 	
 }

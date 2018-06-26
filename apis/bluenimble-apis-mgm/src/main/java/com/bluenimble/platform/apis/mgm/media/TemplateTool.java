@@ -19,12 +19,15 @@ package com.bluenimble.platform.apis.mgm.media;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiAccessDeniedException;
+import com.bluenimble.platform.api.ApiServicesManager;
 import com.bluenimble.platform.api.validation.ApiServiceValidator;
 import com.bluenimble.platform.api.validation.ApiServiceValidator.Spec;
 import com.bluenimble.platform.api.validation.FieldType;
@@ -36,7 +39,14 @@ public class TemplateTool {
 	
 	private Api 				mgm;
 	
-	private static final String OasString = "string";
+	private static final String OasGenericObject = "Object_";
+	
+	private static final String OasString 	= "string";
+	private static final String OasObject 	= "object";
+	private static final String OasArray 	= "array";
+	
+	public static final String OasPlaceholder 	
+											= "placeholder";
 	
 	private static final Map<String, String []> OasTypes = new HashMap<String, String []> ();
 	static {
@@ -54,8 +64,15 @@ public class TemplateTool {
 		OasTypes.put (ApiServiceValidator.Spec.Secret, 				new String [] { OasString, "password" });
 	}
 	
-	interface OasSpec {
+	public interface OasSpec {
 		interface Schema {
+			String Properties 		= "properties";
+			String Ref 				= "$ref";
+			String Items			= "items";
+			
+			String Required 		= "required";
+			String Description		= "description";
+
 			String Type 			= "type";
 			String Format 			= "format";
 			String MinLength 		= "minLength";
@@ -68,11 +85,46 @@ public class TemplateTool {
 			String MultipleOf 		= "multipleOf";
 			String Enum 			= "enum";
 		}
+		interface Placeholder {
+			String Path 		= "path";
+			String Query 		= "query";
+			String Header 		= "header";
+			String Body 		= "body";
+			String Form 		= "form";
+		}
+	}
+	
+	interface GroupingFlowsKeys {
+		String Oas = "oas";
+	}
+	
+	private static final Map<String, Class<? extends ApiServicesManager.GroupingFlow>> GroupingFlows = 
+			new HashMap<String, Class<? extends ApiServicesManager.GroupingFlow>> ();
+	static {
+		GroupingFlows.put (GroupingFlowsKeys.Oas, OasGroupingFlow.class);
 	}
  	
 	public void init (Api mgm) {
 		this.mgm = mgm;
 	}
+	
+	public List<Object> newList () {
+		return new ArrayList<Object> ();
+	} 
+	
+	public Map<String, Object> newMap () {
+		return new HashMap<String, Object> ();
+	} 
+	
+	public String log (Object value) {
+		//System.out.println (value);
+		return Lang.BLANK;
+	} 
+	
+	public int addToList (List<Object> list, Object value) {
+		list.add (value);
+		return 0;
+	} 
 	
 	public boolean isObjectType (String space, String api, JsonObject spec) throws ApiAccessDeniedException {
 		return isObjectType (
@@ -86,34 +138,24 @@ public class TemplateTool {
 		if (Lang.isNullOrEmpty (type)) {
 			return false;
 		}
-		return FieldType.Object.equals (type) || validator.isCustomType (type);
+		return FieldType.Object.equalsIgnoreCase (type) || validator.isCustomType (type);
 	}
 	
-	public Object guess (String space, String api, String name, JsonObject spec) throws ApiAccessDeniedException {
-		ApiServiceValidator validator = mgm.space ().space (space).api (api).getServiceValidator ();
-		Object value = ValidationUtils.guessValue (validator, name, spec);
-		if (value == null) {
-			if (isObjectType (validator, space, api, spec)) {
-				return new JsonObject ().toString (0);
-			}
-			return Lang.BLANK;
-		}
-		if (value instanceof JsonObject) {
-			return ((JsonObject)value).toString (0);
-		}
-		return String.valueOf (value);
-	}
-	
-	public JsonObject groupBy (String space, String api, String property, String groupItemKey) throws ApiAccessDeniedException {
-		
-		// should set appropriate spec.contentTypes  and field.placeholder 'query', 'path', 'body', 'header'
-		// update endpoints
-		
-		return mgm.space ().space (space).api (api).getServicesManager ().groupBy (property, groupItemKey);
+	public JsonObject groupBy (String space, String api, String property, String groupItemKey, String flow) throws Exception {
+		return mgm.space ().space (space).api (api).getServicesManager ().groupBy (property, groupItemKey, GroupingFlows.get (flow).newInstance ());
 	} 
 	
+	public String oasSchema (String space, String api, JsonObject spec, Map<String, Object> components) throws ApiAccessDeniedException {
+		return jOasSchema (space, api, spec, components).toString (0);
+	}
+	
 	@SuppressWarnings("unchecked")
-	public String oasSchema (JsonObject spec) {
+	public JsonObject jOasSchema (String space, String api, JsonObject spec, Map<String, Object> components) throws ApiAccessDeniedException {
+		
+		if (isObjectType (space, api, spec) || FieldType.Array.equalsIgnoreCase (Json.getString(spec, Spec.Type))) {
+			return oasObjectSchema (space, api, spec, components);
+		}
+		
 		String type = Json.getString (spec, Spec.Type, FieldType.String).toLowerCase ();
 		
 		if (!OasTypes.containsKey (type)) {
@@ -128,6 +170,7 @@ public class TemplateTool {
 		String oasType = attrs [0];
 		
 		JsonObject schema = new JsonObject ();
+
 		schema.set (OasSpec.Schema.Type, oasType);
 		if (attrs.length > 1) {
 			schema.set (OasSpec.Schema.Format, attrs [1]);
@@ -136,7 +179,7 @@ public class TemplateTool {
 		if (spec.containsKey (Spec.VType)) {
 			String vType = Json.getString (spec, Spec.VType).toLowerCase ();
 			if (vType.equalsIgnoreCase (FieldType.Facets.Regex)) {
-				schema.set (OasSpec.Schema.Pattern, vType);
+				schema.set (OasSpec.Schema.Pattern, Json.getString (spec, Spec.Format));
 			} else {
 				schema.set (OasSpec.Schema.Format, vType);
 			}
@@ -173,8 +216,76 @@ public class TemplateTool {
 			}
 		}
 		
-		return schema.toString (0);
+		return schema;
 		
+	}
+	
+	public JsonObject oasObjectSchema (String space, String api, JsonObject spec, Map<String, Object> components) throws ApiAccessDeniedException {
+		
+		JsonObject oasSchema = new JsonObject ();
+		
+		JsonObject oasProps = new JsonObject ();
+		oasProps.set (OasSpec.Schema.Type, OasObject);
+		oasSchema.set (OasSpec.Schema.Properties, oasProps);
+		
+		JsonArray oasRequired = new JsonArray ();
+		oasSchema.set (OasSpec.Schema.Required, oasRequired);
+		
+		JsonObject schemaRef = new JsonObject ();
+		
+		JsonObject refTarget = schemaRef;
+
+		String type = Json.getString (spec, Spec.Type);
+		
+		if (FieldType.Array.equalsIgnoreCase (type)) {
+			schemaRef.set (OasSpec.Schema.Type, OasArray);
+			type = Json.getString (spec, Spec.SType, FieldType.String);
+			JsonObject oItems = new JsonObject ();
+			schemaRef.set (OasSpec.Schema.Items, oItems);
+			spec = spec.duplicate ();
+			spec.set (Spec.Type, type);
+			refTarget = oItems;
+			if (!isObjectType (space, api, spec)) {
+				schemaRef.set (
+					OasSpec.Schema.Items, 
+					jOasSchema (space, api, spec, components).set (OasSpec.Schema.Description, Json.getString (spec, Spec.Title))
+				);
+				return schemaRef;
+			}
+		}
+		
+		JsonObject fields = Json.getObject (spec, Spec.Fields);
+		
+		if (!Json.isNullOrEmpty (fields)) {
+			Iterator<String> keys = fields.keys ();
+			while (keys.hasNext ()) {
+				String key = keys.next ();
+				JsonObject oField = Json.getObject (fields, key);
+				if (Json.getBoolean (oField, Spec.Required, true)) {
+					oasRequired.add (key);
+				}
+				oasProps.set (
+					key, 
+					jOasSchema (space, api, oField, components)
+						.set (OasSpec.Schema.Description, Json.getString (oField, Spec.Title)
+					)			
+				);
+			}
+		}
+		
+		if (oasRequired.isEmpty ()) {
+			oasSchema.remove (OasSpec.Schema.Required);
+		}
+		
+		if (FieldType.Object.equalsIgnoreCase (type)) {
+			type = OasGenericObject + components.size ();
+		}
+
+		components.put (type, oasSchema.toString (0));
+		
+		refTarget.set (OasSpec.Schema.Ref, "#/components/schemas/" + type);
+		
+		return schemaRef;
 	}
 	
 	private String [] getFacet (JsonObject spec, String facet) {
@@ -202,6 +313,21 @@ public class TemplateTool {
 			return Lang.BLANK;
 		}
 		return object.toString (0);
+	}
+	
+	public Object guess (String space, String api, String name, JsonObject spec) throws ApiAccessDeniedException {
+		ApiServiceValidator validator = mgm.space ().space (space).api (api).getServiceValidator ();
+		Object value = ValidationUtils.guessValue (validator, name, spec);
+		if (value == null) {
+			if (isObjectType (validator, space, api, spec)) {
+				return new JsonObject ().toString (0);
+			}
+			return Lang.BLANK;
+		}
+		if (value instanceof JsonObject) {
+			return ((JsonObject)value).toString (0);
+		}
+		return String.valueOf (value);
 	}
 	
 }

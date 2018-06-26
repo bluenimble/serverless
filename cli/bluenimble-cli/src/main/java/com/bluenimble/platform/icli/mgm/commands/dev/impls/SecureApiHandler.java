@@ -46,6 +46,7 @@ public class SecureApiHandler implements CommandHandler {
 		Schemes.add ("token");
 		Schemes.add ("cookie");
 		Schemes.add ("basic");
+		Schemes.add ("key");
 		Schemes.add ("signature");
 	}
 	

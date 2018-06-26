@@ -615,7 +615,7 @@ public class BlueNimble extends JLineTool {
 				new JsonObject ()
 					.set ("application/spec.bnb.calls", ApiContentTypes.Json)
 					.set ("application/spec.graphql", ApiContentTypes.Json)
-					.set ("application/spec.openapi", ApiContentTypes.Json)
+					.set ("application/spec.openapi-3.0", ApiContentTypes.Json)
 			);
 		}
 		

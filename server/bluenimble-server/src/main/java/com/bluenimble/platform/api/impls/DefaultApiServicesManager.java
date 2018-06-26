@@ -37,6 +37,8 @@ import com.bluenimble.platform.api.ApiServicesManagerException;
 import com.bluenimble.platform.api.ApiStatus;
 import com.bluenimble.platform.api.ApiVerb;
 import com.bluenimble.platform.api.tracing.Tracer;
+import com.bluenimble.platform.api.validation.ApiServiceValidator;
+import com.bluenimble.platform.api.validation.FieldType;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.reflect.ClassLoaderRegistry;
@@ -305,10 +307,14 @@ public class DefaultApiServicesManager implements ApiServicesManager {
 	}
 	
 	// group by
-	public JsonObject groupBy (String property, String groupItemKey) {
+	public JsonObject groupBy (String property, String groupItemKey, GroupingFlow flow) {
 		JsonObject groups = new JsonObject ();
 		if (Lang.isNullOrEmpty (property)) {
 			return groups;
+		}
+		
+		if (flow == null) {
+			flow = NoGroupingFlow;
 		}
 		
 		String [] path = Lang.split (property, Lang.DOT);
@@ -323,6 +329,10 @@ public class DefaultApiServicesManager implements ApiServicesManager {
  					continue;
  				}
  				String groupKey = String.valueOf (pv);
+ 				
+ 				// flow onGroupKey
+ 				groupKey = flow.onGroupKey (api, groupKey);
+ 				
  				if (Lang.isNullOrEmpty (groupKey)) {
  					continue;
  				}
@@ -333,6 +343,8 @@ public class DefaultApiServicesManager implements ApiServicesManager {
  					groups.set (groupKey, group);
  				}
  				
+ 				String type = Json.getString (s.source, ApiServiceValidator.Spec.Type, FieldType.String);
+ 				
  				if (!Lang.isNullOrEmpty (groupItemKey)) {
  					Object gikValue = Json.find (s.source, groupItemKey);
  					if (gikValue == null) {
@@ -342,8 +354,10 @@ public class DefaultApiServicesManager implements ApiServicesManager {
  	 						continue;
  						}
  					}
- 					JsonObject oService = s.toJson ().duplicate ();
- 					oService.remove (property, groupItemKey);
+ 					JsonObject oService = s.source.duplicate ();
+ 					oService = flow.onService (api, oService, FieldType.Object.equalsIgnoreCase (type) || api.getServiceValidator ().isCustomType (type));
+ 					oService.remove (property);
+ 					oService.remove (groupItemKey);
  					group.set (String.valueOf (gikValue), oService);
  				} else {
  					JsonArray items = Json.getArray (group, ApiOutput.Defaults.Items);
@@ -352,6 +366,7 @@ public class DefaultApiServicesManager implements ApiServicesManager {
  						group.set (ApiOutput.Defaults.Items, items);
  					}
  					JsonObject oService = s.toJson ().duplicate ();
+ 					oService = flow.onService (api, oService, FieldType.Object.equalsIgnoreCase (type) || api.getServiceValidator ().isCustomType (type));
  					oService.remove (property);
  					items.add (oService);
  				}

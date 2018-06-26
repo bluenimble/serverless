@@ -268,9 +268,10 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 		
 		if (value == null) {
 			value = defaultValue;
-			if (value != null) {
-				request.set (name, value);
-			}
+		}
+		
+		if (value != null) {
+			request.set (name, value);
 		}
 		
 		return value;
@@ -279,7 +280,10 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 
 	@Override
 	public boolean isCustomType (String type) {
-		return !validators.containsKey (type);
+		if (type == null) {
+			return false;
+		}
+		return !validators.containsKey (type.toLowerCase ());
 	}
 
 }
