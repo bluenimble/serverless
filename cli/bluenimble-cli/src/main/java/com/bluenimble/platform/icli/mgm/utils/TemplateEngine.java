@@ -271,12 +271,4 @@ public class TemplateEngine {
 		long		timestamp;
 	}
 	
-	public static void main (String[] args) throws Exception {
-		
-		System.out.println (
-			apply ("hellow\\[[alpha]]", (JsonObject)new JsonObject ().set ("alpha", "Antoni"))
-		);	
-		
-	}
-	
 }

@@ -6,9 +6,12 @@
 	
 	"spec": {
 		"fields": {
-			"[[model]]": { }
+			"[[model]]": { },
+			"filter": { "required": "false", "type": "Filter" }
 		}
 	},
+	
+	"tags": ["[[Models]]", "List"],
 	
 	"runtime": {
 		"function": "functions/[[models]]/List[[Model]][[Refs]].js"

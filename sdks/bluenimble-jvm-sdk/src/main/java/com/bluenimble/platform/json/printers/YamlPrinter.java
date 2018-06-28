@@ -2,6 +2,7 @@ package com.bluenimble.platform.json.printers;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
@@ -21,11 +22,14 @@ public class YamlPrinter {
 		EndLn
 	}
 	
-	private static final String Object 	= "---";
+	private static final String		EscapeQuote 	= "\\\"";
+	private static final Pattern 	ValuePattern 	= Pattern.compile (".*[:\\\\'\\-\\{\\}\\[\\]!|\"/].*");
 	
-	private static final String Colon 	= ": ";
-	private static final String Dash 	= "- ";
-	private static final String Tab 	= "  ";
+	private static final String 	Object 	= "---";
+	
+	private static final String 	Colon 	= ": ";
+	private static final String 	Dash 	= "- ";
+	private static final String 	Tab 	= "  ";
 	
 	private int initialIndent;
 	
@@ -60,9 +64,9 @@ public class YamlPrinter {
 			String key = keys.next ();
 			if (startEndln || counter > 0) {
 				endln ();
-				print (key, indent, DataType.Key);
+				print (valueFor (key), indent, DataType.Key);
 			} else {
-				print (key, 0, DataType.Key);
+				print (valueFor (key), 0, DataType.Key);
 			}
 			
 			counter++;
@@ -76,13 +80,13 @@ public class YamlPrinter {
 				String sv = String.valueOf (value);
 				int indexOfEndLn = sv.indexOf (Lang.ENDLN);
 				if (indexOfEndLn < 0) {
-					print (String.valueOf (value), 0, DataType.Value);
+					print (valueFor (value), 0, DataType.Value);
 				} else {
 					print (Lang.PIPE, 0, DataType.Pipe);
 					String [] aSv = Lang.split (sv, Lang.ENDLN);
 					for (String s : aSv) {
 						endln ();
-						print (s, indent + 1, DataType.Value);
+						print (valueFor (s), indent + 1, DataType.Value);
 					}
 				}
 			}
@@ -98,7 +102,7 @@ public class YamlPrinter {
 			} else if (value instanceof JsonArray) {
 				printArray ((JsonArray)value, indent);
 			} else {
-				print (String.valueOf (value), 0, DataType.Value);
+				print (valueFor (value), 0, DataType.Value);
 			}
 		}
 	}
@@ -123,6 +127,21 @@ public class YamlPrinter {
 		for (int i = 0; i < indent; i++) {
 			print (Tab, DataType.Tab);
 		}
+	}
+	
+	protected String valueFor (Object oValue) {
+		if (oValue == null) {
+			return Lang.NULL;
+		}
+		
+		String value = String.valueOf (oValue);
+		
+		if (ValuePattern.matcher (value).matches ()) {
+			value = Lang.replace (value, Lang.QUOTE, EscapeQuote);
+			value = Lang.QUOTE + value + Lang.QUOTE;
+		}
+		
+		return value;
 	}
 	
 }

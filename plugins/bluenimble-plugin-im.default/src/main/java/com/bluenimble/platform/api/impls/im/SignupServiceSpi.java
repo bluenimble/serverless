@@ -32,12 +32,12 @@ import com.bluenimble.platform.api.ApiServiceExecutionException;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.CodeExecutor;
 import com.bluenimble.platform.api.impls.JsonApiOutput;
-import com.bluenimble.platform.api.impls.SimpleApiServiceSpi;
 import com.bluenimble.platform.api.impls.im.LoginServiceSpi.ActivationCodeTypes;
 import com.bluenimble.platform.api.impls.im.LoginServiceSpi.Config;
 import com.bluenimble.platform.api.impls.im.LoginServiceSpi.Defaults;
 import com.bluenimble.platform.api.impls.im.LoginServiceSpi.Fields;
 import com.bluenimble.platform.api.impls.im.LoginServiceSpi.Spec;
+import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseObject;
@@ -51,7 +51,7 @@ import com.bluenimble.platform.messaging.impls.JsonSender;
 import com.bluenimble.platform.plugins.im.SecurityUtils;
 import com.bluenimble.platform.reflect.beans.impls.DefaultBeanSerializer;
 
-public class SignupServiceSpi extends SimpleApiServiceSpi {
+public class SignupServiceSpi extends AbstractApiServiceSpi {
 
 	private static final long serialVersionUID = -5297356423303847595L;
 	

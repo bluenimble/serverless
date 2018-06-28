@@ -11,6 +11,8 @@
 		}
 	},
 	
+	"tags": ["[[Models]]", "Remove"],
+	
 	"spi": {
 		"class": "[[package]].[[models]].Remove[[Model]][[Ref]]"
 	}

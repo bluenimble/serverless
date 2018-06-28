@@ -6,14 +6,16 @@
 	
 	"spec": {
 		"fields": {
-			"provider": { "max": "2" },
-			"authcode": { }
+			"provider": { "max": "2", "title": "OAuth Provider" },
+			"authcode": { "title": "Authorization Token" }
 		}
 	},
 	
 	"security": {
 		"enabled": "false"
 	},
+	
+	"tags": ["Security", "Login"],
 	
 	"spi": {
 		"class": "im.default:OAuthSpi"

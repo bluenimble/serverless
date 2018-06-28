@@ -6,13 +6,15 @@
 	
 	"spec": {
 		"fields": {
-			"payload": { "type": "Object" }
+			"payload": { "type": "[[Model]]" }
 		}
 	},
 	
 	"security": {
 		"enabled": "false"
 	},
+	
+	"tags": ["[[Models]]", "Create"],
 	
 	"spi": {
 		"class": "[[package]].[[models]].Create[[Model]]"

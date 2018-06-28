@@ -7,9 +7,11 @@
 	"spec": {
 		"fields": {
 			"[[model]]": { },
-			"filter": { "required": "false", "type": "Object" }
+			"filter": { "required": "false", "type": "Filter" }
 		}
 	},
+	
+	"tags": ["[[Models]]", "List"],
 	
 	"runtime": {
 		"function": "functions/[[models]]/List[[Model]][[Refs]].js"

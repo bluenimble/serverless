@@ -78,6 +78,8 @@ public class MacroSourceCommand extends AbstractCommand {
 			bindings.put ("Command", command);
 		}
 		
+		bindings.put ("Install", BlueNimble.Home);
+		
 		bindings.put ("Home", BlueNimble.Work);
 		
 		bindings.put ("Config", BlueNimble.Config);

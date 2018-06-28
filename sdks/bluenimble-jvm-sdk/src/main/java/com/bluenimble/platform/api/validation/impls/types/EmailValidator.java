@@ -52,7 +52,7 @@ public class EmailValidator extends AbstractTypeValidator {
 		
 		Matcher matcher = EmailRegex.matcher (String.valueOf (value));
 		
-		if (!matcher.find ()) {
+		if (!matcher.matches ()) {
 			return ValidationUtils.feedback (
 				null, spec, Spec.Type, 
 				validator.getMessage (api, request.getLang (), TypeMessage, label)

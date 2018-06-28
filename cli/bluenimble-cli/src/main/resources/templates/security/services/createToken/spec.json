@@ -7,13 +7,15 @@
 	"spec": {
 		"fields": {
 			"Content-Type": { "scope": "h", "enum": [ "application/json" ] },
-			"payload": { "type": "Object",
+			"payload": { "type": "Token",
 				"fields": {
-					"age": 	{ "required": "false" }
+					"age": 	{ "title": "Token Age in minutes", "required": "false", "type": "Integer", "min": "0" }
 				}
 			}
 		}
 	},
+	
+	"tags": ["Security", "User"],
 	
 	"spi": {
 		"class": "im.default:CreateTokenSpi"

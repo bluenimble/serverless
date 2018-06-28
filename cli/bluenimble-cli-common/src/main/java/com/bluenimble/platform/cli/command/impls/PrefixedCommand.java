@@ -160,7 +160,7 @@ public class PrefixedCommand extends AbstractCommand {
 	
 	private String filter (String value) {
 		value = value.trim ();
-		if (value.startsWith (Lang.QUOT) && value.endsWith (Lang.QUOT)) {
+		if (value.startsWith (Lang.QUOTE) && value.endsWith (Lang.QUOTE)) {
 			value = value.substring (1, value.length () - 1);
 		}
 		return value;

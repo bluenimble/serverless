@@ -15,12 +15,15 @@
  * limitations under the License.
  */
 
+// native imports 
+var Lang 			= native ('com.bluenimble.platform.Lang');
+
 /**
  *
  *	Install an api from a model file or from bnb repository
  *
  **/
- 
+
 // check if valid command args
 if (typeof Command === 'undefined') {
 	throw 'missing command arguments. eg. install api [ApiNs required] [file or url of the api model spec]';

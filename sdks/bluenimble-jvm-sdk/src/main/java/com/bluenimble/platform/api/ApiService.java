@@ -46,9 +46,8 @@ public interface ApiService extends Manageable {
 		}
 
 		interface Meta	{
-			String Type		= "type";
-			String SubType	= "subType";
 			String Tags		= "tags";
+			String Links	= "links";
 		}
 
 		String Status		= "status";

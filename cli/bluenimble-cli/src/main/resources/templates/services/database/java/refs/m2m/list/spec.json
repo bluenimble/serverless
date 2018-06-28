@@ -2,13 +2,16 @@
 	
 	    "verb": "get",
 	"endpoint": "/[[models]]/:[[model]]/[[refs]]",
-		"name": "Get [[Model]] [[Refs]]",
+		"name": "Get [[Model]] [[Refs]] by filter",
 	
 	"spec": {
 		"fields": {
-			"[[model]]": { }
+			"[[model]]": { },
+			"filter": { "required": "false", "type": "Filter" }
 		}
 	},
+	
+	"tags": ["[[Models]]", "List"],
 	
 	"spi": {
 		"class": "[[package]].[[models]].List[[Model]][[Refs]]"

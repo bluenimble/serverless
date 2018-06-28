@@ -11,6 +11,8 @@
 		}
 	},
 	
+	"tags": ["[[Models]]", "Remove"],
+	
 	"runtime": {
 		"function": "functions/[[models]]/Remove[[Model]][[Ref]].js"
 	},

@@ -117,7 +117,7 @@ public class ScriptSourceCommand extends AbstractCommand {
 		Matcher m = SplitPattern.matcher (cmd);
 		while (m.find ()) {
 			String value = m.group (1);
-			if (value.startsWith (Lang.QUOT) && value.endsWith (Lang.QUOT)) {
+			if (value.startsWith (Lang.QUOTE) && value.endsWith (Lang.QUOTE)) {
 				value = value.substring (1, value.length () - 1);
 			}
 			lArgs.add (value); 

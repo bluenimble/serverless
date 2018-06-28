@@ -10,8 +10,10 @@
 		}
 	},
 	
+	"tags": ["[[Models]]", "Read"],
+	
 	"spi": {
-		"class": "[[package]].[[models]].Get[[Model]][[Ref]]Spi"
+		"class": "[[package]].[[models]].Get[[Model]][[Ref]]"
 	}
 	
 }

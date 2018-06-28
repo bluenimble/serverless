@@ -11,6 +11,8 @@
 		}
 	},
 	
+	"tags": ["[[Models]]", "Read"],
+	
 	"spi": {
 		"class": "[[package]].[[models]].Get[[Model]][[Ref]]"
 	}

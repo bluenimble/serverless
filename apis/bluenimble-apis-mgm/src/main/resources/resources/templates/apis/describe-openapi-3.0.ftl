@@ -44,7 +44,7 @@
 							,"description": "${service.description}"
 						</#if>
 						<#if (service.meta.tags)??>
-							,"tags": ${service.meta.tags}
+							,"tags": ["${service.meta.tags?join('","')}"]
 						</#if>
 						
 						<#assign fields = {} >
@@ -159,14 +159,52 @@
 						</#if>
 						"responses": {
 							"200": {
-								"description": "pet response",
-								"content": {
-									"application/json": {
-										"schema": {
-											"$ref": "#/components/schemas/Pet"
+								<#if gk == 'get'>
+									"description": "OK",
+									"content": {
+										"application/json": {
+											"schema": {
+												"type": "object"
+											}
 										}
 									}
-								}
+								<#elseif gk == 'post'>
+									"description": "Deleted",
+									"content": {
+										"application/json": {
+											"schema": {
+												"type": "object"
+											}
+										}
+									}
+								<#elseif gk == 'put'>
+									"description": "Updated",
+									"content": {
+										"application/json": {
+											"schema": {
+												"type": "object"
+											}
+										}
+									}
+								<#elseif gk == 'delete'>
+									"description": "Deleted",
+									"content": {
+										"application/json": {
+											"schema": {
+												"type": "object"
+											}
+										}
+									}
+								<#elseif gk == 'patch'>
+									"description": "Updated",
+									"content": {
+										"application/json": {
+											"schema": {
+												"type": "object"
+											}
+										}
+									}
+								</#if>
 							},
 							"401": {
 								"$ref": "#/components/responses/UnauthorizedError"
@@ -174,11 +212,14 @@
 							"403": {
 								"$ref": "#/components/responses/ForbiddenError"
 							},
+							"404": {
+								"$ref": "#/components/responses/NotFoundError"
+							},
 							"422": {
 								"$ref": "#/components/responses/ValidationError"
 							},
-							"default": {
-								"$ref": "#/components/responses/OtherError"
+							"5XX": {
+								"$ref": "#/components/responses/UnexpectedError"
 							}
 						}
 						
@@ -209,6 +250,16 @@
 					}
 				}
 			},
+			"NotFoundError": {
+				"description": "Requested object not found",
+				"content": {
+					"application/json": {
+						"schema": {
+							"$ref": "#/components/schemas/Error.404"
+						}
+					}
+				}
+			},
 			"ValidationError": {
 				"description": "Data validation error",
 				"content": {
@@ -219,33 +270,18 @@
 					}
 				}
 			},
-			"OtherError": {
+			"UnexpectedError": {
 				"description": "unexpected error",
 				"content": {
 					"application/json": {
 						"schema": {
-							"$ref": "#/components/schemas/Error.500"
+							"$ref": "#/components/schemas/Error.5XX"
 						}
 					}
 				}
 			}
 		},
 		"schemas": {
-			"Error.500": {
-				"required": [
-					"code",
-					"message"
-				],
-				"properties": {
-					"code": {
-						"type": "integer",
-						"format": "int32"
-					},
-					"message": {
-						"type": "string"
-					}
-				}
-			},
 			"Error.401": {
 				"required": [
 					"code",
@@ -276,7 +312,37 @@
 					}
 				}
 			},
+			"Error.404": {
+				"required": [
+					"code",
+					"message"
+				],
+				"properties": {
+					"code": {
+						"type": "integer",
+						"format": "int32"
+					},
+					"message": {
+						"type": "string"
+					}
+				}
+			},
 			"Error.422": {
+				"required": [
+					"code",
+					"message"
+				],
+				"properties": {
+					"code": {
+						"type": "integer",
+						"format": "int32"
+					},
+					"message": {
+						"type": "string"
+					}
+				}
+			},
+			"Error.5XX": {
 				"required": [
 					"code",
 					"message"

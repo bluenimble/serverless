@@ -10,12 +10,10 @@
 		}
 	},
 	
-	"runtime": {
-		"function": "functions/[[models]]/Unset[[Model]][[Ref]].js"
-	},
+	"tags": ["[[Models]]", "Unlink"],
 	
 	"spi": {
-		"class": "scripting.javascript:ServiceSpi"
+		"class": "[[package]].[[models]].Unset[[Model]][[Ref]]Spi"
 	}
 	
 }

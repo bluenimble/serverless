@@ -28,18 +28,17 @@ import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.ApiServiceExecutionException;
 import com.bluenimble.platform.api.impls.JsonApiOutput;
-import com.bluenimble.platform.api.impls.SimpleApiServiceSpi;
 import com.bluenimble.platform.api.impls.im.LoginServiceSpi.Config;
+import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.http.HttpClientException;
 import com.bluenimble.platform.http.HttpHeaders;
 import com.bluenimble.platform.http.response.HttpResponse;
-import com.bluenimble.platform.http.utils.ContentTypes;
 import com.bluenimble.platform.http.utils.Http;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.im.SecurityUtils;
 
-public class OAuthServiceSpi extends SimpleApiServiceSpi {
+public class OAuthServiceSpi extends AbstractApiServiceSpi {
 
 	private static final long serialVersionUID = -5297356423303847595L;
 	

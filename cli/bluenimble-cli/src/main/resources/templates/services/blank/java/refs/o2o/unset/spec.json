@@ -10,8 +10,10 @@
 		}
 	},
 	
+	"tags": ["[[Models]]", "Unlink"],
+	
 	"spi": {
-		"class": "[[package]].[[models]].Unset[[Model]][[Ref]]Spi"
+		"class": "[[package]].[[models]].Unset[[Model]][[Ref]]"
 	}
 	
 }

@@ -7,7 +7,12 @@
 				"auth": { "secrets": "default" }
 			},
 			"key": {
-				"prefix": "BNB-API-Key"
+				"prefix": "BNB-API-Key",
+				"auth": { 
+					"query": {
+						"entity": "AppKeys", "where": { "key": ":accessKey" }
+					}	 
+				}
 			},
 			"cookie": {
 				"auth": { "secrets": "default" }
@@ -16,7 +21,7 @@
 				"prefix": "BNB-HMAC-SHA256",
 				"auth": { 
 					"query": {
-						"entity": "AppKeys", "where": { "accessKey": ":accessKey" }
+						"entity": "AppKeyPairs", "where": { "accessKey": ":accessKey" }
 					}	 
 				}
 			},

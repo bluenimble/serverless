@@ -49,10 +49,10 @@ public class SplitCommand extends AbstractCommand {
 		Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher (str);
 		while (m.find ()) {
 			String s = m.group (1);
-		    if (s.startsWith (Lang.QUOT)) {
+		    if (s.startsWith (Lang.QUOTE)) {
 		    	s = s.substring (1);
 		    }
-		    if (s.endsWith (Lang.QUOT)) {
+		    if (s.endsWith (Lang.QUOTE)) {
 		    	s = s.substring (0, s.length () - 1);
 		    }
 		    arr.add (s); 

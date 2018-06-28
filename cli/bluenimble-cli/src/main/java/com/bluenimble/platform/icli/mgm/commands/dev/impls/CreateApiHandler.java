@@ -214,7 +214,12 @@ public class CreateApiHandler implements CommandHandler {
 		}
 		
 		if (source.isFile ()) {
-			CodeGenUtils.writeFile (source, new File (destFolder, source.getName ()), data, specLang); 
+			String destName = source.getName ();
+			if (destName.endsWith (BlueNimble.SpecLangs.Json) && BlueNimble.SpecLangs.Yaml.equals (specLang)) {
+				destName = destName.substring (0, destName.lastIndexOf (Lang.DOT)) + Lang.DOT + BlueNimble.SpecLangs.Yaml;
+			}
+			
+			CodeGenUtils.writeFile (source, new File (destFolder, destName), data, specLang); 
 			return;
 		}
 		

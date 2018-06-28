@@ -4,9 +4,17 @@
 	"endpoint": "/[[models]]/:[[model]]",
 		"name": "Delete [[Model]]",
 	
+	"spec": {
+		"fields": {
+			"[[model]]": { }
+		}
+	},
+	
 	"security": {
 		"enabled": "false"
 	},
+	
+	"tags": ["[[Models]]", "Delete"],
 	
 	"spi": {
 		"class": "[[package]].[[models]].Delete[[Model]]"

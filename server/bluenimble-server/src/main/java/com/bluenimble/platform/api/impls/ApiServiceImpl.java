@@ -25,7 +25,7 @@ import com.bluenimble.platform.api.ApiService;
 import com.bluenimble.platform.api.ApiServiceSpi;
 import com.bluenimble.platform.api.ApiStatus;
 import com.bluenimble.platform.api.ApiVerb;
-import com.bluenimble.platform.api.impls.spis.NoLogicApiServiceSpi;
+import com.bluenimble.platform.api.impls.spis.NoneApiServiceSpi;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.reflect.BeanUtils;
 import com.bluenimble.platform.reflect.ClassLoaderRegistry;
@@ -35,7 +35,7 @@ public class ApiServiceImpl implements ApiService {
 
 	private static final long serialVersionUID = 920163706776702151L;
 	
-	private static final ApiServiceSpi DefaultSpi = new NoLogicApiServiceSpi ();
+	private static final ApiServiceSpi DefaultSpi = new NoneApiServiceSpi ();
 	
 	interface SpecExt {
 		String Index = "index";

@@ -25,17 +25,17 @@ import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.ApiServiceExecutionException;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.impls.JsonApiOutput;
-import com.bluenimble.platform.api.impls.SimpleApiServiceSpi;
 import com.bluenimble.platform.api.impls.im.LoginServiceSpi.Config;
 import com.bluenimble.platform.api.impls.im.LoginServiceSpi.Defaults;
 import com.bluenimble.platform.api.impls.im.LoginServiceSpi.Spec;
+import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseObject;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.im.SecurityUtils;
 
-public class ChangePasswordSpi extends SimpleApiServiceSpi {
+public class ChangePasswordSpi extends AbstractApiServiceSpi {
 
 	private static final long serialVersionUID = -5297356423303847595L;
 

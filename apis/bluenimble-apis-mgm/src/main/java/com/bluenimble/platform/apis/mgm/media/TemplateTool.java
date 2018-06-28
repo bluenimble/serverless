@@ -224,8 +224,9 @@ public class TemplateTool {
 		
 		JsonObject oasSchema = new JsonObject ();
 		
+		oasSchema.set (OasSpec.Schema.Type, OasObject);
+
 		JsonObject oasProps = new JsonObject ();
-		oasProps.set (OasSpec.Schema.Type, OasObject);
 		oasSchema.set (OasSpec.Schema.Properties, oasProps);
 		
 		JsonArray oasRequired = new JsonArray ();
@@ -294,7 +295,7 @@ public class TemplateTool {
 		}
 		
 		String facetValue = Json.getString (spec, facet).trim ();
-		if (!Lang.isNullOrEmpty (facetValue)) {
+		if (Lang.isNullOrEmpty (facetValue)) {
 			return null;
 		}
 		

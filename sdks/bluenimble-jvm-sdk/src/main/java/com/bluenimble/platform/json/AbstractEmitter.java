@@ -98,16 +98,16 @@ public abstract class AbstractEmitter implements JsonEmitter {
 		if (value == null) {
 			write (Lang.NULL);
 		} else {
-			write (Lang.QUOT);
+			write (Lang.QUOTE);
 			write (Json.escape (String.valueOf (value)));
-			write (Lang.QUOT);
+			write (Lang.QUOTE);
 		}
 	}
 
 	protected void writeName (String name) {
-		write (Lang.QUOT);
+		write (Lang.QUOTE);
 		write (name);
-		write (Lang.QUOT);
+		write (Lang.QUOTE);
 		write (Lang.COLON);
 	}
 

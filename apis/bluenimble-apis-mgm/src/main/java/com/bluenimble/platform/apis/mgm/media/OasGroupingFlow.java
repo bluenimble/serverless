@@ -1,7 +1,9 @@
 package com.bluenimble.platform.apis.mgm.media;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import com.bluenimble.platform.Json;
@@ -12,9 +14,10 @@ import com.bluenimble.platform.api.ApiService;
 import com.bluenimble.platform.api.ApiServicesManager;
 import com.bluenimble.platform.api.ApiVerb;
 import com.bluenimble.platform.api.validation.ApiServiceValidator;
-import com.bluenimble.platform.api.validation.FieldType;
 import com.bluenimble.platform.api.validation.ApiServiceValidator.Spec;
+import com.bluenimble.platform.api.validation.FieldType;
 import com.bluenimble.platform.apis.mgm.media.TemplateTool.OasSpec;
+import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 
 public class OasGroupingFlow implements ApiServicesManager.GroupingFlow {
@@ -27,13 +30,24 @@ public class OasGroupingFlow implements ApiServicesManager.GroupingFlow {
 		String Stream 	= "s";
 	}
 	
+	private static final Map<String, String> VerbAction = new HashMap<String, String>();
+	static {
+		VerbAction.put (ApiVerb.GET.name ().toUpperCase (), "Read");
+		VerbAction.put (ApiVerb.POST.name ().toUpperCase (), "Create");
+		VerbAction.put (ApiVerb.PUT.name ().toUpperCase (), "Update");
+		VerbAction.put (ApiVerb.PATCH.name ().toUpperCase (), "Update");
+		VerbAction.put (ApiVerb.DELETE.name ().toUpperCase (), "Delete");
+	}
+	
+	private static final String GlobalOperation = "Global";
+	
 	private Set<String> pathFields = new HashSet<String> ();
 	
 	@Override
 	public String onGroupKey (Api api, String groupKey) {
-		if (pathFields != null) {
-			pathFields.clear ();
-		}
+		
+		pathFields.clear ();
+		
 		int indexOfSlashColon = groupKey.indexOf (SlashColon);
 		if (indexOfSlashColon < 0) {
 			return groupKey;
@@ -53,7 +67,10 @@ public class OasGroupingFlow implements ApiServicesManager.GroupingFlow {
 				isParameter = true;
 				e = e.substring (1);
 			}
-			pathFields.add (e);
+
+			if (isParameter) {
+				pathFields.add (e);
+			}
 			
 			sb.append (Lang.SLASH);
 			
@@ -98,6 +115,31 @@ public class OasGroupingFlow implements ApiServicesManager.GroupingFlow {
 		}
 		
 		String verb = Json.getString (service, ApiService.Spec.Verb, ApiVerb.GET.name ()).toUpperCase ();
+		
+		JsonObject meta = Json.getObject (service, ApiService.Spec.Meta.class.getSimpleName ().toLowerCase ());
+		if (meta == null) {
+			meta = new JsonObject ();
+			service.set (ApiService.Spec.Meta.class.getSimpleName ().toLowerCase (), meta);
+		}
+		JsonArray tags = Json.getArray (meta, ApiService.Spec.Meta.Tags);
+		if (tags == null) {
+			tags = new JsonArray ();
+			meta.set (ApiService.Spec.Meta.Tags, tags);
+			String actionTag = VerbAction.get (verb);
+			if (actionTag != null) {
+				tags.add (actionTag);
+			}
+		}
+		
+		String serviceId = Json.getString (service, ApiService.Spec.Id);
+		if (!Lang.isNullOrEmpty (serviceId)) {
+			int indexOfDot = serviceId.lastIndexOf (Lang.DOT);
+			if (indexOfDot < 0) {
+				tags.add (GlobalOperation);
+			} else {
+				tags.add (serviceId.substring (0, indexOfDot).replace (Lang.DOT, Lang.BLANK));
+			}
+		}
 		
 		boolean isBodyAware = verb.equals (ApiVerb.POST.name ()) || verb.equals (ApiVerb.PUT.name ()) || verb.equals (ApiVerb.PATCH.name ());
 		

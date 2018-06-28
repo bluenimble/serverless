@@ -6,13 +6,15 @@
 	
 	"spec": {
 		"fields": {
-			"activationCode": { }
+			"activationCode": { "title": "Activation Code" }
 		}
 	},
 	
 	"security": {
 		"enabled": "false"
 	},
+	
+	"tags": ["Security", "Signup", "User"],
 	
 	"spi": {
 		"class": "im.default:ActivateSpi"

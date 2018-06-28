@@ -93,7 +93,7 @@ public class Lang {
 	public static final String 		PARENTH_OPEN			= "(";
 	public static final String 		PARENTH_CLOSE			= ")";
 
-	public static final String 		QUOT					= "\"";
+	public static final String 		QUOTE					= "\"";
 	public static final String 		APOS					= "'";
 	public static final String 		QUESTION				= "?";
 	
@@ -109,7 +109,7 @@ public class Lang {
 	public static final byte [] 	B_JSON_ARRAY_OPEN		= ARRAY_OPEN.getBytes ();
 	public static final byte [] 	B_JSON_ARRAY_CLOSE		= ARRAY_CLOSE.getBytes ();
 
-	public static final byte []		B_QUOT					= QUOT.getBytes ();
+	public static final byte []		B_QUOT					= QUOTE.getBytes ();
 	public static final byte [] 	B_COLON 				= COLON.getBytes ();
 	public static final byte [] 	B_COMMA 				= COMMA.getBytes ();
 	public static final byte [] 	B_JSON_DATA 			= DATA.getBytes ();

@@ -7,12 +7,14 @@
 	"spec": {
 		"fields": {
 			"[[model]]": { },
-			"filter": { "required": "false", "type": "Object" }
+			"filter": { "required": "false", "type": "Filter" }
 		}
 	},
 	
+	"tags": ["[[Models]]", "List"],
+	
 	"spi": {
-		"class": "[[package]].[[models]].List[[Model]][[Refs]]Spi"
+		"class": "[[package]].[[models]].List[[Model]][[Refs]]"
 	}
 	
 }

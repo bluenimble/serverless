@@ -11,6 +11,8 @@
 		}
 	},
 	
+	"tags": ["[[Models]]", "Read"],
+	
 	"runtime": {
 		"function": "functions/[[models]]/Get[[Model]][[Ref]].js"
 	},

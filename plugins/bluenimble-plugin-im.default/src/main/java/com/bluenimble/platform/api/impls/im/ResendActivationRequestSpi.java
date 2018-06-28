@@ -28,21 +28,24 @@ import com.bluenimble.platform.api.ApiServiceExecutionException;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.CodeExecutor;
 import com.bluenimble.platform.api.impls.JsonApiOutput;
-import com.bluenimble.platform.api.impls.SimpleApiServiceSpi;
 import com.bluenimble.platform.api.impls.im.LoginServiceSpi.Config;
 import com.bluenimble.platform.api.impls.im.LoginServiceSpi.Defaults;
 import com.bluenimble.platform.api.impls.im.LoginServiceSpi.Fields;
+import com.bluenimble.platform.api.impls.im.LoginServiceSpi.Spec;
 import com.bluenimble.platform.api.impls.im.SignupServiceSpi.Email;
+import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseObject;
+import com.bluenimble.platform.db.query.Query;
+import com.bluenimble.platform.db.query.impls.JsonQuery;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.messaging.Messenger;
 import com.bluenimble.platform.messaging.impls.JsonActor;
 import com.bluenimble.platform.messaging.impls.JsonRecipient;
 import com.bluenimble.platform.messaging.impls.JsonSender;
 
-public class ResendActivationRequestSpi extends SimpleApiServiceSpi {
+public class ResendActivationRequestSpi extends AbstractApiServiceSpi {
 
 	private static final long serialVersionUID = -5297356423303847595L;
 
@@ -56,7 +59,18 @@ public class ResendActivationRequestSpi extends SimpleApiServiceSpi {
 		
 		DatabaseObject account = null;
 		try {
-			account = db.get (Json.getString (config, Config.UsersEntity, Defaults.User), (String)consumer.get (ApiConsumer.Fields.Id));
+			JsonObject query = Json.getObject (config, Config.Query);
+			if (query == null) {
+				query = new JsonObject ();
+				
+				JsonObject where = new JsonObject ();
+				query.set (Query.Construct.where.name (), where);
+				
+				where.set (Json.getString (config, Config.UserProperty, Fields.Email), request.get (Spec.Email));
+			}
+						
+			account = db.findOne (Json.getString (config, Config.UsersEntity, Defaults.User), new JsonQuery (query));
+			
 		} catch (Exception ex) {
 			throw new ApiServiceExecutionException (ex.getMessage (), ex);
 		}

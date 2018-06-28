@@ -21,7 +21,7 @@
 	},
 	
 	"spi": {
-		"class": "com.bluenimble.platform.api.impls.spis.GetResourceApiServiceSpi"
+		"class": "core:ResourceSpi"
 	} 
 	
 }

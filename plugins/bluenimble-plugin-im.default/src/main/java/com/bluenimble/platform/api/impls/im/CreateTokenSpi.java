@@ -26,12 +26,12 @@ import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.ApiServiceExecutionException;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.impls.JsonApiOutput;
-import com.bluenimble.platform.api.impls.SimpleApiServiceSpi;
+import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.im.SecurityUtils;
 
-public class CreateTokenSpi extends SimpleApiServiceSpi {
+public class CreateTokenSpi extends AbstractApiServiceSpi {
 
 	private static final long serialVersionUID = -5297356423303847595L;
 

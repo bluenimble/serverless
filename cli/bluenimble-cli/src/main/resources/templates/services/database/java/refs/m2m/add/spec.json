@@ -11,6 +11,8 @@
 		}
 	},
 	
+	"tags": ["[[Models]]", "Append"],
+	
 	"spi": {
 		"class": "[[package]].[[models]].Add[[Model]][[Ref]]"
 	}

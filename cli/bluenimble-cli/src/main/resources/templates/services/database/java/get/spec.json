@@ -5,10 +5,16 @@
 		"name": "Get [[Model]]",
 	
 	"spec": {
-		"fields": { 
+		"fields": {
 			"[[model]]": { }
 		}
-	},	
+	},
+	
+	"security": {
+		"enabled": "false"
+	},
+	
+	"tags": ["[[Models]]", "Read"],
 	
 	"spi": {
 		"class": "[[package]].[[models]].Get[[Model]]"

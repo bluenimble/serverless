@@ -28,6 +28,7 @@ var JsonArray 		= native ('com.bluenimble.platform.json.JsonArray');
 
 var BuildUtils 		= native ('com.bluenimble.platform.icli.mgm.utils.BuildUtils');
 var SpecUtils 		= native ('com.bluenimble.platform.icli.mgm.utils.SpecUtils');
+var OsCommander 	= native ('com.bluenimble.platform.icli.mgm.utils.OsCommander');
 								  
 function extract (service, file, script) {
 	var markers = FileUtils.readStartsWith (script, '//@', true);
@@ -146,7 +147,7 @@ if (typeof Keys === 'undefined') {
 
 // check if valid command args
 if (typeof Command === 'undefined') {
-	throw 'missing command arguments. eg. push [ApiNs required] [Version optional]';
+	throw 'missing command arguments. eg. push api [ApiNs required] [Version optional]';
 }
 
 var tokens = Lang.split (Command, ' ', true);
@@ -192,8 +193,11 @@ if (!Vars ['build.release.nocopy'] || Vars ['build.release.nocopy'] != 'true') {
 		
 		Tool.note ('Building api - (mvn clean install) ' + apiNs);
 
-		// call maven
-		BuildUtils.mvn (Tool.proxy (), apiSrc, "clean install");
+		OsCommander.execute (
+			apiSrc, 
+			"mvn clean install",
+			null
+		);
 		
 		var apiMvnBuildFiles = apiMvnBuild.listFiles ();
 		if (apiMvnBuildFiles == null || apiMvnBuildFiles.legth == 0) {

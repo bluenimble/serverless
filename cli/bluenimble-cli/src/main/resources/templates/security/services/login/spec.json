@@ -7,10 +7,10 @@
 	"spec": {
 		"fields": {
 			"Content-Type": { "scope": "h", "enum": [ "application/json" ] },
-			"payload": { "type": "Object",
+			"payload": { "type": "Credentials",
 				"fields": {
-					"user": 	{ }, 
-					"password": { }
+					"user": 	{ "title": "Email" }, 
+					"password": { "secret": "true", "title": "Password" }
 				}
 			}
 		}
@@ -31,6 +31,8 @@
 	"security": {
 		"enabled": "false"
 	},
+	
+	"tags": ["Security", "Login"],
 	
 	"spi": {
 		"class": "im.default:LoginSpi"

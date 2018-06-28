@@ -6,16 +6,22 @@
 	
 	"spec": {
 		"fields": {
-			"query": { "type": "Object", "required": "false",
+			"query": { "type": "Query", "required": "false",
 				"fields": {
 					"select": { "type": "Array", "required": "false" }, 
-					"where": { "type": "Object" }, 
-					"orderBy": { "type": "Object", "required": "false" }, 
-					"groupBy": { "type": "Array", "required": "false" }
+					"where": { "type": "QueryWhere" }, 
+					"orderBy": { "type": "QueryOrderBy", "required": "false" }, 
+					"groupBy": { "type": "Array", "sType": "QueryGroupBy", "required": "false" }
 				} 
 			}
 		}
 	},
+	
+	"security": {
+		"enabled": "false"
+	},
+	
+	"tags": ["[[Models]]", "List"],
 	
 	"runtime": {
 		"function": "functions/[[models]]/Find[[Models]].js"

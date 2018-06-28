@@ -17,11 +17,15 @@
 package com.bluenimble.platform.reflect;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.PackageClassLoader;
+import com.bluenimble.platform.api.impls.spis.GetResourceApiServiceSpi;
+import com.bluenimble.platform.api.impls.spis.NoneApiServiceSpi;
 import com.bluenimble.platform.json.JsonObject;
 
 @SuppressWarnings("rawtypes")
@@ -29,6 +33,8 @@ public class BeanUtils {
 	
 	private static final Class<?> 	[] 	NoTypes 	= new Class [] {};
 	private static final Object 	[] 	NoValues 	= new Object [] {};
+	
+	private static final String 		Core		= "core";
 	
 	private static final String 		Dollar		= "$";
 
@@ -40,6 +46,12 @@ public class BeanUtils {
 	public static final String 			Properties 	= "properties";
 	
 	public static final String 			Enabled 	= "enabled";
+	
+	private static final Map<String, Class<?>> 	CoreClasses = new HashMap<String, Class<?>> ();
+	static {
+		CoreClasses.put ("ResourceSpi", GetResourceApiServiceSpi.class);
+		CoreClasses.put ("NoneSpi", 	NoneApiServiceSpi.class);
+	}
 	
 	public static Object create (JsonObject definition) throws Exception {
 		return create (null, definition);
@@ -71,27 +83,38 @@ public class BeanUtils {
 		
 		int indexOfColon = clazz.indexOf (Lang.COLON);
 		
+		String loaderName = null;
 		if (indexOfColon > 0) {
-			String loaderName 	= clazz.substring (0, indexOfColon);
-			clazz 				= clazz.substring (indexOfColon + 1);
+			loaderName 	= clazz.substring (0, indexOfColon);
+			clazz 		= clazz.substring (indexOfColon + 1);
 			
 			boolean required = !loaderName.startsWith (Lang.XMARK);
 			if (!required) {
 				loaderName = loaderName.substring (1);
 			}
 			
-			if (registry != null) { 
-				ClassLoader rLoader		= registry.find (loaderName);
-				if (rLoader != null) {
-					loader = rLoader;
-				} else if (!required) {
-					return null;
+			if (Core.equals (loaderName)) {
+				loader = BeanUtils.class.getClassLoader ();
+			} else {
+				if (registry != null) { 
+					ClassLoader rLoader		= registry.find (loaderName);
+					if (rLoader != null) {
+						loader = rLoader;
+					} else if (!required) {
+						return null;
+					}
 				}
 			}
 		}
 		
 		Object bean = null;
-		if (PackageClassLoader.class.isAssignableFrom (loader.getClass ())) {
+		if (Core.equals (loaderName)) {
+			Class<?> cls = CoreClasses.get (clazz); 
+			if (cls == null) {
+				throw new Exception ("Core Class " + clazz + " not found");
+			}
+			bean = cls.newInstance ();
+		} else if (PackageClassLoader.class.isAssignableFrom (loader.getClass ())) {
 			PackageClassLoader pcl = (PackageClassLoader)loader;
 			if (pcl.hasSynonym (clazz)) {
 				clazz = pcl.synonym (clazz);

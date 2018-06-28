@@ -5,10 +5,16 @@
 		"name": "Delete [[Model]]",
 	
 	"spec": {
-		"fields": { 
+		"fields": {
 			"[[model]]": { }
 		}
-	},	
+	},
+	
+	"security": {
+		"enabled": "false"
+	},
+	
+	"tags": ["[[Models]]", "Delete"],
 	
 	"spi": {
 		"class": "[[package]].[[models]].Delete[[Model]]"

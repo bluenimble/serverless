@@ -61,9 +61,9 @@ public class FriendlyJsonEmitter extends AbstractEmitter {
 				color = FColor.YELLOW.name ();
 			} 
 		}
-		tool.write (Lang.QUOT);
+		tool.write (Lang.QUOTE);
 		tool.printer ().text (-100, Json.escape (String.valueOf (value)), color, null);
-		tool.write (Lang.QUOT);
+		tool.write (Lang.QUOTE);
 	}
 
 	@Override

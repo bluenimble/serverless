@@ -11,6 +11,8 @@
 		}
 	},
 	
+	"tags": ["[[Models]]", "Append"],
+	
 	"runtime": {
 		"function": "functions/[[models]]/Add[[Model]][[Ref]].js"
 	},

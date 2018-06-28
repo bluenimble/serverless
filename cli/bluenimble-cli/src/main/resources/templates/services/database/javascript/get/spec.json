@@ -5,10 +5,16 @@
 		"name": "Get [[Model]]",
 	
 	"spec": {
-		"fields": { 
+		"fields": {
 			"[[model]]": { }
 		}
-	},	
+	},
+	
+	"security": {
+		"enabled": "false"
+	},
+	
+	"tags": ["[[Models]]", "Read"],
 	
 	"runtime": {
 		"function": "functions/[[models]]/Get[[Model]].js"

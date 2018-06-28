@@ -7,13 +7,15 @@
 	"spec": {
 		"fields": {
 			"[[model]]": {  },
-			"payload": { "type": "Object" }
+			"payload": { "type": "[[Model]]NoId" }
 		}
 	},
 	
 	"security": {
 		"enabled": "false"
 	},
+	
+	"tags": ["[[Models]]", "Update"],
 	
 	"runtime": {
 		"function": "functions/[[models]]/Update[[Model]].js"

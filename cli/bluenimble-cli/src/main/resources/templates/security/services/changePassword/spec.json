@@ -6,16 +6,19 @@
 	
 	"spec": {
 		"fields": {
-			"user": 	{ },
+			"user": 	{ "title": "Email" },
 			"password": { 
                 "title": "Password",
 				"min": "8", 
 				"vType": "Regex", 
+				"secret": "true",
 				"format": "^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8,}$", 
 				"errMsg": "Weak password! It should be 8 characters or more, contains at least 1 upper case letter, another in lower case, one numeral and one of the special characters !@#$&*" 
 			}
 		}
 	},
+	
+	"tags": ["Security", "User"],
 	
 	"spi": {
 		"class": "im.default:ChangePasswordSpi"

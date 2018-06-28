@@ -6,12 +6,15 @@
 	
 	"spec": {
 		"fields": {
-			"Content-Type": { "scope": "h", "enum": [ "application/json" ] },
-			"payload": { "type": "Object", "strict": [[#eq ModelSpec.strict 'true']]"true"[[else]]"false"[[/eq]][[#if ModelSpec]][[#if ModelSpec.fields]], 
-				"fields": [[json ModelSpec.fields]][[/if]][[/if]] 
-			}
+			"payload": { "type": "[[Model]]" }
 		}
 	},
+	
+	"security": {
+		"enabled": "false"
+	},
+	
+	"tags": ["[[Models]]", "Create"],
 	
 	"runtime": {
 		"function": "functions/[[models]]/Create[[Model]].js"
