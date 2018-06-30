@@ -1,0 +1,11 @@
+{
+	
+	    "verb": "[[verb]]",
+	"endpoint": "/[[path]]/[[model]]",
+	    "name": "[[Model]]",
+	
+	"spi": {
+		"class": "[[package]].[[path]].[[Model]]"
+	}
+	
+}

@@ -1,0 +1,22 @@
+{
+	
+	    "verb": "put",
+	"endpoint": "/[[models]]/:[[model]]/[[refs]]/:[[ref]]",
+		"name": "Set [[Model]] [[Ref]]",
+	
+	"spec": {
+		"fields": {
+			"[[model]]": { },
+			"[[ref]]": { }
+		}
+	},
+	
+	"meta": {
+		"tags": ["[[Models]]", "Link"]
+	},
+	
+	"spi": {
+		"class": "[[package]].[[models]].Set[[Model]][[Ref]]"
+	}
+	
+}

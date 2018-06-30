@@ -1,0 +1,26 @@
+{
+	
+	    "verb": "put",
+	"endpoint": "/[[models]]/:[[model]]",
+		"name": "Update [[Model]]",
+	
+	"spec": {
+		"fields": {
+			"[[model]]": {  },
+			"payload": { "type": "[[Model]]NoId" }
+		}
+	},
+	
+	"security": {
+		"enabled": "false"
+	},
+	
+	"meta": {
+		"tags": ["[[Models]]", "Update"]
+	},
+	
+	"spi": {
+		"class": "[[package]].[[models]].Update[[Model]]"
+	}
+	
+}

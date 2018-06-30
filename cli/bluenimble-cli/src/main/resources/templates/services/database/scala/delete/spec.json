@@ -1,0 +1,25 @@
+{
+	
+	    "verb": "delete",
+	"endpoint": "/[[models]]/:[[model]]",
+		"name": "Delete [[Model]]",
+	
+	"spec": {
+		"fields": {
+			"[[model]]": { }
+		}
+	},
+	
+	"security": {
+		"enabled": "false"
+	},
+	
+	"meta": {
+		"tags": ["[[Models]]", "Delete"]
+	},
+	
+	"spi": {
+		"class": "[[package]].[[models]].Delete[[Model]]"
+	}
+	
+}

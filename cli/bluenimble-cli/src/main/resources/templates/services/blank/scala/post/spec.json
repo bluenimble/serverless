@@ -1,0 +1,25 @@
+{
+	
+	    "verb": "post",
+	"endpoint": "/[[models]]",
+		"name": "Create [[Model]]",
+	
+	"spec": {
+		"fields": {
+			"payload": { "type": "[[Model]]" }
+		}
+	},
+	
+	"security": {
+		"enabled": "false"
+	},
+	
+	"meta": {
+		"tags": ["[[Models]]", "Create"]
+	},
+	
+	"spi": {
+		"class": "[[package]].[[models]].Create[[Model]]"
+	}
+	
+}

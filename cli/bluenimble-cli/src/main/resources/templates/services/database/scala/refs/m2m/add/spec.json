@@ -1,0 +1,22 @@
+{
+	
+	    "verb": "post",
+	"endpoint": "/[[models]]/:[[model]]/[[refs]]/:[[ref]]",
+		"name": "Add a new [[Ref]] to [[Model]]",
+	
+	"spec": {
+		"fields": {
+			"[[model]]": { },
+			"[[ref]]": { }
+		}
+	},
+	
+	"meta": {
+		"tags": ["[[Models]]", "Append"]
+	},
+	
+	"spi": {
+		"class": "[[package]].[[models]].Add[[Model]][[Ref]]"
+	}
+	
+}

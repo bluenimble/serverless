@@ -1,0 +1,15 @@
+{
+	
+	    "verb": "[[verb]]",
+	"endpoint": "/[[path]]/[[model]]",
+	    "name": "[[Model]]",
+	
+	"security": {
+		"enabled": "false"
+	},
+	
+	"spi": {
+		"class": "[[package]].[[path]].[[Model]]"
+	}
+	
+}

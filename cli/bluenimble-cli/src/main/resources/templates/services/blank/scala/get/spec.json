@@ -1,0 +1,25 @@
+{
+	
+	    "verb": "get",
+	"endpoint": "/[[models]]/:[[model]]",
+		"name": "Get [[Model]]",
+	
+	"spec": {
+		"fields": {
+			"[[model]]": { }
+		}
+	},
+	
+	"security": {
+		"enabled": "false"
+	},
+	
+	"meta": {
+		"tags": ["[[Models]]", "Read"]
+	},
+	
+	"spi": {
+		"class": "[[package]].[[models]].Get[[Model]]"
+	}
+	
+}

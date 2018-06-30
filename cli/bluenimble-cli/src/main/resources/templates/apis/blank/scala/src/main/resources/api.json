@@ -1,0 +1,15 @@
+{
+	"namespace": 	"[[api]]",
+	
+	"name": 		"[[Api]] api",
+	"description": 	"[[Api]] description",
+	
+	"tracer": {
+		"class": "!tracing.log4j:default"
+	},
+	
+	"spi": {
+		"class": "[[package]].[[Api]]Api"
+	}	
+	
+}

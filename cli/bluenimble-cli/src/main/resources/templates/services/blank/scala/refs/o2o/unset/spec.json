@@ -1,0 +1,21 @@
+{
+	
+	    "verb": "delete",
+	"endpoint": "/[[models]]/:[[model]]/[[ref]]",
+		"name": "Unset [[Ref]] from [[Model]]",
+	
+	"spec": {
+		"fields": {
+			"[[model]]": { }
+		}
+	},
+	
+	"meta": {
+		"tags": ["[[Models]]", "Unlink"]
+	},
+	
+	"spi": {
+		"class": "[[package]].[[models]].Unset[[Model]][[Ref]]"
+	}
+	
+}

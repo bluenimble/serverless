@@ -1,0 +1,14 @@
+{
+	
+	    "verb": "get",
+	"endpoint": "/",
+	
+	"security": {
+		"enabled": "false"
+	},
+	
+	"spi": {
+		"class": "[[package]].Root"
+	}
+	
+}

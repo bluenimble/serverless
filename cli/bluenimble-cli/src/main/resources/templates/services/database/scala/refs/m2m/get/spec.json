@@ -1,0 +1,22 @@
+{
+	
+	    "verb": "get",
+	"endpoint": "/[[models]]/:[[model]]/[[refs]]/:[[ref]]",
+		"name": "Get [[Ref]] from [[Model]]",
+	
+	"spec": {
+		"fields": {
+			"[[model]]": { },
+			"[[ref]]": { }
+		}
+	},
+	
+	"meta": {
+		"tags": ["[[Models]]", "Read"]
+	},
+	
+	"spi": {
+		"class": "[[package]].[[models]].Get[[Model]][[Ref]]"
+	}
+	
+}

@@ -1,0 +1,22 @@
+{
+	
+	    "verb": "delete",
+	"endpoint": "/[[models]]/:[[model]]/[[refs]]/:[[ref]]",
+		"name": "Remove [[Ref]] from [[Model]]",
+	
+	"spec": {
+		"fields": {
+			"[[model]]": { },
+			"[[ref]]": { }
+		}
+	},
+	
+	"meta": {
+		"tags": ["[[Models]]", "Remove"]
+	},
+	
+	"spi": {
+		"class": "[[package]].[[models]].Remove[[Model]][[Ref]]"
+	}
+	
+}

@@ -1,0 +1,10 @@
+{
+	
+	    "verb": "get",
+	"endpoint": "/",
+	
+	"spi": {
+		"class": "[[package]].Root"
+	}
+	
+}
