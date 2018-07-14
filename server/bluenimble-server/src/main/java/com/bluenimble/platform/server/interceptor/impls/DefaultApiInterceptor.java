@@ -354,23 +354,20 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 		} else {
 			err = e.getMessage ();
 		}
-		response.error (ApiResponse.UNPROCESSABLE_ENTITY, err);
+		response.error (e.status (), err);
 		writeError (mediaProcessor, api, consumer, service, request, response); 
 	}
 
 	private void logDebug (Api api, Object o) {
 		api.tracer ().log (Level.Debug, o);
-		server.tracer ().log (Level.Debug, o);
 	}
 	
 	private void logInfo (Api api, Object o) {
 		api.tracer ().log (Level.Info, o);
-		server.tracer ().log (Level.Info, o);
 	}
 	
 	private void logError (Api api, Object o, Throwable th) {
 		api.tracer ().log (Level.Error, o, th);
-		server.tracer ().log (Level.Error, o, th);
 	}
 	
 	private void writeError (ApiMediaProcessor mediaProcessor, Api api, ApiConsumer consumer, ApiService service, ApiRequest request, ApiResponse response) {

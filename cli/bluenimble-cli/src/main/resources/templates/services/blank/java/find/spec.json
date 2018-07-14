@@ -21,7 +21,9 @@
 		"enabled": "false"
 	},
 	
-	"tags": ["[[Models]]", "List"],
+	"meta": {
+		"tags": ["[[Models]]", "List"]
+	},
 	
 	"spi": {
 		"class": "[[package]].[[models]].Find[[Models]]"

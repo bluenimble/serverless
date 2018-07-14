@@ -10,7 +10,9 @@
 		}
 	},
 	
-	"tags": ["[[Models]]", "Read"],
+	"meta": {
+		"tags": ["[[Models]]", "Read"]
+	},
 	
 	"runtime": {
 		"function": "functions/[[models]]/Get[[Model]][[Ref]].js"

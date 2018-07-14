@@ -51,7 +51,7 @@ public class StringValidator extends AbstractTypeValidator {
 	public Object validate (Api api, ApiConsumer consumer, ApiRequest request, 
 			ApiServiceValidator validator, String name, String label, JsonObject spec, Object value) {
 		
-		Object message = isRequired (validator, api, request.getLang (), label, spec, value);
+		Object message = isRequired (validator, api, request, label, spec, value);
 		if (message != null) {
 			return message;
 		}

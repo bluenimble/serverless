@@ -14,8 +14,10 @@
 		"enabled": "false"
 	},
 	
-	"tags": ["[[Models]]", "Create"],
-	
+	"meta": {
+		"tags": ["[[Models]]", "Create"]
+	},
+		
 	"spi": {
 		"class": "[[package]].[[models]].Create[[Model]]"
 	}

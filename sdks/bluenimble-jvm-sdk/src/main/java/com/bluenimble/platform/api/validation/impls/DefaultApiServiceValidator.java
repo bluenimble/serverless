@@ -25,6 +25,7 @@ import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiRequest.Scope;
+import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.validation.ApiServiceValidator;
 import com.bluenimble.platform.api.validation.ApiServiceValidatorException;
@@ -155,15 +156,6 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 			
 			TypeValidator validator = getTypeValidator (type);
 			if (validator == null) {
-				/*
-				if (feedback == null) {
-					feedback = new JsonObject ();
-				}
-				feedback.set (name, ValidationUtils.feedback (
-					null, spec, Spec.Type, 
-					"type '" + type + "' not supported"
-				));
-				*/
 				validator = getTypeValidator (FieldType.Object);
 			}
 			
@@ -201,7 +193,12 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 		}
 		
 		if (feedback != null && !feedback.isEmpty ()) {
-			throw new ApiServiceValidatorException (feedback);
+			ApiServiceValidatorException vex = new ApiServiceValidatorException (feedback);
+			ApiResponse.Status status = (ApiResponse.Status)request.get (ApiRequest.ResponseStatus);
+			if (status != null) {
+				vex.status (status);
+			}
+			throw vex;
 		}
 		
 	}
@@ -250,9 +247,6 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 			if (ConsumerScope == sc) {
 				if (defaultValue != null) {
 					value = consumer.get (defaultValue.toString ());
-				}
-				if (value != null) {
-					request.set (name, value);
 				}
 				continue;
 			}

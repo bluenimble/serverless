@@ -21,6 +21,7 @@ import java.text.MessageFormat;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiRequest;
+import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.validation.ApiServiceValidator;
 import com.bluenimble.platform.api.validation.ApiServiceValidator.Spec;
@@ -54,11 +55,17 @@ public class RegexValidator extends AbstractTypeValidator {
 		}
 		
 		if (!String.valueOf (value).matches (regex)) {
+			// custom message
 			String msg = null; 
 			if (spec.containsKey (Spec.ErrMsg)) {
 				msg = MessageFormat.format (spec.getString (Spec.ErrMsg), new Object [] { label });
 			} else {
 				msg = validator.getMessage (api, request.getLang (), TypeMessage, label);
+			}
+			// custom status code
+			int status = Json.getInteger (spec, Spec.ErrCode, 0);
+			if (status > 0) {
+				request.set (ApiRequest.ResponseStatus, new ApiResponse.Status (status));
 			}
 			return ValidationUtils.feedback (
 				null, spec, Spec.Format, 

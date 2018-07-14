@@ -50,6 +50,7 @@ public interface ApiServiceValidator extends Serializable {
 		
 		String Scope		= "scope";
 		
+		String ErrCode		= "errCode";
 		String ErrMsg		= "errMsg";
 
 		String Facets		= "facets";

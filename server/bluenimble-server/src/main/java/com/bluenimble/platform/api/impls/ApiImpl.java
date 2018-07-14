@@ -50,6 +50,8 @@ import com.bluenimble.platform.api.DescribeOption;
 import com.bluenimble.platform.api.impls.spis.DefaultApiSpi;
 import com.bluenimble.platform.api.media.ApiMediaProcessor;
 import com.bluenimble.platform.api.media.MediaTypeUtils;
+import com.bluenimble.platform.api.rules.ApiRulesEngine;
+import com.bluenimble.platform.api.rules.impls.NoApiRulesEngine;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.api.tracing.Tracer.Level;
@@ -104,6 +106,8 @@ public class ApiImpl implements Api {
 	private ApiResourcesManager 	resourcesManager;
 	private ApiServicesManager 		servicesManager;
 
+	private ApiRulesEngine			rulesEngine;
+	
 	private JsonObject 				failure;
 	
 	private ApiStatus 				status;
@@ -257,6 +261,20 @@ public class ApiImpl implements Api {
 		tracer.onInstall (this);
 		space.tracer ().log (Tracer.Level.Info, "\t     Tracer: {0}", tracer.getClass ().getSimpleName ());
 		
+		// init tracer
+		JsonObject oRulesEngine = Json.getObject (descriptor, ConfigKeys.RulesEngine);
+		if (!Json.isNullOrEmpty (oRulesEngine)) {
+			try {
+				rulesEngine = (ApiRulesEngine)BeanUtils.create (this.getClassLoader (), oTracer, space.getServer ().getPluginsRegistry ());
+			} catch (Exception ex) {
+				failed (ex);
+			} 
+		}
+		if (rulesEngine == null) {
+			rulesEngine = new NoApiRulesEngine ();
+		}
+		space.tracer ().log (Tracer.Level.Info, "\t     RulesEngine: {0}", rulesEngine.getClass ().getSimpleName ());
+		
 		ApiContext context = new DefaultApiContext ();
 		
 		try {
@@ -395,6 +413,11 @@ public class ApiImpl implements Api {
 	}
 
 	@Override
+	public ApiRulesEngine getRulesEngine () {
+		return rulesEngine;
+	}
+
+	@Override
 	public Tracer tracer () {
 		if (tracer == null) {
 			return NoTracing.Instance;
@@ -500,77 +523,7 @@ public class ApiImpl implements Api {
 		
 		return langI18n;
 	}
-/*
-	@Override
-	public ApiMediaProcessor lockupMediaProcessor (ApiRequest request, ApiService service) {
-		
-		String defaultContentType = Json.getString (getMedia (), Api.Spec.Media.Default, ApiContentTypes.Json);
-		
-		String requestedMedia = (String)request.get (ApiHeaders.Accept, Scope.Header);
-		
-		if (Lang.isNullOrEmpty (requestedMedia)) {
-			requestedMedia = defaultContentType;
-		}
-		
-		requestedMedia = requestedMedia.toLowerCase ();
-		
-		
-		Map<String, ApiMediaProcessor> mediaProcessors = space.getServer ().getMediaProcessors ();
-		
-		// don't apply matching, check if it's in the supported list first
-		if (!Json.isNullOrEmpty (service.getMedia ())) {
-			JsonObject oMedia = Json.getObject (service.getMedia (), requestedMedia);
-			boolean anySelected = false;
-			if (Json.isNullOrEmpty (oMedia)) {
-				oMedia = Json.getObject (service.getMedia (), Lang.STAR);
-				anySelected = oMedia != null;
-			} 
-			if (!Json.isNullOrEmpty (oMedia)) {
-				String baseMedia = Json.getString (oMedia, ApiService.Spec.Media.Base);
-				request.set (ApiRequest.SelectedMedia, anySelected ? Lang.STAR : requestedMedia);
-				return mediaProcessors.get (baseMedia);
-			}
-		} else if (mediaProcessors.containsKey (requestedMedia)) {
-			request.set (ApiRequest.SelectedMedia, requestedMedia);
-			return mediaProcessors.get (requestedMedia);
-		}
-		
-		String [] supported = 
-			Lang.toArray (
-				mediaProcessors.keySet (), 
-				null
-			);
-		
-		String [] serviceMedias = null;
-				
-		if (!Json.isNullOrEmpty (service.getMedia ())) {
-			serviceMedias = new String [service.getMedia ().size ()];
-			
-			@SuppressWarnings("unchecked")
-			Iterator<String> keys = service.getMedia ().keySet ().iterator ();
-			
-			int counter = 0;
-			while (keys.hasNext ()) {
-				String key = keys.next ();
-				String mediaType = (String)Json.find (service.getMedia (), key, ApiService.Spec.Media.Base);
-				if (Lang.isNullOrEmpty (mediaType)) {
-					mediaType = key;
-				}
-				serviceMedias [counter++] = mediaType;
-			}
-			supported = Lang.add (supported, serviceMedias);
-		}
-		
-		requestedMedia = MediaTypeUtils.bestMatch (supported, requestedMedia);
-		if (requestedMedia == null) {
-			requestedMedia = defaultContentType;
-		}
-		
-		request.set (ApiRequest.SelectedMedia, requestedMedia);
-		
-		return mediaProcessors.get (requestedMedia);
-	}
-*/
+
 	@Override
 	public ApiMediaProcessor lockupMediaProcessor (ApiRequest request, ApiService service) {
 		

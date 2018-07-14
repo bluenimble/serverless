@@ -31,6 +31,9 @@
 				<#assign groupKeys = group?keys>
 				<#list groupKeys as gk>
 					<#assign service = group[gk] >
+					<#if (service.meta.publish)?? && service.meta.publish == 'false'>
+						<#continue>
+					</#if>
 					<#assign bodyFields = TemplateTool.newList() >
 					"${gk}": {
 						"description": "${(service.description)!(service.name)!'no description provided'}"
@@ -65,6 +68,9 @@
 								
 								<#list allFields as fk>
 									<#assign field = fields[fk] >
+									<#if !(field.placeholder)??>
+										<#continue>
+									</#>
 									<#if SimplePlaceholders?seq_contains(field.placeholder)>
 										<#if firstIter == false>,</#if>
 										{

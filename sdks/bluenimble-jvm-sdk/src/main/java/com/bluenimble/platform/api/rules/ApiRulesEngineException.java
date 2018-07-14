@@ -14,51 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.api.validation;
+package com.bluenimble.platform.api.rules;
 
-import com.bluenimble.platform.api.ApiResponse;
-import com.bluenimble.platform.json.JsonObject;
-
-public class ApiServiceValidatorException extends Exception {
+public class ApiRulesEngineException extends Exception {
 
 	private static final long serialVersionUID = 1165308892883189037L;
-	
-	private ApiResponse.Status status = ApiResponse.UNPROCESSABLE_ENTITY;
 
-	private JsonObject feedback;
-	
-	public ApiServiceValidatorException () {
+	public ApiRulesEngineException () {
 		super ();
 	}
 
-	public ApiServiceValidatorException (JsonObject feedback) {
-		super ();
-		this.feedback = feedback;
-	}
-
-	public ApiServiceValidatorException (String message, Throwable cause) {
+	public ApiRulesEngineException (String message, Throwable cause) {
 		super (message, cause);
 	}
 
-	public ApiServiceValidatorException (String message) {
+	public ApiRulesEngineException (String message) {
 		super (message);
 	}
 
-	public ApiServiceValidatorException (Throwable cause) {
+	public ApiRulesEngineException (Throwable cause) {
 		super (cause);
 	}
 	
-	public JsonObject getFeedback () {
-		return feedback;
-	}
-
-	public ApiServiceValidatorException status (ApiResponse.Status status) {
-		this.status = status;
-		return this;
-	}
-
-	public ApiResponse.Status status () {
-		return status;
-	}
 	
+
 }

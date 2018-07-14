@@ -14,7 +14,9 @@
 		"enabled": "false"
 	},
 	
-	"tags": ["[[Models]]", "Read"],
+	"meta": {
+		"tags": ["[[Models]]", "Read"]
+	},
 	
 	"spi": {
 		"class": "[[package]].[[models]].Get[[Model]]"

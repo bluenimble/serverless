@@ -30,6 +30,8 @@ public interface ApiRequest extends ApiContext {
 
 	String SelectedMedia 		= "Container.Request.SelectedMedia";
 	String MediaSelector 		= "Container.Request.MediaSelector";
+	
+	String ResponseStatus 		= "Container.Request.ResponseStatus";
 
 	String Transport			= "transport";
 	String Payload				= "payload";

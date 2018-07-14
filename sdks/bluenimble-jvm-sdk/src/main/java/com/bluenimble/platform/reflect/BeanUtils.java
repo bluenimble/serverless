@@ -24,6 +24,7 @@ import java.util.Map;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.PackageClassLoader;
+import com.bluenimble.platform.api.impls.spis.ComposerApiServiceSpi;
 import com.bluenimble.platform.api.impls.spis.GetResourceApiServiceSpi;
 import com.bluenimble.platform.api.impls.spis.NoneApiServiceSpi;
 import com.bluenimble.platform.json.JsonObject;
@@ -51,6 +52,7 @@ public class BeanUtils {
 	static {
 		CoreClasses.put ("ResourceSpi", GetResourceApiServiceSpi.class);
 		CoreClasses.put ("NoneSpi", 	NoneApiServiceSpi.class);
+		CoreClasses.put ("ComposerSpi",	ComposerApiServiceSpi.class);
 	}
 	
 	public static Object create (JsonObject definition) throws Exception {

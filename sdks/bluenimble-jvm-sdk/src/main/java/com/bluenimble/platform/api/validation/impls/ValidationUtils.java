@@ -16,12 +16,14 @@
  */
 package com.bluenimble.platform.api.validation.impls;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiRequest;
+import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.ApiService;
 import com.bluenimble.platform.api.validation.ApiServiceValidator;
 import com.bluenimble.platform.api.validation.ApiServiceValidator.Spec;
@@ -69,21 +71,30 @@ public class ValidationUtils {
 		
 		boolean enumFailed = false;
 		
-		String enumMessage = null;
+		String sEnum = null;
 		
 		if (_enum instanceof JsonArray) {
 			enumFailed = !((JsonArray)_enum).contains (value);
-			enumMessage = ((JsonArray)_enum).join (Lang.COMMA);
+			sEnum = ((JsonArray)_enum).join (Lang.COMMA);
 		} else if (_enum instanceof JsonObject) {
 			enumFailed = !((JsonObject)_enum).containsKey (value);
-			enumMessage = Lang.join (new ArrayList<String> (((JsonObject)_enum).keySet ()), Lang.COMMA);
+			sEnum = Lang.join (new ArrayList<String> (((JsonObject)_enum).keySet ()), Lang.COMMA);
 		}
 		
 		if (enumFailed) {
-			return ValidationUtils.feedback (
-				feedback, spec, Spec.Enum, 
-				validator.getMessage (api, request.getLang (), StringValidator.EnumMessage, label, enumMessage, value)
-			);
+			// custom message
+			String msg = null; 
+			if (spec.containsKey (Spec.ErrMsg)) {
+				msg = MessageFormat.format (spec.getString (Spec.ErrMsg), new Object [] { label, sEnum, value });
+			} else {
+				msg = validator.getMessage (api, request.getLang (), StringValidator.EnumMessage, label, sEnum, value);
+			}
+			// custom status code
+			int status = Json.getInteger (spec, Spec.ErrCode, 0);
+			if (status > 0) {
+				request.set (ApiRequest.ResponseStatus, new ApiResponse.Status (status));
+			}
+			return ValidationUtils.feedback (feedback, spec, Spec.Enum, msg);
 		}
 		return null;
 	}

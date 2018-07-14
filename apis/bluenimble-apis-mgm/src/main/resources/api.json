@@ -10,7 +10,7 @@
 	
 	"features": {
 		"media.default": {
-			"fm": {
+			"templating": {
 				"objects": {
 					"TemplateTool": {
 						"class": "com.bluenimble.platform.apis.mgm.media.TemplateTool"

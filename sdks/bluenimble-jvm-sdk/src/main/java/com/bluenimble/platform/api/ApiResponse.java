@@ -21,6 +21,7 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.io.Writer;
 
+import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.json.JsonObject;
 
 public interface ApiResponse extends Serializable {
@@ -134,8 +135,12 @@ public interface ApiResponse extends Serializable {
 			this.message = message;
 		}
 		
+		public Status (int code) {
+			this (code, null);
+		}
+		
 		public String toString () {
-			return code + " " + message;
+			return code + (message != null ? Lang.SPACE + message : Lang.BLANK);
 		}
 		
 	}

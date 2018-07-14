@@ -16,9 +16,13 @@
  */
 package com.bluenimble.platform.api.validation.impls;
 
+import java.text.MessageFormat;
+
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
+import com.bluenimble.platform.api.ApiRequest;
+import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.validation.ApiServiceValidator;
 import com.bluenimble.platform.api.validation.ApiServiceValidator.Spec;
 import com.bluenimble.platform.api.validation.TypeValidator;
@@ -32,7 +36,7 @@ public abstract class AbstractTypeValidator implements TypeValidator {
 
 	public static final String RequiredMessage	= "Required";
 	
-	protected JsonObject isRequired (ApiServiceValidator validator, Api api, String lang, String label, JsonObject spec, Object value) {
+	protected JsonObject isRequired (ApiServiceValidator validator, Api api, ApiRequest request, String label, JsonObject spec, Object value) {
 		
 		boolean required = Json.getBoolean (spec, Spec.Required, true);
 		
@@ -42,7 +46,18 @@ public abstract class AbstractTypeValidator implements TypeValidator {
 		
 		boolean valueIsEmpty = (value == null) || (value instanceof String && Lang.isNullOrEmpty ((String)value));
 		if (valueIsEmpty) {
-			return ValidationUtils.feedback (null, spec, RequiredFacet, validator.getMessage (api, lang, RequiredMessage, label));
+			String msg = null; 
+			if (spec.containsKey (Spec.ErrMsg)) {
+				msg = MessageFormat.format (spec.getString (Spec.ErrMsg), new Object [] { label });
+			} else {
+				msg = validator.getMessage (api, request.getLang (), RequiredMessage, label);
+			}
+			// custom status code
+			int status = Json.getInteger (spec, Spec.ErrCode, 0);
+			if (status > 0) {
+				request.set (ApiRequest.ResponseStatus, new ApiResponse.Status (status));
+			}
+			return ValidationUtils.feedback (null, spec, RequiredFacet, msg);
 		}
 		
 		return null;

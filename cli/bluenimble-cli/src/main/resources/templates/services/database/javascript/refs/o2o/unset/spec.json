@@ -10,7 +10,9 @@
 		}
 	},
 	
-	"tags": ["[[Models]]", "Unlink"],
+	"meta": {
+		"tags": ["[[Models]]", "Unlink"]
+	},
 	
 	"spi": {
 		"class": "[[package]].[[models]].Unset[[Model]][[Ref]]Spi"

@@ -14,7 +14,9 @@
 		"enabled": "false"
 	},
 	
-	"tags": ["[[Models]]", "Create"],
+	"meta": {
+		"tags": ["[[Models]]", "Create"]
+	},
 	
 	"runtime": {
 		"function": "functions/[[models]]/Create[[Model]].js"

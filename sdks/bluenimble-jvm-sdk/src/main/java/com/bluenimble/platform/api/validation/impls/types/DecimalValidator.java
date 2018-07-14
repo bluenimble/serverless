@@ -48,7 +48,7 @@ public class DecimalValidator extends AbstractTypeValidator {
 	public Object validate (Api api, ApiConsumer consumer, ApiRequest request, 
 			ApiServiceValidator validator, String name, String label, JsonObject spec, Object value) {
 		
-		JsonObject message = isRequired (validator, api, request.getLang (), label, spec, value);
+		JsonObject message = isRequired (validator, api, request, label, spec, value);
 		if (message != null) {
 			return message;
 		}

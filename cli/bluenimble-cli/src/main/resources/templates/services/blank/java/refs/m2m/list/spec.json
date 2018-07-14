@@ -11,7 +11,9 @@
 		}
 	},
 	
-	"tags": ["[[Models]]", "List"],
+	"meta": {
+		"tags": ["[[Models]]", "List"]
+	},
 	
 	"spi": {
 		"class": "[[package]].[[models]].List[[Model]][[Refs]]"

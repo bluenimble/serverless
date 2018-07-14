@@ -11,7 +11,9 @@
 		}
 	},
 	
-	"tags": ["[[Models]]", "Link"],
+	"meta": {
+		"tags": ["[[Models]]", "Link"]
+	},
 	
 	"runtime": {
 		"function": "functions/[[models]]/Set[[Model]][[Ref]].js"

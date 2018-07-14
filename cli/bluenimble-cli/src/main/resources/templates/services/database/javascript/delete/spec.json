@@ -14,7 +14,9 @@
 		"enabled": "false"
 	},
 	
-	"tags": ["[[Models]]", "Delete"],
+	"meta": {
+		"tags": ["[[Models]]", "Delete"]
+	},
 	
 	"runtime": {
 		"function": "functions/[[models]]/Delete[[Model]].js"

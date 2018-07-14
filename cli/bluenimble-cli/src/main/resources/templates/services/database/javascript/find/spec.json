@@ -21,7 +21,9 @@
 		"enabled": "false"
 	},
 	
-	"tags": ["[[Models]]", "List"],
+	"meta": {
+		"tags": ["[[Models]]", "List"]
+	},
 	
 	"runtime": {
 		"function": "functions/[[models]]/Find[[Models]].js"
