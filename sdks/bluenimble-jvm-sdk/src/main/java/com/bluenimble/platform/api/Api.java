@@ -18,7 +18,6 @@ package com.bluenimble.platform.api;
 
 import com.bluenimble.platform.Traceable;
 import com.bluenimble.platform.api.media.ApiMediaProcessor;
-import com.bluenimble.platform.api.rules.ApiRulesEngine;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.validation.ApiServiceValidator;
 import com.bluenimble.platform.api.validation.ApiServiceValidatorException;
@@ -94,8 +93,6 @@ public interface Api extends Traceable, Manageable {
 	ApiResourcesManager getResourcesManager 	();
 	ApiServicesManager 	getServicesManager 		();
 	
-	ApiRulesEngine			getRulesEngine 			();
-
 	ApiMediaProcessor	lockupMediaProcessor	(ApiRequest request, ApiService service);
 	
 	void 				validate 				(ApiConsumer consumer, JsonObject spec, ApiRequest request) 

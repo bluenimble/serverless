@@ -50,8 +50,6 @@ import com.bluenimble.platform.api.DescribeOption;
 import com.bluenimble.platform.api.impls.spis.DefaultApiSpi;
 import com.bluenimble.platform.api.media.ApiMediaProcessor;
 import com.bluenimble.platform.api.media.MediaTypeUtils;
-import com.bluenimble.platform.api.rules.ApiRulesEngine;
-import com.bluenimble.platform.api.rules.impls.NoApiRulesEngine;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.api.tracing.Tracer.Level;
@@ -106,8 +104,6 @@ public class ApiImpl implements Api {
 	private ApiResourcesManager 	resourcesManager;
 	private ApiServicesManager 		servicesManager;
 
-	private ApiRulesEngine			rulesEngine;
-	
 	private JsonObject 				failure;
 	
 	private ApiStatus 				status;
@@ -261,20 +257,6 @@ public class ApiImpl implements Api {
 		tracer.onInstall (this);
 		space.tracer ().log (Tracer.Level.Info, "\t     Tracer: {0}", tracer.getClass ().getSimpleName ());
 		
-		// init tracer
-		JsonObject oRulesEngine = Json.getObject (descriptor, ConfigKeys.RulesEngine);
-		if (!Json.isNullOrEmpty (oRulesEngine)) {
-			try {
-				rulesEngine = (ApiRulesEngine)BeanUtils.create (this.getClassLoader (), oTracer, space.getServer ().getPluginsRegistry ());
-			} catch (Exception ex) {
-				failed (ex);
-			} 
-		}
-		if (rulesEngine == null) {
-			rulesEngine = new NoApiRulesEngine ();
-		}
-		space.tracer ().log (Tracer.Level.Info, "\t     RulesEngine: {0}", rulesEngine.getClass ().getSimpleName ());
-		
 		ApiContext context = new DefaultApiContext ();
 		
 		try {
@@ -410,11 +392,6 @@ public class ApiImpl implements Api {
 	@Override
 	public ApiServiceValidator getServiceValidator () {
 		return serviceValidator;
-	}
-
-	@Override
-	public ApiRulesEngine getRulesEngine () {
-		return rulesEngine;
 	}
 
 	@Override
