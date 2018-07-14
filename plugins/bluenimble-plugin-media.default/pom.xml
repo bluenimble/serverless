@@ -110,11 +110,6 @@
 		    <version>2.3.28</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.jtwig</groupId>
-		    <artifactId>jtwig-core</artifactId>
-		    <version>5.87.0.RELEASE</version>
-		</dependency>
-		<dependency>
 		    <groupId>com.github.jknack</groupId>
 		    <artifactId>handlebars</artifactId>
 		    <version>4.0.6</version>

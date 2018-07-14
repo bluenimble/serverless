@@ -17,17 +17,14 @@
 package com.bluenimble.platform.api.impls.media.engines;
 
 import java.io.Serializable;
+import java.io.Writer;
+import java.util.Map;
 
-import com.bluenimble.platform.api.ApiOutput;
-import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResource;
-import com.bluenimble.platform.api.ApiResponse;
-import com.bluenimble.platform.api.security.ApiConsumer;
-import com.bluenimble.platform.json.JsonObject;
 
 public interface TemplateEngine extends Serializable {
 	
-	String _Api 				= "api";
+	String Templating			= "templating";	
 	
 	String Consumer 			= "consumer";
 
@@ -41,12 +38,6 @@ public interface TemplateEngine extends Serializable {
 	
 	String Error 				= "error";
 	
-	String Namespace 			= "namespace";
-	String Endpoint 			= "endpoint";
-	
-
-	void write (
-		ApiConsumer consumer, ApiRequest request, ApiResponse response, ApiOutput output, ApiResource template, JsonObject mediaSpec
-	) throws TemplateEngineException;
+	void write (ApiResource template, Map<String, Object> model, Writer writer) throws TemplateEngineException;
 	
 }

@@ -155,7 +155,7 @@ public class PlainMediaProcessor implements ApiMediaProcessor {
 					
 					response.flushHeaders ();
 					
-					engine.write (consumer, request, response, output, template, media);
+					engine.write (template, templateModel (api, consumer, request, response, output), response.toWriter ());
 					
 					response.close ();
 					return;
@@ -193,6 +193,29 @@ public class PlainMediaProcessor implements ApiMediaProcessor {
 	@Override
 	public void removeWriter (String name) {
 		writers.remove (name);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private Map<String, Object> templateModel (Api api, ApiConsumer consumer, ApiRequest request, ApiResponse response, ApiOutput output) {
+		
+		JsonObject config = (JsonObject)Json.find (api.getFeatures (), plugin.getNamespace (), TemplateEngine.Templating);
+		
+		JsonObject model = new JsonObject ();
+		
+		model.set (Json.getString (config, TemplateEngine.I18n, TemplateEngine.I18n), api.i18n (request.getLang ()));
+
+		model.set (Json.getString (config, TemplateEngine.Request, TemplateEngine.Request), request.toJson ());
+		if (consumer != null) {
+			model.set (Json.getString (config, TemplateEngine.Consumer, TemplateEngine.Consumer), consumer.toJson ());
+		}
+		
+		if (output != null) {
+			model.set (Json.getString (config, TemplateEngine.Output, TemplateEngine.Output), output.data ());
+			model.set (Json.getString (config, TemplateEngine.Meta, TemplateEngine.Meta), output.meta ());
+		}
+		model.set (Json.getString (config, TemplateEngine.Error, TemplateEngine.Error), response.getError ());
+		
+		return model;
 	}
 
 }

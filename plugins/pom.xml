@@ -26,6 +26,7 @@
 		<module>bluenimble-plugin-visitors.default</module>
 		<module>bluenimble-plugin-security.default</module>
 		<module>bluenimble-plugin-security.keystore</module>
+
 		<module>bluenimble-plugin-media.default</module>
 		
 		<module>bluenimble-plugin-storage.filesystem</module>

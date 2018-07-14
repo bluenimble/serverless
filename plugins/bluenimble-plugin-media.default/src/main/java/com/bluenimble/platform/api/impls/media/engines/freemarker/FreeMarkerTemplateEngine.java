@@ -17,6 +17,7 @@
 
 package com.bluenimble.platform.api.impls.media.engines.freemarker;
 
+import java.io.Writer;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,17 +26,12 @@ import java.util.Map;
 import com.bluenimble.platform.Encodings;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.api.Api;
-import com.bluenimble.platform.api.ApiOutput;
-import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResource;
-import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.impls.media.engines.TemplateEngine;
 import com.bluenimble.platform.api.impls.media.engines.TemplateEngineException;
-import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.Plugin;
 import com.bluenimble.platform.reflect.BeanUtils;
-import com.bluenimble.platform.server.plugins.media.MediaPlugin;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -51,7 +47,6 @@ public class FreeMarkerTemplateEngine implements TemplateEngine {
 	
 	private static final String InitMethod = "init";
 
-	private Api 				api;
 	private JsonObject 			config;
 	
 	private Configuration 		freeMarker;
@@ -59,10 +54,7 @@ public class FreeMarkerTemplateEngine implements TemplateEngine {
 	private Map<String, Object> objects;
 	
 	public FreeMarkerTemplateEngine (Plugin plugin, Api api) throws Exception {
-		this.api = api;
-		
-		config = (JsonObject)Json.find (api.getFeatures (), plugin.getNamespace (), MediaPlugin.FreeMarkerEngine);
-		
+		config = (JsonObject)Json.find (api.getFeatures (), plugin.getNamespace (), Templating);
 		JsonObject oObjects = Json.getObject (config, Spec.Objects);
 		if (!Json.isNullOrEmpty (oObjects)) {
 			objects = new HashMap<String, Object>();
@@ -113,35 +105,14 @@ public class FreeMarkerTemplateEngine implements TemplateEngine {
 	}
 
 	@Override
-	public void write (ApiConsumer consumer, ApiRequest request, ApiResponse response, ApiOutput output,
-			ApiResource template, JsonObject mediaSpec) throws TemplateEngineException {
+	public void write (ApiResource template, Map<String, Object> model, Writer writer) throws TemplateEngineException {
 		try {
-			
-			JsonObject model = new JsonObject ();
-			
-			model.set (Json.getString (config, I18n, I18n), api.i18n (request.getLang ()));
-
-			model.set (Json.getString (config, Request, Request), request.toJson ());
-			if (consumer != null) {
-				model.set (Json.getString (config, Consumer, Consumer), consumer.toJson ());
-			}
-			
-			if (output != null) {
-				model.set (Json.getString (config, Output, Output), output.data ());
-				model.set (Json.getString (config, Meta, Meta), output.meta ());
-			}
-			model.set (Json.getString (config, Error, Error), response.getError ());
-			
 			model.putAll (objects);
-			
 			Template tpl = freeMarker.getTemplate (template.path ());
-			
-			tpl.process (model, response.toWriter ());
-			
+			tpl.process (model, writer);
 		} catch (Exception e) {
 			throw new TemplateEngineException (e.getMessage (), e);
 		}
-		
 	}
 
 }

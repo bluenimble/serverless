@@ -18,6 +18,7 @@ package com.bluenimble.platform.api.impls.media.engines.handlebars;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Writer;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,13 +27,9 @@ import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
-import com.bluenimble.platform.api.ApiOutput;
-import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResource;
-import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.impls.media.engines.TemplateEngine;
 import com.bluenimble.platform.api.impls.media.engines.TemplateEngineException;
-import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.server.plugins.media.MediaPlugin;
 import com.github.jknack.handlebars.Handlebars;
@@ -54,11 +51,9 @@ public class HandlebarsTemplateEngine implements TemplateEngine {
 	protected Map<String, CachedTemplate> templates = new ConcurrentHashMap<String, CachedTemplate> ();
 	
 	private Handlebars engine;
-	private Api api;
 	private JsonObject config;
 	
 	public HandlebarsTemplateEngine (MediaPlugin plugin, Api api) {
-		this.api = api;
 		config = (JsonObject)Json.find (api.getFeatures (), plugin.getNamespace (), MediaPlugin.HandlebarsEngine);
 		engine = new Handlebars (new HandlebarsTemplateLoader (plugin, api));
 		engine.startDelimiter (Json.getString (config, StartDelimitter, DefaultStartDelimitter));
@@ -229,8 +224,7 @@ public class HandlebarsTemplateEngine implements TemplateEngine {
 	}
 	
 	@Override
-	public void write (ApiConsumer consumer, ApiRequest request,
-			ApiResponse response, ApiOutput output, final ApiResource template, final JsonObject mediaSpec)
+	public void write (ApiResource template, Map<String, Object> model, Writer writer)
 			throws TemplateEngineException {
 		
 		final String uuid = template.path ();
@@ -275,24 +269,7 @@ public class HandlebarsTemplateEngine implements TemplateEngine {
 		}
 		
 		try {
-			
-			JsonObject vars = new JsonObject ();
-			
-			vars.set (Json.getString (config, I18n, I18n), api.i18n (request.getLang ()));
-
-			vars.set (Json.getString (config, Request, Request), request.toJson ());
-			if (consumer != null) {
-				vars.set (Json.getString (config, Consumer, Consumer), consumer.toJson ());
-			}
-			
-			if (output != null) {
-				vars.set (Json.getString (config, Output, Output), output.data ());
-				vars.set (Json.getString (config, Meta, Meta), output.meta ());
-			}
-			vars.set (Json.getString (config, Error, Error), response.getError ());
-			
-			cTemplate.template.apply (vars, response.toWriter ());
-			
+			cTemplate.template.apply (model, writer);
 		} catch (Exception e) {
 			throw new TemplateEngineException (e.getMessage (), e);
 		}

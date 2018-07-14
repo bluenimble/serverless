@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.api.scripting.impls;
+package com.bluenimble.platform.scripting.impls;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

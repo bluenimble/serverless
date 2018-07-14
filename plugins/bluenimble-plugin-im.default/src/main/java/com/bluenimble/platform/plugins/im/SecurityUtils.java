@@ -112,7 +112,8 @@ public class SecurityUtils {
 		return salt;
 	}
 
-	public static ApiOutput onFinish (Api api, ApiConsumer consumer, ApiRequest pRequest, final JsonObject onFinish, JsonObject account) throws ApiServiceExecutionException {
+	public static ApiOutput onFinish (Api api, ApiConsumer consumer, ApiRequest pRequest, final JsonObject onFinish, JsonObject account) 
+			throws ApiServiceExecutionException {
 		
 		if (onFinish == null || onFinish.isEmpty ()) {
 			return null;
