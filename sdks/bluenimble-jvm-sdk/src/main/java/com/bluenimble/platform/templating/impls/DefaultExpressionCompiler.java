@@ -19,9 +19,14 @@ package com.bluenimble.platform.templating.impls;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.templating.Expression;
 import com.bluenimble.platform.templating.ExpressionCompiler;
+import com.bluenimble.platform.templating.ScriptNode;
 import com.bluenimble.platform.templating.TextNode;
 import com.bluenimble.platform.templating.VariableNode;
 
@@ -31,24 +36,30 @@ public class DefaultExpressionCompiler implements ExpressionCompiler {
 	
 	protected int 		cacheSize 		= 50;
 	
-	protected char 		expStart 		= '[';
-	protected char 		expEnd 			= ']';
+	protected String 	expStart 		= "[";
+	protected String 	expEnd 			= "]";
+	
+	private ScriptEngine scriptEngine;
+	
+	protected Map<String, Expression> cached; 
 	
 	public DefaultExpressionCompiler () {
-		
+		this (false);
 	}
 	
-	public DefaultExpressionCompiler (int cacheSize, char expStart, char expEnd) {
+	public DefaultExpressionCompiler (boolean withScripting) {
+		withScripting (withScripting);
+	}
+	
+	public DefaultExpressionCompiler (int cacheSize, String expStart, String expEnd) {
 		this (expStart, expEnd);
 		this.cacheSize 	= cacheSize;
 	}
 	
-	public DefaultExpressionCompiler (char expStart, char expEnd) {
+	public DefaultExpressionCompiler (String expStart, String expEnd) {
 		this.expStart 	= expStart;
 		this.expEnd		= expEnd;
 	}
-	
-	protected Map<String, Expression> cached; 
 	
 	@Override
 	public Expression compile (String text, String id) {
@@ -91,7 +102,7 @@ public class DefaultExpressionCompiler implements ExpressionCompiler {
 		} else {
 			// create a text node for the starting part of the text 
 			expression.node (new TextNode (text.substring (0, indexOfStart)));
-			text = text.substring (indexOfStart + 1);
+			text = text.substring (indexOfStart + expStart.length ());
 		}
 		
 		while (indexOfStart > -1) {
@@ -103,9 +114,23 @@ public class DefaultExpressionCompiler implements ExpressionCompiler {
 			
 			// add a var node
 			String var = text.substring (0, indexOfEnd);
-			expression.node (new VariableNode (var));
 			
-			text = text.substring (indexOfEnd + 1);
+			// it's a script
+			if (var.startsWith (Lang.EQUALS)) {
+				if (scriptEngine != null) {
+					try {
+						expression.node (new ScriptNode (scriptEngine, var.substring (1)));
+					} catch (ScriptException e) {
+						throw new RuntimeException (e.getMessage (), e);
+					}
+				} else {
+					expression.node (new VariableNode (var.substring (1)));
+				}
+			} else {
+				expression.node (new VariableNode (var));
+			}
+			
+			text = text.substring (indexOfEnd + expEnd.length ());
 
 			indexOfStart = text.indexOf (expStart);
 			
@@ -115,7 +140,7 @@ public class DefaultExpressionCompiler implements ExpressionCompiler {
 				break;
 			} else {
 				expression.node (new TextNode (text.substring (0, indexOfStart)));
-				text = text.substring (indexOfStart + 1);
+				text = text.substring (indexOfStart + expStart.length ());
 			}
 			
 		}
@@ -125,6 +150,13 @@ public class DefaultExpressionCompiler implements ExpressionCompiler {
 	
 	public DefaultExpressionCompiler cacheSize (int cacheSize) {
 		this.cacheSize = cacheSize;
+		return this;
+	}
+	
+	public DefaultExpressionCompiler withScripting (boolean withScripting) {
+		if (withScripting && scriptEngine == null) {
+			scriptEngine = new ScriptEngineManager ().getEngineByName ("js");
+		}
 		return this;
 	}
 

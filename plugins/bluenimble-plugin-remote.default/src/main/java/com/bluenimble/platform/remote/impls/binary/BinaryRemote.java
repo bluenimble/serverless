@@ -35,7 +35,7 @@ import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.remote.SerializationException;
 import com.bluenimble.platform.remote.Serializer;
 import com.bluenimble.platform.remote.impls.BaseRemote;
-import com.bluenimble.platform.templating.VariableResolver;
+import com.bluenimble.platform.templating.SimpleVariableResolver;
 import com.bluenimble.platform.tools.binary.BinaryClient;
 import com.bluenimble.platform.tools.binary.BinaryClientCallback;
 import com.bluenimble.platform.tools.binary.BinaryClientException;
@@ -60,7 +60,7 @@ public class BinaryRemote extends BaseRemote {
 		if (!Json.isNullOrEmpty (featureSpec)) {
 			JsonObject master = featureSpec.duplicate ();
 			
-			Json.resolve (master, ECompiler, new VariableResolver () {
+			Json.resolve (master, ECompiler, new SimpleVariableResolver () {
 				private static final long serialVersionUID = 1L;
 				@Override
 				public Object resolve (String namespace, String... property) {
@@ -84,7 +84,7 @@ public class BinaryRemote extends BaseRemote {
 		// resole and add headers
 		JsonObject headers = Json.getObject (spec, Spec.Headers);
 		if (!Json.isNullOrEmpty (headers)) {
-			Json.resolve (headers, ECompiler, new VariableResolver () {
+			Json.resolve (headers, ECompiler, new SimpleVariableResolver () {
 				private static final long serialVersionUID = 1L;
 				@Override
 				public Object resolve (String namespace, String... property) {

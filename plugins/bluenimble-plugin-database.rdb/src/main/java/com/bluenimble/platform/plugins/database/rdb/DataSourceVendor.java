@@ -24,6 +24,7 @@ import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.server.utils.InstallUtils;
+import com.bluenimble.platform.templating.SimpleVariableResolver;
 import com.bluenimble.platform.templating.VariableResolver;
 import com.bluenimble.platform.templating.impls.DefaultExpressionCompiler;
 
@@ -72,7 +73,7 @@ public class DataSourceVendor {
 				.set (RdbPlugin.Spec.Type, type)
 				.set (RdbPlugin.DataFolder, dataFolder.getAbsolutePath ());
 		
-		VariableResolver vr = new VariableResolver () {
+		VariableResolver vr = new SimpleVariableResolver () {
 			private static final long serialVersionUID = -485939153491337463L;
 
 			@Override

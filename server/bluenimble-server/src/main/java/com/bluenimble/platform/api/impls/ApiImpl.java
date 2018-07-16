@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
@@ -108,7 +109,7 @@ public class ApiImpl implements Api {
 	
 	private ApiStatus 				status;
 	
-	private Object					helper;
+	private Map<String, Object>		helpers;
 		
 	public ApiImpl (ApiSpaceImpl space, File home) {
 		this.space 	= space;
@@ -370,13 +371,19 @@ public class ApiImpl implements Api {
 	}
 
 	@Override
-	public Object getHelper () {
-		return helper;
+	public Object getHelper (String key) {
+		if (helpers == null) {
+			return null;
+		}
+		return helpers.get (key);
 	}
 
 	@Override
-	public void setHelper (Object helper) {
-		this.helper = helper;
+	public void setHelper (String key, Object helper) {
+		if (helpers == null) {
+			helpers = new ConcurrentHashMap<String, Object> ();
+		}
+		helpers.put (key, helper);
 	}
 
 	@Override
@@ -877,7 +884,11 @@ public class ApiImpl implements Api {
 		servicesManager = null;
 		failure = null;
 		status = null;
-		helper = null;
+		
+		if (helpers != null) {
+			helpers.clear ();
+		}
+		helpers = null;
 	}
 
 }

@@ -16,15 +16,20 @@
  */
 package com.bluenimble.platform.templating.impls.converters;
 
+import com.bluenimble.platform.json.JsonArray;
+import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.json.JsonParser;
 import com.bluenimble.platform.templating.ValueConverter;
 
 public class JsonValueConverter implements ValueConverter {
 
 	@Override
-	public Object convert (String value, String spec) {
+	public Object convert (Object value, String spec) {
+		if (value instanceof JsonObject || value instanceof JsonArray) {
+			return value;
+		}
 		try {
-			return JsonParser.parse (value);
+			return JsonParser.parse (String.valueOf (value));
 		} catch (Exception ex) {
 			throw new RuntimeException (ex.getMessage (), ex);
 		}

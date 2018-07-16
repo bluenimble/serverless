@@ -18,6 +18,6 @@ package com.bluenimble.platform.templating;
 
 public interface ValueConverter {
 
-	Object convert (String value, String spec);
+	Object convert (Object value, String spec);
 	
 }

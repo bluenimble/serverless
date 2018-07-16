@@ -646,7 +646,7 @@ public class Json {
 		System.out.println (
 			Base64.encodeBase64String (IOUtils.toByteArray (new FileInputStream (new File ("/tmp/lead.keys.bin"))))
 		);
-		*/
+		
 		
 		JsonObject keys = Json.load (new File ("/Users/lilya/Desktop/sensesay-plain.keys"));
 		
@@ -655,7 +655,7 @@ public class Json {
 		System.out.println (
 			Base64.encodeBase64String (IOUtils.toByteArray (new FileInputStream (new File ("/Users/lilya/Desktop/sensesay-plain.bin"))))
 		);
-		
+		*/
 		
 	}
 	

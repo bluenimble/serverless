@@ -97,8 +97,8 @@ public interface Api extends Traceable, Manageable {
 	
 	void 				validate 				(ApiConsumer consumer, JsonObject spec, ApiRequest request) 
 																						throws ApiServiceValidatorException;
-	void 				setHelper				(Object helper);
-	Object 				getHelper				();
+	void 				setHelper				(String key, Object helper);
+	Object 				getHelper				(String key);
 	
 	JsonObject			describe 				(DescribeOption... options);
 	

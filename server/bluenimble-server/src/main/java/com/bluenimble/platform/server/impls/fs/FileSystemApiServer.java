@@ -63,7 +63,7 @@ import com.bluenimble.platform.server.security.impls.DefaultApiRequestSigner;
 import com.bluenimble.platform.server.utils.ConfigKeys;
 import com.bluenimble.platform.server.utils.ConfigKeys.Folders;
 import com.bluenimble.platform.server.utils.InstallUtils;
-import com.bluenimble.platform.templating.VariableResolver;
+import com.bluenimble.platform.templating.SimpleVariableResolver;
 import com.bluenimble.platform.templating.impls.DefaultExpressionCompiler;
 
 public class FileSystemApiServer extends AbstractApiServer {
@@ -462,7 +462,7 @@ public class FileSystemApiServer extends AbstractApiServer {
 	
 	@Override
 	public JsonObject resolve (JsonObject descriptor, Map<String, String []> varsMapping) {
-		return (JsonObject)Json.resolve (descriptor, ExpressionCompiler, new VariableResolver () {
+		return (JsonObject)Json.resolve (descriptor, ExpressionCompiler, new SimpleVariableResolver () {
 			private static final long serialVersionUID = -485939153491337463L;
 			@Override
 			public Object resolve (String namespace, String... property) {

@@ -25,6 +25,8 @@ public class SpecAndSpiPair implements Serializable {
 
 	private static final long serialVersionUID = -5450514957053351188L;
 	
+	public static final String Name = SpecAndSpiPair.class.getSimpleName ();
+	
 	private static final String Spi = "spi";
 	
 	private Object spec;

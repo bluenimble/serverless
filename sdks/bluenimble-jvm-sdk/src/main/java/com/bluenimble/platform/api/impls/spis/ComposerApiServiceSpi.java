@@ -16,7 +16,9 @@
  */
 package com.bluenimble.platform.api.impls.spis;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
@@ -39,18 +41,25 @@ import com.bluenimble.platform.templating.impls.DefaultExpressionCompiler;
 {
 
     "verb": "put",
-    "endpoint": "/cars/:car/status/:status",
+    "endpoint": "/cars/:car/:driver/status/:status",
     
     "custom": {
         "flow": [{
+        	"id": "alpha",
             "verb": "put", "endpoint": "/cars/[car]",
             "parameters": {
                 "payload": {
                     "status": "[status]"
                 }
             }
-        },
-        "templates/flows/flow.tpl"]
+        }, {
+            "verb": "post", "endpoint": "/drivers/[driver]",
+            "parameters": {
+                "payload": {
+                    "lastStop": "[output.alpha.stopDate]"
+                }
+            }
+        }]
     },
     
     "spi": {
@@ -65,7 +74,7 @@ public class ComposerApiServiceSpi extends AbstractApiServiceSpi {
 
 	private static final long serialVersionUID = 4666775202589517190L;
 	
-	private static final DefaultExpressionCompiler ExpressionCompiler = new DefaultExpressionCompiler ();
+	private static final DefaultExpressionCompiler ExpressionCompiler = new DefaultExpressionCompiler (true).cacheSize (100);
 	
 	interface ResolverPrefix {
 		String Request 	= "request";
@@ -94,6 +103,11 @@ public class ComposerApiServiceSpi extends AbstractApiServiceSpi {
 		
 		final JsonObject oOutput = new JsonObject ();
 		
+		final Map<String, Object> bindings = new HashMap<String, Object> ();
+		bindings.put (ResolverPrefix.Request, request);
+		bindings.put (ResolverPrefix.Consumer, consumer);
+		bindings.put (ResolverPrefix.Output, oOutput);
+		
 		VariableResolver variableResolver = new VariableResolver () {
 			private static final long serialVersionUID = -485939153491337463L;
 			@Override
@@ -110,6 +124,11 @@ public class ComposerApiServiceSpi extends AbstractApiServiceSpi {
 				} 
 				return null;
 			}
+			
+			@Override
+			public Map<String, Object> bindings () {
+				return bindings;
+			}
 		};
 		
 		ApiOutput finalOutput = null;
@@ -117,16 +136,7 @@ public class ComposerApiServiceSpi extends AbstractApiServiceSpi {
 		ApiOutput output = null;
 		
 		for (int i = 0; i < flow.count (); i++) {
-			Object step = flow.get (i);
-			
-			if (step instanceof String) {
-				// it's a template,
-				// eval
-				// is Object or Array->Object, loop execute
-			} 
-			
-			output = processStep (api, consumer, request, step, variableResolver, oOutput);
-			
+			output = processStep (api, consumer, request, flow.get (i), variableResolver, oOutput);
 			if (oOutput.containsKey (FinalOutput)) {
 				finalOutput = output;
 			}

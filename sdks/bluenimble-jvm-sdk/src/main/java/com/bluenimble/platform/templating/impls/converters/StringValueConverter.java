@@ -21,8 +21,8 @@ import com.bluenimble.platform.templating.ValueConverter;
 public class StringValueConverter implements ValueConverter {
 
 	@Override
-	public Object convert (String value, String spec) {
-		return value;
+	public Object convert (Object value, String spec) {
+		return String.valueOf (value);
 	}
 
 }

@@ -17,9 +17,12 @@
 package com.bluenimble.platform.templating;
 
 import java.io.Serializable;
+import java.util.Map;
 
 public interface VariableResolver extends Serializable {
 
-	Object resolve (String namespace, String... property);
+	Object 				resolve (String namespace, String... property);
+	
+	Map<String, Object> bindings ();
 	
 }

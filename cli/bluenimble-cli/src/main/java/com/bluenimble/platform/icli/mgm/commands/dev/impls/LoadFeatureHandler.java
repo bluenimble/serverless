@@ -30,7 +30,7 @@ import com.bluenimble.platform.cli.command.CommandResult;
 import com.bluenimble.platform.cli.command.impls.DefaultCommandResult;
 import com.bluenimble.platform.icli.mgm.BlueNimble;
 import com.bluenimble.platform.json.JsonObject;
-import com.bluenimble.platform.templating.VariableResolver;
+import com.bluenimble.platform.templating.SimpleVariableResolver;
 import com.bluenimble.platform.templating.impls.DefaultExpressionCompiler;
 
 public class LoadFeatureHandler implements CommandHandler {
@@ -103,7 +103,7 @@ public class LoadFeatureHandler implements CommandHandler {
 		}
 		
 		if (mVariables != null) {
-			oFeature = (JsonObject)Json.resolve (oFeature, ExpressionCompiler, new VariableResolver () {
+			oFeature = (JsonObject)Json.resolve (oFeature, ExpressionCompiler, new SimpleVariableResolver () {
 				private static final long serialVersionUID = 1L;
 
 				@Override

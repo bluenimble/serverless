@@ -73,7 +73,7 @@ import com.bluenimble.platform.icli.mgm.remote.impls.XmlResponseReader;
 import com.bluenimble.platform.icli.mgm.remote.impls.YamlResponseReader;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.security.KeyPair;
-import com.bluenimble.platform.templating.VariableResolver;
+import com.bluenimble.platform.templating.SimpleVariableResolver;
 import com.bluenimble.platform.templating.impls.DefaultExpressionCompiler;
 
 public class RemoteUtils {
@@ -441,7 +441,7 @@ public class RemoteUtils {
 			return expression;
 		}
 		
-		return Compiler.compile (expression, null).eval (new VariableResolver () {
+		return Compiler.compile (expression, null).eval (new SimpleVariableResolver () {
 			private static final long serialVersionUID = -5398683910131117933L;
 			@Override
 			public Object resolve (String ns, String... aProp) {

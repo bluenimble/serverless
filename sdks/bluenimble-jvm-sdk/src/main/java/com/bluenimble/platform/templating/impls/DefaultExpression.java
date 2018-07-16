@@ -21,9 +21,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.script.ScriptException;
+
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.templating.Expression;
 import com.bluenimble.platform.templating.Node;
+import com.bluenimble.platform.templating.ScriptNode;
 import com.bluenimble.platform.templating.TextNode;
 import com.bluenimble.platform.templating.ValueConverter;
 import com.bluenimble.platform.templating.VariableNode;
@@ -78,6 +81,9 @@ public class DefaultExpression implements Expression {
 
 	@Override
 	public void node (Node node) {
+		if (node instanceof TextNode && Lang.BLANK.equals (((TextNode)node).token ())) {
+			return;
+		}
 		if (nodes == null) {
 			nodes = new ArrayList<Node> ();
 		}
@@ -106,49 +112,72 @@ public class DefaultExpression implements Expression {
 			return null;
 		}
 		
-		StringBuilder sb = new StringBuilder ();
-		for (int i = 0; i < nodes (); i ++) {
-			Node node = node (i);
-			if (node instanceof TextNode) {
-				sb.append (node.token ());
-			} if (node instanceof VariableNode) {
-				VariableNode vNode = (VariableNode)node;
-				
-				List<VariableNode.Property> properties = vNode.vars ();
-				
-				Object value = null;
-				
-				for (VariableNode.Property p : properties) {
-					if (p.value () != null) {
-						value = p.value ();
-						break;
-					}
-					value = vr.resolve (p.namespace (), p.keys ());
-					if (value != null) {
-						break;
-					}
-				}
-				if (value == null) {
-					value = node.token ();
-				}
-				
-				sb.append (value);
+		Object value = null;
+		
+		if (nodes.size () == 1) {
+			if (node (0) instanceof VariableNode) {
+				value = evalVarNode ((VariableNode)node (0), vr);
+			} else if (node (0) instanceof ScriptNode) {
+				value = evalScriptNode ((ScriptNode)node (0), vr);
 			}
+		} else {
+			StringBuilder sb = new StringBuilder ();
+			for (int i = 0; i < nodes (); i ++) {
+				Node node = node (i);
+				if (node instanceof TextNode) {
+					sb.append (node.token ());
+				} else if (node instanceof VariableNode) {
+					sb.append (evalVarNode ((VariableNode)node, vr));
+				} else if (node instanceof ScriptNode) {
+					sb.append (evalScriptNode ((ScriptNode)node, vr));
+				}
+			}
+			
+			value = sb.toString ();
+			
+			sb.setLength (0);
+			sb = null;
 		}
-		
-		String s = sb.toString ();
-		
-		sb.setLength (0);
-		sb = null;
 		
 		if (type != null) {
 			ValueConverter c = Converters.get (type);
 			if (c != null) {
-				return c.convert (s, spec);
+				return c.convert (value, spec);
 			}
 		}
 		
-		return s;
+		return value;
+	}
+	
+	private Object evalVarNode (VariableNode vNode, VariableResolver vr) {
+		List<VariableNode.Property> properties = vNode.vars ();
+		
+		Object value = null;
+		
+		for (VariableNode.Property p : properties) {
+			if (p.value () != null) {
+				value = p.value ();
+				break;
+			}
+			value = vr.resolve (p.namespace (), p.keys ());
+			if (value != null) {
+				break;
+			}
+		}
+		if (value == null) {
+			value = vNode.token ();
+		}
+		
+		return value;
+		
 	}
 
+	private Object evalScriptNode (ScriptNode sNode, VariableResolver vr) {
+		try {
+			return sNode.eval (vr);
+		} catch (ScriptException e) {
+			throw new RuntimeException (e.getMessage (), e);
+		}
+	}
+	
 }

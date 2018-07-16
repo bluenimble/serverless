@@ -48,11 +48,11 @@ public class BeanUtils {
 	
 	public static final String 			Enabled 	= "enabled";
 	
-	private static final Map<String, Class<?>> 	CoreClasses = new HashMap<String, Class<?>> ();
+	private static final Map<String, Object> 	CoreObjects = new HashMap<String, Object> ();
 	static {
-		CoreClasses.put ("ResourceSpi", GetResourceApiServiceSpi.class);
-		CoreClasses.put ("NoneSpi", 	NoneApiServiceSpi.class);
-		CoreClasses.put ("ComposerSpi",	ComposerApiServiceSpi.class);
+		CoreObjects.put ("ResourceSpi", new GetResourceApiServiceSpi ());
+		CoreObjects.put ("NoneSpi", 	new NoneApiServiceSpi ());
+		CoreObjects.put ("ComposerSpi",	new ComposerApiServiceSpi ());
 	}
 	
 	public static Object create (JsonObject definition) throws Exception {
@@ -111,11 +111,15 @@ public class BeanUtils {
 		
 		Object bean = null;
 		if (Core.equals (loaderName)) {
-			Class<?> cls = CoreClasses.get (clazz); 
-			if (cls == null) {
-				throw new Exception ("Core Class " + clazz + " not found");
+			Object co = CoreObjects.get (clazz); 
+			if (co == null) {
+				throw new Exception ("Core Object " + clazz + " not found");
 			}
-			bean = cls.newInstance ();
+			if (co instanceof Class) {
+				bean = ((Class)co).newInstance ();
+			} else {
+				bean = co;
+			}
 		} else if (PackageClassLoader.class.isAssignableFrom (loader.getClass ())) {
 			PackageClassLoader pcl = (PackageClassLoader)loader;
 			if (pcl.hasSynonym (clazz)) {

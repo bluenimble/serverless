@@ -109,7 +109,7 @@ public class ScriptableApiSpi implements ApiSpi {
 			throw new ApiManagementException ("can't create 'api spec' js object");
 		}
 		
-		api.setHelper (new SpecAndSpiPair (jsApi, jsSpi));
+		api.setHelper (SpecAndSpiPair.Name, new SpecAndSpiPair (jsApi, jsSpi));
 		
 		if (!engine.has (jsSpi, Functions.OnStart)) {
 			return;
@@ -126,7 +126,7 @@ public class ScriptableApiSpi implements ApiSpi {
 
 	@Override
 	public void onStop (Api api, ApiContext context) throws ApiManagementException {
-		Object spi = ((SpecAndSpiPair)api.getHelper ()).spi ();
+		Object spi = ((SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name)).spi ();
 		if (spi == null) {
 			return;
 		}
@@ -136,7 +136,7 @@ public class ScriptableApiSpi implements ApiSpi {
 			return;
 		}
 		
-		Object jsApi = ((SpecAndSpiPair)api.getHelper ()).spec ();
+		Object jsApi = ((SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name)).spec ();
 		if (jsApi == null) {
 			return;
 		}		
@@ -152,7 +152,7 @@ public class ScriptableApiSpi implements ApiSpi {
 	@Override
 	public void onRequest (Api api, ApiRequest request, ApiResponse response)
 			throws ApiServiceExecutionException {
-		Object spi = ((SpecAndSpiPair)api.getHelper ()).spi ();
+		Object spi = ((SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name)).spi ();
 		if (spi == null) {
 			return;
 		}
@@ -162,7 +162,7 @@ public class ScriptableApiSpi implements ApiSpi {
 			return;
 		}
 		
-		Object jsApi = ((SpecAndSpiPair)api.getHelper ()).spec ();
+		Object jsApi = ((SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name)).spec ();
 		if (jsApi == null) {
 			throw new ApiServiceExecutionException ("api or spi not attached on Api OnStart");
 		}		
@@ -179,7 +179,7 @@ public class ScriptableApiSpi implements ApiSpi {
 	@Override
 	public void onService (Api api, ApiService service, ApiRequest request,
 			ApiResponse response) throws ApiServiceExecutionException {
-		Object spi = ((SpecAndSpiPair)api.getHelper ()).spi ();
+		Object spi = ((SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name)).spi ();
 		if (spi == null) {
 			return;
 		}
@@ -189,7 +189,7 @@ public class ScriptableApiSpi implements ApiSpi {
 			return;
 		}
 		
-		Object jsApi = ((SpecAndSpiPair)api.getHelper ()).spec ();
+		Object jsApi = ((SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name)).spec ();
 		if (jsApi == null) {
 			throw new ApiServiceExecutionException ("api or spi not attached on Api OnStart");
 		}		
@@ -207,7 +207,7 @@ public class ScriptableApiSpi implements ApiSpi {
 	public void onExecute (Api api, ApiConsumer consumer, ApiService service,
 			ApiRequest request, ApiResponse response)
 			throws ApiServiceExecutionException {
-		Object spi = ((SpecAndSpiPair)api.getHelper ()).spi ();
+		Object spi = ((SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name)).spi ();
 		if (spi == null) {
 			return;
 		}
@@ -217,7 +217,7 @@ public class ScriptableApiSpi implements ApiSpi {
 			return;
 		}
 		
-		Object jsApi = ((SpecAndSpiPair)api.getHelper ()).spec ();
+		Object jsApi = ((SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name)).spec ();
 		if (jsApi == null) {
 			throw new ApiServiceExecutionException ("api or spi not attached on Api OnStart");
 		}		
@@ -242,7 +242,7 @@ public class ScriptableApiSpi implements ApiSpi {
 	public void afterExecute (Api api, ApiConsumer consumer, ApiService service,
 			ApiRequest request, ApiResponse response)
 			throws ApiServiceExecutionException {
-		Object spi = ((SpecAndSpiPair)api.getHelper ()).spi ();
+		Object spi = ((SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name)).spi ();
 		if (spi == null) {
 			return;
 		}
@@ -252,7 +252,7 @@ public class ScriptableApiSpi implements ApiSpi {
 			return;
 		}
 		
-		Object jsApi = ((SpecAndSpiPair)api.getHelper ()).spec ();
+		Object jsApi = ((SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name)).spec ();
 		if (jsApi == null) {
 			throw new ApiServiceExecutionException ("api or spi not attached on Api OnStart");
 		}		
@@ -270,7 +270,7 @@ public class ScriptableApiSpi implements ApiSpi {
 
 	@Override
 	public void findConsumer (Api api, ApiService service, ApiRequest request, ApiConsumer consumer) throws ApiAuthenticationException {
-		Object spi = ((SpecAndSpiPair)api.getHelper ()).spi ();
+		Object spi = ((SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name)).spi ();
 		if (spi == null) {
 			return;
 		}
@@ -280,7 +280,7 @@ public class ScriptableApiSpi implements ApiSpi {
 			return;
 		}
 		
-		Object jsApi = ((SpecAndSpiPair)api.getHelper ()).spec ();
+		Object jsApi = ((SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name)).spec ();
 		if (jsApi == null) {
 			throw new ApiAuthenticationException ("api or spi not attached on Api OnStart");
 		}		
@@ -296,7 +296,7 @@ public class ScriptableApiSpi implements ApiSpi {
 
 	@Override
 	public void onError (Api api, ApiService service, ApiConsumer consumer, ApiRequest request, ApiResponse response, JsonObject error) {
-		Object spi = ((SpecAndSpiPair)api.getHelper ()).spi ();
+		Object spi = ((SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name)).spi ();
 		if (spi == null) {
 			return;
 		}
@@ -306,7 +306,7 @@ public class ScriptableApiSpi implements ApiSpi {
 			return;
 		}
 
-		Object jsApi = ((SpecAndSpiPair)api.getHelper ()).spec ();
+		Object jsApi = ((SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name)).spec ();
 		if (api == null || jsApi == null) {
 			Object msg = error.get (ApiResponse.Error.Message);
 			if (msg != null) {

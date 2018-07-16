@@ -40,7 +40,7 @@ import com.bluenimble.platform.remote.Serializer;
 import com.bluenimble.platform.remote.impls.BaseRemote;
 import com.bluenimble.platform.remote.impls.http.bnb.AccessSecretKeysBasedHttpRequestSigner;
 import com.bluenimble.platform.remote.impls.http.oauth.OkHttpOAuthConsumer;
-import com.bluenimble.platform.templating.VariableResolver;
+import com.bluenimble.platform.templating.SimpleVariableResolver;
 
 import okhttp3.FormBody;
 import okhttp3.Headers;
@@ -100,7 +100,7 @@ public class HttpRemote extends BaseRemote {
 		if (!Json.isNullOrEmpty (featureSpec)) {
 			JsonObject master = featureSpec.duplicate ();
 			
-			Json.resolve (master, ECompiler, new VariableResolver () {
+			Json.resolve (master, ECompiler, new SimpleVariableResolver () {
 				private static final long serialVersionUID = 1L;
 				@Override
 				public Object resolve (String namespace, String... property) {
@@ -143,7 +143,7 @@ public class HttpRemote extends BaseRemote {
 			// resole and add headers
 			JsonObject headers = Json.getObject (spec, Spec.Headers);
 			if (!Json.isNullOrEmpty (headers)) {
-				Json.resolve (headers, ECompiler, new VariableResolver () {
+				Json.resolve (headers, ECompiler, new SimpleVariableResolver () {
 					private static final long serialVersionUID = 1L;
 					@Override
 					public Object resolve (String namespace, String... property) {

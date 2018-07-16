@@ -66,8 +66,8 @@ public interface ApiService extends Manageable {
 	String 						getName 			();
 	String 						getDescription 		();
 	
-	void 						setHelper			(Object helper);
-	Object 						getHelper			();
+	void 						setHelper			(String key, Object helper);
+	Object 						getHelper			(String key);
 	
 	JsonObject 					getSecurity 		();
 	JsonObject 					getRuntime 			();

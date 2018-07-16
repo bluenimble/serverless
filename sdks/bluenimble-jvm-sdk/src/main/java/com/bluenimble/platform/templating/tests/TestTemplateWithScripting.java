@@ -16,57 +16,48 @@
  */
 package com.bluenimble.platform.templating.tests;
 
+import java.util.Map;
+
 import com.bluenimble.platform.Json;
-import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.json.JsonObject;
-import com.bluenimble.platform.templating.SimpleVariableResolver;
 import com.bluenimble.platform.templating.VariableResolver;
 import com.bluenimble.platform.templating.impls.DefaultExpressionCompiler;
 
-public class TestTemplate {
+public class TestTemplateWithScripting {
 	
 	public static void main (String [] args) {
 	
-		String exp1 = "[model.a] [NoNs]";
-		
-		String exp2 = "Hello [model.c]";
-		
-		String exp3 = "[model.b] done";
-
-		String exp4 = "simple text";
-		
-		String exp5 = "simple [model.b] [alpha.a] [beta | 'alpha']";
-
-		String exp6 = "{ price: '[model.b]' }>>json";
+		String exp = "simple <% model.b %> <%= model.b > 400 ? 600 : 800 %>/<% beta | 'alpha' %>";
 
 		final JsonObject model = (JsonObject)new JsonObject ().set ("a", "A Value").set ("b", 409).set ("c", "Hello");
 		
-		VariableResolver vr = new SimpleVariableResolver () {
+		VariableResolver vr = new VariableResolver () {
 			private static final long serialVersionUID = -485939153491337463L;
 
 			@Override
 			public Object resolve (String namespace, String... property) {
-				System.out.println (namespace);
 				if (namespace == null) {
 					return null;
 				}
-				System.out.println (Lang.join (property, Lang.DOT));
 				if (namespace == null || namespace.equals ("model")) {
 					return Json.find (model, property);
 				}
 				return null;
 			}
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public Map<String, Object> bindings () {
+				return (JsonObject)new JsonObject ().set ("model", model);
+			}
 			
 		};
 		
-		DefaultExpressionCompiler compiler = new DefaultExpressionCompiler ();
+		DefaultExpressionCompiler compiler = new DefaultExpressionCompiler ("<%", "%>").withScripting (true);
 		
-		System.out.println ("exp1: " + compiler.compile (exp1, null).eval (vr));
-		System.out.println ("exp2: " + compiler.compile (exp2, null).eval (vr));
-		System.out.println ("exp3: " + compiler.compile (exp3, null).eval (vr));
-		System.out.println ("exp4: " + compiler.compile (exp4, null).eval (vr));
-		System.out.println ("exp5: " + compiler.compile (exp5, null).eval (vr));
-		System.out.println ("exp6: " + compiler.compile (exp6, null).eval (vr));
+		System.out.println ("value: " + compiler.compile (exp, null).eval (vr));
+		
+		System.out.println ("value: " + compiler.compile (exp, null).eval (vr));
 		
 
 	}

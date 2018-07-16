@@ -69,7 +69,7 @@ public class ScriptableApiServiceSpi implements ApiServiceSpi {
 	
 	@Override
 	public void onStart (Api api, ApiService service, ApiContext context) throws ApiManagementException {
-		SpecAndSpiPair helper = (SpecAndSpiPair)api.getHelper ();
+		SpecAndSpiPair helper = (SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name);
 		if (helper == null) {
 			throw new ApiManagementException ("api '" + api.getNamespace () + "' doesn't support scripting or couldn't start correctly.");
 		}		
@@ -124,7 +124,7 @@ public class ScriptableApiServiceSpi implements ApiServiceSpi {
 			throw new ApiManagementException ("script returned an undefined object");
 		}
 		
-		service.setHelper (new SpecAndSpiPair  (jsService, spi));
+		service.setHelper (SpecAndSpiPair.Name, new SpecAndSpiPair  (jsService, spi));
 		
 		if (!engine.has (spi, Functions.OnStart)) {
 			return;
@@ -141,7 +141,7 @@ public class ScriptableApiServiceSpi implements ApiServiceSpi {
 
 	@Override
 	public void onStop (Api api, ApiService service, ApiContext context) throws ApiManagementException {
-		SpecAndSpiPair apiHelper = (SpecAndSpiPair)api.getHelper ();
+		SpecAndSpiPair apiHelper = (SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name);
 		if (apiHelper == null) {
 			throw new ApiManagementException ("api '" + api.getNamespace () + "' doesn't support scripting");
 		}		
@@ -152,7 +152,7 @@ public class ScriptableApiServiceSpi implements ApiServiceSpi {
 		}		
 
 		
-		SpecAndSpiPair serviceHelper = (SpecAndSpiPair)service.getHelper ();
+		SpecAndSpiPair serviceHelper = (SpecAndSpiPair)service.getHelper (SpecAndSpiPair.Name);
 
 		Object spi = serviceHelper.spi ();
 		if (spi == null) {
@@ -174,12 +174,12 @@ public class ScriptableApiServiceSpi implements ApiServiceSpi {
 
 	@Override
 	public ApiOutput execute (Api api, ApiConsumer consumer, ApiRequest request, ApiResponse response) throws ApiServiceExecutionException {
-		Object jsApi = ((SpecAndSpiPair)api.getHelper ()).spec ();
+		Object jsApi = ((SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name)).spec ();
 		if (jsApi == null) {
 			throw new ApiServiceExecutionException ("api '" + api.getNamespace () + "' doesn't support scripting");
 		}		
 
-		SpecAndSpiPair serviceHelper = (SpecAndSpiPair)request.getService ().getHelper ();
+		SpecAndSpiPair serviceHelper = (SpecAndSpiPair)request.getService ().getHelper (SpecAndSpiPair.Name);
 
 		Object spi = serviceHelper.spi ();
 		if (spi == null) {

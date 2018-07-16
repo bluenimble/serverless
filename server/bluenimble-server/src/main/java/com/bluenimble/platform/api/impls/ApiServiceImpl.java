@@ -16,6 +16,9 @@
  */
 package com.bluenimble.platform.api.impls;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
@@ -56,7 +59,7 @@ public class ApiServiceImpl implements ApiService {
 	
 	private   	JsonObject				accessors;
 	
-	private 	Object					helper;
+	private Map<String, Object>		helpers;
 	
 	private 	ApiImpl					api;
 	
@@ -190,13 +193,19 @@ public class ApiServiceImpl implements ApiService {
 	}
 
 	@Override
-	public Object getHelper () {
-		return helper;
+	public Object getHelper (String key) {
+		if (helpers == null) {
+			return null;
+		}
+		return helpers.get (key);
 	}
 
 	@Override
-	public void setHelper (Object helper) {
-		this.helper = helper;
+	public void setHelper (String key, Object helper) {
+		if (helpers == null) {
+			helpers = new ConcurrentHashMap<String, Object> ();
+		}
+		helpers.put (key, helper);
 	}
 
 	public JsonObject accessors () {
