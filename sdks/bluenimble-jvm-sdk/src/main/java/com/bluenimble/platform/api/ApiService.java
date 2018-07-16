@@ -49,11 +49,17 @@ public interface ApiService extends Manageable {
 			String Tags		= "tags";
 			String Links	= "links";
 		}
+		
+		interface Spi		{
+			String Function		= "function";
+		}
+
+		interface Runtime		{
+		}
 
 		String Status		= "status";
 		String Spec 		= "spec";
-		String Runtime 		= "runtime";
-		String Custom 		= "custom";
+
 		String Mock 		= "mock";
 		String Output 		= "output";
 		String Features 	= "features";
@@ -73,7 +79,7 @@ public interface ApiService extends Manageable {
 	JsonObject 					getRuntime 			();
 	JsonObject 					getFeatures 		();
 	JsonObject 					getMedia 			();
-	JsonObject 					getCustom 			();
+	JsonObject 					getSpiDef 			();
 	
 	ApiStatus					status				();
 	void						pause				();

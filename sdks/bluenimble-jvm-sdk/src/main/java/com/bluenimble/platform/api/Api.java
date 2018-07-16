@@ -33,7 +33,6 @@ public interface Api extends Traceable, Manageable {
 		String Description 		= "description";
 		String Release			= "release";
 		String Status			= "status";
-		String Custom			= "custom";
 		String Features			= "features";
 		String Tracer			= "tracer";
 		String Markers			= "markers";
@@ -50,9 +49,11 @@ public interface Api extends Traceable, Manageable {
 		interface Tracking		{
 			String Tracker		= "tracker";
 		}
-		interface Runtime		{
-			String Async		= "async";
+		interface Spi		{
 			String Function		= "function";
+		}
+		interface Runtime		{
+			
 		}
 		
 	}
@@ -69,8 +70,6 @@ public interface Api extends Traceable, Manageable {
 	
 	JsonObject 			getFailure 				();
 	
-	JsonObject 			getCustom 				();
-	
 	JsonObject 			getRuntime 				();
 
 	JsonObject 			getFeatures 			();
@@ -80,6 +79,8 @@ public interface Api extends Traceable, Manageable {
 	JsonObject 			getSecurity 			();
 	
 	JsonObject 			getTracking 			();
+	
+	JsonObject 			getSpiDef 				();
 	
 	ApiSpi 				getSpi 					();
 	

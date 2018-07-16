@@ -18,12 +18,9 @@
 		"tags": ["[[Models]]", "Read"]
 	},
 	
-	"runtime": {
-		"function": "functions/[[models]]/Get[[Model]].js"
-	},
-	
 	"spi": {
-		"class": "scripting.javascript:ServiceSpi"
+		"class": "scripting.javascript:ServiceSpi",
+		"function": "functions/[[models]]/Get[[Model]].js"
 	}
 	
 }

@@ -18,12 +18,9 @@
 		"tags": ["[[Models]]", "Delete"]
 	},
 	
-	"runtime": {
-		"function": "functions/[[models]]/Delete[[Model]].js"
-	},
-	
 	"spi": {
-		"class": "scripting.javascript:ServiceSpi"
+		"class": "scripting.javascript:ServiceSpi",
+		"function": "functions/[[models]]/Delete[[Model]].js"
 	}
 	
 }

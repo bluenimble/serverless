@@ -25,12 +25,9 @@
 		"tags": ["[[Models]]", "List"]
 	},
 	
-	"runtime": {
-		"function": "functions/[[models]]/Find[[Models]].js"
-	},
-	
 	"spi": {
-		"class": "scripting.javascript:ServiceSpi"
+		"class": "scripting.javascript:ServiceSpi",
+		"function": "functions/[[models]]/Find[[Models]].js"
 	}
 	
 }

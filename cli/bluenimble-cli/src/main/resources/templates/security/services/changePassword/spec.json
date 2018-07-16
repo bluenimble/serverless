@@ -18,7 +18,9 @@
 		}
 	},
 	
-	"tags": ["Security", "User"],
+	"meta": {
+		"tags": ["Security", "User"]
+	},
 	
 	"spi": {
 		"class": "im.default:ChangePasswordSpi"

@@ -29,14 +29,13 @@ import com.bluenimble.platform.api.ApiService;
 import com.bluenimble.platform.api.ApiServiceExecutionException;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.ApiSpi;
-import com.bluenimble.platform.api.tracing.Tracer.Level;
 import com.bluenimble.platform.api.security.ApiAuthenticationException;
 import com.bluenimble.platform.api.security.ApiConsumer;
+import com.bluenimble.platform.api.tracing.Tracer.Level;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.scripting.ScriptContext;
 import com.bluenimble.platform.scripting.ScriptingEngine;
 import com.bluenimble.platform.scripting.ScriptingEngine.Supported;
-import com.bluenimble.platform.server.plugins.scripting.utils.ApiUtils;
 import com.bluenimble.platform.scripting.ScriptingEngineException;
 
 public class ScriptableApiSpi implements ApiSpi {
@@ -66,11 +65,11 @@ public class ScriptableApiSpi implements ApiSpi {
 	
 	@Override
 	public void onStart (Api api, ApiContext context) throws ApiManagementException {
-		String script = Json.getString (api.getRuntime (), Api.Spec.Runtime.Function);
-		if (Lang.isNullOrEmpty (script)) {
-			throw new ApiManagementException ("function not defined in " + ApiUtils.RuntimeKey);
+		String _function = Json.getString (api.getSpiDef (), Api.Spec.Spi.Function);
+		if (Lang.isNullOrEmpty (_function)) {
+			throw new ApiManagementException ("function not defined in " + Api.Spec.Spi.class.getSimpleName ().toLowerCase ());
 		}
-		String [] path = Lang.split (script, Lang.SLASH);
+		String [] path = Lang.split (_function, Lang.SLASH);
 		
 		ApiResource rScript = null;
 		try {
@@ -119,7 +118,7 @@ public class ScriptableApiSpi implements ApiSpi {
 		try {
 			engine.invoke (jsSpi, Functions.OnStart, jsApi, context);
 		} catch (ScriptingEngineException ex) {
-			ex.setScript (script);
+			ex.setScript (_function);
 			throw new ApiManagementException (ex.getMessage (), ex);
 		}		
 	}
@@ -171,7 +170,7 @@ public class ScriptableApiSpi implements ApiSpi {
 		try {
 			engine.invoke (spi, Functions.OnRequest, jsApi, request, response);
 		} catch (ScriptingEngineException ex) {
-			ex.setScript (Json.getString (api.getRuntime (), Api.Spec.Runtime.Function));
+			ex.setScript (Json.getString (api.getSpiDef (), Api.Spec.Spi.Function));
 			throw new ApiServiceExecutionException (ex.getMessage (), ex);
 		}		
 	}
@@ -198,7 +197,7 @@ public class ScriptableApiSpi implements ApiSpi {
 		try {
 			engine.invoke (spi, Functions.OnService, jsApi, service, request, response);
 		} catch (ScriptingEngineException ex) {
-			ex.setScript (Json.getString (api.getRuntime (), Api.Spec.Runtime.Function));
+			ex.setScript (Json.getString (api.getSpiDef (), Api.Spec.Spi.Function));
 			throw new ApiServiceExecutionException (ex.getMessage (), ex);
 		}		
 	}
@@ -233,7 +232,7 @@ public class ScriptableApiSpi implements ApiSpi {
 			engine.invoke (spi, Functions.OnExecute, jsApi, consumer, service, request, response);
 			
 		} catch (ScriptingEngineException ex) {
-			ex.setScript (Json.getString (api.getRuntime (), Api.Spec.Runtime.Function));
+			ex.setScript (Json.getString (api.getSpiDef (), Api.Spec.Spi.Function));
 			throw new ApiServiceExecutionException (ex.getMessage (), ex);
 		}	
 	}
@@ -263,7 +262,7 @@ public class ScriptableApiSpi implements ApiSpi {
 			engine.invoke (spi, Functions.AfterExecute, jsApi, consumer, service, request, response);
 			
 		} catch (ScriptingEngineException ex) {
-			ex.setScript (Json.getString (api.getRuntime (), Api.Spec.Runtime.Function));
+			ex.setScript (Json.getString (api.getSpiDef (), Api.Spec.Spi.Function));
 			throw new ApiServiceExecutionException (ex.getMessage (), ex);
 		}	
 	}
@@ -289,7 +288,7 @@ public class ScriptableApiSpi implements ApiSpi {
 		try {
 			engine.invoke (spi, Functions.FindConsumer, jsApi, service, request, consumer);
 		} catch (ScriptingEngineException ex) {
-			ex.setScript (Json.getString (api.getRuntime (), Api.Spec.Runtime.Function));
+			ex.setScript (Json.getString (api.getSpiDef (), Api.Spec.Spi.Function));
 			throw new ApiAuthenticationException (ex.getMessage (), ex);
 		}		
 	}

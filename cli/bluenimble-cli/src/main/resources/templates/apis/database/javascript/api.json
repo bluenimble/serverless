@@ -4,16 +4,13 @@
 	"name": 		"[[Api]] api",
 	"description": 	"[[Api]] description",
 	
-	"runtime": {
-		"function": "functions/Api.js"
-	},
-
 	"tracer": {
 		"class": "!tracing.log4j:default"
 	},
 	
 	"spi": {
-		"class": "scripting.javascript:ApiSpi"
+		"class": "scripting.javascript:ApiSpi",
+		"function": "functions/Api.js"
 	}
 	
 }

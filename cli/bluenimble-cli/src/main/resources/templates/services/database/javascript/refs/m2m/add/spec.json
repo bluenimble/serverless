@@ -15,12 +15,9 @@
 		"tags": ["[[Models]]", "Append"]
 	},
 	
-	"runtime": {
-		"function": "functions/[[models]]/Add[[Model]][[Ref]].js"
-	},
-	
 	"spi": {
-		"class": "scripting.javascript:ServiceSpi"
+		"class": "scripting.javascript:ServiceSpi",
+		"function": "functions/[[models]]/Add[[Model]][[Ref]].js"
 	}
 	
 }

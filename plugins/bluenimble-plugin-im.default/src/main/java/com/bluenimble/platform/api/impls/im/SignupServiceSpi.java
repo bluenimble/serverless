@@ -67,7 +67,7 @@ public class SignupServiceSpi extends AbstractApiServiceSpi {
 	public ApiOutput execute (Api api, ApiConsumer consumer, ApiRequest request, ApiResponse response)
 			throws ApiServiceExecutionException {
 		
-		JsonObject config = request.getService ().getCustom ();
+		JsonObject config = request.getService ().getSpiDef ();
 		
 		JsonObject payload = (JsonObject)request.get (ApiRequest.Payload);
 

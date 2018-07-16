@@ -7,12 +7,9 @@
 		"enabled": "false"
 	},
 	
-	"runtime": {
-		"function": "functions/Root.js"
-	},
-	
 	"spi": {
-		"class": "scripting.javascript:ServiceSpi"
+		"class": "scripting.javascript:ServiceSpi",
+		"function": "functions/Root.js"
 	}
 	
 }

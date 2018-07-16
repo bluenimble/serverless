@@ -4,12 +4,9 @@
 	"endpoint": "/[[path]]/[[model]]",
 	    "name": "[[Model]]",
 	
-	"runtime": {
-		"function": "functions/[[path]]/[[Model]].js"
-	},
-	
 	"spi": {
-		"class": "scripting.javascript:ServiceSpi"
+		"class": "scripting.javascript:ServiceSpi",
+		"function": "functions/[[path]]/[[Model]].js"
 	}
 	
 }

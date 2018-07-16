@@ -73,8 +73,6 @@ public class ApiImpl implements Api {
 	
 	private static final long serialVersionUID = -6354828571701974927L;
 
-	private static final String RuntimeKey			= Spec.Runtime.class.getSimpleName ().toLowerCase ();
-	
 	interface Describe {
 		String Space 			= "space";	
 		String Services 		= "services";	
@@ -441,12 +439,7 @@ public class ApiImpl implements Api {
 
 	@Override
 	public JsonObject getRuntime () {
-		return Json.getObject (descriptor, RuntimeKey);
-	}
-
-	@Override
-	public JsonObject getCustom () {
-		return Json.getObject (descriptor, Spec.Custom);
+		return Json.getObject (descriptor, Spec.Runtime.class.getSimpleName ().toLowerCase ());
 	}
 
 	@Override
@@ -467,6 +460,11 @@ public class ApiImpl implements Api {
 	@Override
 	public JsonObject getTracking () {
 		return Json.getObject (descriptor, Spec.Tracking.class.getSimpleName ().toLowerCase ());
+	}
+
+	@Override
+	public JsonObject getSpiDef () {
+		return Json.getObject (descriptor, Spec.Spi.class.getSimpleName ().toLowerCase ());
 	}
 
 	@Override
@@ -632,8 +630,8 @@ public class ApiImpl implements Api {
 			describe.set (Api.Spec.Features, getFeatures ().duplicate ());
 		}
 		
-		if (getCustom () != null && opts.containsKey (DescribeOption.Option.custom)) {
-			describe.set (Api.Spec.Custom, getCustom ().duplicate ());
+		if (getRuntime () != null && opts.containsKey (DescribeOption.Option.runtime)) {
+			describe.set (Api.Spec.Runtime.class.getSimpleName ().toLowerCase (), getRuntime ().duplicate ());
 		}
 		
 		if (servicesManager.isEmpty (null)) {

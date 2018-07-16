@@ -15,7 +15,8 @@
 	},
 	
 	"spi": {
-		"class": "[[package]].[[models]].Unset[[Model]][[Ref]]Spi"
+		"class": "scripting.javascript:ServiceSpi",
+		"function": "functions/[[models]]/Unset[[Model]][[Ref]].js"
 	}
 	
 }

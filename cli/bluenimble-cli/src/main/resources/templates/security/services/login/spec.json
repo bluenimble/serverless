@@ -16,26 +16,23 @@
 		}
 	},
 	
-	/**
-	 * Uncomment this section: 1. to set email preferences for signing users  2. change default configuration 
-	 *
-	
-			"custom": {
-				// if set to true, an email will be send to the user using the "email" configuration bellow
-				"requiresActivation": "true"
-			},
-	 
-	 *
-	 **/
- 	
 	"security": {
 		"enabled": "false"
 	},
 	
-	"tags": ["Security", "Login"],
+	"meta": {
+		"tags": ["Security", "Login"]
+	},
 	
 	"spi": {
 		"class": "im.default:LoginSpi"
+		/**
+		 * Uncomment this section: 1. to set email preferences for signing users  2. change default configuration 
+		 *
+		// if set to true, an email will be send to the user using the "email" configuration bellow
+		"requiresActivation": "true"
+		 *
+		 **/
 	}
 	
 }

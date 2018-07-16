@@ -26,7 +26,6 @@ public class DefaultProxyPlugin extends AbstractPlugin {
 	private static final long serialVersionUID = -7715328225346939289L;
 	
 	interface Registered {
-		String ApiSpi 		= "ApiSpi";
 		String ServiceSpi 	= "ServiceSpi";
 	}
 

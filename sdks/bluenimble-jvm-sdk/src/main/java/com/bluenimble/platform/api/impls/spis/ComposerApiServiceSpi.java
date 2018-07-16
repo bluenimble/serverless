@@ -82,8 +82,8 @@ public class ComposerApiServiceSpi extends AbstractApiServiceSpi {
 		String Output 	= "output";
 	}
 	
-	interface Custom {
-		String Flow 	= "flow";
+	interface Spec {
+		String Chain 	= "chain";
 		String Space 	= "space";
 		String Api 		= "api";
 		String Id 		= "id";
@@ -96,16 +96,16 @@ public class ComposerApiServiceSpi extends AbstractApiServiceSpi {
 	@Override
 	public ApiOutput execute (Api api, ApiConsumer consumer, ApiRequest request, ApiResponse response) throws ApiServiceExecutionException {
 		
-		JsonArray flow = Json.getArray (request.getService ().getCustom (), Custom.Flow);
-		if (Json.isNullOrEmpty (flow)) {
+		Object chain = request.getService ().getSpiDef ().get (Spec.Chain);
+		if (chain == null) {
 			return null;
 		}
 		
 		final JsonObject oOutput = new JsonObject ();
 		
 		final Map<String, Object> bindings = new HashMap<String, Object> ();
-		bindings.put (ResolverPrefix.Request, request);
-		bindings.put (ResolverPrefix.Consumer, consumer);
+		bindings.put (ResolverPrefix.Request, request.toJson ());
+		bindings.put (ResolverPrefix.Consumer, consumer.toJson ());
 		bindings.put (ResolverPrefix.Output, oOutput);
 		
 		VariableResolver variableResolver = new VariableResolver () {
@@ -115,14 +115,13 @@ public class ComposerApiServiceSpi extends AbstractApiServiceSpi {
 				if (Lang.isNullOrEmpty (namespace)) {
 					return null;
 				}
-				if (namespace.equals (ResolverPrefix.Request)) {
-					return request.get (Lang.join (property, Lang.DOT), Scope.Parameter, Scope.Header);
-				} else if (namespace.equals (ResolverPrefix.Consumer)) {
-					return consumer.get (Lang.join (property, Lang.DOT));
-				} else if (namespace.equals (ResolverPrefix.Output)) {
-					return Json.find (oOutput, property);
-				} 
-				return null;
+				
+				JsonObject target = (JsonObject)bindings.get (namespace);
+				if (target == null) {
+					return null;
+				}
+				
+				return Json.find (target, property);
 			}
 			
 			@Override
@@ -135,10 +134,15 @@ public class ComposerApiServiceSpi extends AbstractApiServiceSpi {
 	
 		ApiOutput output = null;
 		
-		for (int i = 0; i < flow.count (); i++) {
-			output = processStep (api, consumer, request, flow.get (i), variableResolver, oOutput);
-			if (oOutput.containsKey (FinalOutput)) {
-				finalOutput = output;
+		if (chain instanceof JsonObject) {
+			return processStep (api, consumer, request, (JsonObject)chain, variableResolver, oOutput);
+		} else if (chain instanceof JsonArray) {
+			JsonArray aChain = (JsonArray)chain;
+			for (int i = 0; i < aChain.count (); i++) {
+				output = processStep (api, consumer, request, aChain.get (i), variableResolver, oOutput);
+				if (oOutput.containsKey (FinalOutput)) {
+					finalOutput = output;
+				}
 			}
 		}
 		
@@ -158,15 +162,15 @@ public class ComposerApiServiceSpi extends AbstractApiServiceSpi {
 		ApiRequest stepRequest = api.space ().request (request, consumer, new Endpoint () {
 			@Override
 			public String space () {
-				return Json.getString (oStep, Custom.Space, api.space ().getNamespace ());
+				return Json.getString (oStep, Spec.Space, api.space ().getNamespace ());
 			}
 			@Override
 			public String api () {
-				return Json.getString (oStep, Custom.Api, api.getNamespace ());
+				return Json.getString (oStep, Spec.Api, api.getNamespace ());
 			}
 			@Override
 			public String [] resource () {
-				String resource = Json.getString (oStep, Custom.Endpoint);
+				String resource = Json.getString (oStep, Spec.Endpoint);
 				if (resource.startsWith (Lang.SLASH)) {
 					resource = resource.substring (1);
 				}
@@ -182,7 +186,7 @@ public class ComposerApiServiceSpi extends AbstractApiServiceSpi {
 			public ApiVerb verb () {
 				try {
 					return ApiVerb.valueOf (
-						Json.getString (oStep, Custom.Verb, ApiVerb.POST.name ()).toUpperCase ()
+						Json.getString (oStep, Spec.Verb, ApiVerb.POST.name ()).toUpperCase ()
 					);
 				} catch (Exception ex) {
 					return ApiVerb.POST;
@@ -212,7 +216,7 @@ public class ComposerApiServiceSpi extends AbstractApiServiceSpi {
 		
 		ApiOutput output = api.call (stepRequest);
 		
-		String id = Json.getString (oStep, Custom.Id);
+		String id = Json.getString (oStep, Spec.Id);
 		if (!Lang.isNullOrEmpty (id) && output != null) {
 			oOutput.set (id, output.data ());
 		}

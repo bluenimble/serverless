@@ -39,7 +39,6 @@ import com.bluenimble.platform.scripting.ScriptContext;
 import com.bluenimble.platform.scripting.ScriptingEngine;
 import com.bluenimble.platform.scripting.ScriptingEngine.Supported;
 import com.bluenimble.platform.scripting.ScriptingEngineException;
-import com.bluenimble.platform.server.plugins.scripting.utils.ApiUtils;
 import com.bluenimble.platform.server.plugins.scripting.utils.Converters;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
@@ -79,22 +78,20 @@ public class ScriptableApiServiceSpi implements ApiServiceSpi {
 			throw new ApiManagementException ("api '" + api.getNamespace () + "' doesn't support scripting");
 		}		
 		
-		JsonObject runtime = service.getRuntime ();
-
-		String script = Json.getString (runtime, Api.Spec.Runtime.Function);
-		if (Lang.isNullOrEmpty (script)) {
-			throw new ApiManagementException ("script not found in " + ApiUtils.RuntimeKey);
+		String _function = Json.getString (service.getSpiDef (), Api.Spec.Spi.Function);
+		if (Lang.isNullOrEmpty (_function)) {
+			throw new ApiManagementException ("function not found in " + ApiService.Spec.Spi.class.getSimpleName ().toLowerCase ());
 		}
-		String [] path = Lang.split (script, Lang.SLASH);
+		String [] path = Lang.split (_function, Lang.SLASH);
 		
-		ApiResource rScript = null;
+		ApiResource rFunction = null;
 		try {
-			rScript = api.getResourcesManager ().get (path);
+			rFunction = api.getResourcesManager ().get (path);
 		} catch (ApiResourcesManagerException ex) {
 			throw new ApiManagementException (ex.getMessage (), ex);
 		}
 		
-		if (rScript == null) {
+		if (rFunction == null) {
 			throw new ApiManagementException ("function '" + Lang.join (path, Lang.SLASH) + "' not found");
 		}
 		
@@ -115,7 +112,7 @@ public class ScriptableApiServiceSpi implements ApiServiceSpi {
 		// create the spi
 		Object spi = null;
 		try {
-			spi = engine.eval (Supported.Javascript, api, rScript, ScriptContext.Empty);
+			spi = engine.eval (Supported.Javascript, api, rFunction, ScriptContext.Empty);
 		} catch (Exception ex) {
 			throw new ApiManagementException (ex.getMessage (), ex);
 		}
@@ -134,7 +131,7 @@ public class ScriptableApiServiceSpi implements ApiServiceSpi {
 		try {
 			engine.invoke (spi, Functions.OnStart, jsApi, jsService, context);
 		} catch (ScriptingEngineException ex) {
-			ex.setScript (script);
+			ex.setScript (_function);
 			throw new ApiManagementException (ex.getMessage (), ex);
 		}		
 	}
@@ -196,7 +193,7 @@ public class ScriptableApiServiceSpi implements ApiServiceSpi {
 		try {
 			result = engine.invoke (spi, Functions.Execute, jsApi, consumer, request, response);
 		} catch (ScriptingEngineException ex) {
-			ex.setScript (Json.getString (request.getService ().getRuntime (), Api.Spec.Runtime.Function));
+			ex.setScript (Json.getString (request.getService ().getSpiDef (), ApiService.Spec.Spi.Function));
 			throw new ApiServiceExecutionException (ex.getMessage (), ex);
 		}		
 		

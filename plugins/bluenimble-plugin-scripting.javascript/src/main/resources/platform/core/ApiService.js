@@ -34,30 +34,30 @@ var ApiService = function (proxy) {
 	this.endpoint 		= proxy.getEndpoint 	();
 	
 	/**	
-	  The security block in the service json spec - if any -
+	  The security block of this service - if any -
 	  @type {JsonObject}
 	*/
 	this.security 		= proxy.getSecurity 	();
 	/**	
-	  The runtime block in the service json spec - if any -
+	  The runtime block of this service - if any -
 	  @type {JsonObject}
 	*/
 	this.runtime		= proxy.getRuntime 		();
 	/**	
-	  The features block in the service json spec - if any -
+	  The features block of this service - if any -
 	  @type {JsonObject}
 	*/
 	this.features		= proxy.getFeatures 	();
 	/**	
-	  The media block in the service json spec - if any -
+	  The media block of this service - if any -
 	  @type {JsonObject}
 	*/
 	this.media			= proxy.getMedia 		();
 	/**	
-	  The custom block in the service json spec - if any -
+	  The spi block of this service - if any -
 	  @type {JsonObject}
 	*/
-	this.custom			= proxy.getCustom 		();
+	this.spiDef			= proxy.getSpiDef 		();
 	
 	/**	
 	  The error message in case of a failure during deployment of this service

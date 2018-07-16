@@ -347,7 +347,7 @@ public class RdbPlugin extends AbstractPlugin {
 		ApiSpace space = api.space ();
 		
 		// initialize any linked datasource
-		JsonArray datasources = Json.getArray (api.getRuntime (), DataSources);
+		JsonArray datasources = Json.getArray (api.getSpiDef (), DataSources);
 		
 		if (datasources != null && !datasources.isEmpty ()) {
 			// change classloader

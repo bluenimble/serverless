@@ -175,10 +175,10 @@ public class DefaultCodeExecutor implements CodeExecutor {
 					
 					if (request.getService () != null) {
 						JsonObject oService = new JsonObject ();
-						String script = Json.getString (request.getService ().getRuntime (), Api.Spec.Runtime.Function);
-						oService.set (Api.Spec.Runtime.Function, script);
+						String script = Json.getString (request.getService ().getSpiDef (), Api.Spec.Spi.Function);
+						oService.set (Api.Spec.Spi.Function, script);
 						if (script == null) {
-							oService.set (Api.Spec.Runtime.Function, request.getService ().getSpi ().getClass ().getSimpleName ());
+							oService.set (Api.Spec.Spi.Function, request.getService ().getSpi ().getClass ().getSimpleName ());
 						}
 						oService.set (ApiService.Spec.Endpoint, request.getService ().getEndpoint ());
 						

@@ -40,22 +40,22 @@ function Api (proxy) {
 	this.failure		= proxy.getFailure ();
 	
 	/**	
-	  The runtime block in the api.json spec - if any - 
+	  The runtime block of this api - if any - 
 	  @type {JsonObject}
 	*/
 	this.runtime		= proxy.getRuntime ();
 	/**	
-	  The custom block in the api.json spec - if any -
+	  The spi block of this api - if any -
 	  @type {JsonObject}
 	*/
-	this.custom			= proxy.getCustom ();
+	this.spiDef			= proxy.getSpiDef 	();
 	/**	
-	  The features defined by this api - if any -
+	  The features block of this api - if any -
 	  @type {JsonObject}
 	*/
 	this.features		= proxy.getFeatures ();
 	/**	
-	  The security block in the api.json spec - if any -
+	  The security block of this api - if any -
 	  @type {JsonObject}
 	*/
 	this.security		= proxy.getSecurity ();

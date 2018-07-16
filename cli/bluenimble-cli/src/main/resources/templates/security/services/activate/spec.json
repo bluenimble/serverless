@@ -14,7 +14,9 @@
 		"enabled": "false"
 	},
 	
-	"tags": ["Security", "Signup", "User"],
+	"meta": {
+		"tags": ["Security", "Signup", "User"]
+	},
 	
 	"spi": {
 		"class": "im.default:ActivateSpi"

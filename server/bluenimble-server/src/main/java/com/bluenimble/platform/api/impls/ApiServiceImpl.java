@@ -127,7 +127,7 @@ public class ApiServiceImpl implements ApiService {
 
 	@Override
 	public JsonObject getRuntime () {
-		return Json.getObject (source, Spec.Runtime);
+		return Json.getObject (source, Spec.Runtime.class.getSimpleName ().toLowerCase ());
 	}
 
 	@Override
@@ -147,8 +147,8 @@ public class ApiServiceImpl implements ApiService {
 	}
 
 	@Override
-	public JsonObject getCustom () {
-		return Json.getObject (source, Spec.Custom);
+	public JsonObject getSpiDef () {
+		return Json.getObject (source, Spec.Spi.class.getSimpleName ().toLowerCase ());
 	}
 
 	@Override
@@ -246,7 +246,7 @@ public class ApiServiceImpl implements ApiService {
 	}
 	
 	protected void attachSpi (ClassLoader classloader, ClassLoaderRegistry clRegistry) {
-		JsonObject oSpi = Json.getObject (source, ConfigKeys.Spi);
+		JsonObject oSpi = Json.getObject (source, Spec.Spi.class.getSimpleName ().toLowerCase ());
 		
 		if (oSpi != null) {
 			try {
@@ -259,7 +259,7 @@ public class ApiServiceImpl implements ApiService {
 	
 	private void resolveEndpoint () {
 		
-		String endpoint = Json.getString (source, ApiService.Spec.Endpoint);
+		String endpoint = Json.getString (source, Spec.Endpoint);
 		if (Lang.isNullOrEmpty (endpoint)) {
 			return;
 		}

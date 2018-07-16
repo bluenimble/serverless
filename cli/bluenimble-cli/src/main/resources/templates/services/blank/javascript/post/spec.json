@@ -18,12 +18,9 @@
 		"tags": ["[[Models]]", "Create"]
 	},
 	
-	"runtime": {
-		"function": "functions/[[models]]/Create[[Model]].js"
-	},
-	
 	"spi": {
-		"class": "scripting.javascript:ServiceSpi"
+		"class": "scripting.javascript:ServiceSpi",
+		"function": "functions/[[models]]/Create[[Model]].js"
 	}
 	
 }

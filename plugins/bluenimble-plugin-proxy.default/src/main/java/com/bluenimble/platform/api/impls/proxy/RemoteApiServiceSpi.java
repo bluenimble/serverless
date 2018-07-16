@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Json;
+import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.ValueHolder;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiContext;
@@ -27,6 +28,8 @@ import com.bluenimble.platform.remote.Remote;
 public class RemoteApiServiceSpi implements ApiServiceSpi {
 
 	private static final long serialVersionUID = -7448782202115381461L;
+	
+	private static final String SpiKey 	= Api.Spec.Spi.class.getSimpleName ().toLowerCase ();
 
 	interface Spec {
 		String Remote = "remote";
@@ -36,7 +39,12 @@ public class RemoteApiServiceSpi implements ApiServiceSpi {
 	public ApiOutput execute (Api api, ApiConsumer consumer, ApiRequest request, ApiResponse response)
 			throws ApiServiceExecutionException {
 
-		Remote remote = api.space ().feature (Remote.class, Json.getString (request.getService ().getRuntime (), Spec.Remote), request);
+		String remoteId = (String)Json.find (request.getService ().toJson (), SpiKey, Spec.Remote);
+		if (Lang.isNullOrEmpty (remoteId)) {
+			throw new ApiServiceExecutionException (Spec.Remote + " not defined in service " + SpiKey);
+		}
+		
+		Remote remote = api.space ().feature (Remote.class, remoteId, request);
 		
 		JsonObject spec = new JsonObject ();
 		

@@ -15,13 +15,13 @@
 		"enabled": "false"
 	},
 	
-	"tags": ["Security", "Login"],
-	
-	"spi": {
-		"class": "im.default:OAuthSpi"
+	"meta": {
+		"tags": ["Security", "Login"]
 	},
 	
-	"custom": {
+	"spi": {
+		"class": "im.default:OAuthSpi",
+		
 		"providers": {
 			"fb": {
 				"keys": {

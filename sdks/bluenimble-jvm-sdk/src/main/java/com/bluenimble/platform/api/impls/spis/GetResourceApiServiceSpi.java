@@ -50,7 +50,7 @@ public class GetResourceApiServiceSpi extends AbstractApiServiceSpi {
 			throw new ApiServiceExecutionException ("Resource / not found").status (ApiResponse.BAD_REQUEST);
 		}
 		
-		String location = (String)Json.find (request.getService ().getCustom (), Custom.Resources, Custom.Root);
+		String location = (String)Json.find (request.getService ().getSpiDef (), Custom.Resources, Custom.Root);
 		if (!Lang.isNullOrEmpty (location)) {
 			path = location + Lang.SLASH + path;
 		}

@@ -32,8 +32,6 @@ import com.bluenimble.platform.json.JsonObject;
 
 public class ApiUtils {
 	
-	public static final String RuntimeKey = Api.Spec.Runtime.class.getSimpleName ().toLowerCase ();
-	
 	interface Spec {
 		String Space 		= "space";
 		String Api 			= "api";
