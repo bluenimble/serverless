@@ -43,8 +43,9 @@ import com.bluenimble.platform.templating.impls.DefaultExpressionCompiler;
     "verb": "put",
     "endpoint": "/cars/:car/:driver/status/:status",
     
-    "custom": {
-        "flow": [{
+    "spi": {
+        "class": "core:ComposerSpi",
+        "chain": [{
         	"id": "alpha",
             "verb": "put", "endpoint": "/cars/[car]",
             "parameters": {
@@ -60,10 +61,6 @@ import com.bluenimble.platform.templating.impls.DefaultExpressionCompiler;
                 }
             }
         }]
-    },
-    
-    "spi": {
-        "class": "core:ComposerSpi"
     }
 
 } 

@@ -18,14 +18,11 @@
 		}
 	},
 	
-	"custom": {
+	"spi": {
+		"class": "core:ResourceSpi",
 		"resources": {
 			"root": "app"
 		}
-	},
-	
-	"spi": {
-		"class": "core:ResourceSpi"
 	} 
 	
 }
