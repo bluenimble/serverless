@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
+//import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -239,14 +239,14 @@ public abstract class AbstractTool implements Tool {
 		
 		final Map<String, Object> vars = (Map<String, Object>)getContext (Tool.ROOT_CTX).get (ToolContext.VARS);
 
-		Calendar now = Calendar.getInstance ();
-		vars.put ("day", now.get (Calendar.DAY_OF_MONTH));
-		vars.put ("month", now.get (Calendar.MONTH) + 1);
-		vars.put ("year", now.get (Calendar.YEAR));
-		vars.put ("hour", now.get (Calendar.HOUR));
-		vars.put ("min", now.get (Calendar.MINUTE));
-		vars.put ("sec", now.get (Calendar.SECOND));
-		vars.put ("uuid", Lang.UUID (20).toString ());
+		//Calendar now = Calendar.getInstance ();
+		//vars.put ("day", now.get (Calendar.DAY_OF_MONTH));
+		//vars.put ("month", now.get (Calendar.MONTH) + 1);
+		//vars.put ("year", now.get (Calendar.YEAR));
+		//vars.put ("hour", now.get (Calendar.HOUR));
+		//vars.put ("min", now.get (Calendar.MINUTE));
+		//vars.put ("sec", now.get (Calendar.SECOND));
+		//vars.put ("uuid", Lang.UUID (20).toString ());
 
 		cmdLine = Lang.resolve (cmdLine, ExpStart, ExpEnd, new Lang.VariableResolver () {
 			@Override

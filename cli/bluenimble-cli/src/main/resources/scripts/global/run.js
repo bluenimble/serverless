@@ -36,7 +36,7 @@ if (tokens.length < 2) {
 
 var target 		= tokens [0];
 if (target != 'case' && target != 'api') {
-	throw 'invalid target ' + target + '. Possible targets: [case] and [api]';
+	throw 'invalid target ' + target + '. Possible targets: [case] or [api]';
 }
 
 var callsVar 	= tokens [1];
@@ -49,7 +49,7 @@ if (target == 'api') {
 		headers = Vars ['remote.headers'];
 	}
 	var currentAccept = headers.Accept;
-	headers.Accept = 'application/spec.calls.bnb';
+	headers.Accept = 'application/spec.bnb.calls';
 	Tool.command ('desc api ' + callsVar + ' all >> ' + callsVar + '_calls');
 	callsVar = callsVar + '_calls';
 	headers.Accept = currentAccept;
