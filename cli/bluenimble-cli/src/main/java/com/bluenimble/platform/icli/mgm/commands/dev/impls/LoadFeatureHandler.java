@@ -119,6 +119,8 @@ public class LoadFeatureHandler implements CommandHandler {
 		Map<String, Object> vars = (Map<String, Object>)tool.currentContext ().get (ToolContext.VARS);
 		vars.put (fKey, oFeature);
 		
+		tool.printer ().important ("use json set to set appropriate values for entries in yellow");
+		
 		return new DefaultCommandResult (CommandResult.OK, oFeature);
 	}
 

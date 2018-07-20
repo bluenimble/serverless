@@ -26,7 +26,7 @@ public class JsonConverter implements AttributeConverter<JsonObject, String> {
 	 */
 	@Override
 	public JsonObject convertToEntityAttribute (String jsonString) {
-		if (Lang.isNullOrEmpty (jsonString) {
+		if (Lang.isNullOrEmpty (jsonString)) {
 			return null;
 		}
 		try {

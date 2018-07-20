@@ -3,13 +3,13 @@
 	"feature": "database",
 
 	"spec": {
-		"cluster": "hosts where mongodb is running. Ex. host1:port1,host2:port2,...",
-		"database": "database name",
+		"cluster": "<?>hosts where mongodb is running. Ex. host1:port1,host2:port2,...",
+		"database": "<?>database name",
 		
 		"auth": {
 			"type": "sha",
-			"user": "database username",
-			"password": "password"
+			"user": "<?>username",
+			"password": "<?>password"
 		},
 		
 		"allowProprietaryAccess": "true"

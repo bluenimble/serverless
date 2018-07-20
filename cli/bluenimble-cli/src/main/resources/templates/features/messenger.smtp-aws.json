@@ -12,8 +12,8 @@
 			"mail.smtp.starttls.required": "true"
 		}, 
 		"auth": {
-			"user": "your aws smtp username", 
-			"password": "your aws smtp password"
+			"user": "<?>your aws smtp username", 
+			"password": "<?>your aws smtp password"
 		}
 	}
 	

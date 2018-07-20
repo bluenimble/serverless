@@ -96,6 +96,8 @@
 
 								<move 	file="../../build/${project.artifactId}-${project.version}/lib/bluenimble-jvm-sdk-${project.version}.jar" 
 										todir="../../build/${project.artifactId}-${project.version}/boot" />
+								<copy 	file="../../build/${project.artifactId}-${project.version}/boot/bluenimble-jvm-sdk-${project.version}.jar" 
+										todir="../../build/${project.artifactId}-${project.version}/build-libs" />
 								<move 	file="../../build/${project.artifactId}-${project.version}/lib/bluenimble-cli-boot-${project.version}.jar" 
 										todir="../../build/${project.artifactId}-${project.version}/boot" />
 								<move 	file="../../build/${project.artifactId}-${project.version}/lib/javax.persistence-api-2.2.jar" 

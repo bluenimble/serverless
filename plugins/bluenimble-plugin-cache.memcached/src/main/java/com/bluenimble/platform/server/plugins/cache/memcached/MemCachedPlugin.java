@@ -19,7 +19,6 @@ package com.bluenimble.platform.server.plugins.cache.memcached;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import com.bluenimble.platform.Feature;
@@ -98,17 +97,17 @@ public class MemCachedPlugin extends AbstractPlugin {
 			return;
 		}
 		
+		ApiSpace space = (ApiSpace)target;
+		
 		switch (event) {
 			case Create:
-				createClients ((ApiSpace)target);
+				createClients (space);
 				break;
 			case AddFeature:
-				// if it's Messenger and provider is 'smtp' create createSession
-				createClients ((ApiSpace)target);
+				createClient (space, Json.getObject (space.getFeatures (), feature), (String)args [0]);
 				break;
 			case DeleteFeature:
-				// if it's Messenger and provider is 'smtp' shutdown session
-				dropClients ((ApiSpace)target);
+				removeClient ((ApiSpace)target, (String)args [0]);
 				break;
 			default:
 				break;
@@ -117,89 +116,83 @@ public class MemCachedPlugin extends AbstractPlugin {
 	
 	private void createClients (ApiSpace space) throws PluginRegistryException {
 		// create sessions
-		JsonObject msgFeature = Json.getObject (space.getFeatures (), feature);
-		if (msgFeature == null || msgFeature.isEmpty ()) {
+		JsonObject allFeatures = Json.getObject (space.getFeatures (), feature);
+		if (Json.isNullOrEmpty (allFeatures)) {
 			return;
 		}
 		
-		Iterator<String> keys = msgFeature.keys ();
+		Iterator<String> keys = allFeatures.keys ();
 		while (keys.hasNext ()) {
-			String key = keys.next ();
-			
-			JsonObject feature = Json.getObject (msgFeature, key);
-			
-			if (!this.getNamespace ().equalsIgnoreCase (Json.getString (feature, ApiSpace.Features.Provider))) {
-				continue;
-			}
-			
-			String sessionKey = createKey (key);
-			if (space.containsRecyclable (sessionKey)) {
-				continue;
-			}
-			
-			JsonObject spec = Json.getObject (feature, ApiSpace.Features.Spec);
-		
-			String [] nodes = Lang.split (Json.getString (spec, Spec.Cluster), Lang.COMMA);
-			if (nodes == null) {
-				continue;
-			}
-			
-			final JsonObject oAuth = Json.getObject (spec, Spec.Auth);
-			if (oAuth == null || oAuth.isEmpty ()) {
-				continue;
-			}
-			
-			final String user 		= Json.getString (oAuth, Spec.User);
-			final String password 	= Json.getString (oAuth, Spec.Password);
-			
-			AuthDescriptor ad = new AuthDescriptor (new String [] { "PLAIN" }, new PlainCallbackHandler (user, password));
-
-			try {
-				MemcachedClient client = new MemcachedClient (
-					new ConnectionFactoryBuilder ()
-						.setProtocol (ConnectionFactoryBuilder.Protocol.BINARY)
-						.setAuthDescriptor (ad).build (),
-					AddrUtil.getAddresses (Arrays.asList (nodes))
-				);
-				
-				space.addRecyclable (sessionKey, new RecyclableCacheClient (client));
-				
-				feature.set (ApiSpace.Spec.Installed, true);
-				
-			} catch (IOException e) {
-				throw new PluginRegistryException (e.getMessage (), e);
-			}
-			
+			createClient (space, allFeatures, keys.next ());
 		}
 		
 	}
 	
-	private void dropClients (ApiSpace space) {
+	private void createClient (ApiSpace space, JsonObject allFeatures, String name) throws PluginRegistryException {
 		
-		JsonObject cahceFeature = Json.getObject (space.getFeatures (), feature);
+		JsonObject feature = Json.getObject (allFeatures, name);
 		
-		Set<String> recyclables = space.getRecyclables ();
-		for (String r : recyclables) {
-			if (!r.startsWith (feature + Lang.DOT)) {
-				continue;
-			}
-			String name = r.substring ((feature + Lang.DOT).length ());
-			if (cahceFeature == null || cahceFeature.containsKey (name)) {
-				// it's deleted
-				Recyclable recyclable = space.getRecyclable (r);
-				if (!(recyclable instanceof RecyclableCacheClient)) {
-					continue;
-				}
-				// remove from recyclables
-				space.removeRecyclable (r);
-				// recycle
-				recyclable.recycle ();
-			}
+		if (Json.isNullOrEmpty (feature)) {
+			return;
 		}
+		
+		if (!this.getNamespace ().equalsIgnoreCase (Json.getString (feature, ApiSpace.Features.Provider))) {
+			return;
+		}
+		
+		String sessionKey = createKey (name);
+		if (space.containsRecyclable (sessionKey)) {
+			return;
+		}
+		
+		JsonObject spec = Json.getObject (feature, ApiSpace.Features.Spec);
+	
+		String [] nodes = Lang.split (Json.getString (spec, Spec.Cluster), Lang.COMMA);
+		if (nodes == null) {
+			return;
+		}
+		
+		final JsonObject oAuth = Json.getObject (spec, Spec.Auth);
+		if (oAuth == null || oAuth.isEmpty ()) {
+			return;
+		}
+		
+		final String user 		= Json.getString (oAuth, Spec.User);
+		final String password 	= Json.getString (oAuth, Spec.Password);
+		
+		AuthDescriptor ad = new AuthDescriptor (new String [] { "PLAIN" }, new PlainCallbackHandler (user, password));
+
+		try {
+			MemcachedClient client = new MemcachedClient (
+				new ConnectionFactoryBuilder ()
+					.setProtocol (ConnectionFactoryBuilder.Protocol.BINARY)
+					.setAuthDescriptor (ad).build (),
+				AddrUtil.getAddresses (Arrays.asList (nodes))
+			);
+			
+			space.addRecyclable (sessionKey, new RecyclableCacheClient (client));
+			
+			feature.set (ApiSpace.Spec.Installed, true);
+			
+		} catch (IOException e) {
+			throw new PluginRegistryException (e.getMessage (), e);
+		}
+	}
+	
+	private void removeClient (ApiSpace space, String featureName) {
+		String key = createKey (featureName);
+		Recyclable recyclable = space.getRecyclable (createKey (featureName));
+		if (recyclable == null) {
+			return;
+		}
+		// remove from recyclables
+		space.removeRecyclable (key);
+		// recycle
+		recyclable.recycle ();
 	}
 	
 	private String createKey (String name) {
-		return feature + Lang.DOT + name;
+		return feature + Lang.DOT + getNamespace () + Lang.DOT + name;
 	}
 	
 	class RecyclableCacheClient implements Recyclable {

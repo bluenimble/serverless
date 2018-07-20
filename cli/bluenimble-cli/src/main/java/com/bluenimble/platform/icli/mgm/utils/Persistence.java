@@ -21,14 +21,14 @@ import java.util.List;
 
 public class Persistence {
 	
-	private List<DataSource> 	dataSources = new ArrayList<DataSource> ();
+	private List<DataModel> 	dataModels = new ArrayList<DataModel> ();
 	
-	public void addDataSource (DataSource ds) {
-		dataSources.add (ds);
+	public void addDataModel (DataModel dm) {
+		dataModels.add (dm);
 	} 
 	
-	public List<DataSource> getDataSources () {
-		return dataSources;
+	public List<DataModel> getDataModels () {
+		return dataModels;
 	}
 	
 }

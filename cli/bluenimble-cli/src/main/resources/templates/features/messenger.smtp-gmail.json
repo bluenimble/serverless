@@ -10,8 +10,8 @@
 			"mail.smtp.starttls.enable": "true"
 		}, 
 		"auth": {
-			"user": "your gmail email", 
-			"password": "your gmail password"
+			"user": "<?>your gmail email", 
+			"password": "<?>your gmail password"
 		}
 	}
 	

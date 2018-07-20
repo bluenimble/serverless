@@ -54,6 +54,7 @@ public class SourceCompiler {
             throw new Exception ("There are no source files to compile in " + sources.getAbsolutePath());
         }
         
+        
         fileManager.setLocation (
     	    StandardLocation.CLASS_PATH, 
     	    Arrays.asList ( new File ( "build-libs" ).listFiles () )

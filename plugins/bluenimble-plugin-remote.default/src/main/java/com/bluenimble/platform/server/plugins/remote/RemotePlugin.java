@@ -23,7 +23,6 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.security.cert.X509Certificate;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
@@ -126,7 +125,7 @@ public class RemotePlugin extends AbstractPlugin {
 			public Object get (ApiSpace space, String name) {
 				Protocol protocol = protocol (name, space);
 				
-				Recyclable recyclable = space.getRecyclable (createKey (name, space));
+				Recyclable recyclable = space.getRecyclable (createKey (name));
 				if (Protocol.binary.equals (protocol)) {
 					return new BinaryRemote (
 						((RecyclableBinaryClientFactory)recyclable).create ()
@@ -159,27 +158,28 @@ public class RemotePlugin extends AbstractPlugin {
 		switch (event) {
 			case Create:
 			try {
-				createRemotes (space);
+				createClients (space);
 			} catch (Exception ex) {
 				throw new PluginRegistryException (ex.getMessage (), ex);
 			}
 				break;
 			case AddFeature:
 				try {
-					createRemotes (space);
+					createClient (space, Json.getObject (space.getFeatures (), feature), (String)args [0]);
 				} catch (Exception ex) {
 					throw new PluginRegistryException (ex.getMessage (), ex);
 				}
 				break;
 			case DeleteFeature:
-				dropRemotes (space);
+				removeClient (space, (String)args [0]);
 				break;
 			default:
 				break;
 		}
 	}
 	
-	private void createRemotes (ApiSpace space) throws Exception {
+	private void createClients (ApiSpace space) throws Exception {
+		
 		JsonObject allFeatures = Json.getObject (space.getFeatures (), feature);
 		
 		if (Json.isNullOrEmpty (allFeatures)) {
@@ -188,47 +188,43 @@ public class RemotePlugin extends AbstractPlugin {
 		
 		Iterator<String> keys = allFeatures.keys ();
 		while (keys.hasNext ()) {
-			String name = keys.next ();
-			JsonObject feature = Json.getObject (allFeatures, name);
-			
-			if (!this.getNamespace ().equalsIgnoreCase (Json.getString (feature, ApiSpace.Features.Provider))) {
-				continue;
-			}
-			
-			Protocol protocol = protocol (name, space);
-			
-			boolean installed = false;
-			
-			installed = createRemote (space, name, feature, protocol);
-
-			if (installed) {
-				feature.set (ApiSpace.Spec.Installed, true);
-			}
+			createClient (space, allFeatures, keys.next ());
 		}
 	}
 	
-	private boolean createRemote (ApiSpace space, String name, JsonObject feature, Protocol protocol) throws Exception {
-		String recyclableKey = createKey (name, space);
+	private void createClient (ApiSpace space, JsonObject allFeatures, String name) throws Exception {
+		
+		JsonObject feature = Json.getObject (allFeatures, name);
+		
+		if (!this.getNamespace ().equalsIgnoreCase (Json.getString (feature, ApiSpace.Features.Provider))) {
+			return;
+		}
+		
+		Protocol protocol = protocol (name, space);
+		
+		String recyclableKey = createKey (name);
 		
 		Recyclable recyclable = space.getRecyclable (recyclableKey);
 		if (recyclable != null) {
-			return false;
+			return;
 		}
 		
 		JsonObject spec = Json.getObject (feature, ApiSpace.Features.Spec);
 
 		switch (protocol) {
 			case http:
-				return createHttp (space, name, spec, recyclableKey);
+				createHttp (space, name, spec, recyclableKey);
+				feature.set (ApiSpace.Spec.Installed, true);
 			case binary:
-				return createBinary (space, name, feature, recyclableKey);
+				createBinary (space, name, feature, recyclableKey);
+				feature.set (ApiSpace.Spec.Installed, true);
 			default:	
-				return false;
+				break;
 		}
 		
 	}
 	
-	private boolean createHttp (ApiSpace space, String name, JsonObject spec, String recyclableKey) throws Exception {
+	private void createHttp (ApiSpace space, String name, JsonObject spec, String recyclableKey) throws Exception {
 		
 		OkHttpClient http = null;
 		
@@ -272,7 +268,7 @@ public class RemotePlugin extends AbstractPlugin {
 		if (Json.isNullOrEmpty (oProxy)) {
 			http = builder.build ();
 			space.addRecyclable (recyclableKey, new RecyclableHttpClient (http));
-			return true;
+			return;
 		}
 		
 		Proxy.Type type = null;
@@ -287,23 +283,21 @@ public class RemotePlugin extends AbstractPlugin {
 		if (Lang.isNullOrEmpty (host) || port == 0) {
 			http = builder.build ();
 			space.addRecyclable (recyclableKey, new RecyclableHttpClient (http));
-			return true;
+			return;
 		}
 		
 		http = builder.proxy (new Proxy (type, new InetSocketAddress (host, port))).build ();
 		
 		space.addRecyclable (recyclableKey, new RecyclableHttpClient (http));
 		
-		return true;
-		
 	}
 	
-	private boolean createBinary (ApiSpace space, String name, JsonObject spec, String recyclableKey) {
+	private void createBinary (ApiSpace space, String name, JsonObject spec, String recyclableKey) {
 		String 	host = Json.getString (spec, Remote.Spec.Host);
 		int 	port = Json.getInteger (spec, Remote.Spec.Port, 0);
 		
 		if (Lang.isNullOrEmpty (host) || port == 0) {
-			return false;
+			return;
 		}
 		
 		if (spec == null) {
@@ -316,32 +310,18 @@ public class RemotePlugin extends AbstractPlugin {
 				new NettyBinaryClientFactory (host, port, new PoolConfig (Json.getObject (spec, Remote.Spec.Pool)))
 			)
 		);
-		return true;
 	}
 	
-	private void dropRemotes (ApiSpace space) {
-	
-		JsonObject dbFeature = Json.getObject (space.getFeatures (), feature);
-		
-		Set<String> recyclables = space.getRecyclables ();
-		for (String r : recyclables) {
-			if (!r.startsWith (feature + Lang.DOT)) {
-				continue;
-			}
-			String name = r.substring ((feature + Lang.DOT).length ());
-			if (dbFeature == null || dbFeature.containsKey (name)) {
-				// it's deleted
-				Recyclable recyclable = space.getRecyclable (r);
-				if (!(recyclable instanceof RecyclableBinaryClientFactory) && !(recyclable instanceof RecyclableHttpClient)) {
-					continue;
-				}
-				// remove from recyclables
-				space.removeRecyclable (r);
-				// recycle
-				recyclable.recycle ();
-			}
+	private void removeClient (ApiSpace space, String featureName) {
+		String key = createKey (featureName);
+		Recyclable recyclable = space.getRecyclable (createKey (featureName));
+		if (recyclable == null) {
+			return;
 		}
-		
+		// remove from recyclables
+		space.removeRecyclable (key);
+		// recycle
+		recyclable.recycle ();
 	}
 	
 	private Protocol protocol (String name, ApiSpace space) {
@@ -356,8 +336,8 @@ public class RemotePlugin extends AbstractPlugin {
 		}
 	}
 	
-	private String createKey (String name, ApiSpace space) {
-		return feature + Lang.DOT + space.getNamespace () + Lang.DOT + name;
+	private String createKey (String name) {
+		return feature + Lang.DOT + getNamespace () + Lang.DOT + name;
 	}
 	
 	private StoreSource loadStore (JsonObject oStore) {

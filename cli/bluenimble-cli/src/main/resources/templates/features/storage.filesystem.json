@@ -3,7 +3,7 @@
 	"feature": "storage",
 	
 	"spec": {
-		"mount": "yourMount"
+		"mount": "<?>the storage mount"
 	}
 	
 }

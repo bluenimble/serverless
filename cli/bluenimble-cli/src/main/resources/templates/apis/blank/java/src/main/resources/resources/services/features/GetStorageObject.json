@@ -1,0 +1,18 @@
+{
+	    "verb": "get",
+	"endpoint": "/features/storage",
+	
+	"spec": {
+		"fields": {
+			"path": { "title": "Object Path" },
+			"as": { "title": "Output Object Name", "required": "false" },
+			"type": { "title": "Output Object Content Type", "required": "false" }
+		}
+	},
+	
+	"spi": {
+		"class": "core:GetStorageObjectSpi",
+		"feature": "default"
+	} 
+	
+}

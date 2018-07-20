@@ -3,7 +3,7 @@
 	"feature": "remote",
 	
 	"spec": {
-		"endpoint": "yourEndpoint"
+		"endpoint": "<?>The Endpoint"
 	}
 	
 }

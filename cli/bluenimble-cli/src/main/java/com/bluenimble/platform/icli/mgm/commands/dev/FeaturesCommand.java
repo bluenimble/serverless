@@ -17,10 +17,12 @@
 package com.bluenimble.platform.icli.mgm.commands.dev;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.Map;
 
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.cli.Tool;
+import com.bluenimble.platform.cli.ToolContext;
 import com.bluenimble.platform.cli.command.CommandExecutionException;
 import com.bluenimble.platform.cli.command.CommandOption;
 import com.bluenimble.platform.cli.command.CommandResult;
@@ -44,16 +46,25 @@ public class FeaturesCommand extends AbstractCommand {
 	public CommandResult execute (Tool tool, Map<String, CommandOption> options)
 			throws CommandExecutionException {
 		
+		// list by type - if any
+		
+		String selector = (String)tool.currentContext ().get (ToolContext.CommandLine);
+		
 		File features = new File (BlueNimble.Home, "templates/features");
 		
-		File [] files = features.listFiles ();
+		File [] files = features.listFiles (new FileFilter () {
+			@Override
+			public boolean accept (File file) {
+				return Lang.isNullOrEmpty (selector) || file.getName ().contains (selector);
+			}
+		});
 		
 		StringBuilder sb = new StringBuilder ();
 		for (File file : files) {
 			sb.append (file.getName ().substring (0, file.getName ().lastIndexOf (Lang.DOT))).append (Lang.ENDLN);
 		}
 		
-		tool.printer ().content (features.getName (), sb.toString ());
+		tool.printer ().content ("__PS__ GREEN:Features", sb.toString ());
 		
 		sb.setLength (0);
 		

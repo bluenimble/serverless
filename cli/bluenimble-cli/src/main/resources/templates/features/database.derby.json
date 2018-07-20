@@ -1,17 +1,18 @@
 {
 
 	"feature": "database",
+	"provider": "database.rdb",
 
 	"spec": {
 		"vendor": "derby",
-		"type": "remote or memory",
-		"host": "where derby database is running",
+		"type": "<?>remote or memory",
+		"host": "<?>host (if remote) where derby database is running",
 		"port": "",
-		"database": "database name",
+		"database": "<?>database name",
 		
 		"auth": {
-			"user": "username",
-			"password": "password"
+			"user": "<?>username",
+			"password": "<?>password"
 		},
 
 		"pool": {

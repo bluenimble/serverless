@@ -1,11 +1,12 @@
 {
 
 	"feature": "database",
+	"provider": "database.rdb",
 
 	"spec": {
 		"vendor": "h2",
-		"type": "memory or file",
-		"database": "database name if type is file",
+		"type": "<?>memory or file",
+		"database": "<?>database name if type is file",
 		
 		"pool": {
 			"maximumPoolSize": "10",

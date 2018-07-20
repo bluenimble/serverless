@@ -128,6 +128,12 @@ public class ApiImpl implements Api {
 			failed ("Invalid api namespace " + namespace);
 		}
 		
+		// set features object if not present
+		JsonObject features = getFeatures ();
+		if (features == null) {
+			this.descriptor.set (Spec.Features, new JsonObject ());
+		}
+		
 		// load resources manager
 		resourcesManager 	= new DefaultApiResourcesManager ();
 		try {

@@ -332,7 +332,7 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 		
 		remove (apiNs);
 		
-		tracer.log (Tracer.Level.Info, "\tApi [{0}] uninstalled", api.getNamespace ());
+		tracer.log (Tracer.Level.Info, "\tapi [{0}] uninstalled", apiNs);
 	}
 	
 	@Override
@@ -630,7 +630,7 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 		oFeature.set (name, uFeature);
 
 		try {
-			server.getPluginsRegistry ().onEvent (Event.AddFeature, this);
+			server.getPluginsRegistry ().lockup (provider).onEvent (Event.AddFeature, this, name);
 		} catch (PluginRegistryException e) {
 			throw new ApiManagementException (e.getMessage (), e);
 		}
@@ -642,13 +642,19 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 	@Override
 	public void deleteFeature (String name, String feature) throws ApiManagementException {
 		JsonObject oFeature = Json.getObject (getFeatures (), feature);
-		if (oFeature == null || !oFeature.containsKey (name)) {
+		
+		JsonObject uFeature = Json.getObject (oFeature, name);
+		
+		if (oFeature == null || uFeature == null) {
 			throw new ApiManagementException ("feature '" + feature + "/" + name + "' not available for space " + getNamespace ());
 		}
+		
+		String provider = Json.getString (uFeature, ApiSpace.Features.Provider);
+		
 		oFeature.remove (name);
 		
 		try {
-			server.getPluginsRegistry ().onEvent (Event.DeleteFeature, this);
+			server.getPluginsRegistry ().lockup (provider).onEvent (Event.DeleteFeature, this, name);
 		} catch (PluginRegistryException e) {
 			throw new ApiManagementException (e.getMessage (), e);
 		}

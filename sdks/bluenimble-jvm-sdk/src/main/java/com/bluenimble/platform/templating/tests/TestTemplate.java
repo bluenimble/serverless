@@ -27,7 +27,7 @@ public class TestTemplate {
 	
 	public static void main (String [] args) {
 	
-		String exp1 = "[model.a] [NoNs]";
+		String exp1 = "hello dudes";
 		
 		String exp2 = "Hello [model.c]";
 		

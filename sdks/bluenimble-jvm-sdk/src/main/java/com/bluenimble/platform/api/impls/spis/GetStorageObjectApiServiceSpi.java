@@ -16,6 +16,7 @@
  */
 package com.bluenimble.platform.api.impls.spis;
 
+import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiOutput;
@@ -32,47 +33,33 @@ public class GetStorageObjectApiServiceSpi extends AbstractStorageApiServiceSpi 
 
 	private static final long serialVersionUID = 1283296736684087088L;
 	
-	private static final String Output 					= "__Internal__Output__";
-	
-	interface Spec {
-		String As 		= "as";
-		String Type 	= "type";
-	}
-	
 	@Override
 	public ApiOutput execute (Api api, ApiConsumer consumer, ApiRequest request, ApiResponse response) throws ApiServiceExecutionException {
-		ApiOutput output = (ApiOutput)request.get (Output);
-		if (output == null) {
-			output = getObject (api, request);
-		}
-		return output;
-	}
-	
-	private ApiOutput getObject (Api api, ApiRequest request) throws ApiServiceExecutionException {
+		Storage storage = feature (
+			api,
+			Storage.class, 
+			Json.getString (request.getService ().getSpiDef (), Spec.Feature), 
+			request
+		);
 		
-		Storage storage = api.space ().feature (Storage.class, provider, request);
-		
-		String path = (String)request.get (objectParameter);
+		String path = (String)request.get (Spec.ObjectPath);
 		if (Lang.isNullOrEmpty (path)) {
-			throw new ApiServiceExecutionException ("object path not found. Missing request parameter '" + objectParameter + "'").status (ApiResponse.BAD_REQUEST);
+			throw new ApiServiceExecutionException ("object path not found. Missing request parameter '" + Spec.ObjectPath + "'").status (ApiResponse.BAD_REQUEST);
 		}
 		
 		ApiOutput output;
 		try {
-			StorageObject object = findFolder (storage.root (), this.folder).get (path);
+			StorageObject object = find (storage.root (), path);
 			output = object.toOutput (null, (String)request.get (Spec.As), MediaTypeUtils.getMediaForFile ((String)request.get (Spec.Type)));
 		} catch (StorageException e) {
 			throw new ApiServiceExecutionException (e.getMessage (), e);
 		}
 		
 		if (output == null) {
-			throw new ApiServiceExecutionException ("object " + this.folder + Lang.SLASH + path + " not found").status (ApiResponse.BAD_REQUEST);
+			throw new ApiServiceExecutionException ("object " + path + Lang.SLASH + path + " not found").status (ApiResponse.BAD_REQUEST);
 		}
-		
-		request.set (Output, output);
 		
 		return output;
 	}
-	
 
 }

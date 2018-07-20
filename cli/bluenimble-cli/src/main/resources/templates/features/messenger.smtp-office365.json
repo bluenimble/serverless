@@ -10,8 +10,8 @@
 			"mail.smtp.starttls.enable": "true"
 		}, 
 		"auth": {
-			"user": "your office365 email", 
-			"password": "your office365 password"
+			"user": "<?>your office365 email", 
+			"password": "<?>your office365 password"
 		}
 	}
 	

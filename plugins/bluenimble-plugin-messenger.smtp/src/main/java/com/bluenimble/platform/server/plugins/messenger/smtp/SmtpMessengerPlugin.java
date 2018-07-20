@@ -18,7 +18,6 @@ package com.bluenimble.platform.server.plugins.messenger.smtp;
 
 import java.util.Iterator;
 import java.util.Properties;
-import java.util.Set;
 
 import javax.activation.CommandMap;
 import javax.activation.MailcapCommandMap;
@@ -99,113 +98,103 @@ public class SmtpMessengerPlugin extends AbstractPlugin {
 			return;
 		}
 		
+		ApiSpace space = (ApiSpace)target;
+		
 		switch (event) {
 			case Create:
-				createSessions ((ApiSpace)target);
+				createClients (space);
 				break;
 			case AddFeature:
-				// if it's Messenger and provider is 'smtp' create createSession
-				createSessions ((ApiSpace)target);
+				createClient (space, Json.getObject (space.getFeatures (), feature), (String)args [0]);
 				break;
 			case DeleteFeature:
-				// if it's Messenger and provider is 'smtp' shutdown session
-				dropSessions ((ApiSpace)target);
+				removeClient (space, (String)args [0]);
 				break;
 			default:
 				break;
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
-	private void createSessions (ApiSpace space) {
+	private void createClients (ApiSpace space) {
 		// create sessions
-		JsonObject msgFeature = Json.getObject (space.getFeatures (), feature);
-		if (msgFeature == null || msgFeature.isEmpty ()) {
+		JsonObject allFeatures = Json.getObject (space.getFeatures (), feature);
+		if (Json.isNullOrEmpty (allFeatures)) {
 			return;
 		}
 		
-		Iterator<String> keys = msgFeature.keys ();
+		Iterator<String> keys = allFeatures.keys ();
 		while (keys.hasNext ()) {
-			String key = keys.next ();
-			
-			JsonObject feature = Json.getObject (msgFeature, key);
-			
-			if (!this.getNamespace ().equalsIgnoreCase (Json.getString (feature, ApiSpace.Features.Provider))) {
-				continue;
-			}
-			
-			String sessionKey = createKey (key);
-			if (space.containsRecyclable (sessionKey)) {
-				continue;
-			}
-			
-			JsonObject spec = Json.getObject (feature, ApiSpace.Features.Spec);
-		
-			if (mimeTypes != null && mimeTypes.count () > 0) {
-				MailcapCommandMap mc = (MailcapCommandMap) CommandMap.getDefaultCommandMap (); 
-				for (int i = 0; i < mimeTypes.count (); i++) {
-					mc.addMailcap ((String)mimeTypes.get (i)); 
-				}
-			}
-			
-			JsonObject oServer = Json.getObject (spec, Spec.Server);
-			if (oServer == null || oServer.isEmpty ()) {
-				continue;
-			}
-			
-			final JsonObject oAuth = Json.getObject (spec, Spec.Auth);
-			if (oAuth == null || oAuth.isEmpty ()) {
-				continue;
-			}
-			
-			Properties props = new Properties ();
-			props.putAll (oServer);
-			
-			final String user = Json.getString (oAuth, Spec.User);
-			
-			final Session session = Session.getInstance (
-				props,
-				new Authenticator () {
-					protected PasswordAuthentication getPasswordAuthentication () {
-						return new PasswordAuthentication (user, Json.getString (oAuth, Spec.Password));
-					}
-				}
-			);
-			
-			space.addRecyclable (sessionKey, new RecyclableMessenger (new SmtpMessenger (user, session)));
-		
-			feature.set (ApiSpace.Spec.Installed, true);
-			
+			createClient (space, allFeatures, keys.next ());
 		}
 		
 	}
 	
-	private void dropSessions (ApiSpace space) {
+	@SuppressWarnings("unchecked")
+	private void createClient (ApiSpace space, JsonObject allFeatures, String name) {
 		
-		JsonObject msgFeature = Json.getObject (space.getFeatures (), feature);
+		JsonObject feature = Json.getObject (allFeatures, name);
 		
-		Set<String> recyclables = space.getRecyclables ();
-		for (String r : recyclables) {
-			if (!r.startsWith (feature + Lang.DOT)) {
-				continue;
-			}
-			String name = r.substring ((feature + Lang.DOT).length ());
-			if (msgFeature == null || msgFeature.containsKey (name)) {
-				// it's deleted
-				Recyclable recyclable = space.getRecyclable (r);
-				if (!(recyclable instanceof RecyclableMessenger)) {
-					continue;
-				}
-				// remove from recyclables
-				space.removeRecyclable (r);
-				// recycle
-				recyclable.recycle ();
+		if (!this.getNamespace ().equalsIgnoreCase (Json.getString (feature, ApiSpace.Features.Provider))) {
+			return;
+		}
+		
+		String sessionKey = createKey (name);
+		if (space.containsRecyclable (sessionKey)) {
+			return;
+		}
+		
+		JsonObject spec = Json.getObject (feature, ApiSpace.Features.Spec);
+	
+		if (mimeTypes != null && mimeTypes.count () > 0) {
+			MailcapCommandMap mc = (MailcapCommandMap) CommandMap.getDefaultCommandMap (); 
+			for (int i = 0; i < mimeTypes.count (); i++) {
+				mc.addMailcap ((String)mimeTypes.get (i)); 
 			}
 		}
+		
+		JsonObject oServer = Json.getObject (spec, Spec.Server);
+		if (oServer == null || oServer.isEmpty ()) {
+			return;
+		}
+		
+		final JsonObject oAuth = Json.getObject (spec, Spec.Auth);
+		if (oAuth == null || oAuth.isEmpty ()) {
+			return;
+		}
+		
+		Properties props = new Properties ();
+		props.putAll (oServer);
+		
+		final String user = Json.getString (oAuth, Spec.User);
+		
+		final Session session = Session.getInstance (
+			props,
+			new Authenticator () {
+				protected PasswordAuthentication getPasswordAuthentication () {
+					return new PasswordAuthentication (user, Json.getString (oAuth, Spec.Password));
+				}
+			}
+		);
+		
+		space.addRecyclable (sessionKey, new RecyclableMessenger (new SmtpMessenger (user, session)));
+	
+		feature.set (ApiSpace.Spec.Installed, true);
+	}
+	
+	private void removeClient (ApiSpace space, String featureName) {
+		String key = createKey (featureName);
+		Recyclable recyclable = space.getRecyclable (createKey (featureName));
+		if (recyclable == null) {
+			return;
+		}
+		// remove from recyclables
+		space.removeRecyclable (key);
+		// recycle
+		recyclable.recycle ();
 	}
 	
 	private String createKey (String name) {
-		return feature + Lang.DOT + name;
+		return feature + Lang.DOT + getNamespace () + Lang.DOT + name;
 	}
 
 	public JsonArray getMimeTypes () {

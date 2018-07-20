@@ -130,9 +130,16 @@ public class RemoteUtils {
 			}
 		}
 		
+		JsonObject spec = Json.getObject (source, Spec.request.class.getSimpleName ());
+		
 		JsonObject oKeys = null;
 		
 		Keys keys = BlueNimble.keys ();
+		
+		if (keys == null && Json.getBoolean (spec, Spec.request.Sign, true)) {
+			throw new CommandExecutionException ("this command requires security keys.");
+		}
+		
 		if (keys != null) {
 			oKeys = keys.json ();
 		} else {
@@ -154,7 +161,7 @@ public class RemoteUtils {
 		HttpResponse response = null;
 		
 		try {
-			HttpRequest request = request (oKeys, Json.getObject (source, Spec.request.class.getSimpleName ()), tool, BlueNimble.Config, options, streams);
+			HttpRequest request = request (oKeys, spec, tool, BlueNimble.Config, options, streams);
 			
 			response = Http.send (request);
 			

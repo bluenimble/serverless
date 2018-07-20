@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.bluenimble.platform.Json;
+import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.ApiHeaders;
 import com.bluenimble.platform.cli.Tool;
 import com.bluenimble.platform.cli.ToolContext;
@@ -67,6 +68,22 @@ public class HttpHandler implements CommandHandler {
 			spec = (JsonObject)new JsonObject ().set (Spec.request.class.getSimpleName (), new JsonObject ().set (Spec.request.Service, varOrUrl));
 		} else {
 			spec = ((JsonObject)oSpec).duplicate ();
+		}
+		
+		String service = (String)Json.find (spec, Spec.request.class.getSimpleName (), Spec.request.Service);
+		
+		int indexOfFirstSlash = service.indexOf (Lang.SLASH, service.indexOf ("//") + 2);
+		
+		if (indexOfFirstSlash > 0) {
+			String path = service.substring (indexOfFirstSlash + 1);
+			if (!Lang.isNullOrEmpty (path)) {
+				String [] aPath = Lang.split (path, Lang.SLASH);
+				service = service.substring (0, indexOfFirstSlash);
+				for (String p : aPath) {
+					service += Lang.SLASH + Lang.encode (p);
+				}
+				Json.set (spec, Spec.request.class.getSimpleName () + Lang.DOT + Spec.request.Service, service);
+			}
 		}
 		
 		JsonObject request = Json.getObject (spec, Spec.request.class.getSimpleName ());

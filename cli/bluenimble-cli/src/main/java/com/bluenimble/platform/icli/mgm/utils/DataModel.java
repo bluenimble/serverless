@@ -19,12 +19,12 @@ package com.bluenimble.platform.icli.mgm.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DataSource {
+public class DataModel {
 
 	private String 			name;
 	private List<DSEntity> 	entities = new ArrayList<DSEntity> ();
 	
-	public DataSource (String name) {
+	public DataModel (String name) {
 		this.name = name;
 	}
 	

@@ -26,7 +26,9 @@ import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.PackageClassLoader;
 import com.bluenimble.platform.api.impls.spis.ComposerApiServiceSpi;
 import com.bluenimble.platform.api.impls.spis.GetResourceApiServiceSpi;
+import com.bluenimble.platform.api.impls.spis.GetStorageObjectApiServiceSpi;
 import com.bluenimble.platform.api.impls.spis.NoneApiServiceSpi;
+import com.bluenimble.platform.api.impls.spis.PutStorageObjectApiServiceSpi;
 import com.bluenimble.platform.json.JsonObject;
 
 @SuppressWarnings("rawtypes")
@@ -50,8 +52,15 @@ public class BeanUtils {
 	
 	private static final Map<String, Object> 	CoreObjects = new HashMap<String, Object> ();
 	static {
-		CoreObjects.put ("ResourceSpi", new GetResourceApiServiceSpi ());
 		CoreObjects.put ("NoneSpi", 	new NoneApiServiceSpi ());
+		
+		CoreObjects.put ("ResourceSpi", new GetResourceApiServiceSpi ());
+
+		CoreObjects.put ("PutStorageObjectSpi", new PutStorageObjectApiServiceSpi ());
+		CoreObjects.put ("GetStorageObjectSpi", new GetStorageObjectApiServiceSpi ());
+		
+		CoreObjects.put ("ResourceSpi", new GetResourceApiServiceSpi ());
+
 		CoreObjects.put ("ComposerSpi",	new ComposerApiServiceSpi ());
 	}
 	

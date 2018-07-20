@@ -1,16 +1,17 @@
 {
 
 	"feature": "database",
+	"provider": "database.rdb",
 
 	"spec": {
 		"vendor": "postgresql",
-		"host": "where postgresql database is running",
+		"host": "<?>host where postgresql database is running",
 		"port": "",
-		"database": "database name",
+		"database": "<?>database name",
 		
 		"auth": {
-			"user": "username",
-			"password": "password"
+			"user": "<?>username",
+			"password": "<?>password"
 		},
 
 		"pool": {

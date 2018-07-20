@@ -66,6 +66,8 @@ public class DataSourceVendor {
 			port = Json.getInteger (descriptor, RdbPlugin.Spec.Port, 0);
 		}
 		
+		String url = Json.getString (descriptor, type == null ? Template : Template + Lang.DOT + type);
+		
 		final JsonObject data = (JsonObject)new JsonObject ()
 				.set (RdbPlugin.Spec.Host, host)
 				.set (RdbPlugin.Spec.Port, port)
@@ -78,13 +80,18 @@ public class DataSourceVendor {
 
 			@Override
 			public Object resolve (String namespace, String... property) {
-				String firstChar = property [0].substring (0, 1);
+				
+				String [] aProperty = new String [property.length];
+				
+				System.arraycopy (property, 0, aProperty, 0, property.length);
+				
+				String firstChar = aProperty [0].substring (0, 1);
 				if (Tokens.contains (firstChar)) {
-					property [0] = property [0].substring (1);
+					aProperty [0] = aProperty [0].substring (1);
 				} else {
 					firstChar = Lang.BLANK;
 				}
-				Object v = Json.find (data, property);
+				Object v = Json.find (data, aProperty);
 				if (v != null) {
 					return firstChar + v;
 				}
@@ -92,7 +99,7 @@ public class DataSourceVendor {
 			}
 			
 		};
-		return (String)Compiler.compile (Json.getString (descriptor, type == null ? Template : Template + Lang.DOT + type), null).eval (vr);
+		return (String)Compiler.compile (url, null).eval (vr);
 	}
 	
 	public String driver () {

@@ -83,7 +83,7 @@ public class FileSystemStoragePlugin extends AbstractPlugin {
 			}
 			@Override
 			public Object get (ApiSpace space, String name) {
-				String mount = mounts.get (createStorageKey  (name, space));
+				String mount = mounts.get (createKey  (name));
 				if (mount == null) {
 					return null;
 				}
@@ -117,10 +117,10 @@ public class FileSystemStoragePlugin extends AbstractPlugin {
 		
 		switch (event) {
 			case Create:
-				createStorage (space);
+				createClients (space);
 				break;
 			case AddFeature:
-				createStorage (space);
+				createClient (space, Json.getObject (space.getFeatures (), feature), (String)args [0]);
 				break;
 			case DeleteFeature:
 				// NOTHING TO BE DONE. Backup? maybe !!!
@@ -131,45 +131,49 @@ public class FileSystemStoragePlugin extends AbstractPlugin {
 		}
 	}
 	
-	private void createStorage (ApiSpace space) {
-		JsonObject storageFeature = Json.getObject (space.getFeatures (), feature);
-		if (storageFeature == null || storageFeature.isEmpty ()) {
+	private void createClients (ApiSpace space) {
+		JsonObject allFeatures = Json.getObject (space.getFeatures (), feature);
+		
+		if (Json.isNullOrEmpty (allFeatures)) {
 			return;
 		}
 		
-		Iterator<String> keys = storageFeature.keys ();
+		Iterator<String> keys = allFeatures.keys ();
 		while (keys.hasNext ()) {
-			String key = keys.next ();
-			JsonObject feature = Json.getObject (storageFeature, key);
-			
-			if (!this.getNamespace ().equalsIgnoreCase (Json.getString (feature, ApiSpace.Features.Provider))) {
-				continue;
-			}
-			
-			JsonObject spec = Json.getObject (feature, ApiSpace.Features.Spec);
-			if (spec == null) {
-				continue;
-			}
-			
-			String mount = Json.getString (spec, Spec.Mount);
-			if (Lang.isNullOrEmpty (mount)) {
-				continue;
-			}
-			
-			File spaceStorage = new File (fRoot, mount);
-			if (!spaceStorage.exists ()) {
-				spaceStorage.mkdir ();
-			}
-			
-			mounts.put (createStorageKey  (key, space), mount);
-			
-			feature.set (ApiSpace.Spec.Installed, true);
-			
+			createClient (space, allFeatures, keys.next ());
 		}
 	}
 	
-	private String createStorageKey (String name, ApiSpace space) {
-		return feature + Lang.DOT + space.getNamespace () + Lang.DOT + name;
+	private void createClient (ApiSpace space, JsonObject allFeatures, String name) {
+		
+		JsonObject feature = Json.getObject (allFeatures, name);
+		
+		if (!this.getNamespace ().equalsIgnoreCase (Json.getString (feature, ApiSpace.Features.Provider))) {
+			return;
+		}
+		
+		JsonObject spec = Json.getObject (feature, ApiSpace.Features.Spec);
+		if (spec == null) {
+			return;
+		}
+		
+		String mount = Json.getString (spec, Spec.Mount);
+		if (Lang.isNullOrEmpty (mount)) {
+			return;
+		}
+		
+		File spaceStorage = new File (fRoot, mount);
+		if (!spaceStorage.exists ()) {
+			spaceStorage.mkdir ();
+		}
+		
+		mounts.put (createKey  (name), mount);
+		
+		feature.set (ApiSpace.Spec.Installed, true);
+	}
+	
+	private String createKey (String name) {
+		return feature + Lang.DOT + getNamespace () + Lang.DOT + name;
 	}
 	
 }

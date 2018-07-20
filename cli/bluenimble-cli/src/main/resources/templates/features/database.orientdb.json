@@ -3,13 +3,13 @@
 	"feature": "database",
 
 	"spec": {
-		"host": "where orientdb is running",
-		"port": "orientdb port number",
-		"database": "database name",
+		"host": "<?>host where orientdb is running",
+		"port": "",
+		"database": "<?>database name",
 		
 		"auth": {
-			"user": "database username",
-			"password": "password"
+			"user": "<?>username",
+			"password": "<?>password"
 		},
 		
 		"allowProprietaryAccess": "true"

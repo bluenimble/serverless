@@ -32,6 +32,7 @@ import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 
 import com.bluenimble.platform.ArchiveUtils;
+import com.bluenimble.platform.FileUtils;
 import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
@@ -39,13 +40,11 @@ import com.bluenimble.platform.cli.Tool;
 import com.bluenimble.platform.cli.command.CommandExecutionException;
 import com.bluenimble.platform.icli.mgm.BlueNimble;
 import com.bluenimble.platform.icli.mgm.CliSpec.Templates;
-import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 
 public class BuildUtils {
 
 	private static final String Resources 		= "resources";
-	private static final String DataSources 	= "datasources";
 	private static final String Properties 		= "properties.json";
 	private static final String PersistenceXml 	= "persistence.xml";
 	
@@ -81,6 +80,7 @@ public class BuildUtils {
 		Types.put ("date", "java.util.Date");
 		Types.put ("string", "String");
 		Types.put ("number", "java.math.BigDecimal");
+		Types.put ("decimal", "java.math.BigDecimal");
 		Types.put ("int", "Integer");
 		Types.put ("integer", "Integer");
 		Types.put ("long", "Long");
@@ -105,10 +105,10 @@ public class BuildUtils {
 		String Return	= "return";
 	}
 	
-	public static void generate (File apiFolder, JsonArray datasources) throws Exception {
+	public static void generate (File apiFolder, JsonObject dataModels) throws Exception {
 		
-		File dataSourcesFolder = new File (apiFolder, Resources + Lang.SLASH + DataSources);
-		if (Json.isNullOrEmpty (datasources) || !dataSourcesFolder.exists () || !dataSourcesFolder.isDirectory ()) {
+		File dataSourcesFolder = new File (apiFolder, Resources + Lang.SLASH + CodeGenUtils.DataModels);
+		if (Json.isNullOrEmpty (dataModels) || !dataSourcesFolder.exists () || !dataSourcesFolder.isDirectory ()) {
 			return;
 		}
 		
@@ -141,13 +141,13 @@ public class BuildUtils {
 		Persistence persistence = new Persistence ();
 		
 		// generate sources
-		for (int i = 0; i < datasources.count (); i++) {
-			File dsf = new File (dataSourcesFolder, (String)datasources.get (i));
+		for (Object dm : dataModels.keySet ()) {
+			File dsf = new File (dataSourcesFolder, String.valueOf (dm));
 			if (!dsf.exists ()) {
 				continue;
 			}
-			DataSource ds = new DataSource (dsf.getName ());
-			persistence.addDataSource (ds);
+			DataModel ds = new DataModel (dsf.getName ());
+			persistence.addDataModel (ds);
 			loadEntities (ds, dsf, dsf, javaSrc);
 		}
 		
@@ -176,7 +176,7 @@ public class BuildUtils {
 			writer.write ("   version=\"2.0\" xmlns=\"http://java.sun.com/xml/ns/persistence\">\n");
 			
 			// add persistence units
-			for (DataSource ds : persistence.getDataSources ()) {
+			for (DataModel ds : persistence.getDataModels ()) {
 				writer.write ("\t<persistence-unit name=\"" + ds.getName () + "\" transaction-type=\"RESOURCE_LOCAL\">\n");
 				writer.write ("\t\t<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>\n");
 				
@@ -229,7 +229,7 @@ public class BuildUtils {
 			apiLibs.mkdirs ();
 		}
 		
-		ArchiveUtils.compress (javaBin, new File (apiLibs, DataSources + Lang.UUID (6) + JarExt), true, new ArchiveUtils.CompressVisitor () {
+		ArchiveUtils.compress (javaBin, new File (apiLibs, CodeGenUtils.DataModels + Lang.UUID (6) + JarExt), true, new ArchiveUtils.CompressVisitor () {
 			@Override
 			public boolean onAdd (File file) {
 				if (file.getName ().startsWith (Lang.DOT)) {
@@ -240,8 +240,8 @@ public class BuildUtils {
 		});
 		
 		// clean sources and binaries
-		//FileUtils.delete (javaBin);
-		//FileUtils.delete (javaSrc);
+		FileUtils.delete (javaBin);
+		FileUtils.delete (javaSrc);
 	}
 
 	public static int mvn (Tool tool, File workingDir, String args) throws CommandExecutionException {
@@ -261,7 +261,7 @@ public class BuildUtils {
 		return exitValue;
 	}
 	
-	private static void loadEntities (DataSource ds, File dsf, File mdf, File javaSrc) throws Exception {
+	private static void loadEntities (DataModel ds, File dsf, File mdf, File javaSrc) throws Exception {
 		
 		if (mdf.isDirectory ()) {
 			File [] files = mdf.listFiles (new FileFilter () {
@@ -282,7 +282,7 @@ public class BuildUtils {
 		
 	}
 	
-	private static void parse (DataSource ds, File dsf, File mdf) throws Exception {
+	private static void parse (DataModel ds, File dsf, File mdf) throws Exception {
 		
 		DSEntity entity = null;
 		
@@ -299,17 +299,17 @@ public class BuildUtils {
 					continue;
 				}
 				
-				System.out.println ("Line: [" + line + "]");
+				//System.out.println ("Line: [" + line + "]");
 				
 				if (!line.startsWith (Lang.SPACE) && !line.startsWith (Lang.TAB)) {
 					
-					System.out.println ("\tNew Entity Declaration Detected");
+					// System.out.println ("\tNew Entity Declaration Detected");
 					
 					String [] entityTokens = Lang.split (line, AnnoSign);
 					String name = entityTokens [0];
 					entity = new DSEntity (name);
 					
-					System.out.println ("Entity: " + name);
+					// System.out.println ("Entity: " + name);
 					
 					String sParent = Lang.replace (mdf.getParentFile ().getAbsolutePath ().substring (dsf.getAbsolutePath ().length ()), Lang.BACKSLASH, Lang.SLASH);
 					
@@ -317,7 +317,7 @@ public class BuildUtils {
 						sParent = sParent.substring (0, sParent.length () - 1);
 					}
 					
-					System.out.println ("Package: " + sParent);
+					// System.out.println ("Package: " + sParent);
 					
 					if (!Lang.isNullOrEmpty (sParent)) {
 						entity.setPackage (sParent);
@@ -326,7 +326,7 @@ public class BuildUtils {
 					// add entity annotations
 					if (entityTokens.length > 1) {
 						for (int i = 1; i < entityTokens.length; i++) {
-							System.out.println ("\tAdd Class Anootation: " + AnnoSign + entityTokens [i]);
+							// System.out.println ("\tAdd Class Anootation: " + AnnoSign + entityTokens [i]);
 							entity.addAnnotation (AnnoSign + entityTokens [i]);
 						}
 					}
@@ -337,7 +337,7 @@ public class BuildUtils {
 					
 				} else if (line.trim ().startsWith (ImportKeyword)) {
 					
-					System.out.println ("\tImport");
+					// System.out.println ("\tImport");
 
 					if (entity != null) {
 						String [] imports = Lang.split (line.trim (), Lang.SPACE);
@@ -350,7 +350,7 @@ public class BuildUtils {
 					
 				} else if (line.trim ().startsWith (AnnoSign)) {
 					
-					System.out.println ("\tMore Annos");
+					// System.out.println ("\tMore Annos");
 
 					if (entity != null) {
 						if (!entity.getFields ().isEmpty ()) {
@@ -362,7 +362,7 @@ public class BuildUtils {
 					
 				} else {
 					
-					System.out.println ("\tField Declaration");
+					// System.out.println ("\tField Declaration");
 
 					String [] fieldTokens = Lang.split (line.trim (), AnnoSign);
 					String name = fieldTokens [0].trim ();
@@ -397,7 +397,7 @@ public class BuildUtils {
 		
 	}
 	
-	private static void generate (DataSource ds, File javaSrc) throws Exception {
+	private static void generate (DataModel ds, File javaSrc) throws Exception {
 		
 		for (DSEntity entity : ds.getEntities ()) {
 			

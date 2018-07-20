@@ -6,6 +6,7 @@ import java.util.Set;
 public class Markers {
 	
 	public static final String Status 		= "status";
+	public static final String Installed 	= "installed";
 	
 	public static final Set<String> Yellow = new HashSet<String> ();
 	static {
@@ -18,6 +19,7 @@ public class Markers {
 	static {
 		Green.add ("running");
 		Green.add ("available");
+		Green.add ("true");
 	}
 	
 	public static final Set<String> Red = new HashSet<String> ();
@@ -25,6 +27,7 @@ public class Markers {
 		Red.add ("timed_waiting");
 		Red.add ("blocked");
 		Red.add ("failed");
+		Red.add ("false");
 	}
 	
 

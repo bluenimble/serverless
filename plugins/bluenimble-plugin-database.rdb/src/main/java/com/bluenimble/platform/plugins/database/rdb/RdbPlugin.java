@@ -23,7 +23,6 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -42,7 +41,6 @@ import com.bluenimble.platform.api.Manageable;
 import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.encoding.Base64;
-import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.Plugin;
 import com.bluenimble.platform.plugins.PluginRegistryException;
@@ -61,7 +59,7 @@ public class RdbPlugin extends AbstractPlugin {
 	
 	private static final String 	Vendors 		= "vendors";
 	
-	private static final String 	DataSources		= "datasources";
+	private static final String 	Models			= "models";
 	
 	public static final String 		DataFolder		= "DataFolder";
 
@@ -160,53 +158,49 @@ public class RdbPlugin extends AbstractPlugin {
 		
 		switch (event) {
 			case Create:
-				createDataSources (space);
+				createClients (space);
 				break;
 			case AddFeature:
-				createDataSources (space);
+				createClient (space, Json.getObject (space.getFeatures (), feature), (String)args [0]);
 				break;
 			case DeleteFeature:
-				dropDataSources (space);
+				removeClient (space, (String)args [0]);
 				break;
 			default:
 				break;
 		}
 	}
 	
-	private void createDataSources (ApiSpace space) throws PluginRegistryException {
+	private void createClients (ApiSpace space) throws PluginRegistryException {
 		
 		// create factories
 		JsonObject allFeatures = Json.getObject (space.getFeatures (), feature);
-		if (allFeatures == null || allFeatures.isEmpty ()) {
+		if (Json.isNullOrEmpty (allFeatures)) {
 			return;
 		}
 		
 		Iterator<String> keys = allFeatures.keys ();
 		while (keys.hasNext ()) {
 			String key = keys.next ();
-			JsonObject feature = Json.getObject (allFeatures, key);
-			
-			if (!this.getNamespace ().equalsIgnoreCase (Json.getString (feature, ApiSpace.Features.Provider))) {
-				continue;
-			}
-			
-			JsonObject spec = Json.getObject (feature, ApiSpace.Features.Spec);
-			
-			if (spec == null) {
-				continue;
-			}
-			
-			DataSource datasource = createDataSource (key, space, spec);
-			if (datasource != null) {
-				feature.set (ApiSpace.Spec.Installed, true);
-			}
-			
+			createClient (space, allFeatures, key);
 		}
 	}
 	
-	private DataSource createDataSource (String name, ApiSpace space, JsonObject spec) throws PluginRegistryException {
+	private DataSource createClient (ApiSpace space, JsonObject allFeatures, String name) throws PluginRegistryException {
 		
-		String dataSourceKey = dataSourceKey (name, space);
+		JsonObject feature = Json.getObject (allFeatures, name);
+		
+		if (!this.getNamespace ().equalsIgnoreCase (Json.getString (feature, ApiSpace.Features.Provider))) {
+			return null;
+		}
+		
+		JsonObject spec = Json.getObject (feature, ApiSpace.Features.Spec);
+		
+		if (spec == null) {
+			return null;
+		}
+		
+		String dataSourceKey = createKey (name);
 		
 		tracer ().log (Tracer.Level.Info, "Create datasource {0}", dataSourceKey);
 		
@@ -245,15 +239,16 @@ public class RdbPlugin extends AbstractPlugin {
 			HikariConfig config = new HikariConfig ();
 			config.setPoolName (dataSourceKey);
 			config.setDriverClassName (vendor.driver ());
-			config.setJdbcUrl (
-				vendor.url (
-					Json.getString (spec, Spec.Host), 
-					Json.getInteger (spec, Spec.Port, 0), 
-					Json.getString (spec, Spec.Database),
-					Json.getString (spec, Spec.Type),
-					new File (dataFolder, space.getNamespace () + Lang.UNDERSCORE + name)
-				)
+			
+			String url = vendor.url (
+				Json.getString (spec, Spec.Host), 
+				Json.getInteger (spec, Spec.Port, 0), 
+				Json.getString (spec, Spec.Database),
+				Json.getString (spec, Spec.Type),
+				new File (dataFolder, space.getNamespace () + Lang.UNDERSCORE + name)
 			);
+			
+			config.setJdbcUrl (url);
 			
 			JsonObject auth = Json.getObject (spec, Spec.Auth.class.getSimpleName ().toLowerCase ());
 			if (!Json.isNullOrEmpty (auth)) {
@@ -266,9 +261,13 @@ public class RdbPlugin extends AbstractPlugin {
 			JsonObject pool = Json.getObject (spec, Spec.Pool.class.getSimpleName ().toLowerCase ());
 			config.setMaximumPoolSize 	(Json.getInteger (pool, Spec.Pool.MaximumPoolSize, 10));
 			config.setMaxLifetime		(Json.getLong (pool, Spec.Pool.MaxLifeTime, 30) * 60 * 1000);
-			config.setMinimumIdle 		(Json.getInteger (pool, Spec.Pool.MinimumIdle, -1));
 			config.setConnectionTimeout	(Json.getLong (pool, Spec.Pool.ConnectionTimeout, 30) * 60 * 1000);
 			config.setIdleTimeout		(Json.getLong (pool, Spec.Pool.IdleTimeout, 10) * 60 * 1000);
+			
+			int minimumIdle = Json.getInteger (pool, Spec.Pool.MinimumIdle, -1);
+			if (minimumIdle > 0) {
+				config.setMinimumIdle (minimumIdle);
+			}
 			
 			JsonObject props = Json.getObject (spec, Spec.Properties);
 			if (!Json.isNullOrEmpty (props)) {
@@ -302,44 +301,33 @@ public class RdbPlugin extends AbstractPlugin {
 
 			datasource = new HikariDataSource (config); 
 			
+		} catch (Exception ex) {
+			tracer ().log (Tracer.Level.Error, ex.getMessage (), ex);
+			throw new PluginRegistryException (ex);
 		} finally {
 			Thread.currentThread ().setContextClassLoader (currentClassLoader);
 		}
 		
-		tracer ().log (Tracer.Level.Info, "\tSpace DataSource {0}", datasource);
+		tracer ().log (Tracer.Level.Info, "\tSpace DataSource {0} ==> {1}", dataSourceKey, datasource);
 		
 		space.addRecyclable (dataSourceKey, new RecyclableDataSource (datasource));
-		space.addRecyclable (factoryKey (name, space), new RecyclableEntityManagerFactory (null));
+		
+		feature.set (ApiSpace.Spec.Installed, true);
 		
 		return datasource;
 		
 	}
 	
-	private void dropDataSources (ApiSpace space) {
-		
-		JsonObject dbFeature = Json.getObject (space.getFeatures (), feature);
-		
-		Set<String> recyclables = space.getRecyclables ();
-		for (String r : recyclables) {
-			if (!r.startsWith (feature + Lang.DOT)) {
-				continue;
-			}
-			String name = r.substring ((feature + Lang.DOT).length ());
-			if (dbFeature == null || !dbFeature.containsKey (name)) {
-				// it's deleted
-				RecyclableDataSource rf = (RecyclableDataSource)space.getRecyclable (r);
-				// remove from recyclables
-				space.removeRecyclable (r);
-				// recycle
-				rf.recycle ();
-				// remove used trust store if any
-				File storeFile = new File (certsFolder, space.getNamespace () + Lang.UNDERSCORE + name);
-				if (storeFile.exists ()) {
-					storeFile.delete ();
-				}
-			}
+	private void removeClient (ApiSpace space, String featureName) {
+		String key = createKey (featureName);
+		Recyclable recyclable = space.getRecyclable (createKey (featureName));
+		if (recyclable == null) {
+			return;
 		}
-		
+		// remove from recyclables
+		space.removeRecyclable (key);
+		// recycle
+		recyclable.recycle ();
 	}
 	
 	private void onStartApi (Api api) {
@@ -347,29 +335,30 @@ public class RdbPlugin extends AbstractPlugin {
 		ApiSpace space = api.space ();
 		
 		// initialize any linked datasource
-		JsonArray datasources = Json.getArray (api.getSpiDef (), DataSources);
+		JsonObject dataModels = Json.getObject (api.getRuntime (), Models);
 		
-		if (datasources != null && !datasources.isEmpty ()) {
-			// change classloader
-			for (int i = 0; i < datasources.count (); i++) {
-				Recyclable recyclable = space.getRecyclable (
-					factoryKey ((String)datasources.get (i), space)	
-				);
-				if (recyclable == null) {
-					continue;
-				}
-				// create factory
-				recyclable.set (space, api.getClassLoader (), (String)datasources.get (i));
-			}
+		if (Json.isNullOrEmpty (dataModels)) {
+			return;
 		}
+		
+		Iterator<String> dms = dataModels.keys ();
+		while (dms.hasNext ()) {
+			String dataModel = dms.next ();
+
+			RecyclableEntityManagerFactory factory = new RecyclableEntityManagerFactory ();
+			
+			String dataSource = Json.getString (dataModels, dataModel);
+			
+			// create factory
+			factory.set (space, api.getClassLoader (), dataSource, dataModel);
+			
+			space.addRecyclable (createKey (dataSource + Lang.DOT + dataModel), factory);
+		}
+		
 	}
 	
-	private String factoryKey (String name, ApiSpace space) {
-		return feature + Lang.DOT + space.getNamespace () + Lang.DOT + name;
-	}
-
-	private String dataSourceKey (String name, ApiSpace space) {
-		return space.getNamespace () + Lang.DOT + name;
+	private String createKey (String name) {
+		return feature + Lang.DOT + getNamespace () + Lang.DOT + name;
 	}
 
 	class RecyclableDataSource implements Recyclable {
@@ -407,11 +396,6 @@ public class RdbPlugin extends AbstractPlugin {
 		private EntityManagerFactory factory;
 		private JpaMetadata metadata;
 		
-		public RecyclableEntityManagerFactory (EntityManagerFactory factory) {
-			this.factory = factory;
-			metadata = new JpaMetadata (factory);
-		}
-		
 		@Override
 		public void recycle () {
 			if (factory == null) {
@@ -431,20 +415,23 @@ public class RdbPlugin extends AbstractPlugin {
 		public JpaMetadata metadata () {
 			return metadata;
 		}
-
+		
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		@Override
 		public void set (ApiSpace space, ClassLoader classLoader, Object... args) {
 			
+			String dataSource = (String)args [2];
+			String dataModel = (String)args [1];
+
 			ClassLoader currentClassLoader = Thread.currentThread ().getContextClassLoader ();
 			
 			Thread.currentThread ().setContextClassLoader (RdbPlugin.class.getClassLoader ());
 			try {
-				String dsName = (String)args [0];
 				Map properties = new HashMap ();
-				properties.put (PersistenceUnitProperties.NON_JTA_DATASOURCE, datasource (space, dsName));
+				properties.put (PersistenceUnitProperties.NON_JTA_DATASOURCE, datasource (space, dataSource));
 				properties.put (PersistenceUnitProperties.CLASSLOADER, classLoader);
-				factory = Persistence.createEntityManagerFactory (dsName, properties);			
+				factory = Persistence.createEntityManagerFactory (dataModel, properties);			
+				metadata = new JpaMetadata (factory);
 			} finally {
 				Thread.currentThread ().setContextClassLoader (currentClassLoader);
 			}
@@ -454,12 +441,12 @@ public class RdbPlugin extends AbstractPlugin {
 	}
 
 	private DataSource datasource (ApiSpace space, String name) {
-		return ((RecyclableDataSource)space.getRecyclable (dataSourceKey (name, space))).get ();
+		return ((RecyclableDataSource)space.getRecyclable (createKey (name))).get ();
 	}
 	
 	private JpaDatabase newDatabase (ApiSpace space, String name) {
 		
-		RecyclableEntityManagerFactory recyclable = (RecyclableEntityManagerFactory)space.getRecyclable (factoryKey (name, space));
+		RecyclableEntityManagerFactory recyclable = (RecyclableEntityManagerFactory)space.getRecyclable (createKey (name));
 		tracer ().log (Tracer.Level.Debug, "\tEntityManager -> Recyclable = {0}", recyclable);
 		
 		EntityManagerFactory factory = recyclable.get ();

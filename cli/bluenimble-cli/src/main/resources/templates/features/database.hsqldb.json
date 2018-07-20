@@ -1,17 +1,18 @@
 {
 
 	"feature": "database",
+	"provider": "database.rdb",
 
 	"spec": {
 		"vendor": "hsqldb",
-		"type": "hsql, file or memory",
-		"host": "where hsqldb database is running if type is hsql",
+		"type": "<?>hsql, file or memory",
+		"host": "<?>where hsqldb database is running if type is hsql",
 		"port": "",
-		"database": "database name",
+		"database": "<?>database name",
 		
 		"auth": {
-			"user": "username",
-			"password": "password"
+			"user": "<?>username",
+			"password": "<?>password"
 		},
 
 		"pool": {

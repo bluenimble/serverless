@@ -270,7 +270,7 @@ if (Vars ['api.release.notes']) {
 }
 
 //generate datasources 
-BuildUtils.generate (apiFolder, Json.find (apiSpec, 'runtime', 'datasources'));
+BuildUtils.generate (apiFolder, Json.find (apiSpec, 'runtime', 'dataModels'));
 
 // save api.json file
 Json.store (apiSpec, apiSpecFile);

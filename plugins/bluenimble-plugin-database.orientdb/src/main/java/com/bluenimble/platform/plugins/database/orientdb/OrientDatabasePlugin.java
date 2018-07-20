@@ -17,7 +17,6 @@
 package com.bluenimble.platform.plugins.database.orientdb;
 
 import java.util.Iterator;
-import java.util.Set;
 
 import com.bluenimble.platform.Feature;
 import com.bluenimble.platform.Json;
@@ -120,77 +119,60 @@ public class OrientDatabasePlugin extends AbstractPlugin {
 		
 		switch (event) {
 			case Create:
-				createPools (space);
+				createClients (space);
 				break;
 			case AddFeature:
-				createPools (space);
+				createClient (space, Json.getObject (space.getFeatures (), feature), (String)args [0]);
 				break;
 			case DeleteFeature:
-				dropPools (space);
+				removeClient (space, (String)args [0]);
 				break;
 			default:
 				break;
 		}
 	}
 	
-	private void createPools (ApiSpace space) {
+	private void createClients (ApiSpace space) {
 		
 		// create factories
 		JsonObject allFeatures = Json.getObject (space.getFeatures (), feature);
-		if (allFeatures == null || allFeatures.isEmpty ()) {
+		if (Json.isNullOrEmpty (allFeatures)) {
 			return;
 		}
 		
 		Iterator<String> keys = allFeatures.keys ();
 		while (keys.hasNext ()) {
-			String key = keys.next ();
-			JsonObject feature = Json.getObject (allFeatures, key);
-			
-			if (!this.getNamespace ().equalsIgnoreCase (Json.getString (feature, ApiSpace.Features.Provider))) {
-				continue;
-			}
-			
-			JsonObject spec = Json.getObject (feature, ApiSpace.Features.Spec);
-			
-			if (spec == null) {
-				continue;
-			}
-			
-			OPartitionedDatabasePool pool = createPool (key, space, spec);
-			if (pool != null) {
-				feature.set (ApiSpace.Spec.Installed, true);
-			}
+			createClient (space, allFeatures, keys.next ());
 		}
 	}
 	
-	private void dropPools (ApiSpace space) {
-		
-		JsonObject dbFeature = Json.getObject (space.getFeatures (), feature);
-		
-		Set<String> recyclables = space.getRecyclables ();
-		for (String r : recyclables) {
-			if (!r.startsWith (feature + Lang.DOT)) {
-				continue;
-			}
-			String name = r.substring ((feature + Lang.DOT).length ());
-			if (dbFeature == null || dbFeature.containsKey (name)) {
-				// it's deleted
-				Recyclable recyclable = space.getRecyclable (r);
-				if (!(recyclable instanceof RecyclablePool)) {
-					continue;
-				}
-				// remove from recyclables
-				space.removeRecyclable (r);
-				// recycle
-				recyclable.recycle ();
-			}
+	private void removeClient (ApiSpace space, String featureName) {
+		String key = createKey (featureName);
+		Recyclable recyclable = space.getRecyclable (createKey (featureName));
+		if (recyclable == null) {
+			return;
 		}
-		
+		// remove from recyclables
+		space.removeRecyclable (key);
+		// recycle
+		recyclable.recycle ();
 	}
 	
-	private OPartitionedDatabasePool createPool (String name, ApiSpace space, JsonObject spec) {
+	private OPartitionedDatabasePool createClient (ApiSpace space, JsonObject allFeatures, String name) {
 		
-		String factoryKey = createFactoryKey  (name, space);
+		JsonObject feature = Json.getObject (allFeatures, name);
+		
+		if (!this.getNamespace ().equalsIgnoreCase (Json.getString (feature, ApiSpace.Features.Provider))) {
+			return null;
+		}
+		
+		JsonObject spec = Json.getObject (feature, ApiSpace.Features.Spec);
+		
+		if (spec == null) {
+			return null;
+		}
+		
+		String factoryKey = createKey  (name);
 		
 		if (space.containsRecyclable (factoryKey)) {
 			return null;
@@ -211,12 +193,14 @@ public class OrientDatabasePlugin extends AbstractPlugin {
 		
 		space.addRecyclable (factoryKey, new RecyclablePool (pool));
 		
+		feature.set (ApiSpace.Spec.Installed, true);
+		
 		return pool;
 		
 	}
 	
-	private String createFactoryKey (String name, ApiSpace space) {
-		return feature + Lang.DOT + space.getNamespace () + Lang.DOT + name;
+	private String createKey (String name) {
+		return feature + Lang.DOT + getNamespace () + Lang.DOT + name;
 	}
 
 	private String createUrl (JsonObject database) {
@@ -224,7 +208,7 @@ public class OrientDatabasePlugin extends AbstractPlugin {
 	}
 	
 	public ODatabaseDocumentTx acquire (ApiSpace space, String name) {
-		return ((RecyclablePool)space.getRecyclable (createFactoryKey (name, space))).pool ().acquire ();
+		return ((RecyclablePool)space.getRecyclable (createKey (name))).pool ().acquire ();
 	}
 	
 	class RecyclablePool implements Recyclable {

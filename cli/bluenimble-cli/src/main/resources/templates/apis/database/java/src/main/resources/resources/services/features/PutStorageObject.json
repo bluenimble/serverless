@@ -1,0 +1,17 @@
+{
+	    "verb": "post",
+	"endpoint": "/features/storage",
+	
+	"spec": {
+		"fields": {
+			"name": { "title": "Object Name" },
+			"overwrite": { "title": "Overwrite", "required": "false", "value": "true" }
+		}
+	},
+	
+	"spi": {
+		"class": "core:PutStorageObjectSpi",
+		"feature": "default"
+	} 
+	
+}

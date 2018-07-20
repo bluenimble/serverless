@@ -119,6 +119,8 @@ public class DefaultExpression implements Expression {
 				value = evalVarNode ((VariableNode)node (0), vr);
 			} else if (node (0) instanceof ScriptNode) {
 				value = evalScriptNode ((ScriptNode)node (0), vr);
+			} else {
+				value = node (0).token ();
 			}
 		} else {
 			StringBuilder sb = new StringBuilder ();

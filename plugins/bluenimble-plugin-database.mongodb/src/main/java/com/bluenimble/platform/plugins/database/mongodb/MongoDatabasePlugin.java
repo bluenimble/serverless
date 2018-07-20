@@ -19,7 +19,6 @@ package com.bluenimble.platform.plugins.database.mongodb;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
@@ -146,10 +145,10 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 				createClients (space);
 				break;
 			case AddFeature:
-				createClients (space);
+				createClient (space, Json.getObject (space.getFeatures (), feature), (String)args [0]);
 				break;
 			case DeleteFeature:
-				dropClients (space);
+				removeClient (space, (String)args [0]);
 				break;
 			default:
 				break;
@@ -157,66 +156,45 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 	}
 	
 	private void createClients (ApiSpace space) {
-		
 		// create factories
 		JsonObject allFeatures = Json.getObject (space.getFeatures (), feature);
-		if (allFeatures == null || allFeatures.isEmpty ()) {
+		if (Json.isNullOrEmpty (allFeatures)) {
 			return;
 		}
 		
 		Iterator<String> keys = allFeatures.keys ();
 		while (keys.hasNext ()) {
-			String key = keys.next ();
-			
-			JsonObject feature = Json.getObject (allFeatures, key);
-			
-			if (!MongoDatabasePlugin.this.getNamespace ().equalsIgnoreCase (Json.getString (feature, ApiSpace.Features.Provider))) {
-				continue;
-			}
-			
-			JsonObject spec = Json.getObject (feature, ApiSpace.Features.Spec);
-			
-			if (spec == null) {
-				continue;
-			}
-			
-			MongoClient client = createClient (key, space, spec);
-			if (client != null) {
-				feature.set (ApiSpace.Spec.Installed, true);
-			}
-			
+			createClient (space, allFeatures, keys.next ());
 		}
 	}
 	
-	private void dropClients (ApiSpace space) {
-		
-		JsonObject dbFeature = Json.getObject (space.getFeatures (), feature);
-		
-		Set<String> recyclables = space.getRecyclables ();
-		for (String r : recyclables) {
-			if (!r.startsWith (feature + Lang.DOT)) {
-				continue;
-			}
-			String name = r.substring ((feature + Lang.DOT).length ());
-			
-			if (dbFeature == null || !dbFeature.containsKey (name)) {
-				// it's deleted
-				Recyclable recyclable = space.getRecyclable (r);
-				if (!(recyclable instanceof RecyclableClient)) {
-					continue;
-				}
-				// remove from recyclables
-				space.removeRecyclable (r);
-				// recycle
-				recyclable.recycle ();
-			}
+	private void removeClient (ApiSpace space, String featureName) {
+		String key = createKey (featureName);
+		Recyclable recyclable = space.getRecyclable (createKey (featureName));
+		if (recyclable == null) {
+			return;
 		}
-		
+		// remove from recyclables
+		space.removeRecyclable (key);
+		// recycle
+		recyclable.recycle ();
 	}
 	
-	private MongoClient createClient (String name, ApiSpace space, JsonObject spec) {
+	private MongoClient createClient (ApiSpace space, JsonObject allFeatures, String name) {
 		
-		String factoryKey = createFactoryKey  (name, space);
+		JsonObject feature = Json.getObject (allFeatures, name);
+		
+		if (!MongoDatabasePlugin.this.getNamespace ().equalsIgnoreCase (Json.getString (feature, ApiSpace.Features.Provider))) {
+			return null;
+		}
+		
+		JsonObject spec = Json.getObject (feature, ApiSpace.Features.Spec);
+		
+		if (spec == null) {
+			return null;
+		}
+		
+		String factoryKey = createKey  (name);
 		
 		if (space.containsRecyclable (factoryKey)) {
 			return null;
@@ -263,6 +241,8 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 		}
 		
 		space.addRecyclable (factoryKey, new RecyclableClient (client, database));
+		
+		feature.set (ApiSpace.Spec.Installed, true);
 		
 		return client;
 		
@@ -344,12 +324,12 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 		
 	}
 	
-	private String createFactoryKey (String name, ApiSpace space) {
-		return feature + Lang.DOT + space.getNamespace () + Lang.DOT + name;
+	private String createKey (String name) {
+		return feature + Lang.DOT + getNamespace () + Lang.DOT + name;
 	}
 	
 	public MongoDatabase acquire (ApiSpace space, String name) {
-		return ((RecyclableClient)space.getRecyclable (createFactoryKey (name, space))).database ();
+		return ((RecyclableClient)space.getRecyclable (createKey (name))).database ();
 	}
 	
 	class RecyclableClient implements Recyclable {

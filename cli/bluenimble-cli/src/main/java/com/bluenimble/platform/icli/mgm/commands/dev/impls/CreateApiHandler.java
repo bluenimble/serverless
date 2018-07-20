@@ -84,21 +84,29 @@ public class CreateApiHandler implements CommandHandler {
 		File apiFolder = new File (BlueNimble.Workspace, sApiFolder);
 		if (apiFolder.exists ()) {
 			try {
-				tool.printer ().info (sApiFolder + " already exists");
+				tool.printer ().warning (sApiFolder + " already exists");
 				String exists = Json.getString (Json.getObject (BlueNimble.Config, CliSpec.Config.Apis), namespace);
 				if (!Lang.isNullOrEmpty (exists)) {
 					return null;
 				}
-				tool.printer ().info ("binding to the current workspace");
+				tool.printer ().info ("binding " + namespace + " api to the current workspace");
 				String ns = BlueNimble.loadApi (apiFolder);
 				if (ns == null) {
-					tool.printer ().warning ("unable to bind current api. Please check if the api.json exists and the namespace is there.");
+					tool.printer ().warning ("unable to bind current api. Please check if the api.[json|yaml] exists and the namespace is correctly sat.");
 				}
-				Json.getObject (BlueNimble.Config, CliSpec.Config.Apis).set (ns, sApiFolder);
+				JsonObject apis = Json.getObject (BlueNimble.Config, CliSpec.Config.Apis);
+				if (apis == null) {
+					apis = new JsonObject ();
+					BlueNimble.Config.set (CliSpec.Config.Apis, apis);
+				}
+				apis.set (ns, sApiFolder);
 				BlueNimble.Config.set (CliSpec.Config.CurrentApi, sApiFolder);
+				BlueNimble.saveConfig ();
 			} catch (Exception ex) {
 				throw new CommandExecutionException (ex.getMessage (), ex);
 			}
+			
+			return null;
 		}
 		
 		String template 	= (String)vars.get (BlueNimble.DefaultVars.ApiTemplate);
@@ -147,8 +155,6 @@ public class CreateApiHandler implements CommandHandler {
 		} catch (Exception ex) {
 			throw new CommandExecutionException (ex.getMessage (), ex);
 		}
-		
-		//CodeGenUtils.writeAll (apiFolder, tokens, specLang);
 		
 		BlueNimble.Config.set (CliSpec.Config.CurrentApi, namespace);
 		JsonObject oApis = Json.getObject (BlueNimble.Config, CliSpec.Config.Apis);

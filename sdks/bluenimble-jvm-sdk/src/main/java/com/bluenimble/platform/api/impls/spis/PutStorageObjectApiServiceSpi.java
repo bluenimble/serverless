@@ -16,6 +16,7 @@
  */
 package com.bluenimble.platform.api.impls.spis;
 
+import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiOutput;
@@ -35,32 +36,35 @@ public class PutStorageObjectApiServiceSpi extends AbstractStorageApiServiceSpi 
 
 	private static final long serialVersionUID = 1283296736684087088L;
 	
-	private String streamParameter = ApiRequest.Payload;
-	
 	@Override
 	public ApiOutput execute (Api api, ApiConsumer consumer, ApiRequest request, ApiResponse response) throws ApiServiceExecutionException {
+		Storage storage = feature (
+			api,
+			Storage.class, 
+			Json.getString (request.getService ().getSpiDef (), Spec.Feature), 
+			request
+		);
 		
-		Storage storage = api.space ().feature (Storage.class, provider, request);
-		
-		String path = (String)request.get (objectParameter);
-		if (Lang.isNullOrEmpty (path)) {
-			throw new ApiServiceExecutionException ("missing object path parameter '" + objectParameter + "'").status (ApiResponse.BAD_REQUEST);
+		String folder = Json.getString (request.getService ().getSpiDef (), Spec.Folder);
+		if (Lang.isNullOrEmpty (folder)) {
+			throw new ApiServiceExecutionException ("missing folder path in spi").status (ApiResponse.BAD_REQUEST);
 		}
 		
-		String objectName = null;
+		String 	objectName = (String)request.get (Spec.ObjectName);
+		Boolean overwrite = (Boolean)request.get (Spec.Overwrite);
+		
+		if (overwrite == null) {
+			overwrite = Json.getBoolean (request.getService ().getSpiDef (), Spec.Overwrite, true);
+		}
 		
 		StorageObject so = null;
 		long length = -1;
 		
 		ApiStreamSource 	stream 	= null;
 		try {
-			stream 	= (ApiStreamSource)request.get (streamParameter, Scope.Stream);
+			stream 	= (ApiStreamSource)request.get (Spec.StreamId, Scope.Stream);
 			
-			if (Lang.isNullOrEmpty (stream.name ())) {
-				objectName = Lang.UUID (20);
-			}
-
-			so = findFolder (storage.root (), this.folder).add (stream, objectName, true);
+			so = findFolder (storage.root (), folder).add (stream, objectName, overwrite);
 			
 			length = so.length ();
 		} catch (StorageException e) {
@@ -74,13 +78,6 @@ public class PutStorageObjectApiServiceSpi extends AbstractStorageApiServiceSpi 
 				.set (StorageObject.Fields.Length, length)
 		);
 
-	}
-	
-	public String getStreamParameter () {
-		return streamParameter;
-	}
-	public void setStreamParameter (String streamParameter) {
-		this.streamParameter = streamParameter;
 	}
 
 }

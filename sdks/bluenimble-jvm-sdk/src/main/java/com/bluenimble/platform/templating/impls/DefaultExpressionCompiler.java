@@ -99,11 +99,11 @@ public class DefaultExpressionCompiler implements ExpressionCompiler {
 		if (indexOfStart < 0) {
 			expression.node (new TextNode (text));
 			return expression;
-		} else {
-			// create a text node for the starting part of the text 
-			expression.node (new TextNode (text.substring (0, indexOfStart)));
-			text = text.substring (indexOfStart + expStart.length ());
-		}
+		} 
+
+		// create a text node for the starting part of the text 
+		expression.node (new TextNode (text.substring (0, indexOfStart)));
+		text = text.substring (indexOfStart + expStart.length ());
 		
 		while (indexOfStart > -1) {
 			int indexOfEnd = text.indexOf (expEnd);

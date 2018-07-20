@@ -49,6 +49,8 @@ import com.diogonunes.jcdp.color.api.Ansi.FColor;
 
 public class CodeGenUtils {
 
+	public static final String DataModels 		= "dataModels";
+
 	private static final String DefaultTemplate = "blank/javascript";
 	
 	private static final String FindVerb		= "find";
@@ -373,10 +375,10 @@ public class CodeGenUtils {
 		
 		if (ApiVerb.POST.name ().equalsIgnoreCase (verb) && !Json.isNullOrEmpty (serviceModelSpec)) {
 			if (!Json.isNullOrEmpty (serviceModelSpec)) {
-				// write model file
+				// write data model file
 				writeFile (
 					new File (BlueNimble.Home, Templates.class.getSimpleName ().toLowerCase () + Lang.SLASH + Templates.Models + Lang.SLASH + EntityModel),
-					new File (specsFolder.getParentFile (), "datasources/default/" + Model + ".md"), 
+					new File (specsFolder.getParentFile (), DataModels.toLowerCase () + Lang.SLASH + api + Lang.SLASH + Model + ".md"), 
 					data, 
 					specLang
 				);
@@ -530,11 +532,10 @@ public class CodeGenUtils {
 			return;
 		}
 		File [] files = file.listFiles ();
-		if (files == null || files.length == 0) {
-			return;
-		}
-		for (File f : files) {
-			renameAll (f, data);
+		if (files != null && files.length > 0) {
+			for (File f : files) {
+				renameAll (f, data);
+			}
 		}
 		rename (file, data);
 	}

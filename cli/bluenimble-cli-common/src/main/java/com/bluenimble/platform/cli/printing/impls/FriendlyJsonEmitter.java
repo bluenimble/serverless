@@ -27,6 +27,8 @@ import com.diogonunes.jcdp.color.api.Ansi.FColor;
 
 public class FriendlyJsonEmitter extends AbstractEmitter {
 	
+	private static final String InputValue = "<?>";
+	
 	private FontPrinter fontPrinter;
 	private Tool tool;
 	
@@ -51,7 +53,7 @@ public class FriendlyJsonEmitter extends AbstractEmitter {
 		}
 		
 		String color = FColor.CYAN.name ();
-		if (Markers.Status.equals (name)) {
+		if (Markers.Status.equals (name) || Markers.Installed.equals (name)) {
 			String status = value.toString ().toLowerCase ();
 			if (Markers.Red.contains (status)) {
 				color = FColor.RED.name ();
@@ -60,6 +62,12 @@ public class FriendlyJsonEmitter extends AbstractEmitter {
 			} else if (Markers.Yellow.contains (status)) {
 				color = FColor.YELLOW.name ();
 			} 
+		} else if (value instanceof String) {
+			String sValue =  (String)value;
+			if (sValue.startsWith (InputValue)) {
+				color = FColor.YELLOW.name ();
+				value = sValue.substring (InputValue.length ()).trim ();
+			}
 		}
 		tool.write (Lang.QUOTE);
 		tool.printer ().text (-100, Json.escape (String.valueOf (value)), color, null);
