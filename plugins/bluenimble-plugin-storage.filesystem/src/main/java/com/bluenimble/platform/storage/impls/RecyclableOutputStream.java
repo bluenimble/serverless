@@ -21,7 +21,6 @@ import java.io.OutputStream;
 
 import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Recyclable;
-import com.bluenimble.platform.api.ApiSpace;
 
 public class RecyclableOutputStream extends OutputStream implements Recyclable {
 
@@ -61,16 +60,6 @@ public class RecyclableOutputStream extends OutputStream implements Recyclable {
 	@Override
 	public void recycle () {
 		IOUtils.closeQuietly (proxy);
-	}
-
-	@Override
-	public Object get () {
-		return proxy;
-	}
-
-	@Override
-	public void set (ApiSpace space, ClassLoader classLoader, Object... args) {
-		
 	}
 	
 }

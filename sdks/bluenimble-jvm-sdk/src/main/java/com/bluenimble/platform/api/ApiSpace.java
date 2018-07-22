@@ -110,7 +110,7 @@ public interface ApiSpace extends Traceable, Manageable {
 	Collection<ApiSpace> 
 						spaces 					()										throws ApiAccessDeniedException;
 	
-	void				addFeature				(String name, String feature, String provider, JsonObject spec)											
+	void				addFeature				(String name, String feature, String provider, JsonObject spec, boolean overwrite)											
 																						throws ApiManagementException;
 	void				deleteFeature			(String name, String feature)			throws ApiManagementException;
 	

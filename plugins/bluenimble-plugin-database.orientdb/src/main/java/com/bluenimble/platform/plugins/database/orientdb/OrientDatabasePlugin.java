@@ -122,7 +122,7 @@ public class OrientDatabasePlugin extends AbstractPlugin {
 				createClients (space);
 				break;
 			case AddFeature:
-				createClient (space, Json.getObject (space.getFeatures (), feature), (String)args [0]);
+				createClient (space, Json.getObject (space.getFeatures (), feature), (String)args [0], (Boolean)args [1]);
 				break;
 			case DeleteFeature:
 				removeClient (space, (String)args [0]);
@@ -142,13 +142,13 @@ public class OrientDatabasePlugin extends AbstractPlugin {
 		
 		Iterator<String> keys = allFeatures.keys ();
 		while (keys.hasNext ()) {
-			createClient (space, allFeatures, keys.next ());
+			createClient (space, allFeatures, keys.next (), false);
 		}
 	}
 	
 	private void removeClient (ApiSpace space, String featureName) {
 		String key = createKey (featureName);
-		Recyclable recyclable = space.getRecyclable (createKey (featureName));
+		Recyclable recyclable = space.getRecyclable (key);
 		if (recyclable == null) {
 			return;
 		}
@@ -158,7 +158,7 @@ public class OrientDatabasePlugin extends AbstractPlugin {
 		recyclable.recycle ();
 	}
 	
-	private OPartitionedDatabasePool createClient (ApiSpace space, JsonObject allFeatures, String name) {
+	private OPartitionedDatabasePool createClient (ApiSpace space, JsonObject allFeatures, String name, boolean overwrite) {
 		
 		JsonObject feature = Json.getObject (allFeatures, name);
 		
@@ -190,6 +190,10 @@ public class OrientDatabasePlugin extends AbstractPlugin {
 			Json.getInteger (spec, Spec.MaxPartitionSize, 10), 
 			Json.getInteger (spec, Spec.MaxPoolSize, 10)
 		);
+		
+		if (overwrite) {
+			removeClient (space, name);
+		}
 		
 		space.addRecyclable (factoryKey, new RecyclablePool (pool));
 		
@@ -230,18 +234,8 @@ public class OrientDatabasePlugin extends AbstractPlugin {
 		}
 
 		public OPartitionedDatabasePool pool () {
-			return (OPartitionedDatabasePool)get ();
-		}
-
-		@Override
-		public Object get () {
 			return pool;
 		}
 
-		@Override
-		public void set (ApiSpace arg0, ClassLoader arg1, Object... arg2) {
-			
-		}
-		
 	}
 }

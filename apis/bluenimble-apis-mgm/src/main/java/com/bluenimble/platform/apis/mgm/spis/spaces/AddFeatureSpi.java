@@ -37,8 +37,9 @@ public class AddFeatureSpi extends AbstractApiServiceSpi {
 	private static final long serialVersionUID = -3682312790255625219L;
 
 	interface Spec {
-		String Name 	= "name";
-		String Feature 	= "feature";
+		String Name 		= "name";
+		String Feature 		= "feature";
+		String Overwrite 	= "overwrite";
 	}
 	
 	@Override
@@ -46,6 +47,11 @@ public class AddFeatureSpi extends AbstractApiServiceSpi {
 			ApiResponse response) throws ApiServiceExecutionException {
 
 		JsonObject oFeature = (JsonObject)request.get (ApiRequest.Payload);
+		
+		Boolean overwrite = (Boolean)request.get (Spec.Overwrite);
+		if (overwrite == null) {
+			overwrite = false;
+		}
 		
 		ApiSpace space;
 		try {
@@ -59,7 +65,8 @@ public class AddFeatureSpi extends AbstractApiServiceSpi {
 				Json.getString (oFeature, Spec.Name), 
 				Json.getString (oFeature, Spec.Feature), 
 				Json.getString (oFeature, ApiSpace.Features.Provider), 
-				Json.getObject (oFeature, ApiSpace.Features.Spec)
+				Json.getObject (oFeature, ApiSpace.Features.Spec),
+				overwrite
 			);
 		} catch (ApiManagementException e) {
 			throw new ApiServiceExecutionException (e.getMessage (), e).status (ApiResponse.BAD_REQUEST);

@@ -104,7 +104,7 @@ public class MemCachedPlugin extends AbstractPlugin {
 				createClients (space);
 				break;
 			case AddFeature:
-				createClient (space, Json.getObject (space.getFeatures (), feature), (String)args [0]);
+				createClient (space, Json.getObject (space.getFeatures (), feature), (String)args [0], (Boolean)args [1]);
 				break;
 			case DeleteFeature:
 				removeClient ((ApiSpace)target, (String)args [0]);
@@ -123,12 +123,12 @@ public class MemCachedPlugin extends AbstractPlugin {
 		
 		Iterator<String> keys = allFeatures.keys ();
 		while (keys.hasNext ()) {
-			createClient (space, allFeatures, keys.next ());
+			createClient (space, allFeatures, keys.next (), false);
 		}
 		
 	}
 	
-	private void createClient (ApiSpace space, JsonObject allFeatures, String name) throws PluginRegistryException {
+	private void createClient (ApiSpace space, JsonObject allFeatures, String name, boolean overwrite) throws PluginRegistryException {
 		
 		JsonObject feature = Json.getObject (allFeatures, name);
 		
@@ -162,26 +162,32 @@ public class MemCachedPlugin extends AbstractPlugin {
 		
 		AuthDescriptor ad = new AuthDescriptor (new String [] { "PLAIN" }, new PlainCallbackHandler (user, password));
 
+		MemcachedClient client = null;
 		try {
-			MemcachedClient client = new MemcachedClient (
+			client = new MemcachedClient (
 				new ConnectionFactoryBuilder ()
 					.setProtocol (ConnectionFactoryBuilder.Protocol.BINARY)
 					.setAuthDescriptor (ad).build (),
 				AddrUtil.getAddresses (Arrays.asList (nodes))
 			);
 			
-			space.addRecyclable (sessionKey, new RecyclableCacheClient (client));
-			
-			feature.set (ApiSpace.Spec.Installed, true);
-			
 		} catch (IOException e) {
 			throw new PluginRegistryException (e.getMessage (), e);
 		}
+		
+		if (overwrite) {
+			removeClient (space, name);
+		}
+		
+		space.addRecyclable (sessionKey, new RecyclableCacheClient (client));
+		
+		feature.set (ApiSpace.Spec.Installed, true);
+		
 	}
 	
 	private void removeClient (ApiSpace space, String featureName) {
 		String key = createKey (featureName);
-		Recyclable recyclable = space.getRecyclable (createKey (featureName));
+		Recyclable recyclable = space.getRecyclable (key);
 		if (recyclable == null) {
 			return;
 		}
@@ -210,17 +216,7 @@ public class MemCachedPlugin extends AbstractPlugin {
 		}
 
 		public MemcachedClient client () {
-			return (MemcachedClient) get ();
-		}
-
-		@Override
-		public Object get () {
 			return client;
-		}
-
-		@Override
-		public void set (ApiSpace space, ClassLoader classLoader, Object... args) {
-			
 		}
 		
 	}

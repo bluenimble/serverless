@@ -105,6 +105,8 @@
 								
 								<touch file="../../build/${project.artifactId}-${project.version}/bnb.cli.version-${project.version}" />
 								
+								<chmod dir="../../build/${project.artifactId}-${project.version}" perm="775" includes="*.sh" />
+								
 							</target>
 						</configuration>
 						<goals>

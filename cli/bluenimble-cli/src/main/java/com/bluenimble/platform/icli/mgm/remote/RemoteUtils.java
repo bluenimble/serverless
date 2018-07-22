@@ -282,7 +282,7 @@ public class RemoteUtils {
 		
 		
 		// set parameters
-		if (oParameters != null && !oParameters.isEmpty ()) {
+		if (!Json.isNullOrEmpty (oParameters)) {
 			List<HttpParameter> parameters = request.getParameters ();
 			if (parameters == null) {
 				parameters = new ArrayList<HttpParameter> ();

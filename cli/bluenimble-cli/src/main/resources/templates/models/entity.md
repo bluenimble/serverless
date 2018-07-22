@@ -8,14 +8,14 @@
 	
 	# direct fields
 	[[#each ModelSpec.fields]]
-	[[#hasnt ModelSpec.refs @key]][[@key]] [[#eq type 'Object']]json @Convert(converter = helpers.JsonConverter.class)[[else]][[type]][[/eq]][[/hasnt]]
+	[[#hasnt ModelSpec.refs @key]][[@key]] [[#isObject type]]json @Convert(converter = helpers.JsonConverter.class)[[else]][[type]][[/isObject]][[/hasnt]]
 	[[/each]]
 	
 	[[#if ModelSpec.refs]]# relationships
 	[[#each ModelSpec.refs]]
 	[[#eq multiple 'true']]
-	[[@key]] List<[[entity]]> @OneToMany @JoinColumn(name="[[Model]]ID", referencedColumnName="ID")
+	[[@key]] List<[[entity]]> @OneToMany @JoinColumn(name="[[uppercase Model]]_ID", referencedColumnName="ID")
 	[[else]]
-	[[@key]] [[entity]] @OneToOne(fetch=FetchType.LAZY) @JoinColumn(name="ID")
+	[[@key]] [[entity]] @OneToOne(fetch=FetchType.LAZY) @JoinColumn(name="[[uppercase @key]]_ID")
 	[[/eq]]
 	[[/each]][[/if]]

@@ -269,7 +269,25 @@ if (Vars ['api.release.notes']) {
 	release.set ('notes', Vars ['api.release.notes']);
 }
 
-//generate datasources 
+// set runtime
+if (Vars ['api.runtime']) {
+	if (apiSpec.runtime) {
+		apiSpec.get ('runtime').merge (Vars ['api.runtime']);
+	} else {
+		apiSpec.set ('runtime', Vars ['api.runtime']);
+	}
+}
+
+// set features
+if (Vars ['api.features']) {
+	if (apiSpec.features) {
+		apiSpec.get ('features').merge (Vars ['api.features']);
+	} else {
+		apiSpec.set ('features', Vars ['api.features']);
+	}
+}
+
+// generate datasources 
 BuildUtils.generate (apiFolder, Json.find (apiSpec, 'runtime', 'dataModels'));
 
 // save api.json file

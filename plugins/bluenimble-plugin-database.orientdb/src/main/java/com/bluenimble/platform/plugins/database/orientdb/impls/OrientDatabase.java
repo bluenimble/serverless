@@ -28,7 +28,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
-import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseException;
@@ -469,16 +468,6 @@ public class OrientDatabase implements Database {
 		return db;
 	}
 	
-	@Override
-	public Object get () {
-		return null;
-	}
-
-	@Override
-	public void set (ApiSpace space, ClassLoader classLoader, Object... args) {
-		
-	}
-
 	private List<DatabaseObject> toList (String type, List<ODocument> documents, Visitor visitor) {
 		if (visitor == null) {
 			return new DatabaseObjectList<DatabaseObject> (this, documents);

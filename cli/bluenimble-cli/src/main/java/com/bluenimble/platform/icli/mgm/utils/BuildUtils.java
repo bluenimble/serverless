@@ -75,7 +75,7 @@ public class BuildUtils {
 		GlobalProperties.put ("eclipselink.ddl-generation", "drop-and-create-tables");
 	}
 
-	private static final Map<String, String> Types = new HashMap<String, String> ();
+	public static final Map<String, String> Types = new HashMap<String, String> ();
 	static {
 		Types.put ("date", "java.util.Date");
 		Types.put ("string", "String");
@@ -180,39 +180,54 @@ public class BuildUtils {
 				writer.write ("\t<persistence-unit name=\"" + ds.getName () + "\" transaction-type=\"RESOURCE_LOCAL\">\n");
 				writer.write ("\t\t<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>\n");
 				
+				// add helper classes
+				
+				if (helpers.exists ()) {
+					File [] aHelpers = helpers.listFiles ();
+					if (aHelpers != null && aHelpers.length > 0) {
+						for (File h : aHelpers) {
+							writer.write ("\t\t<class>helpers." + h.getName ().substring (0, h.getName ().indexOf (Lang.DOT)) + "</class>\n");	
+						}
+					}
+				}
+				
 				// add classes
 				for (DSEntity entity : ds.getEntities ()) {
 					writer.write ("\t\t<class>" + (entity.getPackage () == null ? Lang.BLANK : Lang.replace (entity.getPackage (), Lang.SLASH, Lang.DOT) + Lang.DOT) + entity.getName () + "</class>\n");
 				}
 				
 				// add properties
+				JsonObject oProperties = null;
+				
 				File properties = new File (dataSourcesFolder, ds.getName () + Lang.SLASH + Properties);
 				if (properties.exists ()) {
-					JsonObject oProperties = Json.load (properties);
-					
-					// add global properties if missing
-					Set<String> globalKeys = GlobalProperties.keySet ();
-					for (String key : globalKeys) {
-						if (!oProperties.containsKey (key)) {
-							if (DoNotApply.equals (oProperties.get (key))) {
-								oProperties.remove (key);
-							} else {
-								oProperties.set (key, GlobalProperties.get (key));
-							}
+					oProperties = Json.load (properties);
+				} else {
+					oProperties = new JsonObject ();
+				}
+				
+				// add global properties if missing
+				Set<String> globalKeys = GlobalProperties.keySet ();
+				for (String key : globalKeys) {
+					if (!oProperties.containsKey (key)) {
+						if (DoNotApply.equals (oProperties.get (key))) {
+							oProperties.remove (key);
+						} else {
+							oProperties.set (key, GlobalProperties.get (key));
 						}
 					}
-					
-					if (!Json.isNullOrEmpty (oProperties)) {
-						writer.write ("\t\t<properties>\n");
+				}
+				
+				if (!Json.isNullOrEmpty (oProperties)) {
+					writer.write ("\t\t<properties>\n");
 
-						Iterator<String> keys = oProperties.keys ();
-						while (keys.hasNext ()) {
-							String key = keys.next ();
-							writer.write ("\t\t\t<property name=\"" + key + "\" value=\"" + oProperties.get (key) + "\" />\n");
-						}
-						
-						writer.write ("\t\t</properties>\n");
+					Iterator<String> keys = oProperties.keys ();
+					while (keys.hasNext ()) {
+						String key = keys.next ();
+						writer.write ("\t\t\t<property name=\"" + key + "\" value=\"" + oProperties.get (key) + "\" />\n");
 					}
+					
+					writer.write ("\t\t</properties>\n");
 				}
 				
 				writer.write ("\t</persistence-unit>\n");
@@ -229,7 +244,7 @@ public class BuildUtils {
 			apiLibs.mkdirs ();
 		}
 		
-		ArchiveUtils.compress (javaBin, new File (apiLibs, CodeGenUtils.DataModels + Lang.UUID (6) + JarExt), true, new ArchiveUtils.CompressVisitor () {
+		ArchiveUtils.compress (javaBin, new File (apiLibs, apiFolder.getName () + Lang.DASH + CodeGenUtils.DataModels + JarExt), true, new ArchiveUtils.CompressVisitor () {
 			@Override
 			public boolean onAdd (File file) {
 				if (file.getName ().startsWith (Lang.DOT)) {

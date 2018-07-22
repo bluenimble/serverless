@@ -105,7 +105,7 @@ public class SmtpMessengerPlugin extends AbstractPlugin {
 				createClients (space);
 				break;
 			case AddFeature:
-				createClient (space, Json.getObject (space.getFeatures (), feature), (String)args [0]);
+				createClient (space, Json.getObject (space.getFeatures (), feature), (String)args [0], (Boolean)args [1]);
 				break;
 			case DeleteFeature:
 				removeClient (space, (String)args [0]);
@@ -124,13 +124,13 @@ public class SmtpMessengerPlugin extends AbstractPlugin {
 		
 		Iterator<String> keys = allFeatures.keys ();
 		while (keys.hasNext ()) {
-			createClient (space, allFeatures, keys.next ());
+			createClient (space, allFeatures, keys.next (), false);
 		}
 		
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void createClient (ApiSpace space, JsonObject allFeatures, String name) {
+	private void createClient (ApiSpace space, JsonObject allFeatures, String name, boolean overwrite) {
 		
 		JsonObject feature = Json.getObject (allFeatures, name);
 		
@@ -176,6 +176,10 @@ public class SmtpMessengerPlugin extends AbstractPlugin {
 			}
 		);
 		
+		if (overwrite) {
+			removeClient (space, name);
+		}
+		
 		space.addRecyclable (sessionKey, new RecyclableMessenger (new SmtpMessenger (user, session)));
 	
 		feature.set (ApiSpace.Spec.Installed, true);
@@ -219,17 +223,7 @@ public class SmtpMessengerPlugin extends AbstractPlugin {
 		}
 
 		public SmtpMessenger messenger () {
-			return (SmtpMessenger) get ();
-		}
-
-		@Override
-		public Object get () {
 			return messenger;
-		}
-
-		@Override
-		public void set (ApiSpace space, ClassLoader classLoader, Object... args) {
-			
 		}
 		
 	}

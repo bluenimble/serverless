@@ -145,7 +145,7 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 				createClients (space);
 				break;
 			case AddFeature:
-				createClient (space, Json.getObject (space.getFeatures (), feature), (String)args [0]);
+				createClient (space, Json.getObject (space.getFeatures (), feature), (String)args [0], (Boolean)args [1]);
 				break;
 			case DeleteFeature:
 				removeClient (space, (String)args [0]);
@@ -164,13 +164,13 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 		
 		Iterator<String> keys = allFeatures.keys ();
 		while (keys.hasNext ()) {
-			createClient (space, allFeatures, keys.next ());
+			createClient (space, allFeatures, keys.next (), false);
 		}
 	}
 	
 	private void removeClient (ApiSpace space, String featureName) {
 		String key = createKey (featureName);
-		Recyclable recyclable = space.getRecyclable (createKey (featureName));
+		Recyclable recyclable = space.getRecyclable (key);
 		if (recyclable == null) {
 			return;
 		}
@@ -180,7 +180,7 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 		recyclable.recycle ();
 	}
 	
-	private MongoClient createClient (ApiSpace space, JsonObject allFeatures, String name) {
+	private MongoClient createClient (ApiSpace space, JsonObject allFeatures, String name, boolean overwrite) {
 		
 		JsonObject feature = Json.getObject (allFeatures, name);
 		
@@ -238,6 +238,10 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 			client = new MongoClient (nodes, options);
 		} else {
 			client = new MongoClient (nodes, creds, options);
+		}
+		
+		if (overwrite) {
+			removeClient (space, name);
 		}
 		
 		space.addRecyclable (factoryKey, new RecyclableClient (client, database));
@@ -353,17 +357,7 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 		}
 
 		public MongoDatabase database () {
-			return ((MongoClient)get ()).getDatabase (database);
-		}
-
-		@Override
-		public Object get () {
-			return client;
-		}
-
-		@Override
-		public void set (ApiSpace arg0, ClassLoader arg1, Object... arg2) {
-			
+			return client.getDatabase (database);
 		}
 		
 	}

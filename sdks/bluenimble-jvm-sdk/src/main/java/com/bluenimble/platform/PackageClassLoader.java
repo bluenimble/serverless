@@ -21,25 +21,31 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class PackageClassLoader extends URLClassLoader {
 	
 	protected static final URL[] EMPTY_URL_ARRAY = new URL[0];
 
-	protected String		 name;
-	protected ClassLoader [] dependencies;
+	protected String		 		name;
+	protected Set<ClassLoader> 		dependencies = new HashSet<ClassLoader>();
 	
-	protected Object		 main;	 
+	protected Object		 		main;	 
 	
-	protected Map<String, Object> registered;
+	protected Map<String, Object> 	registered;
 	
-	protected Map<String, String> synonyms;
+	protected Map<String, String> 	synonyms;
 	
 	public PackageClassLoader (String name, ClassLoader parent, URL [] urls, ClassLoader... dependencies) {
 		super (urls == null ? EMPTY_URL_ARRAY : urls, parent);
 		this.name = name;
-		this.dependencies = dependencies;
+		if (dependencies != null && dependencies.length > 0) {
+			for (ClassLoader cl : dependencies) {
+				this.dependencies.add (cl);
+			}
+		}
 	}
 
 	public PackageClassLoader (String name, URL [] urls, ClassLoader... dependencies) {
@@ -64,7 +70,7 @@ public class PackageClassLoader extends URLClassLoader {
 		if (r != null) {
 			return  r;
 		}
-		if (dependencies == null || dependencies.length == 0) {
+		if (dependencies.isEmpty ()) {
 			return null;
 		}
 		for (ClassLoader cl : dependencies) {
@@ -95,7 +101,7 @@ public class PackageClassLoader extends URLClassLoader {
 		if (r != null) {
 			return  r;
 		}
-		if (dependencies == null || dependencies.length == 0) {
+		if (dependencies.isEmpty ()) {
 			return null;
 		}
 		for (ClassLoader cl : dependencies) {
@@ -137,7 +143,7 @@ public class PackageClassLoader extends URLClassLoader {
 		}
 
 		// if we could not find it, delegate to dependencies
-		if (dependencies == null || dependencies.length == 0) {
+		if (dependencies.isEmpty ()) {
 			throw new ClassNotFoundException (name);
 		}
 		
@@ -152,6 +158,10 @@ public class PackageClassLoader extends URLClassLoader {
 		throw new ClassNotFoundException (name);
 	}
 
+	public void addDependency (ClassLoader classloader) {
+		dependencies.add (classloader);
+	}
+	
 	public void clear () throws IOException {
 		dependencies = null;
 		close ();

@@ -1,6 +1,5 @@
 package com.bluenimble.platform.remote.impls;
 
-import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.ApiStreamSource;
 import com.bluenimble.platform.api.ApiVerb;
 import com.bluenimble.platform.json.JsonObject;
@@ -46,16 +45,6 @@ public abstract class AbstractRemote implements Remote {
 	@Override
 	public void patch (JsonObject spec, Callback callback) {
 		request (ApiVerb.PATCH, spec, callback);
-	}
-	
-	@Override
-	public void set (ApiSpace space, ClassLoader classLoader, Object... args) {
-		
-	}
-
-	@Override
-	public Object get () {
-		return null;
 	}
 	
 	public abstract void request (ApiVerb verb, JsonObject spec, Callback callback, ApiStreamSource... attachments);

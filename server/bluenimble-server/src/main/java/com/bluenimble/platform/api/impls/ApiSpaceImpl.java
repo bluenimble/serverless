@@ -608,7 +608,7 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 	}
 	
 	@Override
-	public void addFeature (String name, String feature, String provider, JsonObject spec) throws ApiManagementException {
+	public void addFeature (String name, String feature, String provider, JsonObject spec, boolean overwrite) throws ApiManagementException {
 		feature = feature.toLowerCase ();
 		provider = provider.toLowerCase ();
 		
@@ -619,7 +619,7 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 			oFeature = new JsonObject ();
 			getFeatures ().set (feature, oFeature);
 		}
-		if (oFeature.containsKey (name)) {
+		if (oFeature.containsKey (name) && !overwrite) {
 			throw new ApiManagementException ("feature '" + feature + "/" + name + "/" + provider + "' already available for space " + getNamespace ());
 		}
 		
@@ -630,7 +630,7 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 		oFeature.set (name, uFeature);
 
 		try {
-			server.getPluginsRegistry ().lockup (provider).onEvent (Event.AddFeature, this, name);
+			server.getPluginsRegistry ().lockup (provider).onEvent (Event.AddFeature, this, name, overwrite);
 		} catch (PluginRegistryException e) {
 			throw new ApiManagementException (e.getMessage (), e);
 		}
@@ -958,8 +958,7 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 				} 
 				// compare json, and update if changed
 				if (!Json.areEqual (Json.getObject (eFeatureSet, name), newFeature)) {
-					deleteFeature (fname, name);
-					addFeature (name, fname, Json.getString (newFeature, ApiSpace.Features.Provider), Json.getObject (newFeature, ApiSpace.Features.Spec));
+					addFeature (name, fname, Json.getString (newFeature, ApiSpace.Features.Provider), Json.getObject (newFeature, ApiSpace.Features.Spec), true);
 				}
 			}
 			
@@ -983,7 +982,7 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 				String name = names.next ();
 				JsonObject newFeature = Json.getObject (eFeatureSet, name);
 				// add feature
-				addFeature (name, fname, Json.getString (newFeature, ApiSpace.Features.Provider), Json.getObject (newFeature, ApiSpace.Features.Spec));
+				addFeature (name, fname, Json.getString (newFeature, ApiSpace.Features.Provider), Json.getObject (newFeature, ApiSpace.Features.Spec), false);
 			}
 		}
 	}

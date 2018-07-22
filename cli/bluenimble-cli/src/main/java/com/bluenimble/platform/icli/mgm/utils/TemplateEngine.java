@@ -211,6 +211,16 @@ public class TemplateEngine {
 		        return target.containsKey (key) ? options.inverse () : options.fn ();
 			}
 		});
+		Engine.registerHelper ("isObject", new Helper<String>() {
+			public CharSequence apply (String property, Options options) throws IOException {
+				if (property == null) {
+					return options.inverse ();
+				} 
+				return (!BuildUtils.Types.containsKey (property.toLowerCase ()) || 
+						property.equalsIgnoreCase ("object") || 
+						property.equalsIgnoreCase ("json"))? options.fn () : options.inverse ();
+			}
+		});
 		
 	}
 

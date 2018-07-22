@@ -6,6 +6,8 @@
 			
 			"args": [{
 				"name": "feature", "desc": "a variable name of a json object representing your feature.\nExample: { feature: 'storage', name: '2ndary-storage', provider: 's3', spec: { your s3 credentials } }"
+			}, {
+				"name": "overwrite", "desc": "overwrite existing feature", "required": "false"
 			}],
 		
 			"request": {
@@ -14,6 +16,9 @@
 				"contentType": "application/json",
 				"body": {
 					"payload": "[arg.0]"
+				},
+				"params": {
+					"overwrite": "[ arg.1 | 'false' ]"
 				}
 			}
 		},

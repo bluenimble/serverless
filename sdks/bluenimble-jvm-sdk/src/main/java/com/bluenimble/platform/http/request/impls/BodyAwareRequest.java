@@ -88,7 +88,7 @@ public class BodyAwareRequest extends AbstractHttpRequest {
 				return;
 			}
 			if (getBodyPartsCount () > 0) {
-				if (hasParameters ()) {
+				if (!doesntNeedBoundary ()) {
 					String cs = charset != null ? charset : HttpUtils.DEFAULT_ENCODING;
 					for (HttpParameter p : getParameters ()) {
 						writer.append ("--" + boundary).append (HttpMessageBody.CRLF);
@@ -139,11 +139,28 @@ public class BodyAwareRequest extends AbstractHttpRequest {
 	 * @return
 	 */
 	private String getBoundary () {
-		if ((getBodyPartsCount () == 1 && (ContentTypes.Multipart.equals (contentType)) || hasParameters ()) 
-				|| getBodyPartsCount () > 1) {
-			return Long.toHexString (System.currentTimeMillis ());
-		} 
-		return null;
+		
+		// no body and no parameters
+		if (doesntNeedBoundary ()) {
+			return null;
+		}
+		
+		// else, create a boundary
+		return Long.toHexString (System.currentTimeMillis ());
+	}
+	
+	private boolean doesntNeedBoundary () {
+		// no body and no parameters
+		// one body and contentType isnt multipart nor form-data
+		return 	(
+					getBodyPartsCount () == 0 && 
+					!hasParameters ()
+				) ||
+				(
+					getBodyPartsCount () == 1 && 
+					!ContentTypes.Multipart.equals (contentType) && 
+					!ContentTypes.FormUrlEncoded.equals (contentType)
+				);
 	}
 	
 	private int getBodyPartsCount () {
@@ -155,12 +172,15 @@ public class BodyAwareRequest extends AbstractHttpRequest {
 	
 	@Override
 	protected String dumpParameters () throws UnsupportedEncodingException {
+		if (doesntNeedBoundary ()) {
+			return super.dumpParameters ();
+		}
 		return null;
 	}
 	
 	@Override
 	public URI getURI () throws UnsupportedEncodingException, URISyntaxException {
-		return HttpUtils.createURI (endpoint, null);
+		return HttpUtils.createURI (endpoint, dumpParameters ());
 	}
 
 	@Override
@@ -168,16 +188,17 @@ public class BodyAwareRequest extends AbstractHttpRequest {
 		StringBuilder sb = new StringBuilder ();
 		try {
 			sb.append (name).append (" ").append (getURI ()).append ("\n");
-			String ps = super.dumpParameters ();
-			if (ps != null) {
-				sb.append (ps).append ("\n");
+			if (parameters != null && !parameters.isEmpty ()) {
+				sb.append ("<PARAMS>\n");
+				for (HttpParameter p : parameters) {
+					sb.append ("\t").append ("[").append (p.getName ()).append ("]=>").append (p.getValue ()).append ("\n");
+				}
 			} else {
 				sb.append ("<NO PARAMS>");
 			}
-			sb.append ("\n");
 		} catch (Exception e) {
-			
 		}
+		
 		sb.append (super.toString ());
 		
 		if (getBodyPartsCount () > 0) {

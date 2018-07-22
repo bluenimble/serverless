@@ -95,7 +95,7 @@ public class AccessSecretKeysBasedHttpRequestSigner implements HttpRequestSigner
 		} catch (Throwable th) {
 			throw new HttpRequestSignerException (th);
 		}
-
+		
         if (SignaturePlaceHolder.Headers.equals (signatureParameterPlace)) {
         	List<HttpHeader> headers = request.getHeaders ();
     		

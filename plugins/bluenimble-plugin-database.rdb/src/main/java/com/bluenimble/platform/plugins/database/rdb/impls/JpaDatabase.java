@@ -13,7 +13,6 @@ import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 
 import com.bluenimble.platform.Lang;
-import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseException;
@@ -247,15 +246,6 @@ public class JpaDatabase implements Database {
 		return null;
 	}
 
-	@Override
-	public Object get () {
-		return null;
-	}
-
-	@Override
-	public void set (ApiSpace space, ClassLoader classLoader, Object... args) {
-	}
-	
 	@Override
 	public void recycle () {
 		entityManager.close ();

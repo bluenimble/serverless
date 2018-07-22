@@ -3,7 +3,6 @@
 	"endpoint": "/spaces/:space",
 	
 	"spec": {
-		"contentType": "application/json",
 		"fields": {
 			"space": {  },
 			"payload": { "type": "Object" }

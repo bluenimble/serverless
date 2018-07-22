@@ -3,13 +3,13 @@
 	"endpoint": "/space/features",
 	
 	"spec": {
-		"contentType": "application/json",
 		"fields": {
 			"payload": { "type": "Object",
 				"fields": {
 					"name": {}, "feature": { }, "provider": { }, "spec": { "required": "false", "type": "Object" }
 				}
-			}
+			},
+			"overwrite": { "type": "Boolean", "required": "false", "value": "false" }
 		}
 	},
 	

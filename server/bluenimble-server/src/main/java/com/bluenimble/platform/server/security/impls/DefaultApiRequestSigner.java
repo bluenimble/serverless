@@ -74,11 +74,17 @@ public class DefaultApiRequestSigner implements ApiRequestSigner {
 		String s = sb.toString ();
 		sb.setLength (0);
 		
+		//System.out.println ("====SING====");
+		//System.out.println (s);
+		//System.out.println ("====SING====");
+
 		try {
 			s = hmac (secretKey, s);
 		} catch (Exception e) {
 			throw new ApiRequestSignerException (e.getMessage (), e);
 		}
+		
+		//System.out.println ("Calculated: " + s);
 		
 		return s;
 		

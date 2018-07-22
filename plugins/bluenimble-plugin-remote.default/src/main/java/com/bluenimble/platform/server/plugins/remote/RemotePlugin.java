@@ -132,7 +132,7 @@ public class RemotePlugin extends AbstractPlugin {
 					);
 				} else {
 					JsonObject featureSpec = (JsonObject)Json.find (space.getFeatures (), feature, name, ApiSpace.Features.Spec);
-					return new HttpRemote (space, name, featureSpec, (OkHttpClient)((RecyclableHttpClient)recyclable).get ());
+					return new HttpRemote (space, name, featureSpec, (OkHttpClient)((RecyclableHttpClient)recyclable).client ());
 				}
 				
 			}
@@ -165,7 +165,7 @@ public class RemotePlugin extends AbstractPlugin {
 				break;
 			case AddFeature:
 				try {
-					createClient (space, Json.getObject (space.getFeatures (), feature), (String)args [0]);
+					createClient (space, Json.getObject (space.getFeatures (), feature), (String)args [0], (Boolean)args [1]);
 				} catch (Exception ex) {
 					throw new PluginRegistryException (ex.getMessage (), ex);
 				}
@@ -188,11 +188,11 @@ public class RemotePlugin extends AbstractPlugin {
 		
 		Iterator<String> keys = allFeatures.keys ();
 		while (keys.hasNext ()) {
-			createClient (space, allFeatures, keys.next ());
+			createClient (space, allFeatures, keys.next (), false);
 		}
 	}
 	
-	private void createClient (ApiSpace space, JsonObject allFeatures, String name) throws Exception {
+	private void createClient (ApiSpace space, JsonObject allFeatures, String name, boolean overwrite) throws Exception {
 		
 		JsonObject feature = Json.getObject (allFeatures, name);
 		
@@ -213,10 +213,10 @@ public class RemotePlugin extends AbstractPlugin {
 
 		switch (protocol) {
 			case http:
-				createHttp (space, name, spec, recyclableKey);
+				createHttp (space, name, spec, recyclableKey, overwrite);
 				feature.set (ApiSpace.Spec.Installed, true);
 			case binary:
-				createBinary (space, name, feature, recyclableKey);
+				createBinary (space, name, feature, recyclableKey, overwrite);
 				feature.set (ApiSpace.Spec.Installed, true);
 			default:	
 				break;
@@ -224,7 +224,7 @@ public class RemotePlugin extends AbstractPlugin {
 		
 	}
 	
-	private void createHttp (ApiSpace space, String name, JsonObject spec, String recyclableKey) throws Exception {
+	private void createHttp (ApiSpace space, String name, JsonObject spec, String recyclableKey, boolean overwrite) throws Exception {
 		
 		OkHttpClient http = null;
 		
@@ -288,11 +288,15 @@ public class RemotePlugin extends AbstractPlugin {
 		
 		http = builder.proxy (new Proxy (type, new InetSocketAddress (host, port))).build ();
 		
+		if (overwrite) {
+			removeClient (space, name);
+		}
+		
 		space.addRecyclable (recyclableKey, new RecyclableHttpClient (http));
 		
 	}
 	
-	private void createBinary (ApiSpace space, String name, JsonObject spec, String recyclableKey) {
+	private void createBinary (ApiSpace space, String name, JsonObject spec, String recyclableKey, boolean overwrite) {
 		String 	host = Json.getString (spec, Remote.Spec.Host);
 		int 	port = Json.getInteger (spec, Remote.Spec.Port, 0);
 		
@@ -304,8 +308,12 @@ public class RemotePlugin extends AbstractPlugin {
 			spec = new JsonObject ();
 		}
 				
+		if (overwrite) {
+			removeClient (space, name);
+		}
+		
 		space.addRecyclable (
-				recyclableKey, 
+			recyclableKey, 
 			new RecyclableBinaryClientFactory (
 				new NettyBinaryClientFactory (host, port, new PoolConfig (Json.getObject (spec, Remote.Spec.Pool)))
 			)
@@ -314,7 +322,7 @@ public class RemotePlugin extends AbstractPlugin {
 	
 	private void removeClient (ApiSpace space, String featureName) {
 		String key = createKey (featureName);
-		Recyclable recyclable = space.getRecyclable (createKey (featureName));
+		Recyclable recyclable = space.getRecyclable (key);
 		if (recyclable == null) {
 			return;
 		}
@@ -400,16 +408,6 @@ public class RemotePlugin extends AbstractPlugin {
 		public BinaryClient create () {
 			return factory.create ();
 		}
-
-		@Override
-		public Object get () {
-			return factory;
-		}
-
-		@Override
-		public void set (ApiSpace space, ClassLoader classLoader, Object... args) {
-			
-		}
 		
 	}
 	
@@ -433,14 +431,8 @@ public class RemotePlugin extends AbstractPlugin {
 			}
 		}
 
-		@Override
-		public Object get () {
+		public OkHttpClient client () {
 			return httpClient;
-		}
-
-		@Override
-		public void set (ApiSpace space, ClassLoader classLoader, Object... args) {
-			
 		}
 		
 	}

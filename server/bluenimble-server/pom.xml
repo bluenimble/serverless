@@ -126,6 +126,8 @@
 								
 								<replace file="../../build/bluenimble-${project.version}/config/instance.json" token="[version]" value="${project.version}"/>
 								
+								<chmod dir="../../build/bluenimble-${project.version}" perm="775" includes="*.sh" />
+								
 							</target>
 						</configuration>
 						<goals>

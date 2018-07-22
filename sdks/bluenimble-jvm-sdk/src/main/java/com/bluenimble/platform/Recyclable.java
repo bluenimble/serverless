@@ -18,10 +18,6 @@ package com.bluenimble.platform;
 
 import java.io.Serializable;
 
-import com.bluenimble.platform.api.ApiSpace;
-
 public interface Recyclable extends Serializable {
-	void	set 		(ApiSpace space, ClassLoader classLoader, Object... args);
-	Object	get 		();
 	void 	recycle 	();
 }

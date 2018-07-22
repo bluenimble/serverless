@@ -120,11 +120,10 @@ public class FileSystemStoragePlugin extends AbstractPlugin {
 				createClients (space);
 				break;
 			case AddFeature:
-				createClient (space, Json.getObject (space.getFeatures (), feature), (String)args [0]);
+				createClient (space, Json.getObject (space.getFeatures (), feature), (String)args [0], (Boolean)args [1]);
 				break;
 			case DeleteFeature:
-				// NOTHING TO BE DONE. Backup? maybe !!!
-				
+				removeClient (space, (String)args [0]);
 				break;
 			default:
 				break;
@@ -140,11 +139,11 @@ public class FileSystemStoragePlugin extends AbstractPlugin {
 		
 		Iterator<String> keys = allFeatures.keys ();
 		while (keys.hasNext ()) {
-			createClient (space, allFeatures, keys.next ());
+			createClient (space, allFeatures, keys.next (), false);
 		}
 	}
 	
-	private void createClient (ApiSpace space, JsonObject allFeatures, String name) {
+	private void createClient (ApiSpace space, JsonObject allFeatures, String name, boolean overwrite) {
 		
 		JsonObject feature = Json.getObject (allFeatures, name);
 		
@@ -167,9 +166,17 @@ public class FileSystemStoragePlugin extends AbstractPlugin {
 			spaceStorage.mkdir ();
 		}
 		
+		if (overwrite) {
+			removeClient (space, name);
+		}
+		
 		mounts.put (createKey  (name), mount);
 		
 		feature.set (ApiSpace.Spec.Installed, true);
+	}
+	
+	private void removeClient (ApiSpace space, String featureName) {
+		mounts.remove (createKey  (featureName));
 	}
 	
 	private String createKey (String name) {
