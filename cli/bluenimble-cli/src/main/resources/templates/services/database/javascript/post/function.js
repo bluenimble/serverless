@@ -30,7 +30,7 @@ return {
 		var payload = request.get (ApiRequest.Payload);
 
 		// write to database
-		var db = api.database (request);
+		var db = api.database (request).trx ();
 			
 		var [[model]] = db.create ('[[Model]]')[[#eq ModelSpec.addDefaults 'true']]// set the current user as the creator of this [[Model]]
 			.ref ('createdBy', 'User', consumer.id)[[/eq]];

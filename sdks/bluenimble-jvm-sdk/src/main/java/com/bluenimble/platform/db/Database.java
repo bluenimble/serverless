@@ -79,9 +79,9 @@ public interface Database extends Recyclable {
 	
 	Object 					proprietary (String name);
 
-	void 					trx 		();
-	void 					commit 		() 														throws DatabaseException;
-	void 					rollback 	()														throws DatabaseException;
+	Database 				trx 		();
+	Database 				commit 		() 														throws DatabaseException;
+	Database 				rollback 	()														throws DatabaseException;
 
 	DatabaseObject 			create 		(String entity) 										throws DatabaseException;
 	List<DatabaseObject>	createList 	() 														throws DatabaseException;

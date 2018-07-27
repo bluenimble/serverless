@@ -37,7 +37,7 @@ import com.bluenimble.platform.json.JsonObject
  *   
  *   return { greeting: "I'm [" + request.service.name + '] and I am hungry to do something that matters!' }
  *
- *	//@author		[[user]]
+ *	//@author	[[user]]
  *	//@created	[[date]]
  * 
  **/
@@ -50,7 +50,7 @@ class Delete[[Model]] extends AbstractApiServiceSpi {
 		
 		// deleting [[Model]] by id (':[[model]]')
 		
-		var db: Database = feature (api, classOf[Database], null, request)
+		var db: Database = feature (api, classOf[Database], null, request).trx ()
 		
 		var [[model]]: DatabaseObject = null
 		try {

@@ -348,6 +348,10 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 		}
 		
 		@Override
+		public void finish () {
+		}
+
+		@Override
 		public void recycle () {
 			try {
 				client.close ();

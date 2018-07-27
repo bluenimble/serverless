@@ -55,7 +55,7 @@ public class Remove[[Model]][[Ref]] extends AbstractApiServiceSpi {
 		Object [[model]]Id 	= request.get ("[[model]]");
 		Object [[ref]]Id 	= request.get ("[[ref]]");
 
-		Database db = feature (api, Database.class, null, request);
+		Database db = feature (api, Database.class, null, request).trx ();
 		
 		DatabaseObject [[model]] = null;
 		try {

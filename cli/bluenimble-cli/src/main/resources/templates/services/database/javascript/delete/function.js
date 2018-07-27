@@ -27,7 +27,7 @@ return {
 		
 		// deleting [[Model]] by id (':[[model]]')
 		
-		var [[model]] = api.database (request).get ( '[[Model]]', request.get ('[[model]]') );
+		var [[model]] = api.database (request).trx ().get ( '[[Model]]', request.get ('[[model]]') );
 		if (![[model]]) {
 			return { deleted: 0, reason: 'NotFound' };
 		}

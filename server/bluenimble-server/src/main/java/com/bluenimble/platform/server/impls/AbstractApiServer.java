@@ -309,12 +309,17 @@ public abstract class AbstractApiServer implements ApiServer {
 
 		JsonObject oFeature = Json.getObject (space.getFeatures (), featureId);
 		
-		if (oFeature == null || oFeature.isEmpty ()) {
+		if (Json.isNullOrEmpty (oFeature)) {
 			throw new FeatureNotFoundException ("feature " + featureId + " not available in space " + space.getNamespace ());
 		} 
 		
-		JsonObject oProvider = Json.getObject (oFeature, name);
-		if (oProvider == null || oProvider.isEmpty ()) {
+		String fName = name;
+		// check if it's fature factory abc#alpha where abc is the feature name and alpha is what the application is looking for.
+		if (fName.lastIndexOf (Lang.SHARP) > 0) {
+			fName = fName.substring (0, fName.indexOf (Lang.SHARP));
+		}
+		JsonObject oProvider = Json.getObject (oFeature, fName);
+		if (Json.isNullOrEmpty (oProvider)) {
 			throw new FeatureNotFoundException ("feature provider " + name + " not available in space " + space.getNamespace ());
 		} 
 		

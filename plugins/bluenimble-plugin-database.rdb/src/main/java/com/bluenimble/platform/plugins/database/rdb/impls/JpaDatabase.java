@@ -57,25 +57,32 @@ public class JpaDatabase implements Database {
 	}
 
 	@Override
-	public void trx () {
+	public JpaDatabase trx () {
+		if (transaction != null) {
+			return this;
+		}
 		transaction = entityManager.getTransaction ();
 		transaction.begin ();
+		return this;
 	}
 
 	@Override
-	public void commit () throws DatabaseException {
-		if (transaction == null) {
-			return;
+	public JpaDatabase commit () throws DatabaseException {
+		if (transaction == null || !transaction.isActive ()) {
+			return this;
 		}
+		tracer.log (Tracer.Level.Info, "Commit Transaction {0}", transaction);
 		transaction.commit ();
+		return this;
 	}
 
 	@Override
-	public void rollback () throws DatabaseException {
+	public JpaDatabase rollback () throws DatabaseException {
 		if (transaction == null) {
-			return;
+			return this;
 		}
 		transaction.rollback ();
+		return this;
 	}
 
 	@Override
@@ -247,6 +254,15 @@ public class JpaDatabase implements Database {
 	}
 
 	@Override
+	public void finish () {
+		try {
+			commit ();
+		} catch (DatabaseException ex) {
+			throw new RuntimeException (ex.getMessage (), ex);
+		}
+	}
+
+	@Override
 	public void recycle () {
 		entityManager.close ();
 	}
@@ -356,7 +372,7 @@ public class JpaDatabase implements Database {
 				if (Timing.start.equals (timing)) {
 					buff.append (dml.name ());
 				} else {
-					if (select.count () == 0) {
+					if (select == null || select.count () == 0) {
 						buff.append (Lang.SPACE).append (QueryEntity);
 					}
 					buff.append (Lang.SPACE).append (Sql.From).append (Lang.SPACE);

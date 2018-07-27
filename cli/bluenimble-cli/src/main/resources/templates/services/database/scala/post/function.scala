@@ -34,7 +34,7 @@ import com.bluenimble.platform.json.JsonObject
  * 				 response.set ('X-MyHeader', 'Hello')
  *				 you can also write data to the response but this is rarely will happen as the platform takes care of this.	
  *
- *	//@author		[[user]]
+ *	//@author	[[user]]
  *	//@created	[[date]]
  * 
  **/
@@ -50,7 +50,7 @@ class Create[[Model]] extends AbstractApiServiceSpi {
 		val payload: JsonObject = request.get (ApiRequest.Payload).asInstanceOf[JsonObject]
 
 		// write to database
-		var db: Database = feature (api, classOf[Database], null, request)
+		var db: Database = feature (api, classOf[Database], null, request).trx ()
 		
 		var [[model]]: DatabaseObject = null
 		try {

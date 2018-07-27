@@ -31,7 +31,7 @@ return {
 		
 		var [[model]]Id =  request.get ('[[model]]');
 
-		var db = api.database (request);
+		var db = api.database (request).trx ();
 
 		// check existence of the [[Model]] given by :[[model]]Id
 		var [[model]] = db.get ('[[Model]]', [[model]]Id);

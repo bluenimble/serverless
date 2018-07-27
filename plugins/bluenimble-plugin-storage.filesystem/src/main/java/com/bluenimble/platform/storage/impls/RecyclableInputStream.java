@@ -78,6 +78,10 @@ public class RecyclableInputStream extends InputStream implements Recyclable {
 	}
 
 	@Override
+	public void finish () {
+	}
+
+	@Override
 	public void recycle () {
 		IOUtils.closeQuietly (proxy);
 	}

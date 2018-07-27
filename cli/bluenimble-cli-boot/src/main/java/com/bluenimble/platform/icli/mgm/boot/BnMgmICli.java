@@ -107,7 +107,7 @@ public class BnMgmICli {
 		
 		Scl = 
 			new PackageClassLoader (
-				"BlueNimbleICli",
+				"BlueNimbleCLI",
 				toUrls (new File (Home, "lib")),
 				(ClassLoader [])null
 			);

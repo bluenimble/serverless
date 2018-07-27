@@ -50,6 +50,9 @@ public class IndexerApiRequestTracker implements ServerRequestTracker {
 			return null;
 		}
 		@Override
+		public void finish () {
+		}
+		@Override
 		public void recycle () {
 		}
 		@Override

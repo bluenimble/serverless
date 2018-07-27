@@ -96,6 +96,8 @@
 
 								<move 	file="../../build/${project.artifactId}-${project.version}/lib/bluenimble-jvm-sdk-${project.version}.jar" 
 										todir="../../build/${project.artifactId}-${project.version}/boot" />
+								
+								<!-- build-libs : Jpa -->								
 								<copy 	file="../../build/${project.artifactId}-${project.version}/boot/bluenimble-jvm-sdk-${project.version}.jar" 
 										todir="../../build/${project.artifactId}-${project.version}/build-libs" />
 								<move 	file="../../build/${project.artifactId}-${project.version}/lib/bluenimble-cli-boot-${project.version}.jar" 
@@ -103,6 +105,26 @@
 								<move 	file="../../build/${project.artifactId}-${project.version}/lib/javax.persistence-api-2.2.jar" 
 										todir="../../build/${project.artifactId}-${project.version}/build-libs" />
 								
+								<!-- api-libs : Jpa Validation -->						
+								<move 	file="../../build/${project.artifactId}-${project.version}/lib/validation-api-2.0.1.Final.jar" 
+										todir="../../build/${project.artifactId}-${project.version}/api-libs" />
+								<move 	file="../../build/${project.artifactId}-${project.version}/lib/bval-jsr-1.1.2.jar" 
+										todir="../../build/${project.artifactId}-${project.version}/api-libs" />
+								<move 	file="../../build/${project.artifactId}-${project.version}/lib/bval-core-1.1.2.jar" 
+										todir="../../build/${project.artifactId}-${project.version}/api-libs" />
+								<copy 	file="../../build/${project.artifactId}-${project.version}/lib/commons-lang3-3.1.jar" 
+										todir="../../build/${project.artifactId}-${project.version}/api-libs" />
+								
+								<!-- api-libs : Jpa Provider -->								
+								<move 	file="../../build/${project.artifactId}-${project.version}/lib/javax.json-1.0.4.jar" 
+										todir="../../build/${project.artifactId}-${project.version}/api-libs" />
+								<move 	file="../../build/${project.artifactId}-${project.version}/lib/commonj.sdo-2.1.1.jar" 
+										todir="../../build/${project.artifactId}-${project.version}/api-libs" />
+								
+								<!-- api-libs : eclipselink jar. removed javax packages, should update once 3.0 is out -->		
+								<move 	file="../../build/${project.artifactId}-${project.version}/patches/eclipselink-2.7.2-patched.jar" 
+										todir="../../build/${project.artifactId}-${project.version}/api-libs" />
+
 								<touch file="../../build/${project.artifactId}-${project.version}/bnb.cli.version-${project.version}" />
 								
 								<chmod dir="../../build/${project.artifactId}-${project.version}" perm="775" includes="*.sh" />
@@ -152,8 +174,30 @@
 			<groupId>javax.persistence</groupId>
 			<artifactId>javax.persistence-api</artifactId>
 			<version>2.2</version>
+		</dependency>
+		<dependency>
+		    <groupId>javax.validation</groupId>
+		    <artifactId>validation-api</artifactId>
+		    <version>2.0.1.Final</version>
 			<scope>runtime</scope>
 		</dependency>
-		
+		<dependency>
+		    <groupId>org.glassfish</groupId>
+		    <artifactId>javax.json</artifactId>
+		    <version>1.0.4</version>
+		    <scope>runtime</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.eclipse.persistence</groupId>
+		    <artifactId>commonj.sdo</artifactId>
+		    <version>2.1.1</version>
+		    <scope>runtime</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.bval</groupId>
+		    <artifactId>bval-jsr</artifactId>
+		    <version>1.1.2</version>
+			<scope>runtime</scope>
+		</dependency>
 	</dependencies>
 </project>

@@ -16,12 +16,16 @@
  */
 package com.bluenimble.platform;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -56,6 +60,18 @@ public class PackageClassLoader extends URLClassLoader {
 		this (name, EMPTY_URL_ARRAY);
 	}
 	
+	public PackageClassLoader () {
+		this ("PCL-" + Lang.UUID (20));
+	}
+	
+	public PackageClassLoader (String name, File... folders) throws MalformedURLException {
+		this (name, toUrls (folders), (ClassLoader [])null);
+	}
+
+	public PackageClassLoader (File... folders) throws MalformedURLException {
+		this ("PCL-" + Lang.UUID (20), toUrls (folders));
+	}
+
 	@Override
 	public URL getResource (String name) {
 		URL r = null;
@@ -212,6 +228,29 @@ public class PackageClassLoader extends URLClassLoader {
 			return;
 		}
 		registered.remove (name);
+	}
+	
+	private static URL [] toUrls (File... libs) throws MalformedURLException {
+		
+		List<File> allFiles = new ArrayList<File> ();
+		
+		for (File lib : libs) {
+			File [] files = lib.listFiles ();
+			if (files != null) {
+				for (File f : files) {
+					allFiles.add (f);
+				}
+			}
+			allFiles.add (lib);
+		}
+		
+		URL [] urls = new URL [allFiles.size ()];
+		
+		for (int i = 0; i < allFiles.size (); i++) {
+			urls [i] = allFiles.get (i).toURI ().toURL ();
+		}
+		
+		return urls;
 	}
 	
 }

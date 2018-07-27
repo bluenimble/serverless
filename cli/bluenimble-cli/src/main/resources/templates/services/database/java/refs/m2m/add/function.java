@@ -54,7 +54,7 @@ public class Add[[Model]][[Ref]] extends AbstractApiServiceSpi {
 		Object [[ref]]Id 	= request.get ("[[ref]]");
 		
 		// write to database
-		Database db = feature (api, Database.class, null, request);
+		Database db = feature (api, Database.class, null, request).trx ();
 		
 		DatabaseObject [[model]] = null;
 		try {

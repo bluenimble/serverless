@@ -52,7 +52,7 @@ public class Delete[[Model]] extends AbstractApiServiceSpi {
 		
 		// deleting [[Model]] by id (':[[model]]')
 		
-		Database db = feature (api, Database.class, null, request);
+		Database db = feature (api, Database.class, null, request).trx ();
 		
 		DatabaseObject [[model]] = null;
 		try {

@@ -235,6 +235,8 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 				api.getSpi ().afterExecute (api, consumer, service, request, response);
 			}
 			
+			request.finish ();
+			
 			if (request instanceof ContainerApiRequest) {
 				request.set (ApiRequest.Output, output);
 			} else {

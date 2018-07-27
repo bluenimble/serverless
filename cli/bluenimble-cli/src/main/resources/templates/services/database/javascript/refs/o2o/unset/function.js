@@ -29,7 +29,7 @@ return {
 		
 		var [[model]]Id = request.get ('[[model]]');
 		
-		var db = api.database (request);
+		var db = api.database (request).trx ();
 
 		// lookup [[Model]] by :[[model]]
 		var [[model]] = db.get ('[[Model]]', [[model]]Id);

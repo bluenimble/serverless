@@ -397,6 +397,10 @@ public class HttpRemote extends BaseRemote {
 	}
 
 	@Override
+	public void finish () {
+	}
+
+	@Override
 	public void recycle () {
 	}
 

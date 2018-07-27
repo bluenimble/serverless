@@ -109,7 +109,7 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 		
 		boolean encryptPassword = Json.getBoolean (config, Config.EncryptPassword, true);
 		
-		Database db = api.space ().feature (Database.class, Json.getString (config, Config.Database, ApiSpace.Features.Default), request);
+		Database db = feature (api, Database.class, Json.getString (config, Config.Database, ApiSpace.Features.Default), request).trx ();
 		
 		DatabaseObject account = null;
 		try {

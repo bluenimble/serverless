@@ -2,8 +2,10 @@
 [[Model]]
 	[[#if ModelSpec.refs]]import java.util.*[[/if]]
 	@Entity(name="[[Model]]")
+	@Table(name="\"[[uppercase Model]]\"")
 	
-	id long @Id @Column(name = "ID") @GeneratedValue(strategy = GenerationType.IDENTITY)
+	id long @Id @GeneratedValue(generator="long-uuid")
+	
 	timestamp date
 	
 	# direct fields

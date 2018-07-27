@@ -375,10 +375,29 @@ public class CodeGenUtils {
 		
 		if (ApiVerb.POST.name ().equalsIgnoreCase (verb) && !Json.isNullOrEmpty (serviceModelSpec)) {
 			if (!Json.isNullOrEmpty (serviceModelSpec)) {
+				
+				JsonObject meta = (JsonObject)vars.get (BlueNimble.DefaultVars.UserMeta);
+				
+				String userName 	= Json.getString (meta, BlueNimble.DefaultVars.UserName);
+				if (Lang.isNullOrEmpty (userName)) {
+					userName = System.getProperty ("user.name");
+				}
+				
+				String userPackage 	= Json.getString (meta, BlueNimble.DefaultVars.UserPackage);
+				if (Lang.isNullOrEmpty (userPackage)) {
+					userPackage = "com." + userName.toLowerCase ();
+				}
+				
+				String sModelFolder = Lang.join (Lang.split (userPackage, Lang.DOT), Lang.SLASH) + Lang.SLASH + api + Lang.SLASH + "model";
+				File modelFolder	= new File (specsFolder.getParentFile (), DataModels.toLowerCase () + Lang.SLASH + api + Lang.SLASH + sModelFolder);
+				if (!modelFolder.exists ()) {
+					modelFolder.mkdirs ();
+				}
+				
 				// write data model file
 				writeFile (
 					new File (BlueNimble.Home, Templates.class.getSimpleName ().toLowerCase () + Lang.SLASH + Templates.Models + Lang.SLASH + EntityModel),
-					new File (specsFolder.getParentFile (), DataModels.toLowerCase () + Lang.SLASH + api + Lang.SLASH + Model + ".md"), 
+					new File (modelFolder, Model + ".md"), 
 					data, 
 					specLang
 				);

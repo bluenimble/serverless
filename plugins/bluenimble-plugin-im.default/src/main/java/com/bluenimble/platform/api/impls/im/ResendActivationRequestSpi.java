@@ -55,7 +55,7 @@ public class ResendActivationRequestSpi extends AbstractApiServiceSpi {
 		
 		JsonObject config = request.getService ().getSpiDef ();
 		
-		Database db = api.space ().feature (Database.class, Json.getString (config, Config.Database, ApiSpace.Features.Default), request);
+		Database db = feature (api, Database.class, Json.getString (config, Config.Database, ApiSpace.Features.Default), request);
 		
 		DatabaseObject account = null;
 		try {

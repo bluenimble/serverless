@@ -225,6 +225,10 @@ public class OrientDatabasePlugin extends AbstractPlugin {
 		}
 		
 		@Override
+		public void finish () {
+		}
+
+		@Override
 		public void recycle () {
 			try {
 				pool.close ();

@@ -142,6 +142,8 @@ public class OrientDatabase implements Database {
 	private Tracer				tracer;
 	private boolean				allowProprietaryAccess;
 	
+	private boolean 			isTransaction;
+	
 	public OrientDatabase (ODatabaseDocumentTx db, Tracer tracer, boolean allowProprietaryAccess) {
 		this.db 		= db;
 		this.tracer 	= tracer;
@@ -168,18 +170,27 @@ public class OrientDatabase implements Database {
 	}
 
 	@Override
-	public void trx () {
+	public OrientDatabase trx () {
 		db.begin ();
+		isTransaction = true;
+		return this;
 	}
 	
 	@Override
-	public void commit () throws DatabaseException {
+	public OrientDatabase commit () throws DatabaseException {
+		if (!isTransaction) {
+			return this;
+		}
+		tracer.log (Tracer.Level.Info, "Commit Transaction {0}", db);
 		db.commit ();
+		isTransaction = false;
+		return this;
 	}
 
 	@Override
-	public void rollback () throws DatabaseException {
+	public OrientDatabase rollback () throws DatabaseException {
 		db.rollback ();
+		return this;
 	}
 
 	@Override
@@ -309,12 +320,27 @@ public class OrientDatabase implements Database {
 	}
 
 	@Override
-	public void recycle () {
-		if (db != null) {
-			tracer.log (Tracer.Level.Info, "Recycling database connection {0}", db);
-			db.activateOnCurrentThread ();
-			db.close ();
+	public void finish () {
+		if (db == null) {
+			return;
 		}
+		
+		try {
+			commit ();
+		} catch (DatabaseException ex) {
+			throw new RuntimeException (ex.getMessage (), ex);
+		}
+	}
+
+	@Override
+	public void recycle () {
+		if (db == null) {
+			return;
+		}
+		
+		tracer.log (Tracer.Level.Info, "Recycling database connection {0}", db);
+		db.activateOnCurrentThread ();
+		db.close ();
 	}
 
 	@Override

@@ -1,0 +1,244 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../stylesheets/style.css">
+<title>Image Task</title>
+</head>
+
+<body>
+
+<h2 id="image">Image</h2>
+<h3>Description</h3>
+<p>Applies a chain of image operations on a set of files.</p>
+<p>Requires <a href="../install.html#librarydependencies">Java Advanced Image API</a> from Sun.</p>
+
+<h5>Overview of used datatypes</h5>
+<img src="image-classdiagram.gif" border="0" alt="Class-Diagram">
+
+<h3>Parameters</h3>
+<table class="attr">
+  <tr>
+    <th scope="col">Attribute</th>
+    <th scope="col">Description</th>
+    <th scope="col">Required</th>
+  </tr>
+  <tr>
+    <td>failonerror</td>
+    <td>Boolean value. If <q>false</q>, note errors to the output but keep going.</td>
+    <td>No; defaults to <q>true</q></td>
+  </tr>
+  <tr>
+    <td>srcdir</td>
+    <td>Directory containing the images.</td>
+    <td>Yes, unless nested fileset is used</td>
+  </tr>
+  <tr>
+    <td>encoding</td>
+    <td>Image encoding type.<br/>Valid (case insensitive)
+      are: <q>jpg</q>, <q>jpeg</q>, <q>tif</q>, <q>tiff</q>
+    </td>
+    <td>No; defaults to <q>jpeg</q></td>
+  </tr>
+  <tr>
+    <td>overwrite</td>
+    <td>Boolean value. Sets whether or not to overwrite a file if there is naming conflict.</td>
+    <td>No; defaults to <q>false</q></td>
+  </tr>
+  <tr>
+    <td>gc</td>
+    <td>Boolean value. Enables garbage collection after each image processed.</td>
+    <td>No; defaults to <q>false</q></td>
+  </tr>
+  <tr>
+    <td>destdir</td>
+    <td>Directory where the result images are stored.</td>
+    <td>No; defaults to value of <var>srcdir</var></td>
+  </tr>
+  <!-- attributes inherited from MatchingTask -->
+  <tr>
+    <td>includes</td>
+    <td>comma- or space-separated list of patterns of files that must be included.</td>
+    <td>No; defaults to all (<q>**</q>)</td>
+  </tr>
+  <tr>
+    <td>includesfile</td>
+    <td>name of a file. Each line of this file is taken to be an include pattern</td>
+    <td>No</td>
+  </tr>
+  <tr>
+    <td>excludes</td>
+    <td>comma- or space-separated list of patterns of files that must be excluded.</td>
+    <td>No; defaults to default excludes or none if <var>defaultexcludes</var> is <q>no</q></td>
+  </tr>
+  <tr>
+    <td>excludesfile</td>
+    <td>name of a file. Each line of this file is taken to be an exclude pattern</td>
+    <td>No</td>
+  </tr>
+  <tr>
+    <td>defaultexcludes</td>
+    <td>indicates whether default excludes should be used or not (<q>yes|no</q>).</td>
+    <td>No; defaults to <q>yes</q></td>
+  </tr>
+  <tr>
+    <td>caseSensitive</td>
+    <td>Boolean value. Sets case sensitivity of the file system.</td>
+    <td>No; defaults to <q>false</q></td>
+  </tr>
+  <tr>
+    <td>followSymlinks</td>
+    <td>Boolean value. Sets whether or not symbolic links should be followed.</td>
+    <td>No; defaults to <q>true</q></td>
+  </tr>
+</table>
+
+<h3>Parameters specified as nested elements</h3>
+<p>This task forms an implicit <a href="../Types/fileset.html">FileSet</a> and supports most
+attributes of <code>&lt;fileset&gt;</code> as well as the
+nested <code>&lt;include&gt;</code>, <code>&lt;exclude&gt;</code>
+and <code>&lt;patternset&gt;</code> elements.</p>
+
+<h4>ImageOperation</h4>
+<p>Adds an ImageOperation to chain.</p>
+<h5>Nested elements</h5>
+<p>ImageOperation can handle
+nested <code>Rotate</code>, <code>Draw</code>, <code>Rectangle</code>, <code>Text</code>
+and <code>Scale</code> objects.</p>
+
+<h4>Rotate</h4>
+<p>Adds a Rotate ImageOperation to chain.</p>
+<h5>Parameters</h5>
+<table class="attr">
+  <tr>
+    <th scope="col">Attribute</th>
+    <th scope="col">Description</th>
+    <th scope="col">Required</th>
+  </tr>
+  <tr>
+    <td>angle</td>
+    <td>Float value. Sets the angle of rotation in degrees.</td>
+    <td>No; defaults to <q>0.0F</q></td>
+  </tr>
+</table>
+
+<h4>Scale</h4>
+<p>Adds a Scale ImageOperation to chain.</p>
+<h5>Parameters</h5>
+<table class="attr">
+  <tr>
+    <th scope="col">Attribute</th>
+    <th scope="col">Description</th>
+    <th scope="col">Required</th>
+  </tr>
+  <tr>
+    <td>proportions</td>
+    <td>Sets which dimension to control proportions from. Valid values are:
+      <ul>
+        <li><q>ignore</q>&mdash; treat the dimensions independently.</li>
+        <li><q>height</q>&mdash;keep proportions based on the width.</li>
+        <li><q>width</q>&mdash;keep proportions based on the height.</li>
+        <li><q>cover</q>&mdash;keep proportions and fit in the supplied dimensions.</li>
+        <li><q>fit</q>&mdash;keep proportions and cover the supplied dimensions.</li>
+      </ul>
+    </td>
+    <td>No; defaults to <q>ignore</q></td>
+  </tr>
+  <tr>
+    <td>width</td>
+    <td>Sets the width of the image, either as an integer or a %.</td>
+        <!-- todo: if integer, what kind? cm, px, inches, ... -->
+    <td>No; defaults to <q>100%</q></td>
+  </tr>
+  <tr>
+    <td>height</td>
+    <td>Sets the height of the image, either as an integer or a %.</td>
+        <!-- todo: if integer, what kind? cm, px, inches, ... -->
+    <td>No; defaults to <q>100%</q></td>
+  </tr>
+</table>
+
+<h4>Draw</h4>
+<p>Adds a Draw ImageOperation to chain. DrawOperation DataType objects can be nested inside the Draw
+object.</p>
+<h5>Parameters</h5>
+<table class="attr">
+  <tr>
+    <th scope="col">Attribute</th>
+    <th scope="col">Description</th>
+    <th scope="col">Required</th>
+  </tr>
+  <tr>
+    <td>xloc</td>
+    <td>X-Position where to draw nested image elements.</td>
+    <td>No; defaults to <q>0</q></td>
+  </tr>
+  <tr>
+    <td>yloc</td>
+    <td>Y-Position where to draw nested image elements.</td>
+    <td>No; defaults to <q>0</q></td>
+  </tr>
+</table>
+
+<h4>mapper</h4>
+<p><em>Since Apache Ant 1.8.0</em></p>
+
+<p>You can define filename transformations by using a
+nested <a href="../Types/mapper.html">mapper</a> element. The default mapper used
+by <code>&lt;image&gt;</code> is the <a href="../Types/mapper.html#identity-mapper">identity
+mapper</a>.</p>
+
+<p>You can also use a <code>filenamemapper</code> type in place of the <code>mapper</code>
+element.</p>
+
+<h3>Examples</h3>
+
+<p>Create thumbnails of my images and make sure they all fit within the 160x160 size whether the
+image is portrait or landscape.</p>
+<pre>
+&lt;image destdir="samples/low" overwrite="yes"&gt;
+    &lt;fileset dir="samples/full"&gt;
+        &lt;include name="**/*.jpg"/&gt;
+    &lt;/fileset&gt;
+    &lt;scale width="160" height="160" proportions="fit"/&gt;
+&lt;/image&gt;</pre>
+
+<p>Create a thumbnail for all PNG files in <samp>src</samp> of the size of 40 pixel keeping the
+proportions and store the <samp>src</samp>.</p>
+<pre>
+&lt;image srcdir="src" includes="*.png"&gt;
+    &lt;scale proportions="width" width="40"/&gt;
+&lt;/image&gt;</pre>
+
+<p>Same as above but store the result in <samp>dest</samp>.</p>
+<pre>
+&lt;image srcdir="src" destdir="dest" includes="*.png"&gt;
+    &lt;scale proportions="width" width="40"/&gt;
+&lt;/image&gt;</pre>
+
+<p>Same as above but store the result to files with original names prefixed
+by <samp>scaled-</samp>.</p>
+<pre>
+&lt;image srcdir="src" destdir="dest" includes="*.png"&gt;
+    &lt;scale proportions="width" width="40"/&gt;
+    &lt;globmapper from="*" to="scaled-*"/&gt;
+&lt;/image&gt;</pre>
+
+</body>
+</html>

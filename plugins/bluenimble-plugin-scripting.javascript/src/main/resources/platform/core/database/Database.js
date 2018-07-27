@@ -30,6 +30,7 @@ var Database = function (api, proxy) {
 	*/
 	this.trx = function () {
 		proxy.trx ();
+		return this;
 	};
 
 	/**	
@@ -37,6 +38,7 @@ var Database = function (api, proxy) {
 	*/
 	this.commit = function () {
 		proxy.commit ();
+		return this;
 	};
 
 	/**	
@@ -44,6 +46,7 @@ var Database = function (api, proxy) {
 	*/
 	this.rollback = function () {
 		proxy.rollback ();
+		return this;
 	};
 
 	/**	

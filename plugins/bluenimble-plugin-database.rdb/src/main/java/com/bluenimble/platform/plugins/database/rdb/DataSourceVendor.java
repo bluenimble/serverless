@@ -39,14 +39,20 @@ public class DataSourceVendor {
 	
 	private static final String 					Classpath 	= "classpath";
 	private static final String 					Template 	= "template";
+	private static final String 					Name 		= "name";
 	private static final String 					Driver 		= "driver";
 	
 	private static final DefaultExpressionCompiler 	Compiler = new DefaultExpressionCompiler ();
 
+	private String		name;
+	
 	private JsonObject 	descriptor;
 	private ClassLoader classLoader;
 	
 	public DataSourceVendor (File home) throws Exception {
+		
+		this.name = home.getName ();
+		
 		File vendor = new File (home, Vendor);
 		if (!vendor.exists ()) {
 			return;
@@ -100,6 +106,10 @@ public class DataSourceVendor {
 			
 		};
 		return (String)Compiler.compile (url, null).eval (vr);
+	}
+	
+	public String name () {
+		return Json.getString (descriptor, Name, name);
 	}
 	
 	public String driver () {

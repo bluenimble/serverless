@@ -140,12 +140,12 @@ public class ScriptableApiServiceSpi implements ApiServiceSpi {
 	public void onStop (Api api, ApiService service, ApiContext context) throws ApiManagementException {
 		SpecAndSpiPair apiHelper = (SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name);
 		if (apiHelper == null) {
-			throw new ApiManagementException ("api '" + api.getNamespace () + "' doesn't support scripting");
-		}		
+			return;
+		}
 		
 		Object jsApi = apiHelper.spec ();
 		if (jsApi == null) {
-			throw new ApiManagementException ("api '" + api.getNamespace () + "' doesn't support scripting");
+			return;
 		}		
 
 		

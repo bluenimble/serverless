@@ -71,7 +71,7 @@ public class SignupServiceSpi extends AbstractApiServiceSpi {
 		
 		JsonObject payload = (JsonObject)request.get (ApiRequest.Payload);
 
-		Database db = api.space ().feature (Database.class, Json.getString (config, Config.Database, ApiSpace.Features.Default), request);
+		Database db = feature (api, Database.class, Json.getString (config, Config.Database, ApiSpace.Features.Default), request).trx ();
 		
 		DatabaseObject account = null;
 		try {

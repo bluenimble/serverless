@@ -401,6 +401,10 @@ public class RemotePlugin extends AbstractPlugin {
 		}
 		
 		@Override
+		public void finish () {
+		}
+
+		@Override
 		public void recycle () {
 			factory.shutdown ();
 		}
@@ -420,6 +424,10 @@ public class RemotePlugin extends AbstractPlugin {
 			this.httpClient = httpClient;
 		}
 		
+		@Override
+		public void finish () {
+		}
+
 		@Override
 		public void recycle () {
 			try {

@@ -25,7 +25,8 @@ public interface ApiContext extends Referenceable {
 	
 	Recyclable		getRecyclable 	(String name);
 	
-	void			recycle			();
+	void			finish			();
 	
+	void			recycle			();
 
 }

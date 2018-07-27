@@ -211,6 +211,10 @@ public class MemCachedPlugin extends AbstractPlugin {
 		}
 		
 		@Override
+		public void finish () {
+		}
+
+		@Override
 		public void recycle () {
 			client.shutdown (2, TimeUnit.SECONDS);
 		}

@@ -52,7 +52,7 @@ public class Create[[Model]] extends AbstractApiServiceSpi {
 		JsonObject payload = (JsonObject)request.get (ApiRequest.Payload);
 
 		// write to database
-		Database db = feature (api, Database.class, null, request);
+		Database db = feature (api, Database.class, null, request).trx ();
 		
 		DatabaseObject [[model]] = null;
 		try {

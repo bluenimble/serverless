@@ -54,7 +54,7 @@ public class Update[[Model]] extends AbstractApiServiceSpi {
 
 		Object [[model]]Id = request.get ("[[model]]");
 
-		Database db = feature (api, Database.class, null, request);
+		Database db = feature (api, Database.class, null, request).trx ();
 		
 		// get [[Model]] by :[[model]]Id
 		DatabaseObject [[model]] = null;

@@ -23,6 +23,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,7 @@ import com.bluenimble.platform.FileUtils;
 import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
+import com.bluenimble.platform.PackageClassLoader;
 import com.bluenimble.platform.cli.Tool;
 import com.bluenimble.platform.cli.command.CommandExecutionException;
 import com.bluenimble.platform.icli.mgm.BlueNimble;
@@ -62,17 +64,28 @@ public class BuildUtils {
 	private static final String ImportKeyword 	= "import";
 	
 	private static final String DefaultType 	= "string";
-	private static final String DefaultImport 	= "javax.persistence.*";
+	private static final Set<String> 
+								DefaultImports 	= new HashSet<String>();
+	static {
+		DefaultImports.add ("javax.persistence.*");
+		DefaultImports.add ("javax.validation.constraints.*");
+	}							
 	
-	private static final String DoNotApply 		= "DoNotApply";
+	private static final String DoNotApply 		= "do-not-apply";
+	
+	private static Set<String> 	ExcludeHelpers	= new HashSet<String> ();
+	static {
+		ExcludeHelpers.add ("DefaultCustomizer.java");
+		ExcludeHelpers.add ("LongUUIDSequence.java");
+		ExcludeHelpers.add ("StringUUIDSequence.java");
+	}
 	
 	private static final Map<String, String> 
-								GlobalProperties 
+								DefaultJpaProperties 
 												= new HashMap<String, String> ();
 	static {
-		GlobalProperties.put ("eclipselink.persistence-context.flush-mode", "COMMIT");
-		GlobalProperties.put ("eclipselink.cache.size.default", "1000");
-		GlobalProperties.put ("eclipselink.ddl-generation", "drop-and-create-tables");
+		DefaultJpaProperties.put ("eclipselink.session.customizer", "helpers.DefaultCustomizer");
+		DefaultJpaProperties.put ("eclipselink.ddl-generation", "drop-and-create-tables");
 	}
 
 	public static final Map<String, String> Types = new HashMap<String, String> ();
@@ -137,7 +150,6 @@ public class BuildUtils {
 			}
 		}
 		
-		
 		Persistence persistence = new Persistence ();
 		
 		// generate sources
@@ -179,6 +191,7 @@ public class BuildUtils {
 			for (DataModel ds : persistence.getDataModels ()) {
 				writer.write ("\t<persistence-unit name=\"" + ds.getName () + "\" transaction-type=\"RESOURCE_LOCAL\">\n");
 				writer.write ("\t\t<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>\n");
+				writer.write ("\t\t<exclude-unlisted-classes>false</exclude-unlisted-classes>\n");
 				
 				// add helper classes
 				
@@ -186,6 +199,9 @@ public class BuildUtils {
 					File [] aHelpers = helpers.listFiles ();
 					if (aHelpers != null && aHelpers.length > 0) {
 						for (File h : aHelpers) {
+							if (ExcludeHelpers.contains (h.getName ())) {
+								continue;
+							}
 							writer.write ("\t\t<class>helpers." + h.getName ().substring (0, h.getName ().indexOf (Lang.DOT)) + "</class>\n");	
 						}
 					}
@@ -207,20 +223,20 @@ public class BuildUtils {
 				}
 				
 				// add global properties if missing
-				Set<String> globalKeys = GlobalProperties.keySet ();
+				Set<String> globalKeys = DefaultJpaProperties.keySet ();
 				for (String key : globalKeys) {
 					if (!oProperties.containsKey (key)) {
 						if (DoNotApply.equals (oProperties.get (key))) {
 							oProperties.remove (key);
 						} else {
-							oProperties.set (key, GlobalProperties.get (key));
+							oProperties.set (key, DefaultJpaProperties.get (key));
 						}
 					}
 				}
 				
 				if (!Json.isNullOrEmpty (oProperties)) {
 					writer.write ("\t\t<properties>\n");
-
+					
 					Iterator<String> keys = oProperties.keys ();
 					while (keys.hasNext ()) {
 						String key = keys.next ();
@@ -244,7 +260,21 @@ public class BuildUtils {
 			apiLibs.mkdirs ();
 		}
 		
-		ArchiveUtils.compress (javaBin, new File (apiLibs, apiFolder.getName () + Lang.DASH + CodeGenUtils.DataModels + JarExt), true, new ArchiveUtils.CompressVisitor () {
+		// copy default api libs
+		File globalApiLibs = new File (BlueNimble.Home, "api-libs");
+		if (globalApiLibs.exists ()) {
+			File [] glibs = globalApiLibs.listFiles ();
+			if (glibs != null && glibs.length > 0) {
+				for (File glib : glibs) {
+					FileUtils.copy (glib, apiLibs, false);
+				}
+			}
+		}
+		
+		String jarFileName = apiFolder.getName () + Lang.DASH + CodeGenUtils.DataModels.toLowerCase () + Lang.DASH + Lang.UUID (12).toLowerCase ();
+		File jarFile = new File (apiLibs, jarFileName + JarExt);
+		
+		ArchiveUtils.compress (javaBin, jarFile, true, new ArchiveUtils.CompressVisitor () {
 			@Override
 			public boolean onAdd (File file) {
 				if (file.getName ().startsWith (Lang.DOT)) {
@@ -254,9 +284,35 @@ public class BuildUtils {
 			}
 		});
 		
+		File jarWeavedFile = new File (jarFile.getParentFile (), jarFileName + "-weaved" + JarExt);
+		
+		// perform weaving
+		PackageClassLoader pcl = null;
+
+		ClassLoader currentClassLoader = Thread.currentThread ().getContextClassLoader ();
+		try {
+			
+			pcl = new PackageClassLoader (new File (BlueNimble.Home, "api-libs"), new File (BlueNimble.Home, "build-libs"));
+			
+			Thread.currentThread ().setContextClassLoader (pcl);
+
+			Class<?> swpCls = pcl.loadClass ("org.eclipse.persistence.tools.weaving.jpa.StaticWeaveProcessor");
+			Object swp = swpCls.getConstructor (new Class [] { File.class, File.class }).newInstance (new Object [] { jarFile, jarWeavedFile});
+			swpCls.getMethod ("performWeaving", new Class [] {} ).invoke (swp, new Object [] { });
+			
+		} finally {
+			Thread.currentThread ().setContextClassLoader (currentClassLoader);
+			if (pcl != null) {
+				pcl.close ();
+			}
+		}
+
+		// delete original
+		jarFile.delete ();
+		
 		// clean sources and binaries
-		FileUtils.delete (javaBin);
-		FileUtils.delete (javaSrc);
+		// FileUtils.delete (javaBin);
+		// FileUtils.delete (javaSrc);
 	}
 
 	public static int mvn (Tool tool, File workingDir, String args) throws CommandExecutionException {
@@ -274,6 +330,10 @@ public class BuildUtils {
 			throw new CommandExecutionException ("mvn " + args + " error : Exit value is " + exitValue);
 		}
 		return exitValue;
+	}
+	
+	public static void weave () {
+		
 	}
 	
 	private static void loadEntities (DataModel ds, File dsf, File mdf, File javaSrc) throws Exception {
@@ -334,6 +394,10 @@ public class BuildUtils {
 					
 					// System.out.println ("Package: " + sParent);
 					
+					if (sParent.startsWith (Lang.SLASH)) {
+						sParent = sParent.substring (1);
+					}
+					
 					if (!Lang.isNullOrEmpty (sParent)) {
 						entity.setPackage (sParent);
 					}
@@ -346,7 +410,9 @@ public class BuildUtils {
 						}
 					}
 					
-					entity.addImport (DefaultImport);
+					for (String imp : DefaultImports) {
+						entity.addImport (imp);
+					}
 					
 					ds.addEntity (entity);
 					
@@ -470,7 +536,7 @@ public class BuildUtils {
 					
 					// get method
 					writer.write (Lang.TAB + JavaSpec.Public + field.getType () + Lang.SPACE + 
-						JavaSpec.Set + capitalize (field.getName ()) + Lang.PARENTH_OPEN + Lang.PARENTH_CLOSE + Lang.SPACE + Lang.OBJECT_OPEN + Lang.ENDLN
+						JavaSpec.Get + capitalize (field.getName ()) + Lang.PARENTH_OPEN + Lang.PARENTH_CLOSE + Lang.SPACE + Lang.OBJECT_OPEN + Lang.ENDLN
 					);
 						writer.write (Lang.TAB + Lang.TAB + JavaSpec.Return + Lang.SPACE + field.getName () + Lang.SEMICOLON + Lang.ENDLN);
 					writer.write (Lang.TAB + Lang.OBJECT_CLOSE + Lang.ENDLN);

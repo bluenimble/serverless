@@ -112,6 +112,7 @@ public class BeanMetadata implements Serializable {
 		if (property == null) {
 			return null;
 		}
+		
 		return property.getReadMethod ().invoke (bean, (Object [])null);
 	}
 

@@ -251,6 +251,10 @@ public class BinaryRemote extends BaseRemote {
 	}
 
 	@Override
+	public void finish () {
+	}
+
+	@Override
 	public void recycle () {
 		if (client != null) {
 			client.recycle ();

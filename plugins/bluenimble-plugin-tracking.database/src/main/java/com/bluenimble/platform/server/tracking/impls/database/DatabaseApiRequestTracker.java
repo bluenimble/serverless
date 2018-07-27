@@ -50,6 +50,9 @@ public class DatabaseApiRequestTracker implements ServerRequestTracker {
 			return null;
 		}
 		@Override
+		public void finish () {
+		}
+		@Override
 		public void recycle () {
 		}
 		@Override

@@ -55,6 +55,17 @@ public abstract class AbstractApiContext implements ApiContext {
 	}
 	
 	@Override
+	public void finish () {
+		if (recyclable == null || recyclable.isEmpty ()) {
+			return;
+		}
+		Iterator<Recyclable> values = recyclable.values ().iterator ();
+		while (values.hasNext ()) {
+			values.next ().finish ();
+		}
+	}
+	
+	@Override
 	public Object getReference () {
 		return reference;
 	}

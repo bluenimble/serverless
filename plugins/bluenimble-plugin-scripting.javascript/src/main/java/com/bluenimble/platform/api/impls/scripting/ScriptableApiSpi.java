@@ -125,7 +125,12 @@ public class ScriptableApiSpi implements ApiSpi {
 
 	@Override
 	public void onStop (Api api, ApiContext context) throws ApiManagementException {
-		Object spi = ((SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name)).spi ();
+		SpecAndSpiPair ssp = (SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name);
+		if (ssp == null) {
+			return;
+		}
+
+		Object spi = ssp.spi ();
 		if (spi == null) {
 			return;
 		}
@@ -151,7 +156,12 @@ public class ScriptableApiSpi implements ApiSpi {
 	@Override
 	public void onRequest (Api api, ApiRequest request, ApiResponse response)
 			throws ApiServiceExecutionException {
-		Object spi = ((SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name)).spi ();
+		SpecAndSpiPair ssp = (SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name);
+		if (ssp == null) {
+			return;
+		}
+
+		Object spi = ssp.spi ();
 		if (spi == null) {
 			return;
 		}
@@ -178,7 +188,12 @@ public class ScriptableApiSpi implements ApiSpi {
 	@Override
 	public void onService (Api api, ApiService service, ApiRequest request,
 			ApiResponse response) throws ApiServiceExecutionException {
-		Object spi = ((SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name)).spi ();
+		SpecAndSpiPair ssp = (SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name);
+		if (ssp == null) {
+			return;
+		}
+
+		Object spi = ssp.spi ();
 		if (spi == null) {
 			return;
 		}
@@ -206,7 +221,12 @@ public class ScriptableApiSpi implements ApiSpi {
 	public void onExecute (Api api, ApiConsumer consumer, ApiService service,
 			ApiRequest request, ApiResponse response)
 			throws ApiServiceExecutionException {
-		Object spi = ((SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name)).spi ();
+		SpecAndSpiPair ssp = (SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name);
+		if (ssp == null) {
+			return;
+		}
+
+		Object spi = ssp.spi ();
 		if (spi == null) {
 			return;
 		}
@@ -241,7 +261,12 @@ public class ScriptableApiSpi implements ApiSpi {
 	public void afterExecute (Api api, ApiConsumer consumer, ApiService service,
 			ApiRequest request, ApiResponse response)
 			throws ApiServiceExecutionException {
-		Object spi = ((SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name)).spi ();
+		SpecAndSpiPair ssp = (SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name);
+		if (ssp == null) {
+			return;
+		}
+
+		Object spi = ssp.spi ();
 		if (spi == null) {
 			return;
 		}
@@ -269,7 +294,12 @@ public class ScriptableApiSpi implements ApiSpi {
 
 	@Override
 	public void findConsumer (Api api, ApiService service, ApiRequest request, ApiConsumer consumer) throws ApiAuthenticationException {
-		Object spi = ((SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name)).spi ();
+		SpecAndSpiPair ssp = (SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name);
+		if (ssp == null) {
+			return;
+		}
+
+		Object spi = ssp.spi ();
 		if (spi == null) {
 			return;
 		}
@@ -295,7 +325,12 @@ public class ScriptableApiSpi implements ApiSpi {
 
 	@Override
 	public void onError (Api api, ApiService service, ApiConsumer consumer, ApiRequest request, ApiResponse response, JsonObject error) {
-		Object spi = ((SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name)).spi ();
+		SpecAndSpiPair ssp = (SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name);
+		if (ssp == null) {
+			return;
+		}
+
+		Object spi = ssp.spi ();
 		if (spi == null) {
 			return;
 		}

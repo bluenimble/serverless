@@ -137,18 +137,21 @@ public class MongoDatabaseImpl implements Database {
 	}
 
 	@Override
-	public void trx () {
+	public MongoDatabaseImpl trx () {
 		// Not Supported
+		return this;
 	}
 	
 	@Override
-	public void commit () throws DatabaseException {
+	public MongoDatabaseImpl commit () throws DatabaseException {
 		// Not Supported
+		return this;
 	}
 
 	@Override
-	public void rollback () throws DatabaseException {
+	public MongoDatabaseImpl rollback () throws DatabaseException {
 		// Not Supported
+		return this;
 	}
 
 	@Override
@@ -274,6 +277,15 @@ public class MongoDatabaseImpl implements Database {
 		}
 		
 		return (Integer)result;
+	}
+
+	@Override
+	public void finish () {
+		try {
+			commit ();
+		} catch (DatabaseException ex) {
+			throw new RuntimeException (ex.getMessage (), ex);
+		}
 	}
 
 	@Override

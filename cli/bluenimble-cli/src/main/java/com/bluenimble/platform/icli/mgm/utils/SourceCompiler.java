@@ -54,10 +54,14 @@ public class SourceCompiler {
             throw new Exception ("There are no source files to compile in " + sources.getAbsolutePath());
         }
         
+        List<File> classpath = new ArrayList<File> ();
+        		
+        classpath.addAll (Arrays.asList ( new File ( "build-libs" ).listFiles () ) );
+        classpath.addAll (Arrays.asList ( new File ( "api-libs" ).listFiles () ) );
         
         fileManager.setLocation (
     	    StandardLocation.CLASS_PATH, 
-    	    Arrays.asList ( new File ( "build-libs" ).listFiles () )
+    	    classpath
     	);
         
         fileManager.setLocation (

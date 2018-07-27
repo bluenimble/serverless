@@ -218,6 +218,11 @@ public class SmtpMessengerPlugin extends AbstractPlugin {
 		}
 		
 		@Override
+		public void finish () {
+			// nothing
+		}
+
+		@Override
 		public void recycle () {
 			// nothing
 		}

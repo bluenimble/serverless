@@ -26,11 +26,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.metamodel.EntityType;
 import javax.sql.DataSource;
-
-import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.bluenimble.platform.Feature;
 import com.bluenimble.platform.IOUtils;
@@ -73,6 +73,31 @@ public class RdbPlugin extends AbstractPlugin {
 		String TrustStorePassword 	= "javax.net.ssl.trustStorePassword";
 	}
 	
+	interface JpaProperties {
+		String NON_JTA_DATASOURCE 	= "javax.persistence.nonJtaDataSource";
+		String VALIDATION_MODE 		= "javax.persistence.validation.mode";
+		
+		String CLASSLOADER 			= "eclipselink.classloader";
+		String TARGET_SERVER 		= "eclipselink.target-server";
+		String TARGET_DATABASE 		= "eclipselink.target-database";
+		String WEAVING 				= "eclipselink.weaving";
+		
+		String PERSISTENCE_CONTEXT_FLUSH_MODE
+									= "eclipselink.persistence-context.flush-mode";
+		String CACHE_SIZE_DEFAULT	= "eclipselink.cache.size.default";
+		
+		String LOGGING_LEVEL 		= "eclipselink.logging.level";		
+	}
+	
+	private static final JsonObject DefaultJpaProperties = new JsonObject ();
+	static {
+		DefaultJpaProperties.set (JpaProperties.TARGET_SERVER, "None");
+		DefaultJpaProperties.set (JpaProperties.WEAVING, "static");
+		DefaultJpaProperties.set (JpaProperties.LOGGING_LEVEL, "FINE");
+		DefaultJpaProperties.set (JpaProperties.PERSISTENCE_CONTEXT_FLUSH_MODE, "COMMIT");
+		DefaultJpaProperties.set (JpaProperties.CACHE_SIZE_DEFAULT, "1000");
+	}
+	
 	private String 	feature;
 	
 	private File 	dataFolder;
@@ -92,7 +117,10 @@ public class RdbPlugin extends AbstractPlugin {
 			String Password 	= "password";
 		}
 		
-		String Properties 	= "properties";
+		interface Properties {
+			String DataSource 	= "datasource";
+			String Jpa 			= "jpa";
+		}
 		
 		interface Pool {
 			String MaximumPoolSize 		= "maximumPoolSize";
@@ -152,11 +180,11 @@ public class RdbPlugin extends AbstractPlugin {
 		if (Api.class.isAssignableFrom (target.getClass ())) {
 			switch (event) {
 				case Start:
-					tracer ().log (Tracer.Level.Info, "Create Api DataModel Factories", ((Api)target).getNamespace ());
+					tracer ().log (Tracer.Level.Info, "Create {0} Api DataModel Factories", ((Api)target).getNamespace ());
 					createApiFactories ((Api)target);
 					break;
 				case Stop:
-					tracer ().log (Tracer.Level.Info, "Destroy Api DataModel Factories", ((Api)target).getNamespace ());
+					tracer ().log (Tracer.Level.Info, "Destroy {0} Api DataModel Factories", ((Api)target).getNamespace ());
 					destroyApiFactories ((Api)target);
 					break;
 				default:
@@ -284,7 +312,7 @@ public class RdbPlugin extends AbstractPlugin {
 				config.setMinimumIdle (minimumIdle);
 			}
 			
-			JsonObject props = Json.getObject (spec, Spec.Properties);
+			JsonObject props = (JsonObject)Json.find (spec, Spec.Properties.class.getSimpleName ().toLowerCase (), Spec.Properties.DataSource);
 			if (!Json.isNullOrEmpty (props)) {
 				// SSL
 				String trustStore = props.getString (SSLProperties.TrustStore);
@@ -329,9 +357,9 @@ public class RdbPlugin extends AbstractPlugin {
 			dataModelFactories = removeClient (space, name);
 		}
 		
-		tracer ().log (Tracer.Level.Info, "\tSpace DataSource {0} ==> {1}", dataSourceKey, datasource);
+		tracer ().log (Tracer.Level.Info, "\tSpace DataSource {0} ==> {1} / {2}", dataSourceKey, datasource, vendor.name ());
 		
-		RecyclableDataSource rds = new RecyclableDataSource (datasource);
+		RecyclableDataSource rds = new RecyclableDataSource (vendor.name (), datasource, (JsonObject)Json.find (spec, Spec.Properties.class.getSimpleName ().toLowerCase (), Spec.Properties.DataSource));
 		
 		space.addRecyclable (dataSourceKey, rds);
 		
@@ -394,9 +422,9 @@ public class RdbPlugin extends AbstractPlugin {
 				((PackageClassLoader)api.getClassLoader ()).addDependency (RdbPlugin.class.getClassLoader ());
 			}
 
-			RecyclableEntityManagerFactory factory = new RecyclableEntityManagerFactory (space, api.getClassLoader (), dataSource, dataModel);
+			RecyclableEntityManagerFactory factory = new RecyclableEntityManagerFactory (api, recyclable.vendor (), dataSource, dataModel);
 			
-			String dmrKey = createKey (dataSource + Lang.DOT + dataModel);
+			String dmrKey = createKey (dataSource + Lang.SHARP + dataModel);
 			
 			space.addRecyclable (dmrKey, factory);
 			
@@ -440,12 +468,13 @@ public class RdbPlugin extends AbstractPlugin {
 				continue;
 			}
 			
-			String dmfKey = createKey (dataSource + Lang.DOT + dataModel);
+			String dmfKey = createKey (dataSource + Lang.SHARP + dataModel);
 			Recyclable dmr = space.getRecyclable (dmfKey);
 			if (dmr == null) {
 				continue;
 			}
-
+			
+			tracer ().log (Tracer.Level.Info, "\tRecycle Factory {0}", dmfKey);
 			dmr.recycle ();
 			
 			dsr.removeDataModelFactory (dmfKey);
@@ -471,14 +500,22 @@ public class RdbPlugin extends AbstractPlugin {
 	class RecyclableDataSource implements Recyclable {
 		private static final long serialVersionUID = 50882416501226306L;
 
-		private DataSource datasource;
+		private String 		vendor;
+		private DataSource 	datasource;
+		private JsonObject 	jpaProperties;
 		
 		private Map<String, RecyclableEntityManagerFactory> dataModelFactories = new ConcurrentHashMap<String, RecyclableEntityManagerFactory> ();
 		
-		public RecyclableDataSource (DataSource datasource) {
-			this.datasource = datasource;
+		public RecyclableDataSource (String vendor, DataSource datasource, JsonObject jpaProperties) {
+			this.vendor 		= vendor;
+			this.datasource 	= datasource;
+			this.jpaProperties 	= jpaProperties;
 		}
 		
+		@Override
+		public void finish () {
+		}
+
 		@Override
 		public void recycle () {
 			if (!dataModelFactories.isEmpty ()) {
@@ -494,6 +531,14 @@ public class RdbPlugin extends AbstractPlugin {
 			}
 		}
 
+		public String vendor () {
+			return vendor;
+		}
+		
+		public JsonObject jpaProperties () {
+			return jpaProperties;
+		}
+		
 		public DataSource datasource () {
 			return datasource;
 		}
@@ -521,29 +566,47 @@ public class RdbPlugin extends AbstractPlugin {
 		private ApiSpace 				space;
 		private	ClassLoader 			classLoader;
 
+		private String 					vendor;
 		private String 					dataSource;
 		private String 					dataModel;
 		
-		public RecyclableEntityManagerFactory (ApiSpace space, ClassLoader classLoader, String dataSource,
-				String dataModel) {
-			this.space 			= space;
-			this.classLoader 	= classLoader;
+		public RecyclableEntityManagerFactory (Api api, String vendor, String dataSource, String dataModel) {
+			this.vendor 		= vendor;
 			this.dataModel 		= dataModel;
 			this.dataSource 	= dataSource;
+			this.space 			= api.space ();
+			this.classLoader 	= api.getClassLoader ();
 			
 			create ();
 		}
 
 		@Override
+		public void finish () {
+		}
+
+		@Override
 		public void recycle () {
+			
 			if (factory == null) {
 				return;
 			}
+			
+			tracer ().log (Tracer.Level.Info, "\tRecycle Factory {0}", dataSource + Lang.SHARP + dataModel);
+			
+			ClassLoader currentClassLoader = Thread.currentThread ().getContextClassLoader ();
+			
+			Thread.currentThread ().setContextClassLoader (classLoader);
 			try {
-				((EntityManagerFactory)factory).close ();
+				
+				// close
+				factory.close ();
+				
 			} catch (Exception ex) {
-				// Ignore
+				tracer ().log (Tracer.Level.Error, ex.getMessage (), ex);
+			} finally {
+				Thread.currentThread ().setContextClassLoader (currentClassLoader);
 			}
+			
 			factory = null;
 			metadata = null;
 		}
@@ -559,20 +622,47 @@ public class RdbPlugin extends AbstractPlugin {
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		public void create () {
 			
+			tracer ().log (Tracer.Level.Info, "\tFactory Create");
+			
 			recycle ();
 			
 			ClassLoader currentClassLoader = Thread.currentThread ().getContextClassLoader ();
 			
-			Thread.currentThread ().setContextClassLoader (RdbPlugin.class.getClassLoader ());
+			tracer ().log (Tracer.Level.Info, "\tSet Classloader");
+			
+			Thread.currentThread ().setContextClassLoader (classLoader);
 			try {
 				Map properties = new HashMap ();
-				properties.put (PersistenceUnitProperties.NON_JTA_DATASOURCE, datasource (space, dataSource));
-				properties.put (PersistenceUnitProperties.CLASSLOADER, classLoader);
-				factory = Persistence.createEntityManagerFactory (dataModel, properties);			
+				properties.put (JpaProperties.TARGET_DATABASE, vendor);
+				properties.put (JpaProperties.CLASSLOADER, classLoader);
+				properties.put (JpaProperties.NON_JTA_DATASOURCE, datasource (space, dataSource));
+				
+				// add global jpa properties
+				JsonObject defaultProperties = DefaultJpaProperties.duplicate ();
+				RecyclableDataSource dsr = (RecyclableDataSource)space.getRecyclable (createKey (dataSource));
+				if (dsr != null && !Json.isNullOrEmpty (dsr.jpaProperties ())) {
+					defaultProperties.merge (dsr.jpaProperties ()); 
+				}
+				
+				Set<String> globalKeys = defaultProperties.keySet ();
+				for (String key : globalKeys) {
+					properties.put (key, defaultProperties.get (key));
+				}
+
+				tracer ().log (Tracer.Level.Info, "\tCreate Entity Manager Factory");
+				
+				factory = Persistence.createEntityManagerFactory (dataModel, properties);
 				metadata = new JpaMetadata (factory);
+				
+				tracer ().log (Tracer.Level.Info, "\tFound Descriptors");
+				printDescriptors (factory);
+				
+			} catch (Exception ex) {
+				ex.printStackTrace ();
+				throw new RuntimeException (ex.getMessage (), ex);
 			} finally {
 				Thread.currentThread ().setContextClassLoader (currentClassLoader);
-			}
+			} 
 		}
 		
 	}
@@ -584,19 +674,30 @@ public class RdbPlugin extends AbstractPlugin {
 	private JpaDatabase newDatabase (ApiSpace space, String name) {
 		
 		RecyclableEntityManagerFactory recyclable = (RecyclableEntityManagerFactory)space.getRecyclable (createKey (name));
-		tracer ().log (Tracer.Level.Debug, "\tEntityManager -> Recyclable = {0}", recyclable);
+		tracer ().log (Tracer.Level.Info, "\tEntityManager -> Recyclable = {0}", recyclable);
 		
 		EntityManagerFactory factory = recyclable.get ();
 		
-		tracer ().log (Tracer.Level.Debug, "\tEntityManager ->    Factory = {0}", factory);
+		tracer ().log (Tracer.Level.Info, "\tEntityManager ->    Factory = {0}", factory);
 		
 		Object oAllowProprietaryAccess = 
 				Json.find (space.getFeatures (), feature, name, ApiSpace.Features.Spec, Spec.AllowProprietaryAccess);
 		boolean allowProprietaryAccess = 
 				oAllowProprietaryAccess == null || String.valueOf (oAllowProprietaryAccess).equalsIgnoreCase (Lang.TRUE);
-		return new JpaDatabase (this.tracer (), factory.createEntityManager (), recyclable.metadata (), allowProprietaryAccess);
+		
+		EntityManager em = factory.createEntityManager ();
+		
+		return new JpaDatabase (this.tracer (), em, recyclable.metadata (), allowProprietaryAccess);
 	}
-
+	
+	private void printDescriptors (EntityManagerFactory factory) {
+		// descriptors
+		factory.getMetamodel ().getEntities ();
+		for (EntityType<?> entity : factory.getMetamodel ().getEntities ()) {
+			tracer ().log (Tracer.Level.Info, "\t ClassDescriptor {0}", entity.getName ());
+		}
+	}
+	
 	public String getDataFolder () {
 		return null;
 	}
