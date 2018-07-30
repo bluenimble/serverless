@@ -4,13 +4,13 @@
 	
 	"spec": {
 		"fields": {
-			"space": {  },
+			"space": { },
 			"payload": { "type": "Object" }
 		}
 	},
 	
 	"security": {
-		"roles": ["super"]
+		"roles": ["super", "admin"]
 	},
 	
 	"spi": {

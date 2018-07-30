@@ -14,35 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.server.impls;
+package com.bluenimble.platform.server.visitors.impls.actions;
 
-import is.tagomor.woothee.Classifier;
-
-import com.bluenimble.platform.api.ApiHeaders;
 import com.bluenimble.platform.api.ApiRequest;
-import com.bluenimble.platform.api.ApiRequest.Scope;
-import com.bluenimble.platform.api.impls.AbstractApiRequest;
-import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.api.ApiResponse;
+import com.bluenimble.platform.api.ApiResponse.Status;
+import com.bluenimble.platform.api.impls.SelectiveApiRequestVisitor.Placeholder;
 
-public class ExtendedApiRequestVisitor extends DefaultApiRequestVisitor {
+public class RejectAction implements RewriteAction {
 
-	private static final long serialVersionUID = 1782406079539122227L;
+	private static final long serialVersionUID = -2165577306745099563L;
 	
-	public ExtendedApiRequestVisitor (JsonObject spec) {
-		setSpec (spec);
-	}
-	
-	@Override
-	protected void enrich (AbstractApiRequest request) {
-		JsonObject device = request.getDevice ();
+	public String [] apply (ApiRequest request, Placeholder placeholder, String [] aTarget, Object value, String conditionValue) {
 		
-		String agent = (String)request.get (ApiHeaders.UserAgent, Scope.Header);
-		if (agent != null) {
-			device.set (ApiRequest.Fields.Device.Agent, agent);
-			device.putAll (Classifier.parse (agent));
+		if (value == null) {
+			request.set (ApiRequest.Reject, ApiResponse.BAD_REQUEST);
+			return aTarget;
 		}
 		
+		request.set (ApiRequest.Reject, new Status (400, String.valueOf (value)));
+		
+		return aTarget;
+		
 	}
 	
-
 }

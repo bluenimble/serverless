@@ -34,6 +34,7 @@ import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiContentTypes;
 import com.bluenimble.platform.api.ApiHeaders;
 import com.bluenimble.platform.api.ApiRequest;
+import com.bluenimble.platform.api.ApiRequestVisitor;
 import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.ApiResponse.Status;
 import com.bluenimble.platform.api.ApiServiceExecutionException;
@@ -62,7 +63,6 @@ import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.Plugin;
 import com.bluenimble.platform.plugins.PluginsRegistry;
 import com.bluenimble.platform.security.KeyPair;
-import com.bluenimble.platform.server.ApiRequestVisitor;
 import com.bluenimble.platform.server.ApiServer;
 import com.bluenimble.platform.server.FeatureNotFoundException;
 import com.bluenimble.platform.server.KeyStoreManager;
@@ -422,6 +422,13 @@ public abstract class AbstractApiServer implements ApiServer {
 		try {
 			if (!(request instanceof ContainerApiRequest)) {
 				requestVisitor.visit ((AbstractApiRequest)request);
+			}
+			
+			if (request.get (ApiRequest.Reject) != null) {
+				Status status = (Status)request.get (ApiRequest.Reject);
+				sendError (response, status, status.getMessage ());
+				request.destroy ();
+				return;
 			}
 			
 			// is space resolved

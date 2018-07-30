@@ -210,6 +210,10 @@ public class DefaultPluginsRegistry implements PluginsRegistry, ClassLoaderRegis
 			// resolve vars
 			descriptor = server.resolve (descriptor, InstallUtils.varsMapping (ApiServer.ResolverPrefix.This, Folders.Plugins, pluginNs ));
 			
+			if (!Json.getBoolean (descriptor, ConfigKeys.Install, true)) {
+				return;
+			}
+			
 			// set system properties
 			JsonObject sysprops = Json.getObject (descriptor, ConfigKeys.SystemProperties);
 			if (!Json.isNullOrEmpty (sysprops)) {

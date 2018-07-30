@@ -14,30 +14,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.server.impls;
+package com.bluenimble.platform.api.impls;
 
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
-import com.bluenimble.platform.api.impls.AbstractApiRequest;
+import com.bluenimble.platform.api.ApiRequest;
+import com.bluenimble.platform.api.ApiRequestVisitor;
 import com.bluenimble.platform.json.JsonObject;
-import com.bluenimble.platform.server.ApiRequestVisitor;
 
-public class DefaultApiRequestVisitor implements ApiRequestVisitor {
+public class SelectiveApiRequestVisitor extends AbstractApiRequestVisitor {
 
 	private static final long serialVersionUID = 1782406079539122227L;
 	
-	enum Target {
+	private static final ApiRequestVisitor Fallback = new DefaultApiRequestVisitor ();
+	
+	public enum Target {
 		space,
 		api,
 		resource
 	}
 
-	enum Placeholder {
+	public enum Placeholder {
 		endpoint,
 		path
 	}
 
-	interface Spec {
+	protected interface Spec {
 		String Static 		= "static";
 		String Value 		= "value";
 		String Placeholder 	= "placeholder";
@@ -45,10 +47,15 @@ public class DefaultApiRequestVisitor implements ApiRequestVisitor {
 		String Mapping 		= "mapping";
 	}
 
-	private JsonObject spec;
-	
 	@Override
 	public void visit (AbstractApiRequest request) {
+		
+		// fallback
+		if (spec == null) {
+			Fallback.visit (request);
+			return;
+		}
+		
 		String endpoint = request.getEndpoint 	();
 		String path 	= request.getPath 		();
 		
@@ -66,11 +73,21 @@ public class DefaultApiRequestVisitor implements ApiRequestVisitor {
 		if (Lang.isNullOrEmpty (path)) {
 			path = null;
 		}
+		
 		String [] aEndpoint = Lang.split (endpoint, Lang.DOT);
 		String [] aPath 	= Lang.split (path, Lang.SLASH);
+
+		// any rewrite defined at the node level
+		aEndpoint 	= endpoint (request, aEndpoint);
+		aPath 		= path (request, aPath);
 		
 		// resolve space, api and resource
 		set (Target.space, 		request, aEndpoint, aPath, 0);
+
+		// any rewrite defined at the space level? after resolving the space ns
+		aEndpoint 	= endpoint (request, aEndpoint);
+		aPath 		= path (request, aPath);
+		
 		set (Target.api, 		request, aEndpoint, aPath, 1);
 		set (Target.resource, 	request, aEndpoint, aPath, 2);
 		
@@ -80,13 +97,24 @@ public class DefaultApiRequestVisitor implements ApiRequestVisitor {
 			device = new JsonObject ();
 		}
 		request.setDevice (device);
+		
+		extend (request);
+		
 	}
 	
-	protected void enrich (AbstractApiRequest request) {
-		// override by implementor
+	protected String [] endpoint (ApiRequest request, String [] endpoint) {
+		return endpoint;
+	}
+
+	protected String [] path (ApiRequest request, String [] path) {
+		return path;
+	}
+
+	protected void extend (AbstractApiRequest request) {
+		// extend by implementor
 	}
 	
-	private void set (Target target, AbstractApiRequest request, String [] aEndpoint, String [] aPath, int defaultIndex) {
+	protected void set (Target target, AbstractApiRequest request, String [] aEndpoint, String [] aPath, int defaultIndex) {
 		JsonObject oTarget 	= Json.getObject (spec, target.name ());
 		
 		Object value = Json.getString (oTarget, Spec.Value);
@@ -139,37 +167,6 @@ public class DefaultApiRequestVisitor implements ApiRequestVisitor {
 			default:
 				break;
 		}
-	}
-
-	public JsonObject getSpec () {
-		return spec;
-	}
-	public void setSpec (JsonObject spec) {
-		this.spec = spec;
-	}
-
-	@Override
-	public String [] guess (String host, String space, String api, String service) {
-		String endpoint = host;
-		String path 	= service;
-		
-		JsonObject apiTarget 	= Json.getObject (spec, Target.api.name ());
-		Placeholder apiPH 		= Placeholder.valueOf (Json.getString (apiTarget, Spec.Placeholder, Placeholder.path.name ()));
-		
-		if (apiPH.equals (Placeholder.path)) {
-			path = Lang.SLASH + api + path;
-		} 
-		
-		JsonObject spaceTarget 	= Json.getObject (spec, Target.space.name ());
-		Placeholder spacePH 	= Placeholder.valueOf (Json.getString (spaceTarget, Spec.Placeholder, Placeholder.path.name ()));
-		
-		if (spacePH.equals (Placeholder.path)) {
-			path = Lang.SLASH + space + path;
-		} else {
-			endpoint = space + Lang.DOT + endpoint;
-		}
-		
-		return new String [] { endpoint, path };
 	}
 
 }

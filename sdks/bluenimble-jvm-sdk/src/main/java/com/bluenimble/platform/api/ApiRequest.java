@@ -23,6 +23,8 @@ import com.bluenimble.platform.json.JsonObject;
 
 public interface ApiRequest extends ApiContext {
 	
+	String Reject 				= "Container.Request.Reject";
+
 	String Consumer				= "Container.Request.Consumer";
 	String Caller 				= "Container.Request.Caller";
 	

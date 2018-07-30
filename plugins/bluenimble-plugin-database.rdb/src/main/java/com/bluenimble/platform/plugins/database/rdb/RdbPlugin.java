@@ -93,7 +93,7 @@ public class RdbPlugin extends AbstractPlugin {
 	static {
 		DefaultJpaProperties.set (JpaProperties.TARGET_SERVER, "None");
 		DefaultJpaProperties.set (JpaProperties.WEAVING, "static");
-		DefaultJpaProperties.set (JpaProperties.LOGGING_LEVEL, "FINE");
+		DefaultJpaProperties.set (JpaProperties.LOGGING_LEVEL, "WARNING");
 		DefaultJpaProperties.set (JpaProperties.PERSISTENCE_CONTEXT_FLUSH_MODE, "COMMIT");
 		DefaultJpaProperties.set (JpaProperties.CACHE_SIZE_DEFAULT, "1000");
 	}
@@ -180,11 +180,9 @@ public class RdbPlugin extends AbstractPlugin {
 		if (Api.class.isAssignableFrom (target.getClass ())) {
 			switch (event) {
 				case Start:
-					tracer ().log (Tracer.Level.Info, "Create {0} Api DataModel Factories", ((Api)target).getNamespace ());
 					createApiFactories ((Api)target);
 					break;
 				case Stop:
-					tracer ().log (Tracer.Level.Info, "Destroy {0} Api DataModel Factories", ((Api)target).getNamespace ());
 					destroyApiFactories ((Api)target);
 					break;
 				default:
@@ -404,6 +402,8 @@ public class RdbPlugin extends AbstractPlugin {
 			return;
 		}
 		
+		tracer ().log (Tracer.Level.Info, "Create {0} Api DataModel Factories", api.getNamespace ());
+
 		boolean dependencyAdded = false;
 		
 		Iterator<String> dms = dataModels.keys ();
@@ -457,6 +457,8 @@ public class RdbPlugin extends AbstractPlugin {
 			return;
 		}
 		
+		tracer ().log (Tracer.Level.Info, "Destroy {0} Api DataModel Factories", api.getNamespace ());
+
 		Iterator<String> dms = dataModels.keys ();
 		while (dms.hasNext ()) {
 			String dataModel = dms.next ();

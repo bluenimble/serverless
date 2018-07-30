@@ -14,16 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.server;
+package com.bluenimble.platform.server.visitors.impls.checkers;
 
-import java.io.Serializable;
+import com.bluenimble.platform.Lang;
 
-import com.bluenimble.platform.api.impls.AbstractApiRequest;
+public class StartsConditionChecker implements RewriteConditionChecker {
 
-public interface ApiRequestVisitor extends Serializable {
+	private static final long serialVersionUID = 7198589858500030967L;
 
-	void 		visit (AbstractApiRequest request);
-	
-	String []	guess (String host, String space, String api, String service);
-	
+	@Override
+	public boolean check (String value, String token) {
+		if (Lang.isNullOrEmpty (value) || Lang.isNullOrEmpty (token)) {
+			return false;
+		}
+		
+		return value.startsWith (token);
+	}
+
 }

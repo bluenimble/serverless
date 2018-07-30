@@ -43,7 +43,6 @@ import com.bluenimble.platform.cli.command.CommandResult;
 import com.bluenimble.platform.cli.command.impls.AbstractCommand;
 import com.bluenimble.platform.cli.command.impls.DefaultCommandResult;
 import com.bluenimble.platform.icli.mgm.BlueNimble;
-import com.bluenimble.platform.icli.mgm.Keys;
 import com.bluenimble.platform.icli.mgm.utils.JsTool;
 
 public class MacroSourceCommand extends AbstractCommand {
@@ -100,11 +99,6 @@ public class MacroSourceCommand extends AbstractCommand {
 		});
 		
 		bindings.put ("Vars", tool.getContext (Tool.ROOT_CTX).get (ToolContext.VARS));
-		
-		Keys keys = BlueNimble.keys ();
-		if (keys != null) {
-			bindings.put ("Keys", keys.json ());
-		}
 		
 		try {
 			

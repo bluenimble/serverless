@@ -22,6 +22,7 @@ import java.util.Map;
 import com.bluenimble.platform.Traceable;
 import com.bluenimble.platform.api.ApiManagementException;
 import com.bluenimble.platform.api.ApiRequest;
+import com.bluenimble.platform.api.ApiRequestVisitor;
 import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.CodeExecutor;

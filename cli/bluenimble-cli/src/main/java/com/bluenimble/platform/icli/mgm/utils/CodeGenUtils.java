@@ -182,7 +182,7 @@ public class CodeGenUtils {
 			
 			if (isYamlSpec) {
 				os = new FileOutputStream (dest);
-				SpecUtils.toYaml (((StringWriter)writer).toString (), os); 
+				Yamler.toYaml (((StringWriter)writer).toString (), os); 
 			}
 			
 			if (deleteSource) {

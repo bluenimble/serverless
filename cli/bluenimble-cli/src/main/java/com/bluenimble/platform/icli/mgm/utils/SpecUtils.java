@@ -2,15 +2,8 @@ package com.bluenimble.platform.icli.mgm.utils;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Map;
 import java.util.function.Function;
-
-import org.yaml.snakeyaml.Yaml;
 
 import com.bluenimble.platform.FileUtils;
 import com.bluenimble.platform.IOUtils;
@@ -19,8 +12,6 @@ import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.cli.command.CommandExecutionException;
 import com.bluenimble.platform.icli.mgm.BlueNimble;
 import com.bluenimble.platform.json.JsonObject;
-import com.bluenimble.platform.json.printers.YamlOutputStreamPrinter;
-import com.bluenimble.platform.json.printers.YamlPrinter;
 
 public class SpecUtils {
 	
@@ -47,17 +38,7 @@ public class SpecUtils {
 				fileOrFolder.getName ().substring (0, fileOrFolder.getName ().lastIndexOf (Lang.DOT)) + ".json"
 			);
 			
-			Yaml yaml = new Yaml ();
-			
-			InputStream is = null;
-			try {
-				is = new FileInputStream (fileOrFolder);
-				@SuppressWarnings("unchecked")
-				JsonObject o = new JsonObject (yaml.loadAs (is, Map.class), true);
-				Json.store (o, jsonFile);
-			} finally {
-				IOUtils.closeQuietly (is);
-			}	
+			Json.store (Yamler.load (fileOrFolder), jsonFile);
 			
 			if (deleteSource) {
 				FileUtils.delete (fileOrFolder);
@@ -66,7 +47,6 @@ public class SpecUtils {
 		}
 	} 
 
-	@SuppressWarnings("unchecked")
 	public static void j2y (File fileOrFolder, boolean deleteSource) throws Exception {
 		if (!fileOrFolder.exists ()) {
 			return;
@@ -90,24 +70,11 @@ public class SpecUtils {
 				fileOrFolder.getName ().substring (0, fileOrFolder.getName ().lastIndexOf (Lang.DOT)) + ".yaml"
 			);
 			
-			OutputStream out = null;
-			try {
-				out = new FileOutputStream (ymlFile);
-				new YamlOutputStreamPrinter (out).print (Json.load (fileOrFolder));
-			} finally {
-				IOUtils.closeQuietly (out);
-			}
+			// write file 
+			Yamler.store (Json.load (fileOrFolder), ymlFile);
 			
 			// validate 
-			Yaml yaml = new Yaml ();
-			
-			InputStream is = null;
-			try {
-				is = new FileInputStream (ymlFile);
-				new JsonObject (yaml.loadAs (is, Map.class), true);
-			} finally {
-				IOUtils.closeQuietly (is);
-			}	
+			Yamler.load (ymlFile);	
 			
 			if (deleteSource) {
 				FileUtils.delete (fileOrFolder);
@@ -145,16 +112,11 @@ public class SpecUtils {
 		File fApi = new File (apiFolder, "api." + BlueNimble.SpecLangs.Yaml);
 		if (fApi.exists ()) {
 			// yaml
-			OutputStream out = null;
 			try {
-				out = new FileOutputStream (fApi);
-				YamlPrinter yaml = new YamlOutputStreamPrinter (out);
-				yaml.print (spec);
+				Yamler.store (spec, fApi);
 			} catch (Exception ex) {
 				throw new CommandExecutionException (ex.getMessage (), ex);
-			} finally {
-				IOUtils.closeQuietly (out);
-			}
+			} 
 		} else {
 			fApi = new File (apiFolder, "api." + BlueNimble.SpecLangs.Json); 
 			if (fApi.exists ()) {
@@ -168,7 +130,6 @@ public class SpecUtils {
 		
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static JsonObject read (File apiFolder) throws CommandExecutionException {
 		
 		apiFolder = specFolder (apiFolder);
@@ -189,15 +150,10 @@ public class SpecUtils {
 		}
 		
 		// it's yaml
-		Yaml yaml = new Yaml ();
-		InputStream is = null;
 		try {
-			is = new FileInputStream (fApi);
-			return new JsonObject (yaml.loadAs (is, Map.class), true);
+			return Yamler.load (fApi);
 		} catch (Exception ex) {
-			throw new CommandExecutionException (ex.getMessage (), ex);
-		} finally {
-			IOUtils.closeQuietly (is);
+			throw new CommandExecutionException ("can't read api spec file " + fApi.getName () + ". Reason: " + ex.getMessage (), ex);
 		}
 		
 	}
@@ -206,14 +162,14 @@ public class SpecUtils {
 		
 		String spec;
 		try {
-			spec = specFile.getName ().endsWith (".json") ? Json.load (specFile).toString (2) : content (specFile);
+			spec = specFile.getName ().endsWith (".json") ? Json.load (specFile).toString (2) : FileUtils.content (specFile);
 		} catch (Exception ex) {
 			throw new CommandExecutionException (ex.getMessage (), ex);
 		}
 		
-		String comment 	= content (commentFile);
+		String comment = null;
 		try {
-			comment = TemplateEngine.apply (comment, data);
+			comment = TemplateEngine.apply (FileUtils.content (commentFile), data);
 		} catch (Exception ex) {
 			throw new CommandExecutionException (ex.getMessage (), ex);
 		}
@@ -253,12 +209,6 @@ public class SpecUtils {
 		}
 	}
 	
-	public static void toYaml (String jsonText, OutputStream out) throws Exception {
-		JsonObject json = new JsonObject (jsonText);
-		YamlPrinter printer = new YamlOutputStreamPrinter (out);
-		printer.print (json);
-	}
-	
 	public static File specFolder (File apiFolder) {
 		File specFolder = apiFolder;
 		
@@ -288,20 +238,6 @@ public class SpecUtils {
 		
 		return fApi;
 		
-	}
-	
-	public static String content (File file) throws CommandExecutionException {
-		String content = null;
-		InputStream specIs = null;
-		try {
-			specIs = new FileInputStream (file);
-			content = IOUtils.toString (specIs);
-		} catch (Exception ex) {
-			throw new CommandExecutionException (ex.getMessage (), ex);
-		} finally {
-			IOUtils.closeQuietly (specIs);
-		}
-		return content;
 	}
 
 }

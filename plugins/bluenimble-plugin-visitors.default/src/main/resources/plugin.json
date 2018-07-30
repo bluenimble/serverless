@@ -12,7 +12,20 @@
 					"Read More": "https://www.bluenimble.com"
 				}]
 			},
+			"visitors": {
+				"selective": {
+					"class": "com.bluenimble.platform.api.impls.SelectiveApiRequestVisitor"
+				},
+				"rewrite": {
+					"class": "com.bluenimble.platform.server.visitors.impls.RewriteApiRequestVisitor"
+				},
+				"extended": {
+					"class": "visitors.default:com.bluenimble.platform.server.visitors.impls.ExtendedApiRequestVisitor"
+				}
+			},
 			"spec": {
+			
+				"visitor": "[ this.spec.visitor | 'none' ]",
 			
 				"static": { 
 					"/": "[ this.spec.static.root | '/sys/mgm/instance/all' ]" 

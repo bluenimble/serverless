@@ -68,7 +68,7 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 
 	private static final long serialVersionUID = 7811697228373510259L;
 	
-	private static final String RuntimeKey = ApiSpace.Spec.Runtime.class.getSimpleName ();
+	private static final String RuntimeKey = ApiSpace.Spec.Runtime.class.getSimpleName ().toLowerCase ();
 	
 	public interface Spaces {
 		String Sys 	= "sys";	 
@@ -667,8 +667,12 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 	public void alter (String spaceNs, JsonObject change) throws ApiManagementException {
 		try {
 			ApiSpaceImpl space = (ApiSpaceImpl)space (spaceNs);
-			JsonObject descriptor = space.getDescriptor ();
-			descriptor.putAll (change);
+			JsonObject runtime = Json.getObject (space.getDescriptor (), RuntimeKey);
+			if (runtime == null) {
+				space.getDescriptor ().set (RuntimeKey, change);
+			} else {
+				runtime.merge (change);
+			}
 		} catch (Exception e) {
 			throw new ApiManagementException (e.getMessage (), e);
 		}

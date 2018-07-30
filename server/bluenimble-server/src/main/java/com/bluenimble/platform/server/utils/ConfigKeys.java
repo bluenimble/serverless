@@ -40,6 +40,8 @@ public interface ConfigKeys {
 	String DeleteInstalledSpaces
 							= "deleteInstalledSpaces";
 
+	String Install			= "install";	
+	
 	String Enabled 			= "enabled";
 	
 	String Spaces 			= "spaces";	

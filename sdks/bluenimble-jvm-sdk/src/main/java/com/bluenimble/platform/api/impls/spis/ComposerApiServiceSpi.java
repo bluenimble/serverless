@@ -47,17 +47,17 @@ import com.bluenimble.platform.templating.impls.DefaultExpressionCompiler;
         "class": "core:ComposerSpi",
         "chain": [{
         	"id": "alpha",
-            "verb": "put", "endpoint": "/cars/[car]",
+            "verb": "put", "endpoint": "/cars/<% car %>",
             "parameters": {
                 "payload": {
-                    "status": "[status]"
+                    "status": "<% status %>"
                 }
             }
         }, {
-            "verb": "post", "endpoint": "/drivers/[driver]",
+            "verb": "post", "endpoint": "/drivers/<% driver %>",
             "parameters": {
                 "payload": {
-                    "lastStop": "[output.alpha.stopDate]"
+                    "lastStop": "<% output.alpha.stopDate %>"
                 }
             }
         }]
@@ -71,7 +71,8 @@ public class ComposerApiServiceSpi extends AbstractApiServiceSpi {
 
 	private static final long serialVersionUID = 4666775202589517190L;
 	
-	private static final DefaultExpressionCompiler ExpressionCompiler = new DefaultExpressionCompiler (true).cacheSize (100);
+	private static final DefaultExpressionCompiler ExpressionCompiler = 
+							new DefaultExpressionCompiler ("<%", "%>").withScripting (true).cacheSize (100);
 	
 	interface ResolverPrefix {
 		String Request 	= "request";

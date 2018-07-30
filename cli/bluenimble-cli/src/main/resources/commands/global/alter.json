@@ -5,17 +5,15 @@
 			"description": "change a space runtime",
 			
 			"args": [{
-				"name": "space", "desc": "space to change"
-			}, {
 				"name": "runtime", "desc": "a json variable containing the new runtime entries to add or update"
 			}],
 		
 			"request": {
 				"method": "put",
-				"service": "[ keys.endpoints.management ]/spaces/[arg.0]",
+				"service": "[ keys.endpoints.management ]/spaces/NONE",
 				"contentType": "application/json",
 				"body": {
-					"payload": "[arg.1]"
+					"payload": "[arg.0]"
 				}
 			}
 		}

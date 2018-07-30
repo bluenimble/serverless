@@ -41,11 +41,20 @@ public class JpaObject implements DatabaseObject {
 	public JpaObject (JpaDatabase database, Object bean) {
 		this (database, bean.getClass ());
 		this.bean = bean;
+		useDefaultFields (true);
 	}
 	
 	@Override
 	public void useDefaultFields (boolean useDefaultFields) {
-		
+		if (useDefaultFields) {
+			setDefaults ();
+		} else if (!database.entityManager.contains (bean)) {
+			try {
+				unsetDefaults ();
+			} catch (DatabaseException ex) {
+				throw new RuntimeException (ex.getMessage (), ex);
+			}
+		}
 	}
 
 	@Override
@@ -84,6 +93,9 @@ public class JpaObject implements DatabaseObject {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void set (String key, Object value) throws DatabaseException {
+		if (!has (key)) {
+			return;
+		}
 		try {
 			if (value instanceof JpaObject) {
 				value = ((JpaObject)value).bean;
@@ -398,4 +410,21 @@ public class JpaObject implements DatabaseObject {
 		return null;
 	}
 
+	private void setDefaults () {
+		// IMPORTANT: managed by jpa GeneratedValue annotation
+		// setId (Lang.rand ());
+		
+		try {
+			set (Database.Fields.Timestamp, new Date ());
+		} catch (DatabaseException e) {
+			throw new RuntimeException (e.getMessage (), e);
+		}
+	}
+	
+	private void unsetDefaults () throws DatabaseException {
+		// IMPORTANT: managed by jpa GeneratedValue annotation
+		// remove (Database.Fields.Id);
+		remove (Database.Fields.Timestamp);
+	}
+	
 }

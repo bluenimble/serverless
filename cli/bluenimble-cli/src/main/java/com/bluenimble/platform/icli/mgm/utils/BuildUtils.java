@@ -19,9 +19,11 @@ package com.bluenimble.platform.icli.mgm.utils;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -33,6 +35,7 @@ import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 
 import com.bluenimble.platform.ArchiveUtils;
+import com.bluenimble.platform.Encodings;
 import com.bluenimble.platform.FileUtils;
 import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Json;
@@ -43,6 +46,8 @@ import com.bluenimble.platform.cli.command.CommandExecutionException;
 import com.bluenimble.platform.icli.mgm.BlueNimble;
 import com.bluenimble.platform.icli.mgm.CliSpec.Templates;
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.templating.VariableResolver;
+import com.bluenimble.platform.templating.impls.DefaultExpressionCompiler;
 
 public class BuildUtils {
 
@@ -73,6 +78,8 @@ public class BuildUtils {
 	
 	private static final String DoNotApply 		= "do-not-apply";
 	
+	private static DefaultExpressionCompiler ExpressionCompiler = new DefaultExpressionCompiler ("{%", "%}").withScripting (true).cacheSize (1000);
+
 	private static Set<String> 	ExcludeHelpers	= new HashSet<String> ();
 	static {
 		ExcludeHelpers.add ("DefaultCustomizer.java");
@@ -118,9 +125,9 @@ public class BuildUtils {
 		String Return	= "return";
 	}
 	
-	public static void generate (File apiFolder, JsonObject dataModels) throws Exception {
+	public static void generate (File apiFolder, JsonObject dataModels, Map<String, Object> data) throws Exception {
 		
-		File dataSourcesFolder = new File (apiFolder, Resources + Lang.SLASH + CodeGenUtils.DataModels);
+		File dataSourcesFolder = new File (apiFolder, Resources + Lang.SLASH + CodeGenUtils.DataModels.toLowerCase ());
 		if (Json.isNullOrEmpty (dataModels) || !dataSourcesFolder.exists () || !dataSourcesFolder.isDirectory ()) {
 			return;
 		}
@@ -160,7 +167,7 @@ public class BuildUtils {
 			}
 			DataModel ds = new DataModel (dsf.getName ());
 			persistence.addDataModel (ds);
-			loadEntities (ds, dsf, dsf, javaSrc);
+			loadEntities (ds, dsf, dsf, javaSrc, data);
 		}
 		
 		// compile sources
@@ -332,11 +339,71 @@ public class BuildUtils {
 		return exitValue;
 	}
 	
-	public static void weave () {
+	public static JsonObject transform (JsonObject source, Map<String, Object> data) {
+		
+		VariableResolver variableResolver = new VariableResolver () {
+			private static final long serialVersionUID = -485939153491337463L;
+			@Override
+			public Object resolve (String namespace, String... property) {
+				if (Lang.isNullOrEmpty (namespace)) {
+					return null;
+				}
+				
+				Object target = data.get (namespace);
+				if (target == null || (target instanceof JsonObject)) {
+					return null;
+				}
+				
+				return Json.find ((JsonObject)target, property);
+			}
+			
+			@Override
+			public Map<String, Object> bindings () {
+				return data;
+			}
+		};
+		
+		return (JsonObject)Json.resolve (source, ExpressionCompiler, variableResolver);
 		
 	}
 	
-	private static void loadEntities (DataModel ds, File dsf, File mdf, File javaSrc) throws Exception {
+	public static void transform (File file, Map<String, Object> data) throws IOException {
+		
+		VariableResolver variableResolver = new VariableResolver () {
+			private static final long serialVersionUID = -485939153491337463L;
+			@Override
+			public Object resolve (String namespace, String... property) {
+				if (Lang.isNullOrEmpty (namespace)) {
+					return null;
+				}
+				
+				Object target = data.get (namespace);
+				if (target == null || (target instanceof JsonObject)) {
+					return null;
+				}
+				
+				return Json.find ((JsonObject)target, property);
+			}
+			
+			@Override
+			public Map<String, Object> bindings () {
+				return data;
+			}
+		};
+		
+		Object transformed = ExpressionCompiler.compile (FileUtils.content (file), null).eval (variableResolver);
+		
+		OutputStream out = null;
+		try {
+			out = new FileOutputStream (file);
+			IOUtils.write (String.valueOf (transformed), out, Encodings.UTF8);
+		} finally {
+			IOUtils.closeQuietly (out);
+		}
+		
+	}
+	
+	private static void loadEntities (DataModel ds, File dsf, File mdf, File javaSrc, Map<String, Object> data) throws Exception {
 		
 		if (mdf.isDirectory ()) {
 			File [] files = mdf.listFiles (new FileFilter () {
@@ -346,18 +413,20 @@ public class BuildUtils {
 				}
 			});
 			for (File f : files) {
-				loadEntities (ds, dsf, f, javaSrc);
+				loadEntities (ds, dsf, f, javaSrc, data);
 			}
 			return;
 		}
 		
-		parse (ds, dsf, mdf);
+		parse (ds, dsf, mdf, data);
 		
 		generate (ds, javaSrc);
 		
 	}
 	
-	private static void parse (DataModel ds, File dsf, File mdf) throws Exception {
+	private static void parse (DataModel ds, File dsf, File mdf, Map<String, Object> data) throws Exception {
+		
+		transform (mdf, data);
 		
 		DSEntity entity = null;
 		

@@ -19,16 +19,22 @@
 var System 			= native ('java.lang.System');
 var File 			= native ('java.io.File');
 var Pattern 		= native ('java.util.regex.Pattern');
-var Api 			= native ('com.bluenimble.platform.api.Api');
+
 var Lang 			= native ('com.bluenimble.platform.Lang');
-var FileUtils 		= native ('com.bluenimble.platform.FileUtils');
-var Json 			= native ('com.bluenimble.platform.Json');
+var Api 			= native ('com.bluenimble.platform.api.Api');
+
 var JsonObject 		= native ('com.bluenimble.platform.json.JsonObject');
 var JsonArray 		= native ('com.bluenimble.platform.json.JsonArray');
+
+var FileUtils 		= native ('com.bluenimble.platform.FileUtils');
+var Json 			= native ('com.bluenimble.platform.Json');
+var Yamler 			= native ('com.bluenimble.platform.icli.mgm.utils.Yamler');
 
 var BuildUtils 		= native ('com.bluenimble.platform.icli.mgm.utils.BuildUtils');
 var SpecUtils 		= native ('com.bluenimble.platform.icli.mgm.utils.SpecUtils');
 var OsCommander 	= native ('com.bluenimble.platform.icli.mgm.utils.OsCommander');
+
+var BlueNimble		= native ('com.bluenimble.platform.icli.mgm.BlueNimble');
 								  
 function extract (service, file, script) {
 	var markers = FileUtils.readStartsWith (script, '//@', true);
@@ -87,14 +93,10 @@ function extract (service, file, script) {
 			}
 		}
 	}
-		
-	if (service.markers) {
-		Json.store (service, file);
-	}
 
 }
 
-function validate (apiFolder, folderOrFile) {
+function validate (apiFolder, folderOrFile, transformData) {
 
 	if (folderOrFile.getName ().startsWith ('.')) {
 		return;
@@ -103,10 +105,11 @@ function validate (apiFolder, folderOrFile) {
 	if (folderOrFile.isDirectory ()) {
 		var files = folderOrFile.listFiles ();
 		for (var i = 0; i < files.length; i++) {
-			validate (apiFolder, files [i]);
+			validate (apiFolder, files [i], transformData);
 		}
 		return;
 	}
+	
 	// load service spec, find script and extract issues
 	var serviceName = folderOrFile.getName ();
 	serviceName = serviceName.substring (0, serviceName.lastIndexOf ('.'));
@@ -121,18 +124,25 @@ function validate (apiFolder, folderOrFile) {
 		return;
 	}
 	
+	// transform
+	service = BuildUtils.transform (service, transformData);
+	
 	// parse script
 	if (!service.runtime || !service.runtime.function) {
+		Json.store (service, folderOrFile);
 		return;
 	}
 	
 	var _function = new File (apiFolder, 'resources/' + service.runtime.function);
 	if (!_function.exists ()) {
-		Tool.error ('Service spec using referensing the function ' + script.getAbsolutePath () + ' which is not found');
+		Tool.error ('Service spec has a reference to function ' + script.getAbsolutePath () + ' which is not found');
 		return;
 	}
 	
 	extract (service, folderOrFile, _function);
+	
+	// store new spec
+	Json.store (service, folderOrFile);
 	
 	return;
 	
@@ -141,19 +151,15 @@ function validate (apiFolder, folderOrFile) {
 // Start Of Script
 var startTime = System.currentTimeMillis ();
 
-if (typeof Keys === 'undefined') {
-	throw 'Security Keys not found. Load some keys in order to push your api';
-}
-
 // check if valid command args
 if (typeof Command === 'undefined') {
-	throw 'missing command arguments. eg. push api [ApiNs required] [Version optional]';
+	throw 'missing command arguments. eg. push api [ApiNs required] [Target optional]';
 }
 
 var tokens = Lang.split (Command, ' ', true);
 
 if (tokens.length < 2) {
-	throw 'missing command arguments. eg. push api ApiNs OR push api ApiNs v1';
+	throw 'missing command arguments. eg. push api ApiNs OR push api ApiNs prod';
 }
 
 if (tokens [0] != 'api') {
@@ -162,6 +168,50 @@ if (tokens [0] != 'api') {
 
 // api namespace
 var apiNs = tokens [1];
+
+var environment = new JsonObject ();
+
+// load environments
+var allEnvs;
+var isYaml = false;
+
+var fEnvs = new File (Home, 'environments.json');
+if (fEnvs.exists ()) {
+	allEnvs = Json.load (fEnvs);
+} else {
+	fEnvs = new File (Home, 'environments.yaml');
+	if (fEnvs.exists ()) {
+		isYaml = true;
+		allEnvs = Yamler.load (fEnvs);
+	}
+}
+
+var targetEnv;
+
+if (tokens.length > 2) {
+	var envId = tokens [2];
+	if (!allEnvs) {
+		throw 'No environments.json or .yaml file exists in your home folder';
+	}
+	if (!allEnvs.containsKey (envId)) {
+		throw 'No environment with the id ' + envId + ' found in environments.' + (isYaml ? 'json' : 'yaml') + ' file';
+	}
+	
+	targetEnv = allEnvs [envId];
+
+	if (!(targetEnv instanceof JsonObject)) {
+		throw 'Environment with id ' + envId + ' is not a valid object';
+	}
+}
+
+if (allEnvs && allEnvs.common && (allEnvs.common instanceof JsonObject)) {
+	environment = allEnvs.common.duplicate ();
+}
+if (targetEnv) {
+	environment.merge (targetEnv);
+}
+
+var transformData = new JsonObject ().set ("Env", environment);
 
 // Create the build folder if it doesn't exist
 var buildFolder = new File (Home, 'build');
@@ -173,7 +223,7 @@ var apiFolder = new File (buildFolder, apiNs);
 
 // ONLY If Requested
 if (!Vars ['build.release.nocopy'] || Vars ['build.release.nocopy'] != 'true') {
-	// delete api if exists
+	// delete api folder
 	FileUtils.delete (apiFolder);
 	
 	// copy
@@ -240,61 +290,66 @@ apiSpec.set (Api.Spec.Release, release);
 release.set ("date", Lang.utc ());
 
 // set version (this will change the api namespace) from apiNs to apiNs-version. eg travel-v1
-if (tokens.length > 2 && tokens [2]) {
-	release.set ('version', tokens [2]);
-	apiNs += ('-' + tokens [2].toLowerCase ());
-	apiSpec.set (Api.Spec.Name, apiSpec.get (Api.Spec.Name) + " ( " + tokens [2] + " )");
+if (environment.version) {
+	apiSpec.set (Api.Spec.Name, apiSpec.get (Api.Spec.Name) + " ( " + environment.version + " )");
 }
 
-// set user stamp (this will change the api namespace) from apiNs to apiNs-version-stamp. eg travel-v1-john
-if (Keys && Keys.user && Keys.user.stamp && Vars ['api.release.stamp'] == 'true') {
-	apiNs += ('-' + Keys.user.stamp.toLowerCase ());
+var Keys;
+
+if (environment.get ('keys')) {
+    Keys = BlueNimble.keys (environment.get ('keys'));
+	if (!Keys) {
+		throw 'Security Keys (' + environment.get ('keys') + ') defined in your environments file are not found.';
+	}
+} else {
+	Keys = BlueNimble.keys ();
+} 
+
+if (!Keys) {
+	throw 'Security Keys not found. Load some keys in order to push your api';
 }
 
-apiNs = apiNs.toLowerCase ();
+Keys = Keys.json ();
 
+Tool.important ('Pushing with keys ' + Keys.accessKey + ' @ ' + Keys.endpoints.management);
+Tool.important (environment);
+
+// set pusher (user id, email) this is part of the keys
+if (Keys.user && Keys.user.id) {
+	release.set ('pushedBy', Keys.user.id);
+} else if (Vars ['user.meta']) {
+	var user = Vars ['user.meta'];
+	release.set ('pushedBy', user.id||user.name);
+}
+
+// add additional release information from environment
+if (environment.release) {
+	release.merge (environment.release);
+}
+
+if (environment.api && (environment.api instanceof JsonObject)) {
+	apiSpec.merge (environment.api);
+}
+
+apiSpec = BuildUtils.transform (apiSpec, transformData);
+
+apiNs = apiSpec.namespace;
+// validate apiNs
+if (!apiNs || apiNs.trim () == '') {
+	throw 'api namespace not found';
+}
 if (!Pattern.matches ("^[a-zA-Z0-9_-]*$", apiNs)) {
 	throw 'Invalid api namespace ' + apiNs + '. It should contains only letters, numbers, underscore ( _ ) and dash ( - )';
 }
 
-apiSpec.set (Api.Spec.Namespace, apiNs);
-
-// set pusher (user id, email) this is part of the keys
-if (Keys && Keys.user && Keys.user.id) {
-	release.set ('pushedBy', Keys.user.id);
-}
-
-// set release notes
-if (Vars ['api.release.notes']) {
-	release.set ('notes', Vars ['api.release.notes']);
-}
-
-// set runtime
-if (Vars ['api.runtime']) {
-	if (apiSpec.runtime) {
-		apiSpec.get ('runtime').merge (Vars ['api.runtime']);
-	} else {
-		apiSpec.set ('runtime', Vars ['api.runtime']);
-	}
-}
-
-// set features
-if (Vars ['api.features']) {
-	if (apiSpec.features) {
-		apiSpec.get ('features').merge (Vars ['api.features']);
-	} else {
-		apiSpec.set ('features', Vars ['api.features']);
-	}
-}
-
-// generate datasources 
-BuildUtils.generate (apiFolder, Json.find (apiSpec, 'runtime', 'dataModels'));
-
 // save api.json file
 Json.store (apiSpec, apiSpecFile);
 
-// read, validate, parse code
-validate (apiFolder, new File (apiFolder, 'resources/services'));
+// transform, generate, compile and package data models
+BuildUtils.generate (apiFolder, Json.find (apiSpec, 'runtime', 'dataModels'), transformData);
+
+// read, validate, transform and extract markers
+validate (apiFolder, new File (apiFolder, 'resources/services'), transformData);
 
 var newApiFolder = new File (buildFolder, apiNs);
 

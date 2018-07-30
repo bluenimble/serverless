@@ -116,8 +116,18 @@ public class FileUtils {
 		
 	}
 	
-	public static void main (String [] args) throws IOException {
-		copy (new File ("/semantic"), new File ("/tmp"), false);
+	public static String content (File file) throws IOException {
+		String content = null;
+		InputStream specIs = null;
+		try {
+			specIs = new FileInputStream (file);
+			content = IOUtils.toString (specIs);
+		} catch (IOException ex) {
+			throw ex;
+		} finally {
+			IOUtils.closeQuietly (specIs);
+		}
+		return content;
 	}
 
 }
