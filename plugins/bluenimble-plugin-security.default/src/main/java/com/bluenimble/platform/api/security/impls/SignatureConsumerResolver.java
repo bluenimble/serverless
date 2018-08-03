@@ -40,12 +40,12 @@ import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.server.security.impls.DefaultApiConsumer;
 
-@ApiConsumerResolverAnnotation (name = SignatureConsumerResolver.MethodName)
+@ApiConsumerResolverAnnotation (name = SignatureConsumerResolver.Scheme)
 public class SignatureConsumerResolver implements ApiConsumerResolver {
 
 	private static final long serialVersionUID = 889277317993642120L;
 
-	protected static final String MethodName = "signature";
+	protected static final String Scheme = "signature";
 
 	interface Defaults {
 		String 	Prefix 				= "BNB-HMAC-SHA256";
@@ -71,7 +71,7 @@ public class SignatureConsumerResolver implements ApiConsumerResolver {
 	public ApiConsumer resolve (Api api, ApiService service, ApiRequest request)
 			throws ApiAuthenticationException {
 		
-		JsonObject oResolver = Json.getObject (Json.getObject (api.getSecurity (), Api.Spec.Security.Schemes), MethodName);
+		JsonObject oResolver = Json.getObject (Json.getObject (api.getSecurity (), Api.Spec.Security.Schemes), Scheme);
 		
 		String 	scheme 	= Json.getString 	(oResolver, Spec.Prefix, Defaults.Prefix);
 		
@@ -118,7 +118,7 @@ public class SignatureConsumerResolver implements ApiConsumerResolver {
 	public ApiConsumer authorize (Api api, ApiService service, ApiRequest request, ApiConsumer consumer)
 			throws ApiAuthenticationException {
 		
-		JsonObject oResolver = Json.getObject (Json.getObject (api.getSecurity (), Api.Spec.Security.Schemes), MethodName);
+		JsonObject oResolver = Json.getObject (Json.getObject (api.getSecurity (), Api.Spec.Security.Schemes), Scheme);
 		
 		long 	validity 		= Json.getLong 		(oResolver, Spec.Validity, Defaults.Validity) * 1000;
 		String 	timestampHeader = Json.getString 	(oResolver, Spec.TimestampHeader, Defaults.TimestampHeader);
@@ -201,7 +201,7 @@ public class SignatureConsumerResolver implements ApiConsumerResolver {
 	}
 	
 	private String getSecretKey (Api api, ApiRequest request, ApiConsumer consumer, String accessKey) throws ApiAuthenticationException {
-		JsonObject auth = Json.getObject (Json.getObject (Json.getObject (api.getSecurity (), Api.Spec.Security.Schemes), MethodName), Api.Spec.Security.Auth);
+		JsonObject auth = Json.getObject (Json.getObject (Json.getObject (api.getSecurity (), Api.Spec.Security.Schemes), Scheme), Api.Spec.Security.Auth);
 		if (auth == null || auth.isEmpty ()) {
 			return null;
 		}

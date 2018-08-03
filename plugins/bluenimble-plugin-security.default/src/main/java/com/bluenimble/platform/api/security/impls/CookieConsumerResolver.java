@@ -37,12 +37,12 @@ import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.server.security.impls.DefaultApiConsumer;
 
-@ApiConsumerResolverAnnotation (name = CookieConsumerResolver.MethodName)
+@ApiConsumerResolverAnnotation (name = CookieConsumerResolver.Scheme)
 public class CookieConsumerResolver implements ApiConsumerResolver {
 
 	private static final long serialVersionUID = 889277317993642120L;
 	
-	protected static final String MethodName = "cookie";
+	protected static final String Scheme = "cookie";
 
 	interface Defaults {
 		JsonArray 	Cookies 		= (JsonArray)new JsonArray ().set (null, "suid");
@@ -59,7 +59,7 @@ public class CookieConsumerResolver implements ApiConsumerResolver {
 	public ApiConsumer resolve (Api api, ApiService service, ApiRequest request)
 			throws ApiAuthenticationException {
 		
-		JsonObject oResolver = Json.getObject (Json.getObject (api.getSecurity (), Api.Spec.Security.Schemes), MethodName);
+		JsonObject oResolver = Json.getObject (Json.getObject (api.getSecurity (), Api.Spec.Security.Schemes), Scheme);
 		
 		String cookie = (String)request.get (ApiHeaders.Cookie, Scope.Header);
 		if (Lang.isNullOrEmpty (cookie)) {
@@ -107,7 +107,7 @@ public class CookieConsumerResolver implements ApiConsumerResolver {
 	public ApiConsumer authorize (Api api, ApiService service, ApiRequest request, ApiConsumer consumer)
 			throws ApiAuthenticationException {
 		
-		JsonObject auth = Json.getObject (Json.getObject (Json.getObject (api.getSecurity (), Api.Spec.Security.Schemes), MethodName), Api.Spec.Security.Auth);
+		JsonObject auth = Json.getObject (Json.getObject (Json.getObject (api.getSecurity (), Api.Spec.Security.Schemes), Scheme), Api.Spec.Security.Auth);
 		if (auth == null || auth.isEmpty ()) {
 			return consumer;
 		}

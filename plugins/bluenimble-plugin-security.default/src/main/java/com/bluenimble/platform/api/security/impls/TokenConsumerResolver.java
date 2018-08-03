@@ -37,12 +37,12 @@ import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.server.security.impls.DefaultApiConsumer;
 
-@ApiConsumerResolverAnnotation (name = TokenConsumerResolver.MethodName)
+@ApiConsumerResolverAnnotation (name = TokenConsumerResolver.Scheme)
 public class TokenConsumerResolver implements ApiConsumerResolver {
 
 	private static final long serialVersionUID = 889277317993642120L;
 	
-	protected static final String MethodName = "token";
+	protected static final String Scheme = "token";
 
 	interface Defaults {
 		String 	Prefix 			= "Bearer";
@@ -62,7 +62,7 @@ public class TokenConsumerResolver implements ApiConsumerResolver {
 	public ApiConsumer resolve (Api api, ApiService service, ApiRequest request)
 			throws ApiAuthenticationException {
 		
-		JsonObject oResolver = Json.getObject (Json.getObject (api.getSecurity (), Api.Spec.Security.Schemes), MethodName);
+		JsonObject oResolver = Json.getObject (Json.getObject (api.getSecurity (), Api.Spec.Security.Schemes), Scheme);
 		
 		String 	scheme 	= Json.getString 	(oResolver, Spec.Prefix, Defaults.Prefix);
 		
@@ -95,7 +95,7 @@ public class TokenConsumerResolver implements ApiConsumerResolver {
 	public ApiConsumer authorize (Api api, ApiService service, ApiRequest request, ApiConsumer consumer)
 			throws ApiAuthenticationException {
 		
-		JsonObject auth = Json.getObject (Json.getObject (Json.getObject (api.getSecurity (), Api.Spec.Security.Schemes), MethodName), Api.Spec.Security.Auth);
+		JsonObject auth = Json.getObject (Json.getObject (Json.getObject (api.getSecurity (), Api.Spec.Security.Schemes), Scheme), Api.Spec.Security.Auth);
 		if (auth == null || auth.isEmpty ()) {
 			return consumer;
 		}

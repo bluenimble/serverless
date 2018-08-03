@@ -16,9 +16,12 @@
  */
 package com.bluenimble.platform.api.security.impls;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.bluenimble.platform.Crypto;
+import com.bluenimble.platform.Encodings;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
@@ -37,12 +40,12 @@ import com.bluenimble.platform.encoding.Base64;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.server.security.impls.DefaultApiConsumer;
 
-@ApiConsumerResolverAnnotation (name = BasicConsumerResolver.MethodName)
+@ApiConsumerResolverAnnotation (name = BasicConsumerResolver.Scheme)
 public class BasicConsumerResolver implements ApiConsumerResolver {
 
 	private static final long serialVersionUID = 889277317993642120L;
 	
-	protected static final String MethodName 	= "basic";
+	protected static final String Scheme 		= "basic";
 	
 	protected static final String BasicAuth 	= "Basic";
 	
@@ -51,6 +54,7 @@ public class BasicConsumerResolver implements ApiConsumerResolver {
 	}
 	
 	interface Spec {
+		String Encryption = "encryption";
 		interface Auth {
 			String Feature 		= "feature";
 			String Query 		= "query";
@@ -93,8 +97,13 @@ public class BasicConsumerResolver implements ApiConsumerResolver {
 	public ApiConsumer authorize (Api api, ApiService service, ApiRequest request, ApiConsumer consumer)
 			throws ApiAuthenticationException {
 		
-		JsonObject auth = Json.getObject (Json.getObject (Json.getObject (api.getSecurity (), Api.Spec.Security.Schemes), MethodName), Api.Spec.Security.Auth);
-		if (auth == null || auth.isEmpty ()) {
+		JsonObject scheme = Json.getObject (Json.getObject (api.getSecurity (), Api.Spec.Security.Schemes), Scheme);
+		if (Json.isNullOrEmpty (scheme)) {
+			return consumer;
+		}
+		
+		JsonObject auth = Json.getObject (scheme, Api.Spec.Security.Auth);
+		if (Json.isNullOrEmpty (auth)) {
 			return consumer;
 		}
 		
@@ -105,9 +114,20 @@ public class BasicConsumerResolver implements ApiConsumerResolver {
 			return consumer;
 		}
 		
+		String password = (String)consumer.get (ApiConsumer.Fields.Password);
+		
+		String encrytionAlgorithm = Json.getString (scheme, Spec.Encryption);
+		if (!Lang.isNullOrEmpty (encrytionAlgorithm)) {
+			try {
+				password = Crypto.md5 (password, Encodings.UTF8);
+			} catch (UnsupportedEncodingException ex) {
+				throw new ApiAuthenticationException (ex.getMessage (), ex);
+			}
+		}
+		
 		Map<String, Object> bindings = new HashMap<String, Object> ();
 		bindings.put (ApiConsumer.Fields.Id, consumer.get (ApiConsumer.Fields.Id));
-		bindings.put (ApiConsumer.Fields.Password, consumer.get (ApiConsumer.Fields.Password));
+		bindings.put (ApiConsumer.Fields.Password, password);
 		
 		JsonQuery q = new JsonQuery (query, bindings);
 		
