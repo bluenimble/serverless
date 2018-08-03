@@ -126,6 +126,12 @@
 								
 								<replace file="../../build/bluenimble-${project.version}/config/instance.json" token="[version]" value="${project.version}"/>
 								
+								<copy file="../../build/bluenimble-${project.version}/config/install-centos-${project.version}.sh" 
+									todir="../../assets/shells" />
+			
+								<copy file="../../build/bluenimble-${project.version}/config/install-ubuntu-${project.version}.sh" 
+									todir="../../assets/shells" />
+								
 								<chmod dir="../../build/bluenimble-${project.version}" perm="775" includes="*.sh" />
 								
 							</target>

@@ -39,6 +39,11 @@ public interface ApiOutput extends Serializable {
 		String Expires		= "expires";
 	}
 
+	interface Disposition 		{
+		String Inline 		= "inline";
+		String Attachment 	= "attachment";
+	}
+
 	String 				name 		();
 	Date 				timestamp 	();
 	String 				contentType ();

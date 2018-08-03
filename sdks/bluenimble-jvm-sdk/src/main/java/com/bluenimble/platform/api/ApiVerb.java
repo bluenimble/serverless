@@ -22,5 +22,6 @@ public enum ApiVerb {
 	PUT,
 	DELETE,
 	PATCH,
-	HEAD
+	HEAD,
+	OPTIONS
 }

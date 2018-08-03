@@ -37,8 +37,7 @@ public class GetResourceApiServiceSpi extends AbstractApiServiceSpi {
 	}
 
 	interface Custom {
-		String Resources 	= "resources";
-		String Root 		= "root";
+		String Folder 		= "folder";
 	}
 
 	@Override
@@ -50,7 +49,7 @@ public class GetResourceApiServiceSpi extends AbstractApiServiceSpi {
 			throw new ApiServiceExecutionException ("Resource / not found").status (ApiResponse.BAD_REQUEST);
 		}
 		
-		String location = (String)Json.find (request.getService ().getSpiDef (), Custom.Resources, Custom.Root);
+		String location = Json.getString (request.getService ().getSpiDef (), Custom.Folder);
 		if (!Lang.isNullOrEmpty (location)) {
 			path = location + Lang.SLASH + path;
 		}

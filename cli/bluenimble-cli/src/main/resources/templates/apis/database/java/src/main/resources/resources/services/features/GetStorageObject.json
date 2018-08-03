@@ -1,12 +1,18 @@
 {
 	    "verb": "get",
-	"endpoint": "/features/storage",
+	"endpoint": "/features/storage/::path",
 	
 	"spec": {
 		"fields": {
 			"path": { "title": "Object Path" },
 			"as": { "title": "Output Object Name", "required": "false" },
 			"type": { "title": "Output Object Content Type", "required": "false" }
+		}
+	},
+	
+	"media": {
+		"*/*": {
+			"processor": "stream"
 		}
 	},
 	

@@ -32,12 +32,6 @@ var ApiStreamSource = function (proxy) {
 	*/
 	this.contentType	= proxy ? proxy.contentType () : null;
 	/**	
-	  The length of this stream - if any - 
-	  @type {integer}
-	  @readonly
-	*/
-	this.length	= proxy ? proxy.length () : null;
-	/**	
 	  The content of this stream<br/>
 	  @type {InputStream}
 	  @readonly

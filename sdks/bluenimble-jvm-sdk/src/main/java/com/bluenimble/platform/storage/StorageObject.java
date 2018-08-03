@@ -19,6 +19,8 @@ package com.bluenimble.platform.storage;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.nio.channels.Channel;
+import java.nio.file.OpenOption;
 import java.util.Date;
 
 import com.bluenimble.platform.api.ApiContext;
@@ -74,5 +76,7 @@ public interface StorageObject extends Serializable {
 				writer		(ApiContext context)						throws StorageException;
 	
 	InputStream reader		(ApiContext context)						throws StorageException;
+
+	Channel 	channel		(OpenOption... options)						throws StorageException;
 
 }

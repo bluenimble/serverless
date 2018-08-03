@@ -1,0 +1,10 @@
+{
+	    "verb": "post",
+	"endpoint": "/tus",
+	
+	"spi": {
+		"class": "protocols.tus:TusSpi",
+		"tus": "default"
+	} 
+	
+}

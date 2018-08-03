@@ -53,9 +53,11 @@ public interface ApiServer extends Traceable, Manageable {
 	enum Event {
 		// space events
 		Create,
+		Ready,
 		Destroy,
 		AddFeature,
 		DeleteFeature,
+		Update,
 		// api events
 		Install,
 		Uninstall,
@@ -76,7 +78,8 @@ public interface ApiServer extends Traceable, Manageable {
 		String This 		= "this";
 	}
 	
-	interface EventTarget {
+	interface EventSubject {
+		String Runtime = "runtime";
 	}
 	
 	String 					id 						();

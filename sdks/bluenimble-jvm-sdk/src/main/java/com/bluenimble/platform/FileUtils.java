@@ -29,6 +29,8 @@ import java.io.Reader;
 import com.bluenimble.platform.json.JsonArray;
 
 public class FileUtils {
+	
+	private static final int BUFFER_SIZE = 32 * 1024;
 
 	public static void copy (File source, File destFolder, boolean copyRoot) throws IOException {
 		
@@ -69,7 +71,7 @@ public class FileUtils {
 		try {
 			is = new FileInputStream (f);
 			os = new FileOutputStream (df);
-			IOUtils.copy (is, os);
+			IOUtils.copy (is, os, BUFFER_SIZE);
 		} finally {
 			IOUtils.closeQuietly (is);
 			IOUtils.closeQuietly (os);

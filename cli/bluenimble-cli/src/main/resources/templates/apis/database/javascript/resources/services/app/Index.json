@@ -20,9 +20,7 @@
 	
 	"spi": {
 		"class": "core:ResourceSpi",
-		"resources": {
-			"root": "app"
-		}
+		"folder": "app"
 	} 
 	
 }

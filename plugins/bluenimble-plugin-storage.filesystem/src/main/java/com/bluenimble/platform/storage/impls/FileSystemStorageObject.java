@@ -24,10 +24,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.channels.Channel;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.util.Date;
 import java.util.stream.Stream;
@@ -55,14 +57,20 @@ public class FileSystemStorageObject implements StorageObject {
 	protected File 		source;
 	protected String 	extension;
 	
-	private boolean isRoot;
+	private boolean 	isRoot;
+
+	protected 	int 	buffer = 8 * 1024;
+	
+	private String		reader = Lang.UUID (30);	
+	private String		writer = Lang.UUID (30);	
 	
 	protected FileSystemStorageObject () {
 	}
 	
-	public FileSystemStorageObject (File source, boolean isRoot) {
+	public FileSystemStorageObject (File source, boolean isRoot, int buffer) {
 		setSource (source);
 		this.isRoot = isRoot;
+		this.buffer = buffer;
 	}
 	
 	@Override
@@ -128,14 +136,22 @@ public class FileSystemStorageObject implements StorageObject {
 		if (isFolder ()) {
 			throw new StorageException (name () + " is a folder");
 		}
+		
+		RecyclableInputStream ris = (RecyclableInputStream)context.getRecyclable (reader);
+		if (ris != null) {
+			return ris;
+		}
+		
 		InputStream is = null;
 		try {
 			is = new FileInputStream (source);
 		} catch (IOException ioex) {
 			throw new StorageException (ioex.getMessage (), ioex);
 		} 
-		RecyclableInputStream ris = new RecyclableInputStream (is);
-		context.addRecyclable (Lang.UUID (10), ris);
+		
+		ris = new RecyclableInputStream (is);
+		context.addRecyclable (reader, ris);
+		
 		return ris;
 	}
 
@@ -144,14 +160,22 @@ public class FileSystemStorageObject implements StorageObject {
 		if (isFolder ()) {
 			throw new StorageException (name () + " is a folder");
 		}
+		
+		RecyclableOutputStream ros = (RecyclableOutputStream)context.getRecyclable (writer);
+		if (ros != null) {
+			return ros;
+		}
+		
 		OutputStream os = null;
 		try {
 			os = new FileOutputStream (source);
 		} catch (IOException ioex) {
 			throw new StorageException (ioex.getMessage (), ioex);
 		} 
-		RecyclableOutputStream ros = new RecyclableOutputStream (os);
-		context.addRecyclable (Lang.UUID (10), ros);
+		
+		ros = new RecyclableOutputStream (os);
+		context.addRecyclable (writer, ros);
+		
 		return ros;
 	}
 
@@ -210,7 +234,7 @@ public class FileSystemStorageObject implements StorageObject {
 			altContentType = contentType ();
 		}
 		try {
-			return new DefaultApiStreamSource (altName, altName, altContentType, length (), new FileInputStream (source));
+			return new DefaultApiStreamSource (altName, altName, altContentType, new FileInputStream (source));
 		} catch (FileNotFoundException e) {
 			throw new StorageException (e.getMessage (), e);
 		}
@@ -224,7 +248,7 @@ public class FileSystemStorageObject implements StorageObject {
 		OutputStream os = null;
 		try {
 			os = new FileOutputStream (source, append);
-			return IOUtils.copy (input, os);
+			return IOUtils.copy (input, os, buffer);
 		} catch (IOException ioex) {
 			throw new StorageException (ioex.getMessage (), ioex);
 		} finally {
@@ -251,7 +275,7 @@ public class FileSystemStorageObject implements StorageObject {
 				.set (StorageObject.Fields.Timestamp, Lang.toUTC (timestamp ()));
 		try {
 			if (isFolder ()) {
-				long count = new FileSystemFolder (source, false).count ();
+				long count = new FileSystemFolder (source, false, buffer).count ();
 				data.set (ApiOutput.Defaults.Count, count);
 			    data.set (StorageObject.Fields.Length, length ());
 			    		
@@ -323,7 +347,7 @@ public class FileSystemStorageObject implements StorageObject {
 		if (!isFolder ()) {
 			throw new StorageException ("object '" + name () + "' isn't a valid folder");
 		}
-		return new FileSystemFolder (source, isRoot);
+		return new FileSystemFolder (source, isRoot, buffer);
 	}
 
 
@@ -425,6 +449,19 @@ public class FileSystemStorageObject implements StorageObject {
 			throw new StorageException (ex.getMessage (), ex);
 		} finally {
 			IOUtils.closeQuietly (in);
+		}
+	}
+
+	@Override
+	public Channel channel (OpenOption... options) throws StorageException {
+		if (isFolder ()) {
+			throw new StorageException (name () + " is a folder");
+		}
+		
+		try {
+			return FileChannel.open (source.toPath (), options);
+		} catch (IOException ex) {
+			throw new StorageException (ex.getMessage (), ex);
 		}
 	}
 

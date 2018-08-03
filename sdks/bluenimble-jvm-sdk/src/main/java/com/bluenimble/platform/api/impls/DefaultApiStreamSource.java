@@ -18,6 +18,7 @@ package com.bluenimble.platform.api.impls;
 
 import java.io.InputStream;
 
+import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.api.ApiStreamSource;
 
 public class DefaultApiStreamSource implements ApiStreamSource {
@@ -27,14 +28,13 @@ public class DefaultApiStreamSource implements ApiStreamSource {
 	private String 		id;
 	private String 		name;
 	private String 		contentType;
-	private long 		length;
 	private InputStream stream;
+	private boolean		closable;
 	
-	public DefaultApiStreamSource (String id, String name, String contentType, long length, InputStream stream) {
+	public DefaultApiStreamSource (String id, String name, String contentType, InputStream stream) {
 		this.id 			= id;
 		this.name 			= name;
 		this.contentType 	= contentType;
-		this.length 		= length;
 		this.stream 		= stream;
 	}
 	
@@ -52,15 +52,22 @@ public class DefaultApiStreamSource implements ApiStreamSource {
 	public String contentType () {
 		return contentType;
 	}
-
-	@Override
-	public long length () {
-		return length;
-	}
-
 	@Override
 	public InputStream stream () {
 		return stream;
+	}
+	
+	@Override
+	public void close () {
+		if (!closable) {
+			return;
+		}
+		IOUtils.closeQuietly (stream);
+	}
+	
+	public DefaultApiStreamSource setClosable (boolean closable) {
+		this.closable = closable;
+		return this;
 	}
 
 }

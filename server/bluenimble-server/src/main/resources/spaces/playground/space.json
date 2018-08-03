@@ -55,6 +55,12 @@
 	},	
 	
 	"runtime": {
-		"timeout": "10000"
+		"timeout": "10000",
+		"tus": {
+			"default": {
+				"storage": "default",
+                "multiTenant": "false"
+			}
+		}
 	}
 }

@@ -145,4 +145,8 @@ public class HttpApiResponse extends AbstractApiResponse {
 		
 	}
 
+	public HttpServletResponse getProxy () {
+		return proxy;
+	}
+
 }

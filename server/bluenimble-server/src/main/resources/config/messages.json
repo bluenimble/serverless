@@ -81,6 +81,9 @@
 	"UrlType": {
 		"en": "{0} must be a valid Url"
 	},
+	"UUIDType": {
+		"en": "{0} must be a valid UUID"
+	},
 	"PhoneType": {
 		"en": "{0} must be a valid Phone Number"
 	},

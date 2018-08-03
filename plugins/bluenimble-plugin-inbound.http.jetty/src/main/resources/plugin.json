@@ -31,6 +31,15 @@
 				"port": "[ this.ssl.port | '8443' ]",
 				"keystore": "[ this.ssl.keystore | '' ]",
 				"password": "[ this.ssl.password | '' ]"
+			},
+			
+			"cors": {
+				"origins": "[ this.cors.origins | '*' ]",
+				"methods": "[ this.cors.methods | 'GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS' ]",
+				"headers": {
+					"allow": 	"[ this.cors.headers.allow | '' ]>>json",
+					"expose": 	"[ this.cors.headers.expose | '' ]>>json"
+				}
 			}
 		}
 	}

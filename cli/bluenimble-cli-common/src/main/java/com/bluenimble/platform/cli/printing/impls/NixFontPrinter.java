@@ -64,6 +64,9 @@ public class NixFontPrinter implements FontPrinter {
 		} else {
 			code = attr.getCode ();
 		}
+		if (fc == null) {
+			fc = FColor.WHITE;
+		}
 		return Prefix + code + Lang.SEMICOLON + fc.getCode () + Postfix + text + ANSI_RESET;
 	}
 

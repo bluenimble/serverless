@@ -17,15 +17,15 @@
 package com.bluenimble.platform.server.plugins.storage.fs;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import com.bluenimble.platform.Feature;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
+import com.bluenimble.platform.Recyclable;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.Manageable;
+import com.bluenimble.platform.api.tracing.Tracer.Level;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.Plugin;
 import com.bluenimble.platform.plugins.PluginRegistryException;
@@ -39,17 +39,18 @@ import com.bluenimble.platform.storage.impls.FileSystemStorage;
 public class FileSystemStoragePlugin extends AbstractPlugin {
 
 	private static final long serialVersionUID = 3203657740159783537L;
+	
+	private static final int DefaultBuffer = 32 * 1000;
 
 	interface Spec {
 		String Mount 	= "mount";
+		String Buffer	= "buffer";
 	}
 	
 	private String 	root;
 	private File 	fRoot;
 	
 	private String 	feature;
-	
-	private Map<String, String> mounts = new HashMap<String, String> ();
 	
 	@Override
 	public void init (final ApiServer server) throws Exception {
@@ -61,13 +62,18 @@ public class FileSystemStoragePlugin extends AbstractPlugin {
 		feature = aFeature.name ();
 
 		if (Lang.isNullOrEmpty (root)) {
-			root = System.getProperty ("user.home") + File.pathSeparator + "bluenimble/" + getNamespace ();
+			root = System.getProperty ("user.home") + File.separator + "bluenimble/" + getNamespace ();
 		}
 		
 		fRoot = new File (root);
 		
 		if (!fRoot.exists ()) {
 			fRoot.mkdirs ();
+		}
+		
+		tracer.log (Level.Info, "Storage Root folder is " + fRoot.getAbsolutePath ());
+		if (!fRoot.exists ()) {
+			throw new Exception ("root folder not found");
 		}
 		
 		server.addFeature (new ServerFeature () {
@@ -83,11 +89,11 @@ public class FileSystemStoragePlugin extends AbstractPlugin {
 			}
 			@Override
 			public Object get (ApiSpace space, String name) {
-				String mount = mounts.get (createKey  (name));
-				if (mount == null) {
+				RecyclableMount rm = (RecyclableMount)space.getRecyclable (createKey (name));
+				if (rm == null) {
 					return null;
 				}
-				return new FileSystemStorage (mount, new File (fRoot, mount));
+				return new FileSystemStorage (rm.mount (), new File (fRoot, rm.mount ()), rm.buffer ());
 			}
 			@Override
 			public String provider () {
@@ -170,17 +176,53 @@ public class FileSystemStoragePlugin extends AbstractPlugin {
 			removeClient (space, name);
 		}
 		
-		mounts.put (createKey  (name), mount);
+		space.addRecyclable (createKey  (name), new RecyclableMount (mount, Json.getInteger (spec, Spec.Buffer, DefaultBuffer)));
 		
 		feature.set (ApiSpace.Spec.Installed, true);
 	}
 	
 	private void removeClient (ApiSpace space, String featureName) {
-		mounts.remove (createKey  (featureName));
+		String key = createKey (featureName);
+		RecyclableMount recyclable = (RecyclableMount)space.getRecyclable (key);
+		if (recyclable == null) {
+			return;
+		}
+		// remove from recyclables
+		space.removeRecyclable (key);
+		// recycle
+		recyclable.recycle ();
 	}
 	
 	private String createKey (String name) {
 		return feature + Lang.DOT + getNamespace () + Lang.DOT + name;
+	}
+	
+	class RecyclableMount implements Recyclable {
+		private static final long serialVersionUID = 50882416501226306L;
+		
+		private String 	mount;
+		private int 	buffer;
+		
+		public RecyclableMount (String mount, int buffer) {
+			this.mount 	= mount;
+			this.buffer = buffer;
+		}
+		
+		public String mount () {
+			return mount;
+		}
+
+		public int buffer () {
+			return buffer;
+		}
+
+		@Override
+		public void finish () {
+		}
+
+		@Override
+		public void recycle () {
+		}
 	}
 	
 }

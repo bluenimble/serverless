@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 public interface ApiRequestBodyReader extends Serializable {
 	
-	Object 		read 		(InputStream proxy) throws IOException;
+	Object 		read 		(InputStream proxy, String contentType) throws IOException;
 	String []	mediaTypes 	();
 	
 }

@@ -36,7 +36,7 @@ import com.bluenimble.platform.api.ApiRequestVisitor;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.ApiSpace.Spec;
 import com.bluenimble.platform.api.ApiStatus;
-import com.bluenimble.platform.api.impls.ApiFileStreamSource;
+import com.bluenimble.platform.api.impls.FileApiStreamSource;
 import com.bluenimble.platform.api.impls.ApiSpaceImpl;
 import com.bluenimble.platform.api.impls.ApiSpaceImpl.Spaces;
 import com.bluenimble.platform.api.impls.DefaultApiRequestVisitor;
@@ -336,7 +336,7 @@ public class FileSystemApiServer extends AbstractApiServer {
 					continue;
 				} 
 			} else if (aFile.isFile ()) {
-				ApiFileStreamSource is = new ApiFileStreamSource (aFile, ConfigKeys.ApiExt);
+				FileApiStreamSource is = new FileApiStreamSource (aFile, ConfigKeys.ApiExt);
 				try {
 					api = space.install (is);
 				} catch (Exception ex) {
@@ -427,6 +427,9 @@ public class FileSystemApiServer extends AbstractApiServer {
 		try {
 			if (space.isStarted ()) {
 				getPluginsRegistry ().onEvent (Event.Create, space);
+				// AfterCreate handled by plugins to mount runtime services only when features are already available 
+				// in the space
+				getPluginsRegistry ().onEvent (Event.Ready, space);
 			}
 		} catch (Exception ex) {
 			throw new ApiManagementException (ex.getMessage (), ex);

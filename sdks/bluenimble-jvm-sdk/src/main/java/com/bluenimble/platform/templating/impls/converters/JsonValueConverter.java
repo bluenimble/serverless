@@ -16,6 +16,7 @@
  */
 package com.bluenimble.platform.templating.impls.converters;
 
+import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.json.JsonParser;
@@ -28,8 +29,14 @@ public class JsonValueConverter implements ValueConverter {
 		if (value instanceof JsonObject || value instanceof JsonArray) {
 			return value;
 		}
+		
+		String sValue = String.valueOf (value);
+		
+		if (Lang.isNullOrEmpty (sValue)) {
+			return null;
+		}
 		try {
-			return JsonParser.parse (String.valueOf (value));
+			return JsonParser.parse (sValue);
 		} catch (Exception ex) {
 			throw new RuntimeException (ex.getMessage (), ex);
 		}

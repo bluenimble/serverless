@@ -21,6 +21,32 @@ import com.bluenimble.platform.Referenceable;
 
 public interface ApiContext extends Referenceable {
 	
+	ApiContext	Instance 	= new ApiContext () {
+		private static final long serialVersionUID = 3571684809770314117L;
+	
+		@Override
+		public void addRecyclable (String name, Recyclable r) {
+		}
+		@Override
+		public Recyclable getRecyclable (String name) {
+			return null;
+		}
+		@Override
+		public void finish () {
+		}
+		@Override
+		public void recycle () {
+		}
+		@Override
+		public Object getReference () {
+			return null;
+		}
+		@Override
+		public void setReference (Object object) {
+			
+		}
+	};
+	
 	void			addRecyclable 	(String name, Recyclable r);
 	
 	Recyclable		getRecyclable 	(String name);

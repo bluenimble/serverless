@@ -28,6 +28,8 @@
 		<module>bluenimble-plugin-security.keystore</module>
 
 		<module>bluenimble-plugin-media.default</module>
+
+		<module>bluenimble-plugin-protocols.tus</module>		
 		
 		<module>bluenimble-plugin-storage.filesystem</module>
 		

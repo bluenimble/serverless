@@ -107,22 +107,22 @@
 		<dependency>
 		    <groupId>org.eclipse.jetty</groupId>
 		    <artifactId>jetty-server</artifactId>
-		    <version>9.4.8.v20171121</version>
+		    <version>9.4.11.v20180605</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.eclipse.jetty</groupId>
 		    <artifactId>jetty-servlet</artifactId>
-		    <version>9.4.8.v20171121</version>
+		    <version>9.4.11.v20180605</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.eclipse.jetty</groupId>
 		    <artifactId>jetty-jmx</artifactId>
-		    <version>9.4.8.v20171121</version>
+		    <version>9.4.11.v20180605</version>
 		</dependency>
 		<dependency>
-		    <groupId>com.thetransactioncompany</groupId>
-		    <artifactId>cors-filter</artifactId>
-		    <version>2.6</version>
+		    <groupId>org.eclipse.jetty</groupId>
+		    <artifactId>jetty-servlets</artifactId>
+		    <version>9.4.11.v20180605</version>
 		</dependency>
 		<dependency>
 		    <groupId>commons-fileupload</groupId>

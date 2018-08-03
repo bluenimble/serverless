@@ -27,7 +27,9 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import com.bluenimble.platform.encoding.Base64;
 import com.bluenimble.platform.json.JsonArray;
@@ -477,10 +479,25 @@ public class Json {
 			if (o.isEmpty ()) {
 				return o;
 			}
+			Set<String> removed = null;
 			Iterator<String> keys = o.keys ();
 			while (keys.hasNext ()) {
 				String key = keys.next ();
-				o.set (key, resolve (o.get (key), compiler, vr));
+				Object v = resolve (o.get (key), compiler, vr);
+				if (v == null) {
+					if (removed == null) {
+						removed = new HashSet<String> ();
+					}
+					removed.add (key);
+				} else {
+					o.set (key, v);
+				}
+			}
+			// remove nulls
+			if (removed != null && !removed.isEmpty ()) {
+				for (String k : removed) {
+					o.remove (k);
+				}
 			}
 			return o;
 		} else if (obj instanceof JsonArray) {

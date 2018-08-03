@@ -38,6 +38,8 @@ public class TestTemplate {
 		String exp5 = "simple [model.b] [alpha.a] [beta | 'alpha']";
 
 		String exp6 = "{ price: '[model.b]' }>>json";
+		
+		String exp7 = "[ model.alpha | '' ]>>json";
 
 		final JsonObject model = (JsonObject)new JsonObject ().set ("a", "A Value").set ("b", 409).set ("c", "Hello");
 		
@@ -67,6 +69,7 @@ public class TestTemplate {
 		System.out.println ("exp4: " + compiler.compile (exp4, null).eval (vr));
 		System.out.println ("exp5: " + compiler.compile (exp5, null).eval (vr));
 		System.out.println ("exp6: " + compiler.compile (exp6, null).eval (vr));
+		System.out.println ("exp7: " + compiler.compile (exp7, null).eval (vr));
 		
 
 	}

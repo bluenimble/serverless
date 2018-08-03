@@ -16,7 +16,7 @@ public class YamlApiRequestBodyReader implements ApiRequestBodyReader {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Object read (InputStream payload) throws IOException {
+	public Object read (InputStream payload, String contentType) throws IOException {
 		
 		Yaml yaml = new Yaml ();
 		

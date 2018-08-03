@@ -27,6 +27,7 @@ public interface ApiContentTypes {
 	String 				Form		= "application/x-www-form-urlencoded";
 
 	String 				Multipart 	= "multipart/form-data";
+	String 				Chunk 		= "application/offset+octet-stream";
 	
 	String 				Css			= "text/css";
 	String 				Javascript	= "application/javascript";

@@ -24,6 +24,8 @@ public interface FieldType {
 	String Binary			= "Binary";
 	String Base64			= "Base64";
 	
+	String UUID 			= "UUID";
+
 	String Raw				= "Raw";
 	
 	interface Facets {
@@ -32,9 +34,9 @@ public interface FieldType {
 		String Phone 		= "Phone";
 		String Regex 		= "Regex";
 		
-		String StartsWith 	= "Regex";
-		String EndsWith		= "Regex";
-		String Contains 	= "Regex";
+		String StartsWith 	= "StartsWith";
+		String EndsWith		= "EndsWith";
+		String Contains 	= "Contains";
 	}
 	
 }

@@ -41,6 +41,8 @@ import java.util.regex.Pattern;
 import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.regex.WildcardCompiler;
+import com.bluenimble.platform.regex.WildcardMatcher;
 import com.bluenimble.platform.scripting.ScriptingEngineException;
 
 import jdk.nashorn.api.scripting.NashornException;
@@ -928,5 +930,14 @@ public class Lang {
 		}
 		return (name.endsWith ("ies") ? (name.substring (0, name.length () - 3) + "y") : name.substring (0, name.length () - 1));
 	}
+	
+	public static boolean wmatches (String wildcard, String value) {
+		WildcardMatcher matcher = new WildcardMatcher (WildcardCompiler.compile (wildcard), value);
+		return matcher.find ();
+	}
+	
+	public static void main (String [] args) {
+		System.out.println (Lang.wmatches ("/tus**", "/tus/*"));
+	} 
 	
 }

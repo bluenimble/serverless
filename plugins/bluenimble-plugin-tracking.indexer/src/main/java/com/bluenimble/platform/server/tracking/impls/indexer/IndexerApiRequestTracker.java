@@ -21,7 +21,6 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import com.bluenimble.platform.Recyclable;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiContext;
 import com.bluenimble.platform.api.ApiRequest;
@@ -38,32 +37,6 @@ public class IndexerApiRequestTracker implements ServerRequestTracker {
 	protected int keepAliveTime = 30;
 	
 	private ThreadGroup threadGroup = new ThreadGroup ("RequestTracker");
-	
-	private ApiContext	context 	= new ApiContext () {
-		private static final long serialVersionUID = 3571684809770314117L;
-	
-		@Override
-		public void addRecyclable (String name, Recyclable r) {
-		}
-		@Override
-		public Recyclable getRecyclable (String name) {
-			return null;
-		}
-		@Override
-		public void finish () {
-		}
-		@Override
-		public void recycle () {
-		}
-		@Override
-		public Object getReference () {
-			return null;
-		}
-		@Override
-		public void setReference (Object object) {
-			
-		}
-	};
 	
 	private TrackingExecutor executor;
 
@@ -98,7 +71,7 @@ public class IndexerApiRequestTracker implements ServerRequestTracker {
 	}
 	
 	ApiContext context () {
-		return context;
+		return ApiContext.Instance;
 	}
 
 }

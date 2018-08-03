@@ -16,6 +16,15 @@ echo       "BlueNimble Serverless Platform - Server Node"
 echo       "Copyright (c) BlueNimble, Inc. (https://www.bluenimble.com)"
 echo       ""
 
+# Set BNB_RUNTIME to an empty directory outside the installation directory. Recommended for clean upgrades!  
+#                 Default to . (install directory)
+# Set BNB_TENANT  to an empty directory outside the installation directory if you are going to run multiple bluenimble nodes 
+#                 in the same machine using the same binaries. Default to single 
+BNB_RUNTIME=. 
+BN_TENANT=none
+
+echo ""
+
 # resolve links - $0 may be a softlink
 PRG="$0"
 
@@ -74,4 +83,4 @@ echo $$ > $BN_PID
 
 exec "$JAVA" $JAVA_OPTS $BN_OPTS_MEMORY $JAVA_OPTS_SCRIPT \
     -cp "boot/bluenimble-jvm-sdk-[version].jar:boot/bluenimble-server-boot-[version].jar" \
-    $* com.bluenimble.platform.server.boot.BlueNimble $BN_RUNTIME $BN_TENANT
+    $* com.bluenimble.platform.server.boot.BlueNimble $BNB_RUNTIME $BNB_TENANT

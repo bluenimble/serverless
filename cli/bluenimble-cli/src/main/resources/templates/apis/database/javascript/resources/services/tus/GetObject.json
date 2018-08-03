@@ -1,0 +1,22 @@
+{
+	    "verb": "get",
+	"endpoint": "/tus/:id",
+	
+	"spec": {
+		"fields": {
+			"id": { "title": "Object Id", "type": "UUID" }
+		}
+	},
+	
+	"media": {
+		"*/*": {
+			"processor": "stream"
+		}
+	},
+	
+	"spi": {
+		"class": "protocols.tus:TusSpi",
+		"tus": "default"
+	} 
+	
+}

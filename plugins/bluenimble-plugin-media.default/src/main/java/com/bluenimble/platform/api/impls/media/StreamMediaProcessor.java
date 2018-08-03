@@ -33,12 +33,12 @@ import com.bluenimble.platform.api.ApiMediaException;
 import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiRequest.Scope;
-import com.bluenimble.platform.api.media.ApiMediaProcessor;
-import com.bluenimble.platform.api.media.DataWriter;
 import com.bluenimble.platform.api.ApiResource;
 import com.bluenimble.platform.api.ApiResourcesManagerException;
 import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.ApiService;
+import com.bluenimble.platform.api.media.ApiMediaProcessor;
+import com.bluenimble.platform.api.media.DataWriter;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.http.utils.HttpUtils;
 import com.bluenimble.platform.json.JsonObject;
@@ -52,11 +52,6 @@ public class StreamMediaProcessor implements ApiMediaProcessor {
 
 	private static final long serialVersionUID = -3490327410756493328L;
 	
-	interface Disposition 		{
-		String Inline 		= "inline";
-		String Attachment 	= "attachment";
-	}
-
 	public static final String Name = "stream";
 	
     private static final long 		EXPIRE_TIME 			= 604800000L; // ..ms = 1 week.
@@ -275,7 +270,7 @@ public class StreamMediaProcessor implements ApiMediaProcessor {
         // Get content type by file name and set content disposition.
         String disposition = (String)output.get (ApiOutput.Defaults.Disposition);
         if (Lang.isNullOrEmpty (disposition)) {
-        	disposition = Disposition.Inline;
+        	disposition = ApiOutput.Disposition.Inline;
         }
 
         // Initialize response.

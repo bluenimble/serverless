@@ -14,14 +14,9 @@ if [ -d "/opt/bluenimble/platform" ]; then
 	exit 1
 fi
 
-VERSION=$1
+echo       "Install BlueNimble in a Centos host"
 
-if [ -z "$VERSION" ] ; then
-	echo "enter a version to install!"
-	echo "   Example: ./install.sh 1.2.0"
-	echo "Check https://github.com/bluenimble/serverless/releases for available versions"
-    exit 1
-fi
+CLEAN=$1
 
 # change machine limits
 sudo sysctl -w net.core.rmem_max=16777216
@@ -53,15 +48,16 @@ sudo rpm -qa | grep -qw nfs-utils || sudo yum install -y nfs-utils
 sudo rpm -qa | grep -qw java-1.8.0-openjdk || sudo yum -y install java-1.8.0-openjdk
 
 echo "Download and install BlueNimble"
-wget --no-cache https://github.com/bluenimble/serverless/releases/download/v${VERSION}/bluenimble-${VERSION}-bin.tar.gz && \
-  sudo tar -xvzf bluenimble-${VERSION}-bin.tar.gz -C /opt/bluenimble && \
-  rm -f bluenimble-${VERSION}-bin.tar.gz
+wget --no-cache https://github.com/bluenimble/serverless/releases/download/v[version]/bluenimble-[version]-bin.tar.gz && \
+  sudo tar -xvzf bluenimble-[version]-bin.tar.gz -C /opt/bluenimble && \
+  rm -f bluenimble-[version]-bin.tar.gz
 
-echo "Delete playground plugin and space"
-sudo mv /opt/bluenimble/bluenimble-${VERSION} /opt/bluenimble/platform
+sudo mv /opt/bluenimble/bluenimble-[version] /opt/bluenimble/platform
 
-sudo rm -fr /opt/bluenimble/plugins/bluenimble-plugin-dev.playground-${VERSION}
-sudo rm -fr /opt/bluenimble/spaces/playground
+if [ $CLEAN = 'clean' ] ; then
+	sudo rm -fr /opt/bluenimble/plugins/bluenimble-plugin-dev.playground-[version]
+	sudo rm -fr /opt/bluenimble/spaces/playground
+fi
 
 echo "Create BlueNimble auto-start Service"
 sudo chmod u+x /opt/bluenimble/platform/bnb.sh

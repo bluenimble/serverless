@@ -45,6 +45,7 @@ import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
@@ -52,11 +53,13 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
+import com.bluenimble.platform.api.ApiHeaders;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiRequestBodyReader;
+import com.bluenimble.platform.api.ApiVerb;
 import com.bluenimble.platform.api.CodeExecutor;
-import com.bluenimble.platform.api.impls.readers.StreamApiRequestBodyReader;
 import com.bluenimble.platform.api.impls.readers.JsonApiRequestBodyReader;
+import com.bluenimble.platform.api.impls.readers.StreamApiRequestBodyReader;
 import com.bluenimble.platform.api.impls.readers.TextApiRequestBodyReader;
 import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.api.tracing.Tracer.Level;
@@ -68,7 +71,6 @@ import com.bluenimble.platform.plugins.inbound.http.impl.HttpApiResponse;
 import com.bluenimble.platform.plugins.inbound.http.readers.YamlApiRequestBodyReader;
 import com.bluenimble.platform.reflect.BeanUtils;
 import com.bluenimble.platform.server.ApiServer;
-import com.thetransactioncompany.cors.CORSFilter;
 
 public class JettyPlugin extends AbstractPlugin {
 	
@@ -99,6 +101,50 @@ public class JettyPlugin extends AbstractPlugin {
 		}
 	}
 	
+	interface Cors {
+        String Origins 			= "origins";
+        String Methods 			= "methods";
+        String Headers 			= "headers";
+	        String Allow 		= "allow]";
+	        String Expose 		= "expose";
+	}
+	
+	private static final JsonArray DefaultExposedHeaders = new JsonArray ();
+	static {
+		//Authorization,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,User-Agent,X-Requested-With,BNB-Execution-Time,BNB-Node-Id,BNB-Node-Type
+		DefaultExposedHeaders.add (ApiHeaders.ContentType);
+		DefaultExposedHeaders.add (ApiHeaders.ContentLength);
+		DefaultExposedHeaders.add (ApiHeaders.ContentDisposition);
+		DefaultExposedHeaders.add (ApiHeaders.ContentEncoding);
+		DefaultExposedHeaders.add (ApiHeaders.ContentLanguage);
+		DefaultExposedHeaders.add (ApiHeaders.ContentRange);
+		
+		DefaultExposedHeaders.add (ApiHeaders.CacheControl);
+		DefaultExposedHeaders.add (ApiHeaders.Expires);
+		DefaultExposedHeaders.add (ApiHeaders.LastModified);
+		DefaultExposedHeaders.add (ApiHeaders.Pragma);
+		DefaultExposedHeaders.add (ApiHeaders.ETag);
+		DefaultExposedHeaders.add (ApiHeaders.Cookie);
+		DefaultExposedHeaders.add (ApiHeaders.SetCookie);
+		
+		DefaultExposedHeaders.add (ApiHeaders.Location);
+
+		// bnb
+		DefaultExposedHeaders.add (ApiHeaders.NodeID);
+		DefaultExposedHeaders.add (ApiHeaders.NodeType);
+		DefaultExposedHeaders.add (ApiHeaders.NodeVersion);
+		
+		DefaultExposedHeaders.add (ApiHeaders.ExecutionTime);
+		
+		// tus
+		DefaultExposedHeaders.add (ApiHeaders.Tus.UploadOffset);
+		DefaultExposedHeaders.add (ApiHeaders.Tus.UploadLength);
+		DefaultExposedHeaders.add (ApiHeaders.Tus.TusVersion);
+		DefaultExposedHeaders.add (ApiHeaders.Tus.TusResumable);
+		DefaultExposedHeaders.add (ApiHeaders.Tus.TusExtension);
+		DefaultExposedHeaders.add (ApiHeaders.Tus.TusMaxSize);
+	}
+
 	private Map<String, ApiRequestBodyReader> readers = new HashMap<String, ApiRequestBodyReader> ();
 
 	private int 		port 		= 80;
@@ -113,6 +159,8 @@ public class JettyPlugin extends AbstractPlugin {
 	private int			idleTimeout = 30;
 	
 	private JsonObject	ssl;
+	
+	private JsonObject	cors;
 
 	private Server 		httpServer;
 	
@@ -258,7 +306,34 @@ public class JettyPlugin extends AbstractPlugin {
 	        		execute (req, resp);
 	        	}
 	
-	        	protected void execute (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	        	@Override
+				protected void doHead (HttpServletRequest req, HttpServletResponse resp)
+						throws ServletException, IOException {
+	        		execute (req, resp);
+				}
+
+				@Override
+				protected void doOptions (HttpServletRequest req, HttpServletResponse resp)
+						throws ServletException, IOException {
+					execute (req, resp);
+				}
+				
+				@Override
+				protected void doTrace (HttpServletRequest req, HttpServletResponse resp)
+						throws ServletException, IOException {
+					execute (req, resp);
+				}
+				
+				@Override
+				public void service (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+			        if (req.getMethod ().equalsIgnoreCase (ApiVerb.PATCH.name ())) {
+			        	execute (req, resp);
+			        } else {
+			            super.service (req, resp);
+			        }
+			    }
+
+				protected void execute (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 	        		try {
 	        			ApiRequest request = new HttpApiRequest (req, JettyPlugin.this);
 	        			request.getNode ().set (ApiRequest.Fields.Node.Id, server.id ());
@@ -275,10 +350,25 @@ public class JettyPlugin extends AbstractPlugin {
         sContext.addServlet (apiHolder, Lang.SLASH + Lang.STAR);
         
         // cross origin
-        FilterHolder holder = new FilterHolder (CORSFilter.class);
+        FilterHolder holder = new FilterHolder (CrossOriginFilter.class);
         holder.setName ("CORS");
-        holder.setInitParameter ("cors.supportedMethods", "GET, POST, HEAD, PUT, DELETE, PATCH, OPTIONS");
-        holder.setInitParameter ("cors.exposedHeaders", "Accept,Authorization,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,User-Agent,X-Requested-With,BNB-Execution-Time,BNB-Node-Id,BNB-Node-Type");
+        holder.setInitParameter ("allowedOrigins", Json.getString (cors, Cors.Origins, Lang.STAR));
+        holder.setInitParameter ("allowedMethods", Json.getString (cors, Cors.Methods, "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS"));
+        // allow headers
+        String sAllowedHeaders = Lang.STAR;
+        JsonArray allowedHeaders = (JsonArray)Json.find (cors, Cors.Headers, Cors.Allow);
+        if (!Json.isNullOrEmpty (allowedHeaders)) {
+        	sAllowedHeaders = allowedHeaders.join (Lang.COMMA);
+        } 
+        holder.setInitParameter ("allowedHeaders", sAllowedHeaders);
+        
+        // exposed headers
+        JsonArray exposedHeaders = (JsonArray)Json.find (cors, Cors.Headers, Cors.Expose);
+        if (Json.isNullOrEmpty (exposedHeaders)) {
+        	exposedHeaders = DefaultExposedHeaders;
+        } 
+        holder.setInitParameter ("exposedHeaders", exposedHeaders.join (Lang.COMMA));
+        
         sContext.addFilter (holder, "/*", EnumSet.of (DispatcherType.INCLUDE, DispatcherType.FORWARD, DispatcherType.REQUEST, DispatcherType.ERROR));
         
         // monitor
@@ -335,9 +425,15 @@ public class JettyPlugin extends AbstractPlugin {
 	public JsonObject getSsl() {
 		return ssl;
 	}
-
 	public void setSsl(JsonObject ssl) {
 		this.ssl = ssl;
+	}
+
+	public JsonObject getCors () {
+		return cors;
+	}
+	public void setCors (JsonObject cors) {
+		this.cors = cors;
 	}
 
 	public String getContext () {

@@ -11,6 +11,6 @@
 	"spi": {
 		"class": "scripting.javascript:ApiSpi",
 		"function": "functions/Api.js"
-	}	
+	}
 	
 }

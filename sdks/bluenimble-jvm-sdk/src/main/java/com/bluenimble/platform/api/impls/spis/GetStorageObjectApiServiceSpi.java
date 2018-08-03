@@ -52,11 +52,11 @@ public class GetStorageObjectApiServiceSpi extends AbstractStorageApiServiceSpi 
 			StorageObject object = find (storage.root (), path);
 			output = object.toOutput (null, (String)request.get (Spec.As), MediaTypeUtils.getMediaForFile ((String)request.get (Spec.Type)));
 		} catch (StorageException e) {
-			throw new ApiServiceExecutionException (e.getMessage (), e);
+			throw new ApiServiceExecutionException (e.getMessage (), e).status (ApiResponse.NOT_FOUND);
 		}
 		
 		if (output == null) {
-			throw new ApiServiceExecutionException ("object " + path + Lang.SLASH + path + " not found").status (ApiResponse.BAD_REQUEST);
+			throw new ApiServiceExecutionException ("object " + path + " not found").status (ApiResponse.NOT_FOUND);
 		}
 		
 		return output;

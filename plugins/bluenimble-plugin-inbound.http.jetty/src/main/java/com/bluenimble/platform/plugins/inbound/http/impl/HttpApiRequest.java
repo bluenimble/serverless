@@ -61,6 +61,14 @@ public class HttpApiRequest extends AbstractApiRequest {
 	private static final Set<String>			NonPayloadTypes	= new HashSet<String> ();
 	static {
 		NonPayloadTypes.add (ApiContentTypes.Form);
+		NonPayloadTypes.add (ApiContentTypes.Chunk);
+	}
+	
+	private static final Set<ApiVerb>			BodyAware	= new HashSet<ApiVerb> ();
+	static {
+		BodyAware.add (ApiVerb.POST);
+		BodyAware.add (ApiVerb.PUT);
+		BodyAware.add (ApiVerb.PATCH);
 	}
 	
 	protected 	HttpServletRequest 				proxy;
@@ -105,11 +113,14 @@ public class HttpApiRequest extends AbstractApiRequest {
 			while (iter.hasNext ()) {
 			    FileItem item = iter.next ();
 			    tracer.log (Tracer.Level.Debug, "\t Upload Field {0}", item.getFieldName ());
-
 			    if (item.isFormField ()) {
 			    	fields.put (item.getFieldName (), item.getString ());
 			    } else {
-			    	streams.put (item.getFieldName (), new DefaultApiStreamSource (item.getFieldName (), item.getName (), item.getContentType (), item.getSize (), item.getInputStream ()));
+			    	streams.put (
+			    		item.getFieldName (), 
+			    		new DefaultApiStreamSource (item.getFieldName (), item.getName (), item.getContentType (), item.getInputStream ())
+			    			.setClosable (true)
+			    	);
 			    }
 			}
 			return;
@@ -122,7 +133,7 @@ public class HttpApiRequest extends AbstractApiRequest {
 			if (reader == null) {
 				reader = plugin.getReader (ApiContentTypes.Stream);
 			}
-			set (Payload, reader.read (proxy.getInputStream ()), Scope.Parameter);
+			set (Payload, reader.read (proxy.getInputStream (), contentType), Scope.Parameter);
 		}
 	}
 
@@ -177,7 +188,7 @@ public class HttpApiRequest extends AbstractApiRequest {
 		if (streams != null) {
 			Iterator<String> sKeys = streams.keySet ().iterator ();
 			while (sKeys.hasNext ()) {
-				streams.get (sKeys.next ());
+				streams.get (sKeys.next ()).close ();
 			}
 			streams.clear ();
 		}
@@ -221,6 +232,10 @@ public class HttpApiRequest extends AbstractApiRequest {
 	@Override
 	protected void setHeader (String name, Object value) {
 		throw new UnsupportedOperationException ("setHeader can't be used within " + this.getClass ().getSimpleName ());
+	}
+	
+	public HttpServletRequest getProxy () {
+		return proxy;
 	}
 
 }

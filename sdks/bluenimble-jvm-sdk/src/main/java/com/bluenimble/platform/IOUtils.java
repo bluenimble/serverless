@@ -23,6 +23,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.CharArrayWriter;
 import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -631,37 +633,21 @@ public class IOUtils {
 		}
 	}
 
-	// copy from InputStream
-	// -----------------------------------------------------------------------
-	/**
-	 * Copy bytes from an <code>InputStream</code> to an
-	 * <code>OutputStream</code>.
-	 * <p>
-	 * This method buffers the input internally, so there is no need to use a
-	 * <code>BufferedInputStream</code>.
-	 * 
-	 * @param input
-	 *            the <code>InputStream</code> to read from
-	 * @param output
-	 *            the <code>OutputStream</code> to write to
-	 * @return the number of bytes copied
-	 * @throws NullPointerException
-	 *             if the input or output is null
-	 * @throws IOException
-	 *             if an I/O error occurs
-	 * @since Commons IO 1.1
-	 */
-	public static int copy (InputStream input, OutputStream output)
+	public static long copy (InputStream input, OutputStream output, int bufferSize)
 			throws IOException {
-		byte [] buffer = new byte[DEFAULT_BUFFER_SIZE];
-		int count = 0;
-		int n = 0;
-		while (-1 != (n = input.read(buffer))) {
-			output.write (buffer, 0, n);
-			count += n;
-			output.flush ();
-		}
-		return count;
+		byte [] buffer = new byte [bufferSize];
+		long count = 0;
+        int n;
+        while (EOF != (n = input.read(buffer))) {
+            output.write (buffer, 0, n);
+            count += n;
+        }
+        return count;
+	}
+	
+	public static long copy (InputStream input, OutputStream output)
+			throws IOException {
+		return copy (input, output, DEFAULT_BUFFER_SIZE);
 	}
 
 	public static int copy (InputStream input, OutputStream output, int offset, int length)
@@ -954,10 +940,23 @@ public class IOUtils {
 		return toSkip - remain;
 	}
 	
-	public static void main (String [] args) {
-		String str = "Hello Eveybody\nI like that";
-		char [] chars = str.toCharArray ();
-		System.out.println (new String (charsToBytes (chars)));
+	public static void main (String [] args) throws Exception {
+		
+		long start = System.currentTimeMillis ();
+		
+		OutputStream out = null;
+		InputStream in = null;
+		try {
+			in 	= new FileInputStream (new File ("/Users/lilya/large-file.txt"));
+			out = new FileOutputStream (new File ("/Users/lilya/large-file-copy.txt"));
+			IOUtils.copy (in, out, 32 * 1024);
+		} finally {
+			IOUtils.closeQuietly (in);
+			IOUtils.closeQuietly (out);
+		}
+		
+		System.out.println ("Took " + (System.currentTimeMillis () - start) + " millis");
+
 	}
 
 }

@@ -21,19 +21,22 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.ApiStreamSource;
 import com.bluenimble.platform.api.media.MediaTypeUtils;
 
-public class ApiFileStreamSource implements ApiStreamSource {
+public class FileApiStreamSource implements ApiStreamSource {
 
 	private static final long serialVersionUID = 8418771218899098700L;
 	
-	private String 	name;
-	private String 	extension;
-	private File 	file;
+	private String 		name;
+	private String 		extension;
+	private File 		file;
 	
-	public ApiFileStreamSource (File file, String removeExtension) {
+	private InputStream	stream;
+	
+	public FileApiStreamSource (File file, String removeExtension) {
 		this.file = file;
 		this.name = file.getName ();
 		
@@ -63,17 +66,20 @@ public class ApiFileStreamSource implements ApiStreamSource {
 	}
 
 	@Override
-	public long length () {
-		return file.length ();
+	public InputStream stream () {
+		if (stream == null) {
+			try {
+				stream = new FileInputStream (file);
+			} catch (FileNotFoundException ex) {
+				throw new RuntimeException (ex.getMessage (), ex);
+			}
+		}
+		return stream;
 	}
 
 	@Override
-	public InputStream stream () {
-		try {
-			return new FileInputStream (file);
-		} catch (FileNotFoundException ex) {
-			throw new RuntimeException (ex.getMessage (), ex);
-		}
+	public void close () {
+		IOUtils.closeQuietly (stream);
 	}
 
 }

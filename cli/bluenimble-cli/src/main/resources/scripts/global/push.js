@@ -35,6 +35,16 @@ var SpecUtils 		= native ('com.bluenimble.platform.icli.mgm.utils.SpecUtils');
 var OsCommander 	= native ('com.bluenimble.platform.icli.mgm.utils.OsCommander');
 
 var BlueNimble		= native ('com.bluenimble.platform.icli.mgm.BlueNimble');
+
+var Verbs = {
+	get: 'Get',
+	post: 'Create',
+	put: 'Update',
+	'delete': 'Delete',
+	patch: 'Patch',
+	head: 'Echo',
+	options: 'Info'
+};
 								  
 function extract (service, file, script) {
 	var markers = FileUtils.readStartsWith (script, '//@', true);
@@ -96,6 +106,33 @@ function extract (service, file, script) {
 
 }
 
+function saveService (service, file) {
+	if (!service.verb) {
+		service.verb = 'get';
+	}
+	
+	// multiple verbs per service
+	if (service.verb instanceof JsonArray) {
+		for (var i = 0; i < service.verb.length; i++) {
+			var duplicata = service.duplicate ();
+			duplicata.verb = service.verb.get (i).toLowerCase ();
+			var action = Verbs [duplicata.verb];
+			if (!action) {
+				action = duplicata.verb.substring (0, 1).toUpperCase () + duplicata.verb.substring (1);
+			}
+			// store new spec
+			Json.store (duplicata, new File (file.getParentFile (),  action + file.getName ()));
+            
+            // delete original
+            file.delete ();
+            
+		}
+	} else {
+		// store new spec
+		Json.store (service, file);
+	}
+};
+
 function validate (apiFolder, folderOrFile, transformData) {
 
 	if (folderOrFile.getName ().startsWith ('.')) {
@@ -113,7 +150,7 @@ function validate (apiFolder, folderOrFile, transformData) {
 	// load service spec, find script and extract issues
 	var serviceName = folderOrFile.getName ();
 	serviceName = serviceName.substring (0, serviceName.lastIndexOf ('.'));
-	Tool.note ('\t Validating service spec ' + ' ' + serviceName);
+	// Tool.note ('\t Validating service spec ' + ' ' + serviceName);
 	var service;
 	try {
 		service = Json.load (folderOrFile);
@@ -127,22 +164,42 @@ function validate (apiFolder, folderOrFile, transformData) {
 	// transform
 	service = BuildUtils.transform (service, transformData);
 	
-	// parse script
+	// add prefix if any
+	if (transformData.R.api && transformData.R.api.prefix) {
+		service.endpoint = transformData.R.api.prefix + service.endpoint;
+	}
+	
+	// apply services transform
+	if (transformData.R.api && transformData.R.api.services && transformData.R.api.services.length > 0) {
+		for (var i = 0; i < transformData.R.api.services.length; i++) {
+			var oMatch = transformData.R.api.services [i];
+			var wildcard = oMatch.matches;
+			var matches = true;
+			if (wildcard) {
+				matches = Lang.wmatches (wildcard, service.endpoint);
+			}
+			if (matches && oMatch.apply && (oMatch.apply instanceof JsonObject)) {
+				service.merge (oMatch.apply);
+			}
+		}
+	}
+	
+	// parse function code if any
 	if (!service.runtime || !service.runtime.function) {
-		Json.store (service, folderOrFile);
+		saveService (service, folderOrFile);
 		return;
 	}
 	
 	var _function = new File (apiFolder, 'resources/' + service.runtime.function);
 	if (!_function.exists ()) {
+        saveService (service, folderOrFile);
 		Tool.error ('Service spec has a reference to function ' + script.getAbsolutePath () + ' which is not found');
 		return;
 	}
 	
 	extract (service, folderOrFile, _function);
 	
-	// store new spec
-	Json.store (service, folderOrFile);
+	saveService (service, folderOrFile);
 	
 	return;
 	
@@ -169,49 +226,61 @@ if (tokens [0] != 'api') {
 // api namespace
 var apiNs = tokens [1];
 
-var environment = new JsonObject ();
+var recipe = new JsonObject ();
 
-// load environments
-var allEnvs;
+// load recipes
+var allRecipes;
 var isYaml = false;
 
-var fEnvs = new File (Home, 'environments.json');
-if (fEnvs.exists ()) {
-	allEnvs = Json.load (fEnvs);
-} else {
-	fEnvs = new File (Home, 'environments.yaml');
-	if (fEnvs.exists ()) {
-		isYaml = true;
-		allEnvs = Yamler.load (fEnvs);
+var recipesFolder = Home;
+if (Vars ['recipes.folder']) {
+	recipesFolder = new File (Vars ['recipes.folder']);
+	if (!recipesFolder.exists ()) {
+		throw Vars ['recipes.folder'] + " isn't a valid recipes folder. Make sure to set recipes.folder variable and a recipes.json/yaml is present";
 	}
 }
 
-var targetEnv;
+var fRecipes = new File (recipesFolder, 'recipes.json');
+if (fRecipes.exists ()) {
+	allRecipes = Json.load (fRecipes);
+} else {
+	fRecipes = new File (Home, 'recipes.yaml');
+	if (fRecipes.exists ()) {
+		isYaml = true;
+		allRecipes = Yamler.load (fRecipes);
+	}
+}
+
+var rId;
+var mergeCommon = true;
+
+var targetRecipe;
 
 if (tokens.length > 2) {
-	var envId = tokens [2];
-	if (!allEnvs) {
-		throw 'No environments.json or .yaml file exists in your home folder';
+	rId = tokens [2];
+	if (!allRecipes) {
+		throw 'No recipes.json nor recipes.yaml file exists in your home folder';
 	}
-	if (!allEnvs.containsKey (envId)) {
-		throw 'No environment with the id ' + envId + ' found in environments.' + (isYaml ? 'json' : 'yaml') + ' file';
+	if (!allRecipes.containsKey (rId)) {
+		throw 'Recipe ' + rId + ' not found in recipes.' + (isYaml ? 'json' : 'yaml') + ' file';
 	}
 	
-	targetEnv = allEnvs [envId];
+	targetRecipe = allRecipes [rId];
 
-	if (!(targetEnv instanceof JsonObject)) {
-		throw 'Environment with id ' + envId + ' is not a valid object';
+	if (!(targetRecipe instanceof JsonObject)) {
+		throw 'Recipe ' + rId + ' is not a valid object';
 	}
 }
 
-if (allEnvs && allEnvs.common && (allEnvs.common instanceof JsonObject)) {
-	environment = allEnvs.common.duplicate ();
+if (allRecipes && allRecipes.common && (allRecipes.common instanceof JsonObject)) {
+	mergeCommon = true;
+	recipe = allRecipes.common.duplicate ();
 }
-if (targetEnv) {
-	environment.merge (targetEnv);
+if (targetRecipe) {
+	recipe.merge (targetRecipe);
 }
 
-var transformData = new JsonObject ().set ("Env", environment);
+var transformData = new JsonObject ().set ("R", recipe);
 
 // Create the build folder if it doesn't exist
 var buildFolder = new File (Home, 'build');
@@ -273,7 +342,7 @@ if (!Vars ['build.release.nocopy'] || Vars ['build.release.nocopy'] != 'true') {
 	SpecUtils.y2j (apiFolder, true);
 }
 
-Tool.note ('Validating api ' + apiNs);
+Tool.info ('Validating api ' + apiNs);
 
 // read api spec and set installDate, version, user id and stamp
 var apiSpecFile = new File (apiFolder, 'api.json');
@@ -289,17 +358,18 @@ apiSpec.set (Api.Spec.Release, release);
 // set install date
 release.set ("date", Lang.utc ());
 
-// set version (this will change the api namespace) from apiNs to apiNs-version. eg travel-v1
-if (environment.version) {
-	apiSpec.set (Api.Spec.Name, apiSpec.get (Api.Spec.Name) + " ( " + environment.version + " )");
+// set version (this will change the api namespace) from apiNs to apiNs-version.
+// eg travel-v1
+if (recipe.version) {
+	apiSpec.set (Api.Spec.Name, apiSpec.get (Api.Spec.Name) + " ( " + recipe.version + " )");
 }
 
 var Keys;
 
-if (environment.get ('keys')) {
-    Keys = BlueNimble.keys (environment.get ('keys'));
+if (recipe.get ('keys')) {
+    Keys = BlueNimble.keys (recipe.get ('keys'));
 	if (!Keys) {
-		throw 'Security Keys (' + environment.get ('keys') + ') defined in your environments file are not found.';
+		throw 'Security Keys (' + recipe.get ('keys') + ') not found in recipe.';
 	}
 } else {
 	Keys = BlueNimble.keys ();
@@ -311,9 +381,6 @@ if (!Keys) {
 
 Keys = Keys.json ();
 
-Tool.important ('Pushing with keys ' + Keys.accessKey + ' @ ' + Keys.endpoints.management);
-Tool.important (environment);
-
 // set pusher (user id, email) this is part of the keys
 if (Keys.user && Keys.user.id) {
 	release.set ('pushedBy', Keys.user.id);
@@ -322,13 +389,13 @@ if (Keys.user && Keys.user.id) {
 	release.set ('pushedBy', user.id||user.name);
 }
 
-// add additional release information from environment
-if (environment.release) {
-	release.merge (environment.release);
+// add additional release information from recipe
+if (recipe.release) {
+	release.merge (recipe.release);
 }
 
-if (environment.api && (environment.api instanceof JsonObject)) {
-	apiSpec.merge (environment.api);
+if (recipe.api && (recipe.api instanceof JsonObject)) {
+	apiSpec.merge (recipe.api);
 }
 
 apiSpec = BuildUtils.transform (apiSpec, transformData);
@@ -351,9 +418,21 @@ BuildUtils.generate (apiFolder, Json.find (apiSpec, 'runtime', 'dataModels'), tr
 // read, validate, transform and extract markers
 validate (apiFolder, new File (apiFolder, 'resources/services'), transformData);
 
+Tool.success (apiNs + ' api validated with success');
+
 var newApiFolder = new File (buildFolder, apiNs);
 
 apiFolder.renameTo (newApiFolder);
+
+Tool.content ('__PS__ MAGENTA:Security Keys', Keys.accessKey + ' @ ' + Tool.styled (Keys.endpoints.management, 'yellow') );
+var rText = 'None';
+if (rId) {
+	rText = rId + (mergeCommon ? ' + common' : '');
+} else if (mergeCommon) {
+	rText = 'common';
+}
+
+Tool.content ('__PS__ MAGENTA:Using Recipe', rText);
 
 Tool.command ('echo off');
 
@@ -370,4 +449,4 @@ Tool.command ('echo on');
 
 FileUtils.delete (newApiFolder);
 
-Tool.info ('Total Push Time: ' + (System.currentTimeMillis () - startTime) + ' millis');
+Tool.info ('Total Push Time: ' + Tool.styled ((System.currentTimeMillis () - startTime), 'yellow') + ' millis');

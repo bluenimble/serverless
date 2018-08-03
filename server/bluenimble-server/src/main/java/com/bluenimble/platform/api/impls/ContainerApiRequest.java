@@ -174,9 +174,13 @@ public class ContainerApiRequest extends AbstractApiRequest {
 			headers = null;
 		}
 		if (streams != null) {
+			Iterator<String> sKeys = streams.keySet ().iterator ();
+			while (sKeys.hasNext ()) {
+				streams.get (sKeys.next ()).close ();
+			}
 			streams.clear ();
-			streams = null;
 		}
+		streams = null;
 	}
 
 	@Override

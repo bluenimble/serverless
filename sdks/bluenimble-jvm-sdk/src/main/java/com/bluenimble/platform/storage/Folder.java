@@ -39,6 +39,6 @@ public interface Folder extends StorageObject {
 	
 	void			list 			(Visitor visitor, Filter filter)		throws StorageException;
 	
-	boolean			contains		(String name)							throws StorageException;
+	boolean			contains		(String path)							throws StorageException;
 	
 }

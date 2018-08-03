@@ -51,6 +51,7 @@ import com.bluenimble.platform.api.validation.impls.types.RegexValidator;
 import com.bluenimble.platform.api.validation.impls.types.StartsWithValidator;
 import com.bluenimble.platform.api.validation.impls.types.StreamValidator;
 import com.bluenimble.platform.api.validation.impls.types.StringValidator;
+import com.bluenimble.platform.api.validation.impls.types.UUIDValidator;
 import com.bluenimble.platform.api.validation.impls.types.UrlValidator;
 import com.bluenimble.platform.json.JsonObject;
 
@@ -104,6 +105,9 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 		addTypeValidator (FieldType.Facets.Phone.toLowerCase (), 	new PhoneValidator ());
 		
 		addTypeValidator (FieldType.Facets.Regex.toLowerCase (), 	new RegexValidator ());
+		
+		addTypeValidator (FieldType.UUID.toLowerCase (), 			new UUIDValidator ());
+
 	}
 	
 	@Override

@@ -36,8 +36,8 @@ public class FileSystemFolder extends FileSystemStorageObject implements Folder 
 
 	private static final long serialVersionUID = 2756236507680103819L;
 	
-	public FileSystemFolder (File source, boolean isRoot) {
-		super (source, isRoot);
+	public FileSystemFolder (File source, boolean isRoot, int buffer) {
+		super (source, isRoot, buffer);
 	}
 	
 	@Override
@@ -51,7 +51,7 @@ public class FileSystemFolder extends FileSystemStorageObject implements Folder 
 		if (!folder.exists ()) {
 			throw new StorageException ("unbale to create folder '" + path + "' under " + name ());
 		}
-		return new FileSystemFolder (folder, false);
+		return new FileSystemFolder (folder, false, buffer);
 	}
 
 	@Override
@@ -77,20 +77,20 @@ public class FileSystemFolder extends FileSystemStorageObject implements Folder 
 			} catch (IOException ioex) {
 				throw new StorageException (ioex.getMessage (), ioex);
 			}
-			return new FileSystemStorageObject (file, false);
+			return new FileSystemStorageObject (file, false, buffer);
 		}
 		
 		OutputStream os = null;
 		try {
 			os = new FileOutputStream (file);
-			IOUtils.copy (ss.stream (), os);
+			IOUtils.copy (ss.stream (), os, buffer);
 		} catch (IOException ioex) {
 			throw new StorageException (ioex.getMessage (), ioex);
 		} finally {
 			IOUtils.closeQuietly (os);
 		}
 		
-		return new FileSystemStorageObject (file, false);
+		return new FileSystemStorageObject (file, false, buffer);
 	}
 
 	@Override
@@ -104,15 +104,16 @@ public class FileSystemFolder extends FileSystemStorageObject implements Folder 
 		}
 		
 		if (file.isDirectory ()) {
-			return new FileSystemFolder (file, false);
+			return new FileSystemFolder (file, false, buffer);
 		}
 		
-		return new FileSystemStorageObject (file, false);
+		return new FileSystemStorageObject (file, false, buffer);
 	}
 
 	@Override
-	public boolean contains (String name) throws StorageException {
-		return new File (source, name).exists ();
+	public boolean contains (String path) throws StorageException {
+		validatePath (path); 
+		return new File (source, path).exists ();
 	}
 
 	@Override

@@ -1,0 +1,18 @@
+{
+	"namespace": "protocols.tus",
+	"name": "Protocols - Tus Protocol",
+	
+	"spi": {
+		"class": "com.bluenimble.platform.plugins.protocols.tus.TusProtocolPlugin",
+		"properties": {
+			"version": "[version]",
+			"vendor": {
+				"name": "BlueNimble, Inc",
+				"links": [{
+					"Read More": "https://www.bluenimble.com"
+				}]
+			},
+			"dependencies": ["inbound.http.jetty"]
+		}
+	}
+}	

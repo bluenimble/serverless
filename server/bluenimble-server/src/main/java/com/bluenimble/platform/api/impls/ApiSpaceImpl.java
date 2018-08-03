@@ -206,7 +206,7 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 			throw new ApiManagementException ("Api file " + apiFile + " not found");
 		}
 		
-		ApiFileStreamSource is = new ApiFileStreamSource (fApiFile, ConfigKeys.ApiExt);
+		FileApiStreamSource is = new FileApiStreamSource (fApiFile, ConfigKeys.ApiExt);
 		try {
 			return install (is);
 		} finally {
@@ -673,6 +673,8 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 			} else {
 				runtime.merge (change);
 			}
+			// notify runtime changed
+			server.getPluginsRegistry ().onEvent (Event.Update, this, ApiServer.EventSubject.Runtime);
 		} catch (Exception e) {
 			throw new ApiManagementException (e.getMessage (), e);
 		}
@@ -759,7 +761,7 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 			list (new Selector () {
 				@Override
 				public boolean select (Api api) {
-					aApis.add (api.describe (options));
+					aApis.add (api.describe (DescribeOption.Info));
 					return false;
 				}
 			});

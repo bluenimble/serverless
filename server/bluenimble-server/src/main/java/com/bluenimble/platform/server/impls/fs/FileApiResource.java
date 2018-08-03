@@ -35,7 +35,7 @@ import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.ApiResource;
 import com.bluenimble.platform.api.ApiStreamSource;
-import com.bluenimble.platform.api.impls.ApiFileStreamSource;
+import com.bluenimble.platform.api.impls.FileApiStreamSource;
 import com.bluenimble.platform.api.media.MediaTypeUtils;
 import com.bluenimble.platform.streams.Chunk;
 import com.bluenimble.platform.streams.StreamDecorator;
@@ -239,7 +239,7 @@ public class FileApiResource implements ApiResource {
 	@Override
 	public ApiStreamSource toStreamSource () {
 		if (file.isFile ()) {
-			return new ApiFileStreamSource (file, null); 
+			return new FileApiStreamSource (file, null); 
 		}
 		return null;
 	}

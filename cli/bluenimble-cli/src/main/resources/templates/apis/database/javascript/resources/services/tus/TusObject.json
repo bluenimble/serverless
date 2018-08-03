@@ -1,0 +1,16 @@
+{
+	    "verb": ["head", "patch", "delete", "options"],
+	"endpoint": "/tus/:id",
+	
+	"spec": {
+		"fields": {
+			"id": { "title": "Object Id", "type": "UUID" }
+		}
+	},
+	
+	"spi": {
+		"class": "protocols.tus:TusSpi",
+		"tus": "default"
+	} 
+	
+}
