@@ -1,0 +1,13 @@
+[Unit]
+Description=BlueNimble Platform
+After=syslog.target
+After=network.target
+[Service]
+Type=simple
+User=root
+Group=root
+ExecStart=/opt/bluenimble/platform/bnb.sh
+ExecStop=/opt/bluenimble/platform/bnb.stop.sh
+TimeoutSec=600
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+	
+    <Appenders>
+    	<Console name="STDOUT" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{ISO8601} %-5p [%X{namespace}] - %msg%n" />
+	    </Console>
+		<RollingFile name="All">
+			<FileName>logs/bluenimble.log</FileName>
+			<FilePattern>logs/bluenimble.%d{yyyy-MM-dd-hh-mm}.log.zip
+			</FilePattern>
+			<PatternLayout>
+				<Pattern>%d{ISO8601} %-5p [%X{namespace}] - %msg%n</Pattern>
+			</PatternLayout>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="20 MB"/>
+			</Policies>
+			<DefaultRolloverStrategy max="10" />
+		</RollingFile>
+    </Appenders>
+    
+    <Loggers>
+	    <Root level="info">
+			<AppenderRef ref="STDOUT"/>
+			<AppenderRef ref="All"/>
+	    </Root>
+    </Loggers>
+    
+</Configuration>

@@ -31,7 +31,7 @@ public class BlueNimble {
 	private static final String BlueNimbleHomeKey 		= "bluenimble.home";
 	private static final String BlueNimbleRuntimeKey 	= "bluenimble.runtime";
 	
-	private static final String InstallHome		= "BN_HOME";
+	private static final String InstallHome		= "BNB_HOME";
 	
 	public static void main (String [] args) throws Exception {
 		

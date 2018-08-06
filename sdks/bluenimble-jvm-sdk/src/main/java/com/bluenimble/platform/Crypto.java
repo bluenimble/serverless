@@ -140,7 +140,7 @@ public class Crypto {
 	}
 	
 	public static void main (String [] args) throws Exception {
-
+		/*
 		byte [] encrypted = Crypto.encrypt ("Im@ne1977".getBytes (), "a35T@,#;_", Algorithm.AES);
 		
 		String encryptedEncoded = Base64.encodeBase64String (encrypted);
@@ -153,7 +153,9 @@ public class Crypto {
 		byte [] decrypted = Crypto.decrypt (encryptedDecoded, "a35T@,#;_", Algorithm.AES);
 		
 		System.out.print ("Decrypted-Decoded " + new String (decrypted));
+		*/
 		
+		System.out.println (Crypto.md5 ("Im@ne1977", Encodings.UTF8));
 		
 	}
 	

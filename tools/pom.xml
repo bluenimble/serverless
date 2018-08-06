@@ -24,6 +24,7 @@
 	
 	<modules>
 		<module>bluenimble-binary-client</module>
+        <module>bluenimble-socketio</module>
 	</modules>
 	
 </project>

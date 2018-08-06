@@ -12,16 +12,9 @@ echo "     | |_/ / | |_| |  __/ |\\  | | | | | | | |_) | |  __/"
 echo "     \\____/|_|\\__,_|\\___\\_| \\_/_|_| |_| |_|_.__/|_|\\___|"
                                                    
 echo       ""
-echo       "BlueNimble Serverless Platform - Server Node"
+echo       "BlueNimble Serverless SocketsIO / WebSockets"
 echo       "Copyright (c) BlueNimble, Inc. (https://www.bluenimble.com)"
 echo       ""
-
-# Set BNB_RUNTIME to an empty directory outside the installation directory. Recommended for clean upgrades!  
-#                 Default to . (install directory)
-# Set BNB_TENANT  to an empty directory outside the installation directory if you are going to run multiple bluenimble nodes 
-#                 in the same machine using the same binaries. Default to single 
-BNB_RUNTIME=. 
-BNB_TENANT=none
 
 echo ""
 
@@ -41,11 +34,6 @@ done
 # Get standard environment variables
 PRGDIR=`dirname "$PRG"`
 
-# Only set BNB_HOME if not already set
-[ -f "$BNB_HOME"/bnb.sh ] || BNB_HOME=`cd "$PRGDIR" ; pwd`
-export BNB_HOME
-cd "$BNB_HOME"
-
 # Raspberry Pi check (Java VM does not run with -server argument on ARMv6)
 if [ `uname -m` != "armv6l" ]; then
   JAVA_OPTS="$JAVA_OPTS -server "
@@ -60,9 +48,9 @@ else
 fi
 export JAVA
 
-JAVA_OPTS_SCRIPT="-Djna.nosys=true -XX:+HeapDumpOnOutOfMemoryError -XX:MaxDirectMemorySize=7879m -Djava.awt.headless=true -Dfile.encoding=UTF8 -Djava.net.preferIPv4Stack=true -DBNB_HOME=$BNB_HOME"
+JAVA_OPTS_SCRIPT="-Djna.nosys=true -XX:+HeapDumpOnOutOfMemoryError -XX:MaxDirectMemorySize=7879m -Djava.awt.headless=true -Dfile.encoding=UTF8 -Djava.net.preferIPv4Stack=true"
 
-BNB_PID=$BNB_HOME/bnb.pid
+BNB_PID=./bnb.pid
 
 if [ -f "$BNB_PID" ]; then
     echo "removing old pid file $BNB_PID"
@@ -81,6 +69,12 @@ fi
 
 echo $$ > $BNB_PID
 
+CLASSPATH=
+for i in `ls ./lib/*.jar`
+do
+  CLASSPATH=${CLASSPATH}:${i}
+done
+
 exec "$JAVA" $JAVA_OPTS $BNB_OPTS_MEMORY $JAVA_OPTS_SCRIPT \
-    -cp "boot/bluenimble-jvm-sdk-[version].jar:boot/bluenimble-server-boot-[version].jar" \
-    $* com.bluenimble.platform.server.boot.BlueNimble $BNB_RUNTIME $BNB_TENANT
+    -cp ".:${CLASSPATH}" \
+    $* com.bluenimble.platform.servers.socketio.server.boot.BootServer
