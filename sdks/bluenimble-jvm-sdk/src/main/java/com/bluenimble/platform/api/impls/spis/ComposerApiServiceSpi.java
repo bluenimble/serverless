@@ -36,7 +36,7 @@ import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.templating.VariableResolver;
 import com.bluenimble.platform.templating.impls.DefaultExpressionCompiler;
 
-/**
+/*
  * 
 {
 
@@ -47,17 +47,17 @@ import com.bluenimble.platform.templating.impls.DefaultExpressionCompiler;
         "class": "core:ComposerSpi",
         "chain": [{
         	"id": "alpha",
-            "verb": "put", "endpoint": "/cars/<% car %>",
+            "verb": "put", "endpoint": "/cars/&lt;% car %&gt;",
             "parameters": {
                 "payload": {
                     "status": "<% status %>"
                 }
             }
         }, {
-            "verb": "post", "endpoint": "/drivers/<% driver %>",
+            "verb": "post", "endpoint": "/drivers/&lt;% driver %&gt;",
             "parameters": {
                 "payload": {
-                    "lastStop": "<% output.alpha.stopDate %>"
+                    "lastStop": "&lt;% output.alpha.stopDate %&gt;"
                 }
             }
         }]
