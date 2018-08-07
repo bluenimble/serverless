@@ -24,7 +24,7 @@
 	
 	<modules>
 		<module>bluenimble-binary-client</module>
-        <module>bluenimble-socketio</module>
+        	<module>bluenimble-broker</module>
 	</modules>
 	
 </project>

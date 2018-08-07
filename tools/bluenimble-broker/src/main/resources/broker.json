@@ -1,0 +1,17 @@
+{
+	"port": "9696",
+	"auth": {
+		"class": "com.bluenimble.platform.servers.broker.listeners.auth.SimpleAuthorizationListener",
+		"peers": {
+			"admin": {
+				"key": "key1", "type": "producer"
+			},
+			"peer2": {
+				"key": "key2", "type": "consumer"
+			},
+			"peer3": {
+				"key": "key3", "type": "both"
+			}
+		}
+	}
+}

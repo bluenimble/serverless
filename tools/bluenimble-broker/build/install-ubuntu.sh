@@ -49,14 +49,14 @@ sudo apt-cache pkgnames java-1.8.0-openjdk || sudo apt-get install java-1.8.0-op
 sudo apt-cache pkgnames systemd || sudo apt-get install systemd
 
 echo "Download and install BlueNimble"
-wget --no-cache https://github.com/bluenimble/serverless/releases/download/v2.2.0-SNAPSHOT/bluenimble-2.2.0-SNAPSHOT-bin.tar.gz && \
-  sudo tar -xvzf bluenimble-2.2.0-SNAPSHOT-bin.tar.gz -C /opt/bluenimble && \
-  rm -f bluenimble-2.2.0-SNAPSHOT-bin.tar.gz
+wget --no-cache https://github.com/bluenimble/serverless/releases/download/v[version]/bluenimble-[version]-bin.tar.gz && \
+  sudo tar -xvzf bluenimble-[version]-bin.tar.gz -C /opt/bluenimble && \
+  rm -f bluenimble-[version]-bin.tar.gz
 
-sudo mv /opt/bluenimble/bluenimble-2.2.0-SNAPSHOT /opt/bluenimble/platform
+sudo mv /opt/bluenimble/bluenimble-[version] /opt/bluenimble/platform
 
 if [ $CLEAN = 'clean' ] ; then
-	sudo rm -fr /opt/bluenimble/plugins/bluenimble-plugin-dev.playground-2.2.0-SNAPSHOT
+	sudo rm -fr /opt/bluenimble/plugins/bluenimble-plugin-dev.playground-[version]
 	sudo rm -fr /opt/bluenimble/spaces/playground
 fi
 

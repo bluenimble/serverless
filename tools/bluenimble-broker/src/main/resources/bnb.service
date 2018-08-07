@@ -1,0 +1,14 @@
+[Unit]
+Description=BlueNimble Message Broker
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+ExecStart=/opt/bluenimble/broker/bnb.sh
+ExecStop=/opt/bluenimble/broker/bnb.stop.sh
+TimeoutSec=600
+
+[Install]
+WantedBy=multi-user.target

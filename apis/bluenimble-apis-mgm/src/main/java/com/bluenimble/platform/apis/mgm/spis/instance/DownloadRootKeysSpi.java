@@ -39,10 +39,12 @@ public class DownloadRootKeysSpi extends AbstractApiServiceSpi {
 	private static final long serialVersionUID = -3682312790255625219L;
 
 	interface Output {
-		String Name 	= "name";
-		String Endpoint = "endpoint";
-		String KeysName = "root";
-		String KeysExt 	= "keys";
+		String Name 		= "name";
+		String Endpoints 	= "endpoints";
+		String Management 	= "management";
+		String Space 		= "space";
+		String KeysName 	= "root";
+		String KeysExt 		= "keys";
 	}
 	
 	interface Spec {
@@ -60,8 +62,12 @@ public class DownloadRootKeysSpi extends AbstractApiServiceSpi {
 			
 			JsonObject oKeys = new JsonObject ();
 			oKeys.set (Output.Name, Json.getString (request.getNode (), ApiRequest.Fields.Node.Id) + " " + Json.getString (request.getNode (), ApiRequest.Fields.Node.Version));
-			oKeys.set (Output.Endpoint, request.getScheme () + "://" + request.getEndpoint () + Lang.SLASH + 
-										api.space ().getNamespace () + Lang.SLASH + api.getNamespace ());
+			oKeys.set (Output.Endpoints, new JsonObject ()
+					.set (Output.Management, 
+							request.getScheme () + "://" + request.getEndpoint () + Lang.SLASH + 
+										api.space ().getNamespace () + Lang.SLASH + api.getNamespace ()
+						 )
+				);
 			oKeys.set (KeyPair.Fields.AccessKey, kp.accessKey ());
 			oKeys.set (KeyPair.Fields.SecretKey, kp.secretKey ());
 			oKeys.set (CommonSpec.Role, "SUPER");

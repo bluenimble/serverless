@@ -14,7 +14,7 @@ if [ -d "/opt/bluenimble/platform" ]; then
 	exit 1
 fi
 
-echo       "Install BlueNimble in an Ubuntu host"
+echo       "Install BlueNimble in a Centos host"
 
 CLEAN=$1
 
@@ -38,25 +38,24 @@ echo       "  Create /opt/bluenimble folder"
 
 sudo mkdir -p /opt/bluenimble
 
-echo "Update OS"
+echo "Update yum"
 # update linux software repo
-sudo apt-get update
+sudo yum -y update
 
-sudo apt-cache pkgnames libaio || sudo apt-get install libaio
-sudo apt-cache pkgnames wget || sudo apt-get install wget
-sudo apt-cache pkgnames nfs-utils || sudo apt-get install nfs-utils
-sudo apt-cache pkgnames java-1.8.0-openjdk || sudo apt-get install java-1.8.0-openjdk
-sudo apt-cache pkgnames systemd || sudo apt-get install systemd
+sudo rpm -qa | grep -qw wget || sudo yum install -y wget
+sudo rpm -qa | grep -qw libaio || sudo yum install -y libaio
+sudo rpm -qa | grep -qw nfs-utils || sudo yum install -y nfs-utils
+sudo rpm -qa | grep -qw java-1.8.0-openjdk || sudo yum -y install java-1.8.0-openjdk
 
 echo "Download and install BlueNimble"
-wget --no-cache https://github.com/bluenimble/serverless/releases/download/v2.2.0-SNAPSHOT/bluenimble-2.2.0-SNAPSHOT-bin.tar.gz && \
-  sudo tar -xvzf bluenimble-2.2.0-SNAPSHOT-bin.tar.gz -C /opt/bluenimble && \
-  rm -f bluenimble-2.2.0-SNAPSHOT-bin.tar.gz
+wget --no-cache https://github.com/bluenimble/serverless/releases/download/v[version]/bluenimble-[version]-bin.tar.gz && \
+  sudo tar -xvzf bluenimble-[version]-bin.tar.gz -C /opt/bluenimble && \
+  rm -f bluenimble-[version]-bin.tar.gz
 
-sudo mv /opt/bluenimble/bluenimble-2.2.0-SNAPSHOT /opt/bluenimble/platform
+sudo mv /opt/bluenimble/bluenimble-[version] /opt/bluenimble/platform
 
 if [ $CLEAN = 'clean' ] ; then
-	sudo rm -fr /opt/bluenimble/plugins/bluenimble-plugin-dev.playground-2.2.0-SNAPSHOT
+	sudo rm -fr /opt/bluenimble/plugins/bluenimble-plugin-dev.playground-[version]
 	sudo rm -fr /opt/bluenimble/spaces/playground
 fi
 

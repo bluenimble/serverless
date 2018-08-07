@@ -4,7 +4,7 @@
 #
 
 echo       ""
-echo       "BlueNimble Platform"
+echo       "BlueNimble Message Broker (Native, Socket-IO / Websockets)"
 echo       "Copyright (c) BlueNimble, Inc. (http://www.bluenimble.com)"
 echo       ""
 
@@ -27,13 +27,13 @@ PRGDIR=`dirname "$PRG"`
 # Only set BNB_HOME if not already set
 [ -f "$BNB_HOME"/bnb.sh ] || BNB_HOME=`cd "$PRGDIR" ; pwd`
 export BNB_HOME
-cd "$BNB_HOME"
 
 BNB_PID=$BNB_HOME/bnb.pid
 
 if [ -f "$BNB_PID" ]
 then
-    echo "Stopping BlueNimble Platform"
+    echo "Stopping BlueNimble Message Broker"
+    
     PID=$(cat "$BNB_PID")
 
     kill -15 "$PID"
@@ -42,8 +42,8 @@ then
 	  sleep 1
 	done
 	
-	echo "BlueNimble went down!"
+	echo "BlueNimble Message Broker went down!"
     rm "$BNB_PID"
 else
-    echo "BlueNimble Platform not running"
+    echo "BlueNimble Message Broker isn't running in this node"
 fi

@@ -1,2 +1,0 @@
-2018-08-05T18:49:31,245 INFO  [] - Session store / pubsub factory used: MemoryStoreFactory (local session store only)
-2018-08-05T18:49:31,416 INFO  [] - SocketIO server started at port: 9696
