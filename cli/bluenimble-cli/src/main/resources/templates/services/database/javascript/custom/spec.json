@@ -1,12 +1,12 @@
 {
 	
 	    "verb": "[[verb]]",
-	"endpoint": "/[[path]]/[[model]]",
+	"endpoint": "[[path]]/[[model]]",
 	    "name": "[[Model]]",
 	
 	"spi": {
 		"class": "scripting.javascript:ServiceSpi",
-		"function": "functions/[[path]]/[[Model]].js"
+		"function": "functions[[path]]/[[Model]].js"
 	}
 	
 }

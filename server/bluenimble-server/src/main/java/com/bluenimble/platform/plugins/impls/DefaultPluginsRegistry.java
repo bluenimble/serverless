@@ -46,8 +46,8 @@ import com.bluenimble.platform.reflect.BeanUtils;
 import com.bluenimble.platform.reflect.ClassLoaderRegistry;
 import com.bluenimble.platform.server.ApiServer;
 import com.bluenimble.platform.server.ApiServer.Event;
+import com.bluenimble.platform.server.ApiServer.Resolver;
 import com.bluenimble.platform.server.utils.ConfigKeys;
-import com.bluenimble.platform.server.utils.ConfigKeys.Folders;
 import com.bluenimble.platform.server.utils.InstallUtils;
 
 public class DefaultPluginsRegistry implements PluginsRegistry, ClassLoaderRegistry {
@@ -208,7 +208,7 @@ public class DefaultPluginsRegistry implements PluginsRegistry, ClassLoaderRegis
 			}
 			
 			// resolve vars
-			descriptor = server.resolve (descriptor, InstallUtils.varsMapping (ApiServer.ResolverPrefix.This, Folders.Plugins, pluginNs ));
+			descriptor = server.resolve (descriptor, InstallUtils.varsMapping (Resolver.Prefix.This, Resolver.Namespace.Plugins, pluginNs));
 			
 			if (!Json.getBoolean (descriptor, ConfigKeys.Install, true)) {
 				return;

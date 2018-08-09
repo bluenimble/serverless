@@ -49,6 +49,7 @@
 		<module>bluenimble-plugin-cache.memcached</module>
 		
 		<module>bluenimble-plugin-messenger.smtp</module>
+		<module>bluenimble-plugin-messenger.socketio</module>			
 		
 		<module>bluenimble-plugin-remote.default</module>
 		<module>bluenimble-plugin-scheduler.quartz</module>

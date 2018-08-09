@@ -46,6 +46,13 @@ public class JsonActor implements Actor {
 	}
 	
 	@Override
+	public void set (String name, Object value) {
+		if (source == null) {
+			source = new JsonObject ();
+		}
+		source.set (name, value);
+	}
+	@Override
 	public Object get (String name) {
 		if (source == null) {
 			return null;

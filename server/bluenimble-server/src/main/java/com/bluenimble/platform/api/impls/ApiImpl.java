@@ -64,6 +64,7 @@ import com.bluenimble.platform.reflect.BeanUtils;
 import com.bluenimble.platform.regex.WildcardCompiler;
 import com.bluenimble.platform.regex.WildcardMatcher;
 import com.bluenimble.platform.server.ApiServer.Event;
+import com.bluenimble.platform.server.ApiServer.Resolver;
 import com.bluenimble.platform.server.impls.ApiClassLoader;
 import com.bluenimble.platform.server.utils.ConfigKeys;
 import com.bluenimble.platform.server.utils.DescribeUtils;
@@ -161,18 +162,29 @@ public class ApiImpl implements Api {
 		File fDescriptor = new File (home, ConfigKeys.Descriptor.Api);
 		if (fDescriptor.exists () && fDescriptor.isFile ()) {
 			try {
-				this.descriptor = Json.load (new File (home, ConfigKeys.Descriptor.Api));
+				
+				descriptor = Json.load (new File (home, ConfigKeys.Descriptor.Api));
+				
+				// resolve references
+				descriptor = space.server.resolve (
+					descriptor, 
+					InstallUtils.varsMapping (
+						Resolver.Prefix.This, Resolver.Namespace.Apis, 
+						space.getNamespace () + Lang.DOT + Json.getString (descriptor, ApiSpace.Spec.Namespace)
+					)
+				);
+				
 			} catch (Exception ex) {
 				failed (ex);
 			} 
 		}
 		
-		if (this.descriptor == null) {
+		if (descriptor == null) {
 			String namespace = getNamespace ();
 			if (Lang.isNullOrEmpty (namespace)) {
 				namespace = Lang.UUID (10);
 			}
-			this.descriptor = (JsonObject)new JsonObject ().set (Api.Spec.Namespace, namespace);
+			descriptor = (JsonObject)new JsonObject ().set (Api.Spec.Namespace, namespace);
 		} 
 		
 	}

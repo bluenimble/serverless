@@ -1,6 +1,27 @@
 
 function toJavaSender (sender) {
-	return new JC_Messenger_Sender (JC_Converters.convert (sender));
+	var callbacks = sender.callbacks;
+	// delete actual callbacks
+	delete sender.callbacks;
+	sender.callbacks = null;
+	
+	var jSender = new JC_Messenger_Sender (JC_Converters.convert (sender));
+
+	if (!callbacks) {
+		return jSender;
+	}
+	
+	// convert js Callbacks to messaging.Callback (s)
+	while (k in callbacks) {
+		var JCallback = Java.extend (JC_Messenger_Callback, {
+			process: function (feedback) {
+				callbacks [k] (feedback);
+			}
+		});
+		jSender.addCallback (k, new JCallback ());
+	}
+	
+	return jSender;
 }
 function toJavaRecipients (recipients) {
 	if (recipients == null || !recipients.length || recipients.length <= 0) {
@@ -76,3 +97,10 @@ var Messenger = function (proxy) {
 	};
 
 };
+Messenger.prototype.Callbacks = {
+	Connect: 	JC_Sender_Callbacks.Connect,
+	Disconnect: JC_Sender_Callbacks.Disconnect,
+	Error: 		JC_Sender_Callbacks.Error,
+	Ack: 		JC_Sender_Callbacks.Ack
+};
+

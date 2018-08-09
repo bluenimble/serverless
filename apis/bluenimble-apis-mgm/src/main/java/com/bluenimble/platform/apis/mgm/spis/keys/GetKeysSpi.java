@@ -128,18 +128,19 @@ public class GetKeysSpi extends AbstractApiServiceSpi {
 	}
 	
 	private ApiOutput toOutput (KeyPair kp, String paraphrase, ApiSpace keysSpace, Api api, ApiRequest request) throws EncryptionProviderException {
+		
+		String endpointTpl = Json.getString (api.getRuntime (), CommonSpec.EndpointTpl, CommonSpec.DefaultEndpointTpl);
+		
 		JsonObject oKeys = new JsonObject ();
 		oKeys.set (Output.Name, keysSpace.getName ());
 		oKeys.set (Output.Space, keysSpace.getNamespace ());
 		oKeys.set (Output.Endpoints, new JsonObject ()
 			.set (Output.Management, 
-					request.getScheme () + "://" + request.getEndpoint () + Lang.SLASH + 
-								api.space ().getNamespace () + Lang.SLASH + api.getNamespace ()
-				 )
+				request.getScheme () + "://" + String.format (endpointTpl, api.space ().getNamespace (), api.getNamespace ())  
+			 )
 			.set (Output.Space, 
-					request.getScheme () + "://" + request.getEndpoint () + Lang.SLASH + 
-						keysSpace.getNamespace ()
-				 )
+				request.getScheme () + "://" + String.format (endpointTpl, keysSpace.getNamespace (), Lang.BLANK)
+			 )
 		);
 
 		if (kp.expiryDate () != null) {

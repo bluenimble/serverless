@@ -1,0 +1,17 @@
+{
+	"namespace": "messenger.socketio",
+	"name": "Messenger Implementation - SockeIO",
+	
+	"spi": {
+		"class": "com.bluenimble.platform.server.plugins.messenger.socketio.SocketIoMessengerPlugin",
+		"properties": {
+			"version": "[version]",
+			"vendor": {
+				"name": "BlueNimble, Inc",
+				"links": [{
+					"Read More": "https://www.bluenimble.com"
+				}]
+			}
+		}
+	}
+}	

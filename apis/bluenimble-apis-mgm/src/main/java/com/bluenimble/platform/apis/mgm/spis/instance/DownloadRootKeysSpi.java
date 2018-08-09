@@ -30,6 +30,7 @@ import com.bluenimble.platform.api.impls.ApiByteArrayOutput;
 import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.apis.mgm.CommonSpec;
+import com.bluenimble.platform.apis.mgm.Role;
 import com.bluenimble.platform.encoding.Base64;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.security.KeyPair;
@@ -37,6 +38,8 @@ import com.bluenimble.platform.security.KeyPair;
 public class DownloadRootKeysSpi extends AbstractApiServiceSpi {
 
 	private static final long serialVersionUID = -3682312790255625219L;
+	
+	
 
 	interface Output {
 		String Name 		= "name";
@@ -57,6 +60,8 @@ public class DownloadRootKeysSpi extends AbstractApiServiceSpi {
 		
 		String paraphrase = (String)request.get (Spec.Paraphrase);
 		
+		String endpointTpl = Json.getString (api.getRuntime (), CommonSpec.EndpointTpl, CommonSpec.DefaultEndpointTpl);
+		
 		try {
 			KeyPair kp = api.space ().getRootKeys ();
 			
@@ -64,13 +69,12 @@ public class DownloadRootKeysSpi extends AbstractApiServiceSpi {
 			oKeys.set (Output.Name, Json.getString (request.getNode (), ApiRequest.Fields.Node.Id) + " " + Json.getString (request.getNode (), ApiRequest.Fields.Node.Version));
 			oKeys.set (Output.Endpoints, new JsonObject ()
 					.set (Output.Management, 
-							request.getScheme () + "://" + request.getEndpoint () + Lang.SLASH + 
-										api.space ().getNamespace () + Lang.SLASH + api.getNamespace ()
-						 )
+						request.getScheme () + "://" + String.format (endpointTpl, api.space ().getNamespace (), api.getNamespace ()) 
+					 )
 				);
 			oKeys.set (KeyPair.Fields.AccessKey, kp.accessKey ());
 			oKeys.set (KeyPair.Fields.SecretKey, kp.secretKey ());
-			oKeys.set (CommonSpec.Role, "SUPER");
+			oKeys.set (CommonSpec.Role, Role.SUPER.name ());
 			
 			ByteArrayOutputStream out = new ByteArrayOutputStream ();
 			

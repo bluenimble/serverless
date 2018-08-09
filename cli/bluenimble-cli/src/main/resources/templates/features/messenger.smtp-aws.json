@@ -1,6 +1,7 @@
 {
 	
 	"feature": "messenger",
+	"provider": "messenger.smtp",
 
 	"spec": {
 		"server": {

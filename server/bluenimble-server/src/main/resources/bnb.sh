@@ -65,7 +65,6 @@ JAVA_OPTS_SCRIPT="-Djna.nosys=true -XX:+HeapDumpOnOutOfMemoryError -XX:MaxDirect
 BNB_PID=$BNB_HOME/bnb.pid
 
 if [ -f "$BNB_PID" ]; then
-    echo "removing old pid file $BNB_PID"
     rm "$BNB_PID"
 fi
 

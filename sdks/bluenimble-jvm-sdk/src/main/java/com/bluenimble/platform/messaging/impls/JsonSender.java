@@ -16,15 +16,40 @@
  */
 package com.bluenimble.platform.messaging.impls;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.messaging.Callback;
 import com.bluenimble.platform.messaging.Sender;
 
 public class JsonSender extends JsonActor implements Sender {
 
 	private static final long serialVersionUID = -4228904077619093695L;
+	
+	private Map<String, Callback> callbacks;
 
 	public JsonSender (JsonObject source) {
 		super (source);
+	}
+	
+	public void addCallback (String callbackId, Callback callback) {
+		if (Lang.isNullOrEmpty (callbackId) || callback == null) {
+			return;
+		}
+		if (callbacks == null) {
+			callbacks = new HashMap<String, Callback>();
+		}
+		callbacks.put (callbackId, callback);
+	}
+
+	@Override
+	public Callback callback (String callbackId) {
+		if (Lang.isNullOrEmpty (callbackId) || callbacks == null) {
+			return null;
+		}
+		return callbacks.get (callbackId);
 	}
 	
 }

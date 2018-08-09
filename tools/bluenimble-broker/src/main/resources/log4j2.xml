@@ -1,29 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="INFO">
-	
     <Appenders>
-    	<Console name="STDOUT" target="SYSTEM_OUT">
-			<PatternLayout pattern="%d{ISO8601} %-5p [%X{namespace}] - %msg%n" />
-	    </Console>
-		<RollingFile name="All">
-			<FileName>logs/bluenimble.log</FileName>
-			<FilePattern>logs/bluenimble.%d{yyyy-MM-dd-hh-mm}.log.zip
+        <RollingFile name="LogFile" immediateFlush="false" append="true">
+			<FileName>${sys:BNB_HOME}/logs/bluenimble.log</FileName>
+			<FilePattern>${sys:BNB_HOME}/logs/bluenimble.%d{yyyy-MM-dd-hh-mm}.log.zip
 			</FilePattern>
 			<PatternLayout>
-				<Pattern>%d{ISO8601} %-5p [%X{namespace}] - %msg%n</Pattern>
+				<Pattern>%d{yyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Pattern>
 			</PatternLayout>
 			<Policies>
 				<SizeBasedTriggeringPolicy size="20 MB"/>
 			</Policies>
-			<DefaultRolloverStrategy max="10" />
+			<DefaultRolloverStrategy max="50" />
 		</RollingFile>
     </Appenders>
-    
     <Loggers>
-	    <Root level="info">
-			<AppenderRef ref="STDOUT"/>
-			<AppenderRef ref="All"/>
-	    </Root>
+        <Root level="debug">
+            <AppenderRef ref="LogFile"/>
+        </Root>
     </Loggers>
-    
 </Configuration>

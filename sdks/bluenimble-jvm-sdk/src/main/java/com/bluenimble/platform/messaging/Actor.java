@@ -23,6 +23,7 @@ public interface Actor extends Serializable {
 	String id 	();
 	String name ();
 	
-	Object get	(String name);
+	void 	set	(String name, Object value);
+	Object 	get	(String name);
 	
 }

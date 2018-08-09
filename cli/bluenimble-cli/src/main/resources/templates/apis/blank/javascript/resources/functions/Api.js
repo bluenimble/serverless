@@ -3,7 +3,7 @@ return {
 	/**
 	 * Implement this function in order to authenticate users only if you're using a custom authentication scheme different than the ones provided by default.
 	 * 
-	 * The execute function will be triggered when an application or device makes a call to any service under this api. 
+	 * The findConsumer function will be triggered when an application or device makes a call to any service under this api. 
 	 * 
 	 * Arguments:
 	 *  Api 		 the api where this service is running  

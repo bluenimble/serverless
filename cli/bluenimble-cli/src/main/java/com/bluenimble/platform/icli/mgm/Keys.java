@@ -19,6 +19,7 @@ package com.bluenimble.platform.icli.mgm;
 import java.io.Serializable;
 
 import com.bluenimble.platform.Json;
+import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.security.KeyPair;
 
@@ -43,9 +44,25 @@ public class Keys implements Serializable {
 
 	private JsonObject 	source;
 	
+	private JsonObject 	endpoints;
+	
 	public Keys (String alias, JsonObject source) {
 		this.alias 	= alias;
 		this.source = source;
+		
+		endpoints = Json.getObject (source, Spec.Endpoints);
+		if (Json.isNullOrEmpty (endpoints)) {
+			return;
+		}
+		
+		for (Object key : endpoints.keySet ()) {
+			String endpoint = Json.getString (endpoints, (String)key);
+			if (endpoint.endsWith (Lang.SLASH)) {
+				endpoint = endpoint.substring (0, endpoint.length () - 1);
+			}
+			endpoints.set (String.valueOf (key), endpoint);
+		}
+		
 	}
 	
 	public String alias () {
@@ -77,7 +94,7 @@ public class Keys implements Serializable {
 	}
 
 	public String endpoint (String target) {
-		return (String)Json.find (source, Spec.Endpoints, target);
+		return Json.getString (endpoints, target);
 	}
 
 	public String space () {

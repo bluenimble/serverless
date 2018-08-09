@@ -25,7 +25,7 @@
 			},
 			"spec": {
 			
-				"visitor": "[ this.spec.visitor | 'none' ]",
+				"visitor": "[ this.spec.visitor | 'rewrite' ]",
 			
 				"static": { 
 					"/": "[ this.spec.static.root | '/sys/mgm/instance/all' ]" 

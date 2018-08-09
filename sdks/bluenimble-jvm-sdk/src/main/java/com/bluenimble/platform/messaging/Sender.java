@@ -18,5 +18,13 @@ package com.bluenimble.platform.messaging;
 
 public interface Sender extends Actor {
 
+	interface Callbacks {
+		String Connect 		= "connect";
+		String Disconnect 	= "disconnect";
+		String Error 		= "error";
+		String Ack 			= "ack";
+	}
+	
+	Callback callback (String callbackId);
 	
 }

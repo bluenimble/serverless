@@ -431,6 +431,11 @@ public abstract class AbstractApiServer implements ApiServer {
 				return;
 			}
 			
+			if (request.get (ApiRequest.Bypass) != null) {
+				// bypass request
+				return;
+			}
+			
 			// is space resolved
 			if (Lang.isNullOrEmpty (request.getSpace ())) {
 				sendError (response, ApiResponse.NOT_FOUND, "can't resolve space from request");

@@ -289,10 +289,10 @@ public class IOUtils {
 		return sw.toCharArray();
 	}
 
-	public static String toString(InputStream input) throws IOException {
-		StringWriter sw = new StringWriter();
-		copy(input, sw);
-		return sw.toString();
+	public static String toString (InputStream input) throws IOException {
+		StringWriter sw = new StringWriter ();
+		copy (input, sw);
+		return sw.toString ();
 	}
 
 	public static String toString(InputStream input, String encoding)

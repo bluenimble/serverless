@@ -20,6 +20,10 @@
 		}
 	},
 	
+	"runtime":{
+		"endpoint": "[ this.apis.sys.mgm | 'localhost:9090/%s/%s' ]"
+	},
+	
 	"spi": {
 		"class": "com.bluenimble.platform.apis.mgm.KeyStoreAwareApiSpi"
 	}

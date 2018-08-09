@@ -1,0 +1,1027 @@
+2018-08-07 14:21:01.967 [main] DEBUG io.netty.util.internal.logging.InternalLoggerFactory - Using SLF4J as the default logging framework
+2018-08-07 14:21:01.991 [main] DEBUG io.netty.util.internal.PlatformDependent0 - java.nio.Buffer.address: available
+2018-08-07 14:21:01.992 [main] DEBUG io.netty.util.internal.PlatformDependent0 - sun.misc.Unsafe.theUnsafe: available
+2018-08-07 14:21:01.993 [main] DEBUG io.netty.util.internal.PlatformDependent0 - sun.misc.Unsafe.copyMemory: available
+2018-08-07 14:21:01.994 [main] DEBUG io.netty.util.internal.PlatformDependent0 - direct buffer constructor: available
+2018-08-07 14:21:01.997 [main] DEBUG io.netty.util.internal.PlatformDependent0 - java.nio.Bits.unaligned: available, true
+2018-08-07 14:21:01.997 [main] DEBUG io.netty.util.internal.PlatformDependent0 - java.nio.DirectByteBuffer.<init>(long, int): available
+2018-08-07 14:21:01.999 [main] DEBUG io.netty.util.internal.Cleaner0 - java.nio.ByteBuffer.cleaner(): available
+2018-08-07 14:21:02.001 [main] DEBUG io.netty.util.internal.PlatformDependent - Java version: 8
+2018-08-07 14:21:02.001 [main] DEBUG io.netty.util.internal.PlatformDependent - -Dio.netty.noUnsafe: false
+2018-08-07 14:21:02.001 [main] DEBUG io.netty.util.internal.PlatformDependent - sun.misc.Unsafe: available
+2018-08-07 14:21:02.002 [main] DEBUG io.netty.util.internal.PlatformDependent - -Dio.netty.noJavassist: false
+2018-08-07 14:21:02.003 [main] DEBUG io.netty.util.internal.PlatformDependent - Javassist: unavailable
+2018-08-07 14:21:02.003 [main] DEBUG io.netty.util.internal.PlatformDependent - You don't have Javassist in your class path or you don't have enough permission to load dynamically generated classes.  Please check the configuration for better performance.
+2018-08-07 14:21:02.004 [main] DEBUG io.netty.util.internal.PlatformDependent - -Dio.netty.tmpdir: /var/folders/ps/8f1gb10j365f3_243rh95y3r0000gn/T (java.io.tmpdir)
+2018-08-07 14:21:02.010 [main] DEBUG io.netty.util.internal.PlatformDependent - -Dio.netty.bitMode: 64 (sun.arch.data.model)
+2018-08-07 14:21:02.010 [main] DEBUG io.netty.util.internal.PlatformDependent - -Dio.netty.noPreferDirect: false
+2018-08-07 14:21:02.011 [main] DEBUG io.netty.util.internal.PlatformDependent - io.netty.maxDirectMemory: 8261730304 bytes
+2018-08-07 14:21:02.026 [main] DEBUG io.netty.handler.codec.compression.ZlibCodecFactory - -Dio.netty.noJdkZlibDecoder: false
+2018-08-07 14:21:02.026 [main] DEBUG io.netty.handler.codec.compression.ZlibCodecFactory - -Dio.netty.noJdkZlibEncoder: false
+2018-08-07 14:21:02.032 [main] DEBUG io.netty.util.ResourceLeakDetector - -Dio.netty.leakDetection.level: simple
+2018-08-07 14:21:02.033 [main] DEBUG io.netty.util.ResourceLeakDetector - -Dio.netty.leakDetection.maxRecords: 4
+2018-08-07 14:21:02.036 [main] DEBUG io.netty.util.ResourceLeakDetectorFactory - Loaded default ResourceLeakDetector: io.netty.util.ResourceLeakDetector@36f0f1be
+2018-08-07 14:21:02.039 [main] DEBUG io.netty.util.internal.PlatformDependent - org.jctools-core.MpscChunkedArrayQueue: available
+2018-08-07 14:21:02.204 [main] INFO  com.corundumstudio.socketio.SocketIOServer - Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2018-08-07 14:21:02.208 [main] DEBUG io.netty.channel.MultithreadEventLoopGroup - -Dio.netty.eventLoopThreads: 8
+2018-08-07 14:21:02.233 [main] DEBUG io.netty.channel.nio.NioEventLoop - -Dio.netty.noKeySetOptimization: false
+2018-08-07 14:21:02.234 [main] DEBUG io.netty.channel.nio.NioEventLoop - -Dio.netty.selectorAutoRebuildThreshold: 512
+2018-08-07 14:21:02.275 [main] DEBUG io.netty.buffer.PooledByteBufAllocator - -Dio.netty.allocator.numHeapArenas: 4
+2018-08-07 14:21:02.276 [main] DEBUG io.netty.buffer.PooledByteBufAllocator - -Dio.netty.allocator.numDirectArenas: 8
+2018-08-07 14:21:02.276 [main] DEBUG io.netty.buffer.PooledByteBufAllocator - -Dio.netty.allocator.pageSize: 8192
+2018-08-07 14:21:02.277 [main] DEBUG io.netty.buffer.PooledByteBufAllocator - -Dio.netty.allocator.maxOrder: 11
+2018-08-07 14:21:02.277 [main] DEBUG io.netty.buffer.PooledByteBufAllocator - -Dio.netty.allocator.chunkSize: 16777216
+2018-08-07 14:21:02.277 [main] DEBUG io.netty.buffer.PooledByteBufAllocator - -Dio.netty.allocator.tinyCacheSize: 512
+2018-08-07 14:21:02.278 [main] DEBUG io.netty.buffer.PooledByteBufAllocator - -Dio.netty.allocator.smallCacheSize: 256
+2018-08-07 14:21:02.278 [main] DEBUG io.netty.buffer.PooledByteBufAllocator - -Dio.netty.allocator.normalCacheSize: 64
+2018-08-07 14:21:02.278 [main] DEBUG io.netty.buffer.PooledByteBufAllocator - -Dio.netty.allocator.maxCachedBufferCapacity: 32768
+2018-08-07 14:21:02.278 [main] DEBUG io.netty.buffer.PooledByteBufAllocator - -Dio.netty.allocator.cacheTrimInterval: 8192
+2018-08-07 14:21:02.289 [main] DEBUG io.netty.buffer.ByteBufUtil - -Dio.netty.allocator.type: pooled
+2018-08-07 14:21:02.289 [main] DEBUG io.netty.buffer.ByteBufUtil - -Dio.netty.threadLocalDirectBufferSize: 65536
+2018-08-07 14:21:02.290 [main] DEBUG io.netty.buffer.ByteBufUtil - -Dio.netty.maxThreadLocalCharBufferSize: 16384
+2018-08-07 14:21:02.298 [main] DEBUG io.netty.buffer.AbstractByteBuf - -Dio.netty.buffer.bytebuf.checkAccessible: true
+2018-08-07 14:21:02.298 [main] DEBUG io.netty.util.ResourceLeakDetectorFactory - Loaded default ResourceLeakDetector: io.netty.util.ResourceLeakDetector@32910148
+2018-08-07 14:21:02.370 [main] DEBUG io.netty.channel.DefaultChannelId - -Dio.netty.processId: 92445 (auto-detected)
+2018-08-07 14:21:02.373 [main] DEBUG io.netty.util.NetUtil - -Djava.net.preferIPv4Stack: true
+2018-08-07 14:21:02.374 [main] DEBUG io.netty.util.NetUtil - -Djava.net.preferIPv6Addresses: false
+2018-08-07 14:21:02.383 [main] DEBUG io.netty.util.NetUtil - Loopback interface: lo0 (lo0, 127.0.0.1)
+2018-08-07 14:21:02.384 [main] DEBUG io.netty.util.NetUtil - /proc/sys/net/core/somaxconn: 128 (non-existent)
+2018-08-07 14:21:02.386 [main] DEBUG io.netty.channel.DefaultChannelId - -Dio.netty.machineId: 1c:36:bb:ff:fe:23:da:aa (auto-detected)
+2018-08-07 14:21:02.386 [main] DEBUG io.netty.util.internal.ThreadLocalRandom - -Dio.netty.initialSeedUniquifier: 0xacd4485c97392afa
+2018-08-07 14:21:02.441 [nioEventLoopGroup-2-1] INFO  com.corundumstudio.socketio.SocketIOServer - SocketIO server started at port: 9696
+2018-08-07 14:21:04.945 [nioEventLoopGroup-3-1] DEBUG io.netty.util.Recycler - -Dio.netty.recycler.maxCapacityPerThread: 32768
+2018-08-07 14:21:04.946 [nioEventLoopGroup-3-1] DEBUG io.netty.util.Recycler - -Dio.netty.recycler.maxSharedCapacityFactor: 2
+2018-08-07 14:21:04.946 [nioEventLoopGroup-3-1] DEBUG io.netty.util.Recycler - -Dio.netty.recycler.linkCapacity: 16
+2018-08-07 14:21:04.947 [nioEventLoopGroup-3-1] DEBUG io.netty.util.Recycler - -Dio.netty.recycler.ratio: 8
+2018-08-07 14:21:05.011 [nioEventLoopGroup-3-1] DEBUG com.corundumstudio.socketio.handler.AuthorizeHandler - Handshake authorized for sessionId: 8b852faa-9646-4150-becc-a9f0c65151c7, query params: {token=[peer2:key2], EIO=[3], transport=[polling], t=[1533676864817-35], Broker.Peer.Key=[peer2, consumer, null, null]} headers: {Origin=[null], content-length=[0], Accept=[*/*], User-Agent=[Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1 Safari/605.1.15], Connection=[keep-alive], Host=[localhost:9696], Accept-Language=[en-us], Accept-Encoding=[gzip, deflate]}
+2018-08-07 14:21:05.011 [nioEventLoopGroup-3-2] DEBUG com.corundumstudio.socketio.handler.AuthorizeHandler - Handshake authorized for sessionId: 151f0e39-ba71-4e41-86f1-f23378bb5590, query params: {token=[peer2:key2], EIO=[3], transport=[polling], t=[1533676864824-37], Broker.Peer.Key=[peer2, consumer, null, null]} headers: {Origin=[null], content-length=[0], Accept=[*/*], User-Agent=[Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1 Safari/605.1.15], Connection=[keep-alive], Host=[localhost:9696], Accept-Language=[en-us], Accept-Encoding=[gzip, deflate]}
+2018-08-07 14:21:05.032 [nioEventLoopGroup-3-1] DEBUG com.corundumstudio.socketio.handler.ClientHead - binding channel: [id: 0xdb182a8e, L:/127.0.0.1:9696 - R:/127.0.0.1:51422] to transport: POLLING
+2018-08-07 14:21:05.058 [nioEventLoopGroup-3-2] DEBUG com.corundumstudio.socketio.handler.ClientHead - binding channel: [id: 0x4a4a3287, L:/127.0.0.1:9696 - R:/127.0.0.1:51423] to transport: POLLING
+2018-08-07 14:21:05.177 [nioEventLoopGroup-3-4] DEBUG com.corundumstudio.socketio.handler.ClientHead - binding channel: [id: 0x4ff3da03, L:/127.0.0.1:9696 - R:/127.0.0.1:51425] to transport: POLLING
+2018-08-07 14:21:05.210 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker - [id: 0xfe4e529f, L:/127.0.0.1:9696 - R:/127.0.0.1:51424] WebSocket version V13 server handshake
+2018-08-07 14:21:05.210 [nioEventLoopGroup-3-6] DEBUG com.corundumstudio.socketio.handler.ClientHead - binding channel: [id: 0xab1a0ff8, L:/127.0.0.1:9696 - R:/127.0.0.1:51427] to transport: POLLING
+2018-08-07 14:21:05.210 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker - [id: 0xe6c9ae5a, L:/127.0.0.1:9696 - R:/127.0.0.1:51426] WebSocket version V13 server handshake
+2018-08-07 14:21:05.220 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker - WebSocket version 13 server handshake key: FYuxGVBXr/XPDRUpaOggOw==, response: FiQD9JXwUKsMqAWuSnJKa9rH/Vw=
+2018-08-07 14:21:05.220 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker - WebSocket version 13 server handshake key: PUpBIzjeewZII/pLUOXE8w==, response: kcSMg0xHbVkG0pYsYwTtckZvgBM=
+2018-08-07 14:21:05.227 [nioEventLoopGroup-3-8] DEBUG com.corundumstudio.socketio.handler.ClientHead - binding channel: [id: 0x36a1d020, L:/127.0.0.1:9696 - R:/127.0.0.1:51429] to transport: POLLING
+2018-08-07 14:21:05.240 [nioEventLoopGroup-3-5] DEBUG com.corundumstudio.socketio.handler.ClientHead - binding channel: [id: 0xe6c9ae5a, L:/127.0.0.1:9696 - R:/127.0.0.1:51426] to transport: WEBSOCKET
+2018-08-07 14:21:05.242 [nioEventLoopGroup-3-5] DEBUG com.corundumstudio.socketio.transport.WebSocketTransport - сlient 8b852faa-9646-4150-becc-a9f0c65151c7 handshake completed
+2018-08-07 14:21:05.240 [nioEventLoopGroup-3-3] DEBUG com.corundumstudio.socketio.handler.ClientHead - binding channel: [id: 0xfe4e529f, L:/127.0.0.1:9696 - R:/127.0.0.1:51424] to transport: WEBSOCKET
+2018-08-07 14:21:05.244 [nioEventLoopGroup-3-3] DEBUG com.corundumstudio.socketio.transport.WebSocketTransport - сlient 151f0e39-ba71-4e41-86f1-f23378bb5590 handshake completed
+2018-08-07 14:21:05.244 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:21:05.244 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=8
+2018-08-07 14:21:05.245 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:21:05.245 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=8
+2018-08-07 14:21:05.251 [nioEventLoopGroup-3-2] DEBUG com.corundumstudio.socketio.handler.ClientHead - binding channel: [id: 0x50546273, L:/127.0.0.1:9696 - R:/127.0.0.1:51431] to transport: POLLING
+2018-08-07 14:21:05.257 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=8
+2018-08-07 14:21:05.257 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=8
+2018-08-07 14:21:05.266 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:21:05.267 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:21:05.268 [nioEventLoopGroup-3-5] DEBUG com.corundumstudio.socketio.handler.ClientHead - Transport upgraded to: WEBSOCKET for: 8b852faa-9646-4150-becc-a9f0c65151c7
+2018-08-07 14:21:05.270 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:21:05.271 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:21:05.272 [nioEventLoopGroup-3-3] DEBUG com.corundumstudio.socketio.handler.ClientHead - Transport upgraded to: WEBSOCKET for: 151f0e39-ba71-4e41-86f1-f23378bb5590
+2018-08-07 14:21:31.617 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:21:31.618 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:21:31.618 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:21:31.618 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:21:31.619 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:21:31.619 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:21:57.266 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:21:57.266 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:21:57.267 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:21:57.271 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:21:57.271 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:21:57.273 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:22:25.207 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:22:25.208 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:22:25.210 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:22:25.226 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:22:25.226 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:22:25.227 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:22:50.215 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:22:50.216 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:22:50.217 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:22:50.230 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:22:50.230 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:22:50.231 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:23:15.229 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:23:15.229 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:23:15.230 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:23:15.235 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:23:15.235 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:23:15.237 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:23:40.234 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:23:40.239 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:23:40.241 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:23:40.242 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:23:40.243 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:23:40.244 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:24:05.245 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:24:05.245 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:24:05.248 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:24:05.248 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:24:05.248 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:24:05.250 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:24:31.093 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:24:31.093 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:24:31.094 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:24:31.095 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:24:31.095 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:24:31.096 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:24:56.098 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:24:56.099 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:24:56.099 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:24:56.099 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:24:56.100 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:24:56.101 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:25:21.107 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:25:21.107 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:25:21.109 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:25:21.111 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:25:21.112 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:25:21.113 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:25:46.127 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:25:46.128 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:25:46.129 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:25:46.146 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:25:46.146 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:25:46.147 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:26:13.251 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:26:13.251 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:26:13.252 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:26:13.262 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:26:13.262 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:26:13.264 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:26:38.272 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:26:38.272 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:26:38.274 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:26:38.277 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:26:38.278 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:26:38.279 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:27:03.281 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:27:03.281 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:27:03.283 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:27:03.285 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:27:03.286 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:27:03.287 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:27:28.291 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:27:28.292 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:27:28.294 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:27:28.296 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:27:28.296 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:27:28.297 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:27:53.305 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:27:53.305 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:27:53.305 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:27:53.305 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:27:53.307 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:27:53.307 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:28:07.044 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:28:07.044 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:28:07.044 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:28:07.044 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:28:07.045 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:28:07.045 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:28:22.775 [nioEventLoopGroup-3-3] DEBUG com.corundumstudio.socketio.handler.AuthorizeHandler - Handshake authorized for sessionId: 85ed36ee-b269-4d63-be66-6db73e78c18c, query params: {EIO=[3], token=[peer1:key1], transport=[polling], Broker.Peer.Key=[peer1, producer, null, null]} headers: {Connection=[Keep-Alive], User-Agent=[okhttp/3.8.1], content-length=[0], Host=[localhost:9696], Accept-Encoding=[gzip], Accept=[*/*]}
+2018-08-07 14:28:22.776 [nioEventLoopGroup-3-3] DEBUG com.corundumstudio.socketio.handler.ClientHead - binding channel: [id: 0x1d9ec1dd, L:/127.0.0.1:9696 - R:/127.0.0.1:51501] to transport: POLLING
+2018-08-07 14:28:32.049 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:28:32.049 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:28:32.049 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:28:32.049 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:28:32.051 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:28:32.051 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:28:57.057 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:28:57.057 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:28:57.058 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:28:57.058 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:28:57.059 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:28:57.060 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:29:22.065 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:29:22.070 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:29:22.072 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:29:22.072 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:29:22.074 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:29:22.074 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:29:47.076 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:29:47.077 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:29:47.076 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:29:47.077 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:29:47.079 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:29:47.079 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:29:47.804 [pool-2-thread-1] DEBUG com.corundumstudio.socketio.SocketIOChannelInitializer - Client with sessionId: 85ed36ee-b269-4d63-be66-6db73e78c18c disconnected
+2018-08-07 14:29:47.818 [pool-2-thread-1] DEBUG com.corundumstudio.socketio.transport.NamespaceClient - Client 85ed36ee-b269-4d63-be66-6db73e78c18c for namespace  has been disconnected
+2018-08-07 14:29:47.823 [pool-2-thread-1] DEBUG com.corundumstudio.socketio.handler.ClientHead - 85ed36ee-b269-4d63-be66-6db73e78c18c removed due to ping timeout
+2018-08-07 14:29:48.201 [nioEventLoopGroup-3-4] DEBUG com.corundumstudio.socketio.handler.AuthorizeHandler - Handshake authorized for sessionId: 9ac4827a-61a3-4a1f-9498-3e93ac0454d2, query params: {EIO=[3], token=[peer1:key1], transport=[polling], Broker.Peer.Key=[peer1, producer, null, null]} headers: {Connection=[Keep-Alive], User-Agent=[okhttp/3.8.1], content-length=[0], Host=[localhost:9696], Accept-Encoding=[gzip], Accept=[*/*]}
+2018-08-07 14:29:48.202 [nioEventLoopGroup-3-4] DEBUG com.corundumstudio.socketio.handler.ClientHead - binding channel: [id: 0xeb002721, L:/127.0.0.1:9696 - R:/127.0.0.1:51520] to transport: POLLING
+2018-08-07 14:30:12.082 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:30:12.082 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:30:12.084 [nioEventLoopGroup-3-3] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:30:12.086 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:30:12.086 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:30:12.087 [nioEventLoopGroup-3-5] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:30:31.318 [nioEventLoopGroup-3-5] DEBUG com.corundumstudio.socketio.transport.WebSocketTransport - channel inactive 8b852faa-9646-4150-becc-a9f0c65151c7
+2018-08-07 14:30:31.322 [nioEventLoopGroup-3-5] DEBUG com.corundumstudio.socketio.SocketIOChannelInitializer - Client with sessionId: 8b852faa-9646-4150-becc-a9f0c65151c7 disconnected
+2018-08-07 14:30:31.338 [nioEventLoopGroup-3-5] DEBUG com.corundumstudio.socketio.transport.NamespaceClient - Client 8b852faa-9646-4150-becc-a9f0c65151c7 for namespace  has been disconnected
+2018-08-07 14:30:32.743 [nioEventLoopGroup-3-3] DEBUG com.corundumstudio.socketio.transport.WebSocketTransport - channel inactive 151f0e39-ba71-4e41-86f1-f23378bb5590
+2018-08-07 14:30:32.745 [nioEventLoopGroup-3-3] DEBUG com.corundumstudio.socketio.SocketIOChannelInitializer - Client with sessionId: 151f0e39-ba71-4e41-86f1-f23378bb5590 disconnected
+2018-08-07 14:30:32.745 [nioEventLoopGroup-3-3] DEBUG com.corundumstudio.socketio.transport.NamespaceClient - Client 151f0e39-ba71-4e41-86f1-f23378bb5590 for namespace  has been disconnected
+2018-08-07 14:30:43.516 [nioEventLoopGroup-3-5] DEBUG com.corundumstudio.socketio.handler.AuthorizeHandler - Handshake authorized for sessionId: 83a50391-5bdb-42d2-9c95-343e9fe4a7e7, query params: {EIO=[3], token=[peer1:key1], transport=[polling], Broker.Peer.Key=[peer1, producer, null, null]} headers: {Connection=[Keep-Alive], User-Agent=[okhttp/3.8.1], content-length=[0], Host=[localhost:9696], Accept-Encoding=[gzip], Accept=[*/*]}
+2018-08-07 14:30:43.517 [nioEventLoopGroup-3-5] DEBUG com.corundumstudio.socketio.handler.ClientHead - binding channel: [id: 0xec6891af, L:/127.0.0.1:9696 - R:/127.0.0.1:51525] to transport: POLLING
+2018-08-07 14:31:13.292 [pool-2-thread-1] DEBUG com.corundumstudio.socketio.SocketIOChannelInitializer - Client with sessionId: 9ac4827a-61a3-4a1f-9498-3e93ac0454d2 disconnected
+2018-08-07 14:31:13.292 [pool-2-thread-1] DEBUG com.corundumstudio.socketio.transport.NamespaceClient - Client 9ac4827a-61a3-4a1f-9498-3e93ac0454d2 for namespace  has been disconnected
+2018-08-07 14:31:13.292 [pool-2-thread-1] DEBUG com.corundumstudio.socketio.handler.ClientHead - 9ac4827a-61a3-4a1f-9498-3e93ac0454d2 removed due to ping timeout
+2018-08-07 14:32:08.598 [pool-2-thread-1] DEBUG com.corundumstudio.socketio.SocketIOChannelInitializer - Client with sessionId: 83a50391-5bdb-42d2-9c95-343e9fe4a7e7 disconnected
+2018-08-07 14:32:08.599 [pool-2-thread-1] DEBUG com.corundumstudio.socketio.transport.NamespaceClient - Client 83a50391-5bdb-42d2-9c95-343e9fe4a7e7 for namespace  has been disconnected
+2018-08-07 14:32:08.599 [pool-2-thread-1] DEBUG com.corundumstudio.socketio.handler.ClientHead - 83a50391-5bdb-42d2-9c95-343e9fe4a7e7 removed due to ping timeout
+2018-08-07 14:39:36.323 [nioEventLoopGroup-3-6] DEBUG com.corundumstudio.socketio.handler.AuthorizeHandler - Handshake authorized for sessionId: 0b8e6f54-0555-41b9-b84e-01df7ec5f144, query params: {EIO=[3], token=[peer1:key1], transport=[polling], Broker.Peer.Key=[peer1, producer, null, null]} headers: {Connection=[Keep-Alive], User-Agent=[okhttp/3.8.1], content-length=[0], Host=[localhost:9696], Accept-Encoding=[gzip], Accept=[*/*]}
+2018-08-07 14:39:36.323 [nioEventLoopGroup-3-6] DEBUG com.corundumstudio.socketio.handler.ClientHead - binding channel: [id: 0x0af01a3a, L:/127.0.0.1:9696 - R:/127.0.0.1:51582] to transport: POLLING
+2018-08-07 14:39:36.386 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker - [id: 0x1adfa43d, L:/127.0.0.1:9696 - R:/127.0.0.1:51583] WebSocket version V13 server handshake
+2018-08-07 14:39:36.388 [nioEventLoopGroup-3-8] DEBUG com.corundumstudio.socketio.handler.ClientHead - binding channel: [id: 0xc8016f4c, L:/127.0.0.1:9696 - R:/127.0.0.1:51584] to transport: POLLING
+2018-08-07 14:39:36.389 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker - WebSocket version 13 server handshake key: DnQLegxzKL8QXWiZ+zB+ng==, response: UWSgFL5VKG69xfT1PyeTBXvrtQY=
+2018-08-07 14:39:36.394 [nioEventLoopGroup-3-7] DEBUG com.corundumstudio.socketio.handler.ClientHead - binding channel: [id: 0x1adfa43d, L:/127.0.0.1:9696 - R:/127.0.0.1:51583] to transport: WEBSOCKET
+2018-08-07 14:39:36.394 [nioEventLoopGroup-3-7] DEBUG com.corundumstudio.socketio.transport.WebSocketTransport - сlient 0b8e6f54-0555-41b9-b84e-01df7ec5f144 handshake completed
+2018-08-07 14:39:36.416 [nioEventLoopGroup-3-2] DEBUG com.corundumstudio.socketio.handler.ClientHead - binding channel: [id: 0x8a609281, L:/127.0.0.1:9696 - R:/127.0.0.1:51586] to transport: POLLING
+2018-08-07 14:39:36.418 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:39:36.418 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=6
+2018-08-07 14:39:36.419 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=6
+2018-08-07 14:39:36.429 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:39:36.429 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 14:39:36.430 [nioEventLoopGroup-3-7] DEBUG com.corundumstudio.socketio.handler.ClientHead - Transport upgraded to: WEBSOCKET for: 0b8e6f54-0555-41b9-b84e-01df7ec5f144
+2018-08-07 14:39:36.461 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=60
+2018-08-07 14:40:01.382 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:40:01.383 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 14:40:01.383 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 14:40:26.387 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:40:26.387 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 14:40:26.388 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 14:40:51.392 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:40:51.393 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 14:40:51.394 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 14:41:16.403 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:41:16.404 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 14:41:16.405 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 14:41:41.411 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:41:41.411 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 14:41:41.412 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 14:41:48.936 [nioEventLoopGroup-3-3] DEBUG com.corundumstudio.socketio.handler.AuthorizeHandler - Handshake authorized for sessionId: 90b131c5-7e0a-422a-8cfa-0b550499dc87, query params: {token=[peer2:key2], EIO=[3], transport=[polling], t=[1533678108925-0], Broker.Peer.Key=[peer2, consumer, null, null]} headers: {Origin=[null], content-length=[0], Accept=[*/*], User-Agent=[Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1 Safari/605.1.15], Connection=[keep-alive], Host=[localhost:9696], Accept-Language=[en-us], Accept-Encoding=[gzip, deflate]}
+2018-08-07 14:41:48.937 [nioEventLoopGroup-3-3] DEBUG com.corundumstudio.socketio.handler.ClientHead - binding channel: [id: 0x07ad85a8, L:/127.0.0.1:9696 - R:/127.0.0.1:51618] to transport: POLLING
+2018-08-07 14:41:49.027 [nioEventLoopGroup-3-5] DEBUG com.corundumstudio.socketio.handler.ClientHead - binding channel: [id: 0x99860631, L:/127.0.0.1:9696 - R:/127.0.0.1:51620] to transport: POLLING
+2018-08-07 14:41:49.034 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker - [id: 0xd2c5abfc, L:/127.0.0.1:9696 - R:/127.0.0.1:51619] WebSocket version V13 server handshake
+2018-08-07 14:41:49.035 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker - WebSocket version 13 server handshake key: LimADJgn9ycRwQGSR7sksg==, response: cNJBv/P3tcVha7QXzy62jzirmR0=
+2018-08-07 14:41:49.036 [nioEventLoopGroup-3-4] DEBUG com.corundumstudio.socketio.handler.ClientHead - binding channel: [id: 0xd2c5abfc, L:/127.0.0.1:9696 - R:/127.0.0.1:51619] to transport: WEBSOCKET
+2018-08-07 14:41:49.038 [nioEventLoopGroup-3-4] DEBUG com.corundumstudio.socketio.transport.WebSocketTransport - сlient 90b131c5-7e0a-422a-8cfa-0b550499dc87 handshake completed
+2018-08-07 14:41:49.046 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:41:49.046 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=8
+2018-08-07 14:41:49.054 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=8
+2018-08-07 14:41:49.057 [nioEventLoopGroup-3-7] DEBUG com.corundumstudio.socketio.handler.ClientHead - binding channel: [id: 0xeaf8b4f2, L:/127.0.0.1:9696 - R:/127.0.0.1:51622] to transport: POLLING
+2018-08-07 14:41:49.064 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:41:49.064 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:41:49.065 [nioEventLoopGroup-3-4] DEBUG com.corundumstudio.socketio.handler.ClientHead - Transport upgraded to: WEBSOCKET for: 90b131c5-7e0a-422a-8cfa-0b550499dc87
+2018-08-07 14:41:54.744 [nioEventLoopGroup-3-8] DEBUG com.corundumstudio.socketio.handler.AuthorizeHandler - Handshake authorized for sessionId: 22e32776-1b2b-496e-9a48-27160bb153b8, query params: {EIO=[3], token=[peer1:key1], transport=[polling], Broker.Peer.Key=[peer1, producer, null, null]} headers: {Connection=[Keep-Alive], User-Agent=[okhttp/3.8.1], content-length=[0], Host=[localhost:9696], Accept-Encoding=[gzip], Accept=[*/*]}
+2018-08-07 14:41:54.745 [nioEventLoopGroup-3-8] DEBUG com.corundumstudio.socketio.handler.ClientHead - binding channel: [id: 0x91e625d9, L:/127.0.0.1:9696 - R:/127.0.0.1:51626] to transport: POLLING
+2018-08-07 14:41:54.763 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker - [id: 0x978cd234, L:/127.0.0.1:9696 - R:/127.0.0.1:51627] WebSocket version V13 server handshake
+2018-08-07 14:41:54.767 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker - WebSocket version 13 server handshake key: lqvbgytn1viLRcqxaSufJA==, response: pX/HBHZ6gMkNpQ67dNGURz88GqI=
+2018-08-07 14:41:54.772 [nioEventLoopGroup-3-1] DEBUG com.corundumstudio.socketio.handler.ClientHead - binding channel: [id: 0x978cd234, L:/127.0.0.1:9696 - R:/127.0.0.1:51627] to transport: WEBSOCKET
+2018-08-07 14:41:54.772 [nioEventLoopGroup-3-1] DEBUG com.corundumstudio.socketio.transport.WebSocketTransport - сlient 22e32776-1b2b-496e-9a48-27160bb153b8 handshake completed
+2018-08-07 14:41:54.772 [nioEventLoopGroup-3-2] DEBUG com.corundumstudio.socketio.handler.ClientHead - binding channel: [id: 0xa5a401eb, L:/127.0.0.1:9696 - R:/127.0.0.1:51628] to transport: POLLING
+2018-08-07 14:41:54.775 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:41:54.776 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=6
+2018-08-07 14:41:54.777 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=6
+2018-08-07 14:41:54.780 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:41:54.780 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 14:41:54.780 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 14:41:54.781 [nioEventLoopGroup-3-1] DEBUG com.corundumstudio.socketio.handler.ClientHead - Transport upgraded to: WEBSOCKET for: 22e32776-1b2b-496e-9a48-27160bb153b8
+2018-08-07 14:41:54.781 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:41:54.781 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=70
+2018-08-07 14:41:54.783 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=60
+2018-08-07 14:41:54.784 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=42
+2018-08-07 14:42:06.419 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:42:06.419 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 14:42:06.419 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 14:42:14.022 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:42:14.022 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:42:14.023 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:42:19.761 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:42:19.761 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 14:42:19.762 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 14:42:31.428 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:42:31.428 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 14:42:31.429 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 14:42:39.028 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:42:39.028 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:42:39.029 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:42:44.767 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:42:44.768 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 14:42:44.768 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 14:42:56.437 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:42:56.437 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 14:42:56.438 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 14:43:04.033 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:43:04.034 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:43:04.035 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:43:09.772 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:43:09.773 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 14:43:09.773 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 14:43:21.447 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:43:21.448 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 14:43:21.449 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 14:43:34.783 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:43:34.783 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 14:43:34.784 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 14:43:36.963 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:43:36.964 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:43:36.965 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:43:46.463 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:43:46.463 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 14:43:46.464 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 14:43:59.791 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:43:59.791 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 14:43:59.792 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 14:44:03.047 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:44:03.048 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:44:03.048 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:44:11.471 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:44:11.471 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 14:44:11.472 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 14:44:24.800 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:44:24.800 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 14:44:24.804 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 14:44:28.051 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:44:28.052 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:44:28.053 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:44:36.476 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:44:36.477 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 14:44:36.477 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 14:44:49.816 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:44:49.816 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 14:44:49.817 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 14:44:53.056 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:44:53.057 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:44:53.057 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:45:01.484 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:45:01.484 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 14:45:01.484 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 14:45:14.827 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:45:14.828 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 14:45:14.828 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 14:45:18.817 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:45:18.817 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:45:18.818 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 14:45:26.490 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:45:26.491 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 14:45:26.491 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 14:46:14.033 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:46:14.033 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 14:46:14.033 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 14:46:25.693 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:46:25.694 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 14:46:25.694 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 14:46:34.622 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 14:46:34.622 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 14:46:34.622 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:28:44.732 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:28:44.733 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:28:44.733 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:28:45.921 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:28:45.921 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:28:45.922 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:28:54.839 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:28:54.841 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:28:54.843 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:28:59.262 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:28:59.262 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:28:59.262 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:29:10.925 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:29:10.925 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:29:10.925 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:29:19.848 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:29:19.848 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:29:19.849 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:29:24.267 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:29:24.276 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:29:24.277 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:29:35.928 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:29:35.929 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:29:35.929 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:29:44.853 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:29:44.854 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:29:44.855 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:29:49.284 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:29:49.285 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:29:49.285 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:30:00.933 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:30:00.934 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:30:00.934 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:30:14.292 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:30:14.292 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:30:14.292 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:30:19.862 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:30:19.862 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:30:19.863 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:30:25.939 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:30:25.940 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:30:25.940 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:30:39.301 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:30:39.301 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:30:39.302 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:30:44.866 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:30:44.867 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:30:44.871 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:30:50.946 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:30:50.947 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:30:50.947 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:31:04.310 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:31:04.310 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:31:04.311 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:31:11.879 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:31:11.879 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:31:11.883 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:31:15.954 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:31:15.954 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:31:15.955 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:31:29.315 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:31:29.315 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:31:29.316 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:31:36.894 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:31:36.894 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:31:36.895 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:31:40.963 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:31:40.963 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:31:40.963 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:31:54.319 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:31:54.319 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:31:54.322 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:32:01.903 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:32:01.903 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:32:01.905 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:32:05.972 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:32:05.972 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:32:05.973 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:32:19.328 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:32:19.328 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:32:19.328 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:32:26.908 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:32:26.908 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:32:26.909 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:32:30.978 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:32:30.978 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:32:30.978 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:32:44.334 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:32:44.334 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:32:44.335 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:32:55.983 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:32:55.984 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:32:55.984 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:32:59.876 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:32:59.876 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:32:59.877 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:33:09.339 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:33:09.340 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:33:09.340 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:33:20.989 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:33:20.989 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:33:20.989 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:33:33.245 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:33:33.245 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:33:33.246 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:33:34.347 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:33:34.347 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:33:34.348 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:33:45.995 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:33:45.995 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:33:45.996 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:33:58.248 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:33:58.249 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:33:58.250 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:33:59.351 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:33:59.351 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:33:59.352 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:34:10.999 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:34:11.000 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:34:11.000 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:34:23.253 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:34:23.254 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:34:23.255 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:34:24.358 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:34:24.359 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:34:24.359 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:34:36.006 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:34:36.006 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:34:36.006 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:34:49.364 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:34:49.365 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:34:49.366 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:34:50.947 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:34:50.948 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:34:50.949 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:35:01.011 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:35:01.011 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:35:01.012 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:35:14.374 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:35:14.374 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:35:14.375 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:35:15.953 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:35:15.953 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:35:15.957 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:35:26.018 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:35:26.019 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:35:26.019 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:35:39.379 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:35:39.380 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:35:39.380 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:35:41.218 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:35:41.219 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:35:41.220 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:35:51.027 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:35:51.027 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:35:51.028 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:36:04.384 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:36:04.384 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:36:04.384 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:36:06.223 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:36:06.224 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:36:06.226 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:36:16.033 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:36:16.034 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:36:16.034 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:36:29.392 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:36:29.392 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:36:29.393 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:36:31.229 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:36:31.229 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:36:31.230 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:36:41.042 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:36:41.042 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:36:41.043 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:36:54.401 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:36:54.401 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:36:54.402 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:36:56.236 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:36:56.236 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:36:56.237 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:37:06.051 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:37:06.052 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:37:06.052 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:37:19.407 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:37:19.408 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:37:19.408 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:37:21.240 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:37:21.240 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:37:21.240 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:37:31.056 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:37:31.056 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:37:31.056 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:37:44.412 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:37:44.412 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:37:44.413 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:37:51.958 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:37:51.958 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:37:51.959 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:37:56.061 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:37:56.061 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:37:56.062 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:38:09.417 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:38:09.417 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:38:09.417 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:38:17.011 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:38:17.012 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:38:17.012 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:38:21.072 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:38:21.072 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:38:21.072 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:38:34.424 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:38:34.424 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:38:34.424 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:38:44.659 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:38:44.660 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:38:44.661 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:38:46.078 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:38:46.078 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:38:46.078 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:38:59.433 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:38:59.433 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:38:59.433 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:39:11.083 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:39:11.083 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:39:11.084 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:39:17.859 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:39:17.860 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:39:17.861 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:39:24.441 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:39:24.441 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:39:24.442 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:39:36.088 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:39:36.088 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:39:36.088 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:39:42.864 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:39:42.864 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:39:42.865 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:39:49.445 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:39:49.445 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:39:49.445 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:40:01.091 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:40:01.091 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:40:01.092 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:40:07.868 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:40:07.869 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:40:07.869 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:40:14.454 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:40:14.454 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:40:14.454 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:40:26.099 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:40:26.099 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:40:26.099 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:40:32.872 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:40:32.873 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:40:32.873 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:40:39.458 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:40:39.458 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:40:39.458 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:40:51.108 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:40:51.108 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:40:51.108 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:40:57.876 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:40:57.876 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:40:57.877 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:41:04.465 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:41:04.465 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:41:04.465 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:41:16.116 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:41:16.116 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:41:16.117 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:41:22.880 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:41:22.880 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:41:22.884 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:41:29.471 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:41:29.472 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:41:29.472 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:41:41.122 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:41:41.122 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:41:41.123 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:41:47.887 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:41:47.887 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:41:47.889 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:41:54.481 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:41:54.481 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:41:54.481 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:42:06.126 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:42:06.126 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:42:06.126 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:42:12.895 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:42:12.895 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:42:12.896 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:42:19.490 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:42:19.490 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:42:19.491 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:42:31.131 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:42:31.131 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:42:31.131 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:42:37.899 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:42:37.899 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:42:37.900 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:42:44.495 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:42:44.495 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:42:44.496 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:42:56.137 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:42:56.137 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:42:56.137 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:43:02.904 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:43:02.904 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:43:02.905 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:43:09.502 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:43:09.503 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:43:09.503 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:43:21.143 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:43:21.143 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:43:21.143 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:43:27.909 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:43:27.909 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:43:27.910 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:43:34.509 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:43:34.509 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:43:34.510 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:43:46.153 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:43:46.153 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:43:46.154 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:43:52.917 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:43:52.917 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:43:52.918 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:43:59.520 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:43:59.520 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:43:59.521 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:44:11.164 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:44:11.164 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:44:11.164 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:44:17.925 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:44:17.925 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:44:17.929 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:44:24.529 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:44:24.530 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:44:24.530 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:44:36.169 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:44:36.169 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:44:36.170 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:44:44.915 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:44:44.915 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:44:44.916 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:44:49.538 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:44:49.539 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:44:49.539 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:45:01.178 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:45:01.178 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:45:01.179 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:45:12.891 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:45:12.891 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:45:12.899 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:45:14.545 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:45:14.545 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:45:14.545 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:45:26.184 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:45:26.184 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:45:26.185 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:45:37.908 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:45:37.908 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:45:37.909 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:45:39.553 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:45:39.553 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:45:39.553 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:45:51.191 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:45:51.191 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:45:51.191 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:46:02.912 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:46:02.912 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:46:02.913 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:46:04.561 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:46:04.561 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:46:04.561 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:46:16.199 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:46:16.199 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:46:16.200 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:46:27.915 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:46:27.915 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:46:27.916 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:46:29.572 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:46:29.572 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:46:29.572 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:46:41.207 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:46:41.207 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:46:41.209 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:46:52.918 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:46:52.918 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:46:52.919 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:46:54.578 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:46:54.578 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:46:54.579 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:47:06.216 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:47:06.216 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:47:06.217 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:47:17.923 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:47:17.923 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:47:17.924 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:47:19.584 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:47:19.584 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:47:19.584 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:47:31.221 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:47:31.221 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:47:31.222 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:47:42.928 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:47:42.929 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:47:42.929 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:47:44.592 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:47:44.592 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:47:44.592 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:47:56.230 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:47:56.230 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:47:56.230 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:48:07.934 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:48:07.934 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:48:07.935 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:48:09.601 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:48:09.601 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:48:09.601 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:48:21.236 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:48:21.236 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:48:21.236 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:48:32.939 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:48:32.939 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:48:32.940 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:48:34.607 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:48:34.608 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:48:34.608 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:48:46.247 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:48:46.247 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:48:46.248 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:48:57.944 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:48:57.944 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:48:57.945 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:48:59.615 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:48:59.615 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:48:59.615 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:49:11.255 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:49:11.257 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:49:11.257 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:49:22.947 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:49:22.948 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:49:22.949 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:49:24.619 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:49:24.619 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:49:24.619 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:49:36.263 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:49:36.263 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:49:36.264 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:49:47.952 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:49:47.953 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:49:47.954 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:49:49.625 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:49:49.625 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:49:49.625 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:50:01.276 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:50:01.276 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:50:01.276 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:50:12.957 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:50:12.957 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:50:12.961 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:50:14.632 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:50:14.632 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:50:14.632 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:50:26.281 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:50:26.282 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:50:26.282 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:50:37.965 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:50:37.965 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:50:37.976 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:50:39.638 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:50:39.638 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:50:39.638 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:50:51.288 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:50:51.288 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:50:51.289 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:51:02.978 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:51:02.979 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:51:02.980 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:51:04.642 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:51:04.643 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:51:04.643 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:51:16.298 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:51:16.298 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:51:16.298 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:51:27.983 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:51:27.983 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:51:27.984 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:51:29.648 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:51:29.649 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:51:29.650 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:51:41.305 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:51:41.305 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:51:41.306 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:51:52.986 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:51:52.987 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:51:52.988 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:51:54.657 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:51:54.657 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:51:54.658 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:52:06.315 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:52:06.315 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:52:06.315 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:52:17.993 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:52:17.993 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:52:17.994 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:52:19.665 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:52:19.666 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:52:19.666 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:52:31.319 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:52:31.319 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:52:31.319 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:52:44.675 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:52:44.676 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:52:44.676 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:52:49.363 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:52:49.363 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:52:49.364 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:52:56.324 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:52:56.324 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:52:56.325 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:53:09.681 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:53:09.681 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:53:09.682 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:53:14.366 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:53:14.366 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:53:14.367 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:53:21.333 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:53:21.334 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:53:21.334 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:53:34.690 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:53:34.691 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:53:34.691 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:53:39.372 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:53:39.372 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:53:39.372 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:53:46.341 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:53:46.341 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:53:46.341 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:53:59.700 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:53:59.700 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:53:59.701 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:54:04.375 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:54:04.376 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:54:04.376 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:54:11.346 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:54:11.346 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:54:11.346 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:54:24.708 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:54:24.708 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:54:24.709 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:54:29.382 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:54:29.382 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:54:29.383 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:54:36.356 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:54:36.356 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:54:36.356 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:54:49.717 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:54:49.717 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:54:49.717 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:54:54.386 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:54:54.386 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:54:54.387 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:55:01.362 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:55:01.362 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:55:01.362 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:55:14.722 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:55:14.722 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:55:14.722 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:55:19.392 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:55:19.392 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:55:19.393 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:55:26.372 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:55:26.372 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:55:26.372 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:55:39.730 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:55:39.730 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:55:39.730 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:55:51.380 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:55:51.380 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:55:51.381 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:55:54.396 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:55:54.397 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:55:54.398 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:56:04.734 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:56:04.735 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:56:04.735 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:56:16.388 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:56:16.388 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:56:16.388 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:56:29.401 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:56:29.401 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:56:29.402 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:56:29.740 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:56:29.740 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:56:29.740 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:56:41.394 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:56:41.394 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:56:41.395 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 16:56:54.407 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:56:54.408 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 16:56:54.408 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 16:56:54.745 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 16:56:54.745 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 16:56:54.745 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 19:57:16.050 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 19:57:16.050 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 19:57:16.050 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 20:19:05.213 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 20:19:05.212 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 20:19:05.219 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 20:19:05.219 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 20:19:05.230 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 20:19:05.230 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 20:19:05.870 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 20:19:05.871 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 20:19:05.880 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 20:19:20.449 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 20:19:20.449 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 20:19:20.449 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 20:19:20.451 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 20:19:20.452 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 20:19:20.453 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 20:19:21.099 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 20:19:21.099 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 20:19:21.101 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 20:19:45.459 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 20:19:45.459 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 20:19:45.459 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 20:19:45.459 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 20:19:45.460 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 20:19:45.460 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 20:19:46.108 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 20:19:46.109 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 20:19:46.111 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3
+2018-08-07 20:20:10.473 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 20:20:10.473 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 20:20:10.473 [nioEventLoopGroup-3-1] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 20:20:10.477 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 20:20:10.478 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=1
+2018-08-07 20:20:10.478 [nioEventLoopGroup-3-7] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=1
+2018-08-07 20:20:11.118 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame opCode=1
+2018-08-07 20:20:11.118 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder - Decoding WebSocket Frame length=3
+2018-08-07 20:20:11.119 [nioEventLoopGroup-3-4] DEBUG io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=1 length=3

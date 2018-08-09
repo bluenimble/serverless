@@ -1,11 +1,11 @@
 package com.bluenimble.platform.servers.broker.listeners.auth;
 
-import java.util.Arrays;
-
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.servers.broker.Peer;
 import com.bluenimble.platform.servers.broker.listeners.AbstractListener;
+import com.bluenimble.platform.servers.broker.utils.PeerUtils;
 import com.corundumstudio.socketio.AckRequest;
 import com.corundumstudio.socketio.AuthorizationListener;
 import com.corundumstudio.socketio.HandshakeData;
@@ -13,10 +13,13 @@ import com.corundumstudio.socketio.SocketIOClient;
 
 public class SimpleAuthorizationListener extends AbstractListener implements AuthorizationListener {
 	
+	interface Params {
+		String Token = "token";
+	}
+	
 	interface Spec {
 		String Peers 	= "peers";
 		String Key 		= "key";
-		String Type		= "type";
 	}
 	
 	private JsonObject spec;
@@ -29,7 +32,7 @@ public class SimpleAuthorizationListener extends AbstractListener implements Aut
 	@Override
 	public boolean isAuthorized (HandshakeData data) {
 		
-		String token = data.getSingleUrlParam (AbstractListener.Spec.Peer.Token);
+		String token = data.getSingleUrlParam (Params.Token);
 		
 		if (Lang.isNullOrEmpty(token)) {
 			return false;
@@ -53,12 +56,12 @@ public class SimpleAuthorizationListener extends AbstractListener implements Aut
 			return false;
 		}
 		
-		String type = Json.getString (oPeer, Spec.Type);
+		String type = Json.getString (oPeer, Peer.Spec.Type);
 		if (Lang.isNullOrEmpty (type)) {
-			type = PeerType.consumer.name ();
+			type = Peer.Type.consumer.name ();
 		}
 		
-		data.getUrlParams ().put (AbstractListener.Spec.Peer.Type, Arrays.asList (type));
+		data.getUrlParams ().put (Peer.Key, PeerUtils.toList (peer, oPeer));
 		
 		return key.equals (Json.getString (oPeer, Spec.Key));
 	}

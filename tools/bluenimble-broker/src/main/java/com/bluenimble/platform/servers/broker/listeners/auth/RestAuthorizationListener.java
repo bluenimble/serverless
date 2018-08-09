@@ -1,7 +1,6 @@
 package com.bluenimble.platform.servers.broker.listeners.auth;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
@@ -22,7 +21,9 @@ import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.ApiContentTypes;
 import com.bluenimble.platform.api.ApiHeaders;
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.servers.broker.Peer;
 import com.bluenimble.platform.servers.broker.listeners.AbstractListener;
+import com.bluenimble.platform.servers.broker.utils.PeerUtils;
 import com.corundumstudio.socketio.AckRequest;
 import com.corundumstudio.socketio.AuthorizationListener;
 import com.corundumstudio.socketio.HandshakeData;
@@ -31,6 +32,10 @@ import com.corundumstudio.socketio.SocketIOClient;
 public class RestAuthorizationListener extends AbstractListener implements AuthorizationListener {
 	
 	private static final Logger logger = LoggerFactory.getLogger (RestAuthorizationListener.class);
+	
+	interface Params {
+		String Token = "token";
+	}
 	
 	interface Spec {
 		String Endpoint 		= "endpoint";
@@ -68,7 +73,7 @@ public class RestAuthorizationListener extends AbstractListener implements Autho
 		
 		String type = getProperty (Spec.Type, AuthType.Basic);
 		
-		String token = data.getSingleUrlParam (AbstractListener.Spec.Peer.Token);
+		String token = data.getSingleUrlParam (Params.Token);
 		if (Lang.isNullOrEmpty(token)) {
 			return false;
 		}
@@ -94,7 +99,7 @@ public class RestAuthorizationListener extends AbstractListener implements Autho
 			logger.info ("Peer found in master peers");
 			boolean valid = key.equals (Json.find (oPeers, peer, Spec.Key));
 			if (valid) {
-				data.getUrlParams ().put (AbstractListener.Spec.Peer.Type, Arrays.asList ((String)Json.find (oPeers, peer, Spec.Type)));
+				data.getUrlParams ().put (Peer.Key, PeerUtils.toList (peer, Json.getObject (oPeers, peer)));
 			}
 			return valid;
 		}
@@ -139,7 +144,7 @@ public class RestAuthorizationListener extends AbstractListener implements Autho
 				
 				JsonObject rPeer = new JsonObject (responseText);
 				
-				data.getUrlParams ().put (AbstractListener.Spec.Peer.Type, Arrays.asList (Json.getString (rPeer, Spec.Type)));
+				data.getUrlParams ().put (Peer.Key, PeerUtils.toList (peer, rPeer));
 				
 			}
 		} catch (Exception ex) {

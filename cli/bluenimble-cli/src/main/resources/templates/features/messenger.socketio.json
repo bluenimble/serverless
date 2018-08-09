@@ -1,0 +1,11 @@
+{
+	
+	"feature": "messenger",
+	"provider": "messenger.socketio",
+
+	"spec": {
+		"uri": "<?>your socketio server uri", 
+		"authField": "<?>the auth field. default to 'token'"
+	}
+	
+}

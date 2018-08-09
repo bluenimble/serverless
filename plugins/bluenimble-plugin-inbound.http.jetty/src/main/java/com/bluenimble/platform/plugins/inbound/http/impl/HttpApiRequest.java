@@ -220,6 +220,9 @@ public class HttpApiRequest extends AbstractApiRequest {
 				}				
 				value = fields == null ? null : fields.get (name);
 				if (value == null) {
+					if (proxy == null) {
+						return null;
+					}
 					value = proxy.getParameter (name);
 				}
 				return value;

@@ -3,7 +3,7 @@
 	"auth": {
 		"class": "com.bluenimble.platform.servers.broker.listeners.auth.SimpleAuthorizationListener",
 		"peers": {
-			"admin": {
+			"peer1": {
 				"key": "key1", "type": "producer"
 			},
 			"peer2": {

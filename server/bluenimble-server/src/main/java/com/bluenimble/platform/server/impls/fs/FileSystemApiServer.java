@@ -36,10 +36,10 @@ import com.bluenimble.platform.api.ApiRequestVisitor;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.ApiSpace.Spec;
 import com.bluenimble.platform.api.ApiStatus;
-import com.bluenimble.platform.api.impls.FileApiStreamSource;
 import com.bluenimble.platform.api.impls.ApiSpaceImpl;
 import com.bluenimble.platform.api.impls.ApiSpaceImpl.Spaces;
 import com.bluenimble.platform.api.impls.DefaultApiRequestVisitor;
+import com.bluenimble.platform.api.impls.FileApiStreamSource;
 import com.bluenimble.platform.api.impls.media.DefaultApiMediaProcessorRegistry;
 import com.bluenimble.platform.api.media.ApiMediaProcessorRegistry;
 import com.bluenimble.platform.api.security.ApiRequestSigner;
@@ -61,7 +61,6 @@ import com.bluenimble.platform.server.maps.MapProvider;
 import com.bluenimble.platform.server.maps.impls.DefaultMapProvider;
 import com.bluenimble.platform.server.security.impls.DefaultApiRequestSigner;
 import com.bluenimble.platform.server.utils.ConfigKeys;
-import com.bluenimble.platform.server.utils.ConfigKeys.Folders;
 import com.bluenimble.platform.server.utils.InstallUtils;
 import com.bluenimble.platform.templating.SimpleVariableResolver;
 import com.bluenimble.platform.templating.impls.DefaultExpressionCompiler;
@@ -289,7 +288,7 @@ public class FileSystemApiServer extends AbstractApiServer {
 				oSpace = Json.load (fDescriptor);
 				oSpace = resolve (
 					oSpace, 
-					InstallUtils.varsMapping (ResolverPrefix.This, Folders.Spaces, Json.getString (oSpace, ApiSpace.Spec.Namespace))
+					InstallUtils.varsMapping (Resolver.Prefix.This, Resolver.Namespace.Spaces, Json.getString (oSpace, ApiSpace.Spec.Namespace))
 				);
 			} catch (Exception ex) {
 				failed.put ("unnable to load space '" + spaceHome.getName () + "'", ex);
@@ -472,11 +471,11 @@ public class FileSystemApiServer extends AbstractApiServer {
 				if (Lang.isNullOrEmpty (namespace)) {
 					return null;
 				}
-				if (namespace.equals (ResolverPrefix.Server)) {
+				if (namespace.equals (Resolver.Prefix.Server)) {
 					return Json.find (descriptor, property);
-				} else if (namespace.equals (ResolverPrefix.Sys)) {
+				} else if (namespace.equals (Resolver.Prefix.Sys)) {
 					return System.getProperty (Lang.join (property, Lang.DOT));
-				} else if (namespace.equals (ResolverPrefix.Vars)) {
+				} else if (namespace.equals (Resolver.Prefix.Vars)) {
 					if (variables == null) {
 						return null;
 					}

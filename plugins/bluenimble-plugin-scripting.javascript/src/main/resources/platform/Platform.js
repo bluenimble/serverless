@@ -74,6 +74,8 @@ var JC_Contains_Filter 		= Java.type ('com.bluenimble.platform.storage.impls.fil
 var JC_Messenger 			= Java.type ('com.bluenimble.platform.messaging.Messenger');
 var JC_Messenger_Sender 	= Java.type ('com.bluenimble.platform.messaging.impls.JsonSender');
 var JC_Messenger_Recipient 	= Java.type ('com.bluenimble.platform.messaging.impls.JsonRecipient');
+var JC_Messenger_Callback	= Java.type ('com.bluenimble.platform.messaging.Callback');
+var JC_Sender_Callbacks		= Java.type ('com.bluenimble.platform.messaging.Sender.Callbacks');
 
 var JC_Remote_Callback		= Java.type ('com.bluenimble.platform.remote.Remote.Callback');
 

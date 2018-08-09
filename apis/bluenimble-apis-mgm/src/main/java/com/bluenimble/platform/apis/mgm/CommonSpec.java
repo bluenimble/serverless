@@ -18,6 +18,11 @@ package com.bluenimble.platform.apis.mgm;
 
 public interface CommonSpec {
 	
+	String DefaultEndpointTpl	
+						= "localhost/%s/%s";
+	
+	String EndpointTpl	= "endpoint";
+	
 	String Space 		= "space";
 	String Api 			= "api";
 

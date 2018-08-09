@@ -61,6 +61,13 @@
 				"storage": "default",
                 "multiTenant": "false"
 			}
-		}
+		},
+		"rewrite": {
+            "path": {
+                "rules": [{
+                    "if": "ends: /tus", "negate": "true", "methods": ["OPTIONS"], "then": { "bypass": "true" }
+                }]
+            }
+        }
 	}
 }

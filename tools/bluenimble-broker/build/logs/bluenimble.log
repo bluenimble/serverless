@@ -1,0 +1,8 @@
+2018-08-07T11:37:40,540 INFO  [] - Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2018-08-07T11:37:40,759 INFO  [] - SocketIO server started at port: 9696
+2018-08-07T11:39:29,782 INFO  [] - Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2018-08-07T11:39:29,961 INFO  [] - SocketIO server started at port: 9696
+2018-08-07T13:17:33,673 INFO  [] - Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2018-08-07T13:17:34,045 INFO  [] - SocketIO server started at port: 9696
+2018-08-07T13:31:51,744 INFO  [] - Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2018-08-07T13:31:51,927 INFO  [] - SocketIO server started at port: 9696

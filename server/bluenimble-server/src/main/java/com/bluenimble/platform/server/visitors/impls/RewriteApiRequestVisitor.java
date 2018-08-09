@@ -30,12 +30,15 @@ import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.server.ApiServer;
 import com.bluenimble.platform.server.visitors.impls.actions.AppendAction;
+import com.bluenimble.platform.server.visitors.impls.actions.BypassAction;
 import com.bluenimble.platform.server.visitors.impls.actions.PrependAction;
 import com.bluenimble.platform.server.visitors.impls.actions.RejectAction;
 import com.bluenimble.platform.server.visitors.impls.actions.ReplaceAction;
 import com.bluenimble.platform.server.visitors.impls.actions.RewriteAction;
 import com.bluenimble.platform.server.visitors.impls.checkers.ContainsConditionChecker;
 import com.bluenimble.platform.server.visitors.impls.checkers.EndsConditionChecker;
+import com.bluenimble.platform.server.visitors.impls.checkers.IsConditionChecker;
+import com.bluenimble.platform.server.visitors.impls.checkers.IsntConditionChecker;
 import com.bluenimble.platform.server.visitors.impls.checkers.RegExConditionChecker;
 import com.bluenimble.platform.server.visitors.impls.checkers.RewriteConditionChecker;
 import com.bluenimble.platform.server.visitors.impls.checkers.StartsConditionChecker;
@@ -46,7 +49,7 @@ import com.bluenimble.platform.server.visitors.impls.checkers.StartsConditionChe
         "rewrite": {
             "path": {
                 "rules": [{
-                    "if": "contains: /uber-v1", "then": { "replace": "/uber" }
+                    "if": "contains: /uber-v1", "methods": ["OPTIONS"], "then": { "replace": "/uber" }
                 }]
             }
         }
@@ -65,7 +68,12 @@ public class RewriteApiRequestVisitor extends SelectiveApiRequestVisitor {
 
 		String If 		= "if";
 		String Then 	= "then";
+		String Negate 	= "negate";
+		String Methods 	= "methods";
+		
 		interface Checkers {
+			String Isnt 	= "isnt";
+			String Is 		= "is";
 			String Starts 	= "starts";
 			String Ends 	= "ends";
 			String Contains = "contains";
@@ -76,11 +84,14 @@ public class RewriteApiRequestVisitor extends SelectiveApiRequestVisitor {
 			String Prepend 	= "prepend";
 			String Replace 	= "replace";
 			String Reject 	= "reject";
+			String Bypass	= "bypass";
 		}
 	}
 	
 	private static final Map<String, RewriteConditionChecker> Checkers = new HashMap<String, RewriteConditionChecker> ();
 	static {
+		Checkers.put (Spec.Checkers.Is, new IsConditionChecker ());
+		Checkers.put (Spec.Checkers.Isnt, new IsntConditionChecker ());
 		Checkers.put (Spec.Checkers.Starts, new StartsConditionChecker ());
 		Checkers.put (Spec.Checkers.Ends, new EndsConditionChecker ());
 		Checkers.put (Spec.Checkers.Contains, new ContainsConditionChecker ());
@@ -93,6 +104,7 @@ public class RewriteApiRequestVisitor extends SelectiveApiRequestVisitor {
 		Actions.put (Spec.Actions.Prepend, new PrependAction ());
 		Actions.put (Spec.Actions.Replace, new ReplaceAction ());
 		Actions.put (Spec.Actions.Reject, new RejectAction ());
+		Actions.put (Spec.Actions.Bypass, new BypassAction ());
 	}
 	
 	protected ApiServer server;
@@ -197,6 +209,16 @@ public class RewriteApiRequestVisitor extends SelectiveApiRequestVisitor {
 	
 	private String [] applyRule (ApiRequest request, Placeholder placeholder, JsonObject rule, String value, String [] aTarget) {
 		
+		// check methods
+		JsonArray methods = Json.getArray (rule, Spec.Methods);
+		
+		if (!Json.isNullOrEmpty (methods)) {
+			if (!methods.contains (request.getVerb ().name ())) {
+				return aTarget;
+			}
+		}
+		
+		// check condition
 		String condition = Json.getString (rule, Spec.If);
 		
 		server.tracer ().log (Level.Info, "\tApply rule with condition {0}", condition);
@@ -210,9 +232,16 @@ public class RewriteApiRequestVisitor extends SelectiveApiRequestVisitor {
 			if (indexOfColon > 0) {
 				String checkerId 	= condition.substring (0, indexOfColon).trim ();
 				conditionValue 		= condition.substring (indexOfColon + 1).trim ();
+				
 				RewriteConditionChecker checker = Checkers.get (checkerId);
 				server.tracer ().log (Level.Info, "\tRule checker {0}", checker);
+				
 				apply = (checker == null) || checker.check (value, conditionValue);
+				
+				if (Json.getBoolean (rule, Spec.Negate, false)) {
+					apply = !apply;
+				}
+				
 			}
 		}
 		

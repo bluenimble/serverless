@@ -315,7 +315,13 @@ public class JettyPlugin extends AbstractPlugin {
 				@Override
 				protected void doOptions (HttpServletRequest req, HttpServletResponse resp)
 						throws ServletException, IOException {
-					execute (req, resp);
+					
+					ApiRequest apiRequest = execute (req, resp);
+					
+					if (apiRequest.get (ApiRequest.Bypass) != null) {
+						super.doOptions (req, resp);
+					}
+					
 				}
 				
 				@Override
@@ -333,13 +339,18 @@ public class JettyPlugin extends AbstractPlugin {
 			        }
 			    }
 
-				protected void execute (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+				protected ApiRequest execute (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 	        		try {
+	        			
 	        			ApiRequest request = new HttpApiRequest (req, JettyPlugin.this);
 	        			request.getNode ().set (ApiRequest.Fields.Node.Id, server.id ());
 	        			request.getNode ().set (ApiRequest.Fields.Node.Type, server.type ());
 	        			request.getNode ().set (ApiRequest.Fields.Node.Version, server.version ());
+	        			
 	        			server.execute (request, new HttpApiResponse (request.getNode (), request.getId (), resp), CodeExecutor.Mode.Async);
+	        			
+	        			return request;
+	        			
 	        		} catch (Exception e) {
 	        			throw new ServletException (e.getMessage (), e);
 	        		}
@@ -354,6 +365,7 @@ public class JettyPlugin extends AbstractPlugin {
         holder.setName ("CORS");
         holder.setInitParameter ("allowedOrigins", Json.getString (cors, Cors.Origins, Lang.STAR));
         holder.setInitParameter ("allowedMethods", Json.getString (cors, Cors.Methods, "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS"));
+        
         // allow headers
         String sAllowedHeaders = Lang.STAR;
         JsonArray allowedHeaders = (JsonArray)Json.find (cors, Cors.Headers, Cors.Allow);

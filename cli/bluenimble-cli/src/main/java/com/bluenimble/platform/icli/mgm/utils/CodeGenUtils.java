@@ -225,7 +225,7 @@ public class CodeGenUtils {
 		} else if (model != null && model.startsWith (Lang.SLASH)) {
 			int indexOfSlash = model.lastIndexOf (Lang.SLASH);
 			if (indexOfSlash > 0) {
-				path = model.substring (1, indexOfSlash);
+				path = model.substring (0, indexOfSlash);
 			} else {
 				path = Lang.BLANK;
 			} 

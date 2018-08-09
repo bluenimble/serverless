@@ -71,11 +71,18 @@ public interface ApiServer extends Traceable, Manageable {
 		String Recyclables 	= "recyclables";
 	}
 	
-	interface ResolverPrefix {
-		String Sys 			= "sys";
-		String Server 		= "server";
-		String Vars 		= "vars";
-		String This 		= "this";
+	interface Resolver {
+		interface Namespace {
+			String Plugins 		= "plugins";
+			String Spaces 		= "spaces";
+			String Apis 		= "apis";
+		}
+		interface Prefix {
+			String Sys 			= "sys";
+			String Server 		= "server";
+			String Vars 		= "vars";
+			String This 		= "this";
+		}
 	}
 	
 	interface EventSubject {
