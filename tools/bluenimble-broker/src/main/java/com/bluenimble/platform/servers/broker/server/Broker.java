@@ -4,14 +4,6 @@ import java.io.Serializable;
 
 public interface Broker extends Serializable {
 
-	enum Events {
-		join,
-		leave,
-		publish,
-		message,
-		error
-	}
-	
 	interface Spec {
 		String Host 					= "host";
 		String Port 					= "port";
@@ -51,14 +43,14 @@ public interface Broker extends Serializable {
 			String Password				= "password";
 		}
 		
-		interface Auth {
-			String Class				= "class";
-		}
-		
+		String Namespaces  				= "namespaces";
+		String Auths  					= "auths";
+		String Listeners  				= "listeners";
+		String AccessibleBy  			= "accessibleBy";
 		
 	}
 
-	void start 	();
+	void start 	() throws BrokerException;
 	void stop 	();
 	
 }

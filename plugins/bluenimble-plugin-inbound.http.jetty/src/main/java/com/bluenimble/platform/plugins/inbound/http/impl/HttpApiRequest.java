@@ -128,7 +128,16 @@ public class HttpApiRequest extends AbstractApiRequest {
 		
 		String contentType = proxy.getContentType ();
 		
-		if (contentType != null && !NonPayloadTypes.contains (contentType)) {
+		if (contentType == null) {
+			return;
+		}
+		
+		int indexOfSemiColon = contentType.indexOf (Lang.SEMICOLON);
+		if (indexOfSemiColon > 0) {
+			contentType = contentType.substring (0, indexOfSemiColon);
+		}
+		
+		if (!NonPayloadTypes.contains (contentType)) {
 			ApiRequestBodyReader reader = plugin.getReader (contentType.toLowerCase ());
 			if (reader == null) {
 				reader = plugin.getReader (ApiContentTypes.Stream);

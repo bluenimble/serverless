@@ -936,20 +936,15 @@ public class Lang {
 		return matcher.find ();
 	}
 	
-	public static void setTimeout(Runnable runnable, int delay){
+	public static void setTimeout (Runnable runnable, int delay){
 	    new Thread(() -> {
 	        try {
-	            Thread.sleep(delay);
-	            runnable.run();
-	        }
-	        catch (Exception e){
+	            Thread.sleep (delay);
+	            runnable.run ();
+	        } catch (Exception e){
 	            // Ignore
 	        }
 	    }).start();
 	}
-	
-	public static void main (String [] args) {
-		System.out.println (Lang.wmatches ("/tus**", "/tus/*"));
-	} 
 	
 }

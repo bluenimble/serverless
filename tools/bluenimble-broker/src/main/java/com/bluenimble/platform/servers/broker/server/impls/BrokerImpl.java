@@ -2,27 +2,47 @@ package com.bluenimble.platform.servers.broker.server.impls;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.bluenimble.platform.Json;
+import com.bluenimble.platform.Lang;
+import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
-import com.bluenimble.platform.servers.broker.listeners.OnConnectListener;
-import com.bluenimble.platform.servers.broker.listeners.OnJoinListener;
-import com.bluenimble.platform.servers.broker.listeners.OnLeaveListener;
-import com.bluenimble.platform.servers.broker.listeners.OnPublishListener;
+import com.bluenimble.platform.reflect.BeanUtils;
+import com.bluenimble.platform.servers.broker.listeners.EventListener;
+import com.bluenimble.platform.servers.broker.security.SelectiveAuthorizationListener;
 import com.bluenimble.platform.servers.broker.server.Broker;
+import com.bluenimble.platform.servers.broker.server.BrokerException;
 import com.corundumstudio.socketio.AuthorizationListener;
 import com.corundumstudio.socketio.Configuration;
 import com.corundumstudio.socketio.SocketConfig;
+import com.corundumstudio.socketio.SocketIONamespace;
 import com.corundumstudio.socketio.SocketIOServer;
+import com.corundumstudio.socketio.listener.DataListener;
 
 public class BrokerImpl implements Broker {
 
 	private static final long serialVersionUID = 5738360161781372247L;
 	
-	private Configuration 	config;
-	private SocketIOServer 	server;
+	private static final Logger logger = LoggerFactory.getLogger (BrokerImpl.class);
+	
+	private SelectiveAuthorizationListener 	authListener;
+	
+	private JsonObject 						spec;
+	
+	private Configuration 					config;
+	private SocketIOServer 					server;
 	
 	public BrokerImpl (JsonObject spec) throws Exception {
+		
+		this.spec = spec;
 		
 		config = new Configuration ();
 		config.setHostname (Json.getString (spec, Spec.Host));
@@ -50,7 +70,7 @@ public class BrokerImpl implements Broker {
 		
 		JsonObject ssl = Json.getObject (spec, Spec.Ssl.class.getSimpleName ().toLowerCase ());
 		if (!Json.isNullOrEmpty (ssl)) {
-			config.setSSLProtocol (Json.getString (ssl, Spec.Ssl.Protocol, "TLSv1"));
+			config.setSSLProtocol (Json.getString (ssl, Spec.Ssl.Protocol, "TLSv12"));
 			config.setKeyStore (new FileInputStream (new File (Json.getString (ssl, Spec.Ssl.Store))));
 			config.setKeyStoreFormat (Json.getString (ssl, Spec.Ssl.Format, "JKS"));
 			config.setKeyStorePassword (Json.getString (ssl, Spec.Ssl.Password));
@@ -66,35 +86,23 @@ public class BrokerImpl implements Broker {
 			Runtime.getRuntime ().addShutdownHook (new Thread (server::stop));
 		}
 		
-		if (!spec.containsKey (Spec.Auth.class.getSimpleName ().toLowerCase ())) {
-			return;
-		}
-		
-		JsonObject oAuth = Json.getObject (spec, Spec.Auth.class.getSimpleName ().toLowerCase ());
-		if (Json.isNullOrEmpty (oAuth)) {
-			return;
-		}
-		
-		String className = Json.getString (oAuth, Spec.Auth.Class);
-		
-		AuthorizationListener authListener = (AuthorizationListener)Broker.class.getClassLoader ().loadClass (className)
-			.getConstructor (new Class [] { JsonObject.class }).newInstance (new Object [] { oAuth });
+		authListener = new SelectiveAuthorizationListener (config.getContext ());
 		
 		config.setAuthorizationListener (authListener);
 		
 	}
 	
 	@Override
-	public void start () {
+	public void start () throws BrokerException {
 
 		server = new SocketIOServer (config);
 		
-		server.addEventListener (Events.join.name (), JsonObject.class, new OnJoinListener (server));
-		server.addEventListener (Events.leave.name (), JsonObject.class, new OnLeaveListener (server));
-		server.addEventListener (Events.publish.name (), JsonObject.class, new OnPublishListener (server));
-
-		// timeout to send auth event
-		server.addConnectListener (new OnConnectListener (server));
+		// load namespaces
+		try {
+			load ();
+		} catch (Exception ex) {
+			throw new BrokerException (ex.getMessage (), ex);
+		}
 
 		server.start ();
 		
@@ -103,6 +111,131 @@ public class BrokerImpl implements Broker {
 	@Override
 	public void stop () {
 		server.stop ();
+	}
+	
+	private void load () throws Exception {
+		
+		JsonObject namespaces 	= Json.getObject (spec, Spec.Namespaces);
+		JsonObject auths 		= Json.getObject (spec, Spec.Auths);
+		
+		if (Json.isNullOrEmpty (namespaces)) {
+			return;
+		}
+		
+		logger.info ("Load Namespaces");
+		
+		Map<String, AuthorizationListener> authListeners = loadAuths (auths);
+		
+		Iterator<String> nsKeys = namespaces.keys ();
+		while (nsKeys.hasNext ()) {
+			String name = nsKeys.next ();
+			
+			JsonObject oNs = Json.getObject (namespaces, name);
+			
+			loadNamespace (name, oNs);
+			
+			JsonArray nsAuths = Json.getArray (oNs, Spec.Auths);
+			if (Json.isNullOrEmpty (nsAuths)) {
+				continue;
+			}
+			for (int i = 0; i < nsAuths.count (); i++) {
+				authListener.addListener (name, authListeners.get (nsAuths.get (i)));
+			}
+		}
+		
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void loadNamespace (String name, JsonObject oNs) throws Exception {
+		
+		logger.info ("Load Namespace: " + name);
+		
+		JsonObject oListeners = Json.getObject (oNs, Spec.Listeners);
+		if (Json.isNullOrEmpty (oListeners)) {
+			return;
+		}
+		
+		if (!name.startsWith (Lang.SLASH)) {
+			name = Lang.SLASH + name;
+		}
+		
+		SocketIONamespace namespace = null;
+		
+		boolean isGlobal = name.equals (Lang.SLASH);
+		
+		if (!isGlobal) {
+			namespace = server.addNamespace (name);
+		}
+		
+		logger.info ("\tNamespace Instance: " + namespace);
+		
+		// add connect/disconnect listeners
+		if (isGlobal) {
+			server.addConnectListener (new OnConnectListener (server, null));
+			server.addDisconnectListener (new OnDisconnectListener (server, null));
+		} else {
+			namespace.addConnectListener (new OnConnectListener (null, namespace));
+			namespace.addDisconnectListener (new OnDisconnectListener (null, namespace));
+		}
+		
+		Iterator<String> lstKeys = oListeners.keys ();
+		while (lstKeys.hasNext ()) {
+			String event = lstKeys.next ();
+			
+			logger.info ("Found Event: " + event);
+
+			JsonObject oListener = Json.getObject (oListeners, event);
+			
+			Set<String> accessibleBy = null;
+			JsonArray aAccessibleBy = Json.getArray (oListener, Spec.AccessibleBy);
+			if (!Json.isNullOrEmpty (aAccessibleBy)) {
+				accessibleBy = new HashSet<String> ();
+				for (Object o : aAccessibleBy) {
+					accessibleBy.add (String.valueOf (o));
+				}
+			}
+			
+			EventListener listener = (EventListener)BeanUtils.create (oListener);
+			
+			logger.info ("\tEvent Listener: " + listener);
+			
+			Class<?> targetCls = isGlobal ? SocketIOServer.class : SocketIONamespace.class;
+
+			targetCls.getMethod (
+				"addEventListener", 
+				new Class [] { String.class, Class.class, DataListener.class }
+			).invoke (
+				isGlobal ? server : namespace, 
+				new Object [] { 
+					event, 
+					listener.dataType (), 
+					new DelegateListener (listener, accessibleBy)
+				}
+			);
+			logger.info ("\tListener " + event + " added to namespace: " + name);
+			
+		}
+		
+	}
+	
+	private Map<String, AuthorizationListener> loadAuths (JsonObject auths) throws Exception {
+		
+		Map<String, AuthorizationListener> listeners = new HashMap<String, AuthorizationListener> ();
+		
+		if (Json.isNullOrEmpty (auths)) {
+			return listeners;
+		}
+		
+		Iterator<String> authKeys = auths.keys ();
+		while (authKeys.hasNext ()) {
+			String auth = authKeys.next ();
+			JsonObject oAuth = auths.getObject (auth);
+			
+			listeners.put (auth, (AuthorizationListener)BeanUtils.create (oAuth));
+		}
+		
+		return listeners;
+		
 	}
 	
 }

@@ -29,6 +29,7 @@ import com.bluenimble.platform.api.ApiServiceExecutionException;
 import com.bluenimble.platform.api.ApiVerb;
 import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
 import com.bluenimble.platform.api.security.ApiConsumer;
+import com.bluenimble.platform.api.tracing.Tracer.Level;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.protocols.tus.RecyclableTusService;
 import com.bluenimble.platform.plugins.protocols.tus.TusProtocolPlugin;
@@ -72,6 +73,9 @@ public class ProcessTusSpi extends AbstractApiServiceSpi {
 		}
 		
 		String tenant = null;
+		
+		api.tracer ().log (Level.Info, "tenant key         {0}", tsr.tenantKey ());
+		api.tracer ().log (Level.Info, "tenant placeholder {0}", tsr.tenantPlaceholder ());
 		
 		switch (tsr.tenantPlaceholder ()) {
 			case consumer:

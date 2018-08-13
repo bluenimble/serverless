@@ -1,0 +1,26 @@
+{
+	    "verb": "get",
+	"endpoint": "/::path",
+	
+	"spec": {
+		"fields": {
+			"path": { }
+		}
+	},
+	
+	"security": {
+		"enabled": "false"
+	},
+	
+	"media": {
+		"*/*": {
+			"processor": "stream"
+		}
+	},
+	
+	"spi": {
+		"class": "core:ResourceSpi",
+		"folder": "app"
+	} 
+	
+}

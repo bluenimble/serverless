@@ -1,0 +1,23 @@
+{
+	"namespace": "tracing.socketio",
+	"name": "Tracing Implementation - SocketIO",
+	
+	"spi": {
+		"class": "com.bluenimble.platform.plugins.tracing.socketio.SocketIoTracerPlugin",
+		"properties": {
+			"version": "[version]",
+			"vendor": {
+				"name": "BlueNimble, Inc",
+				"links": [{
+					"Read More": "https://www.bluenimble.com"
+				}]
+			},
+			"initOnInstall": "true",
+			
+			"weight": "1000",
+			
+			"channelPrefix": "[ this.channelPrefix | 'logs/' ]"
+		}
+	}
+	
+}	

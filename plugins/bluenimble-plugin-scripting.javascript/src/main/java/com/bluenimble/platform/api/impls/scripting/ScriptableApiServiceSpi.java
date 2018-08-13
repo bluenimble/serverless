@@ -150,7 +150,10 @@ public class ScriptableApiServiceSpi implements ApiServiceSpi {
 
 		
 		SpecAndSpiPair serviceHelper = (SpecAndSpiPair)service.getHelper (SpecAndSpiPair.Name);
-
+		if (serviceHelper == null) {
+			return;
+		}
+		
 		Object spi = serviceHelper.spi ();
 		if (spi == null) {
 			return;

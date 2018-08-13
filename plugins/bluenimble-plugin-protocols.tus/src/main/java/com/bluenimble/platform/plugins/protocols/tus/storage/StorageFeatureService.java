@@ -127,19 +127,21 @@ public class StorageFeatureService implements UploadStorageService {
         	Folder root = folder ();
         	
         	if (multiTenant && !Lang.isNullOrEmpty (ownerKey)) {
+            	Folder tenantFolder = null;
         		try {
-            		root = (Folder)root.get (ownerKey);
+        			tenantFolder = (Folder)root.get (ownerKey);
         		} catch (StorageException sex) {
         			// ignore
         		}
-        		if (root == null) {
-        			root = folder ().add (ownerKey, false);
+        		if (tenantFolder == null) {
+        			tenantFolder = root.add (ownerKey, false);
         		}
+        		root = tenantFolder;
         	}
         	
         	Folder uploadFolder = root.add (id.toString (), false);
             
-            // Create an empty file to storage the bytes of this upload
+            // Create an empty file to store the bytes of this upload
             uploadFolder.add (null, dataFile, false);
 
             //Set starting values

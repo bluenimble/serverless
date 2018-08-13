@@ -10,10 +10,6 @@
 		}
 	},
 	
-	"security": {
-		"enabled": "false"
-	},
-	
 	"meta": {
 		"tags": ["[[Models]]", "Create"]
 	},

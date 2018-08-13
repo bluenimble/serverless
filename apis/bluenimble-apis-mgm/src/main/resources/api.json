@@ -21,7 +21,7 @@
 	},
 	
 	"runtime":{
-		"endpoint": "[ this.apis.sys.mgm | 'localhost:9090/%s/%s' ]"
+		"endpoint": "[ this.endpoint | 'localhost:9090/%s/%s' ]"
 	},
 	
 	"spi": {

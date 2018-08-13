@@ -250,7 +250,7 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 			char sc = s.charAt (i);
 			if (ConsumerScope == sc) {
 				if (defaultValue != null) {
-					value = consumer.get (defaultValue.toString ());
+					value = getFromConsumer (consumer, defaultValue.toString ());
 				}
 				continue;
 			}
@@ -282,6 +282,26 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 			return false;
 		}
 		return !validators.containsKey (type.toLowerCase ());
+	}
+	
+	private Object getFromConsumer (ApiConsumer consumer, String property) {
+		if (Lang.isNullOrEmpty (property)) {
+			return null;
+		}
+		
+		String [] accessors = Lang.split (property, Lang.DOT);
+		
+		Object value = consumer.get (accessors [0]);
+
+		if (accessors.length == 1) {
+			return value;
+		}
+		
+		if (!(value instanceof JsonObject)) {
+			return null;
+		}
+		
+		return Json.find ((JsonObject)value, Lang.moveLeft (accessors, 1));
 	}
 
 }

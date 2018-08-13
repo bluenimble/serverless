@@ -17,7 +17,6 @@
 package com.bluenimble.platform.server.security.impls;
 
 import com.bluenimble.platform.Json;
-import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.scripting.Scriptable;
@@ -44,7 +43,7 @@ public class DefaultApiConsumer implements ApiConsumer {
 
 	@Override
 	public Object get (String property) {
-		return data.find (property, Lang.DOT);
+		return data.get (property);
 	}
 
 	@Override

@@ -406,5 +406,9 @@ public class JsonArray extends JsonAbstractEntity implements List<Object> {
 		}
 		return values.toArray (a);
 	}
+	
+	public List<Object> toList () {
+		return values;
+	}
 
 }

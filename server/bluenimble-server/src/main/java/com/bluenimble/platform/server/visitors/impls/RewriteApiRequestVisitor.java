@@ -128,14 +128,14 @@ public class RewriteApiRequestVisitor extends SelectiveApiRequestVisitor {
 	@Override
 	protected String [] path (ApiRequest request, String [] path) {
 		
-		server.tracer ().log (Level.Info, "Rewrite with Res.Value {0}", Lang.join (path, Lang.SLASH));
+		//server.tracer ().log (Level.Info, "Rewrite with Res.Value {0}", Lang.join (path, Lang.SLASH));
 		
 		JsonObject oRewrite = pickRewrite (request, Spec.Path);
 		if (oRewrite == null) {
 			return path;
 		}
 		
-		server.tracer ().log (Level.Info, "Rewrite Spec {0}", oRewrite);
+		//server.tracer ().log (Level.Info, "Rewrite Spec {0}", oRewrite);
 
 		// process rules
 		String [] rewriten = applyRewrite (request, Placeholder.path, oRewrite, request.getPath (), path);
@@ -149,7 +149,7 @@ public class RewriteApiRequestVisitor extends SelectiveApiRequestVisitor {
 	private JsonObject pickRewrite (ApiRequest request, String target) {
 		String spaceNs = request.getSpace ();
 		
-		server.tracer ().log (Level.Info, "Space Ns {0}", spaceNs);
+		//server.tracer ().log (Level.Info, "Space Ns {0}", spaceNs);
 		
 		if (Lang.isNullOrEmpty (spaceNs)) {
 			return (JsonObject)Json.find (spec, Spec.Rewrite, target);
@@ -169,7 +169,7 @@ public class RewriteApiRequestVisitor extends SelectiveApiRequestVisitor {
 		
 		Object rewrite = space.getRuntime (Spec.Rewrite);
 
-		server.tracer ().log (Level.Info, "Space Rewrite {0}", rewrite);
+		//server.tracer ().log (Level.Info, "Space Rewrite {0}", rewrite);
 		
 		if (rewrite == null || !(rewrite instanceof JsonObject)) {
 			return null;
@@ -190,14 +190,14 @@ public class RewriteApiRequestVisitor extends SelectiveApiRequestVisitor {
 	
 	private String [] applyRewrite (ApiRequest request, Placeholder placeholder, JsonObject oRewrite, String value, String [] aTarget) {
 		
-		server.tracer ().log (Level.Info, "\tApply rewrite on ", placeholder);
+		//server.tracer ().log (Level.Info, "\tApply rewrite on ", placeholder);
 
 		JsonArray aRules = Json.getArray (oRewrite, Spec.Rules);
 		if (Json.isNullOrEmpty (aRules)) {
 			return aTarget;
 		}
 		
-		server.tracer ().log (Level.Info, "\tFound {0} rules", aRules.count ());
+		//server.tracer ().log (Level.Info, "\tFound {0} rules", aRules.count ());
 
 		for (int i = 0; i < aRules.count (); i++) {
 			JsonObject oRule = (JsonObject)aRules.get (i);
@@ -221,7 +221,7 @@ public class RewriteApiRequestVisitor extends SelectiveApiRequestVisitor {
 		// check condition
 		String condition = Json.getString (rule, Spec.If);
 		
-		server.tracer ().log (Level.Info, "\tApply rule with condition {0}", condition);
+		//server.tracer ().log (Level.Info, "\tApply rule with condition {0}", condition);
 
 		boolean apply = true;
 		
@@ -245,7 +245,7 @@ public class RewriteApiRequestVisitor extends SelectiveApiRequestVisitor {
 			}
 		}
 		
-		server.tracer ().log (Level.Info, "\tShould apply actions? {0}", apply);
+		//server.tracer ().log (Level.Info, "\tShould apply actions? {0}", apply);
 
 		if (!apply) {
 			return aTarget;
@@ -257,7 +257,7 @@ public class RewriteApiRequestVisitor extends SelectiveApiRequestVisitor {
 			return aTarget;
 		}
 		
-		server.tracer ().log (Level.Info, "\tApply actions {0}", then);
+		//server.tracer ().log (Level.Info, "\tApply actions {0}", then);
 		
 		JsonObject actions = (JsonObject)then;
 		if (Json.isNullOrEmpty (actions)) {
@@ -267,12 +267,12 @@ public class RewriteApiRequestVisitor extends SelectiveApiRequestVisitor {
 		Iterator<String> actionIds = actions.keys ();
 		while (actionIds.hasNext ()) {
 			String actionId = actionIds.next ();
-			server.tracer ().log (Level.Info, "\tApply action {0}", actionId);
+			//server.tracer ().log (Level.Info, "\tApply action {0}", actionId);
 			RewriteAction action = Actions.get (actionId);
 			if (action == null) {
 				continue;
 			}
-			server.tracer ().log (Level.Info, "\t\t with processor {0}", action);
+			//server.tracer ().log (Level.Info, "\t\t with processor {0}", action);
 			aTarget = action.apply (request, placeholder, aTarget, actions.get (actionId), conditionValue);
 		}
 		

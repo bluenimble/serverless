@@ -37,6 +37,7 @@
 		<module>bluenimble-plugin-tracking.indexer</module>
 		
 		<module>bluenimble-plugin-tracing.log4j</module>
+		<module>bluenimble-plugin-tracing.socketio</module>		
 		
 		<module>bluenimble-plugin-im.default</module>
 

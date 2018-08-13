@@ -16,7 +16,6 @@
  */
 package com.bluenimble.platform.plugins.database.orientdb.impls;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -118,6 +117,7 @@ public class OrientDatabase implements Database {
 		SystemEntities.add ("_studio");
 	}
 	
+	private static final String TruncateQuery 			= "TRUNCATE TABLE ";
 	private static final String DeleteQuery 			= "DELETE FROM " + Tokens.Type + " WHERE " + Fields.Id + " = :" + Fields.Id;
 	private static final String GetQuery 				= "SELECT FROM " + Tokens.Type + " WHERE " + Fields.Id + " = :" + Fields.Id;
 
@@ -286,10 +286,10 @@ public class OrientDatabase implements Database {
 		if (!db.getMetadata ().getSchema ().existsClass (entity)) {
 			return;
 		}
-		
+
 		try {
-			db.getMetadata ().getSchema ().getClass (entity).truncate ();
-		} catch (IOException ex) {
+			db.command (new OCommandSQL (TruncateQuery + entity)).execute ();
+		} catch (Exception ex) {
 			throw new DatabaseException (ex.getMessage (), ex);
 		}
 		

@@ -1,8 +1,44 @@
-2018-08-07T11:37:40,540 INFO  [] - Session store / pubsub factory used: MemoryStoreFactory (local session store only)
-2018-08-07T11:37:40,759 INFO  [] - SocketIO server started at port: 9696
-2018-08-07T11:39:29,782 INFO  [] - Session store / pubsub factory used: MemoryStoreFactory (local session store only)
-2018-08-07T11:39:29,961 INFO  [] - SocketIO server started at port: 9696
-2018-08-07T13:17:33,673 INFO  [] - Session store / pubsub factory used: MemoryStoreFactory (local session store only)
-2018-08-07T13:17:34,045 INFO  [] - SocketIO server started at port: 9696
-2018-08-07T13:31:51,744 INFO  [] - Session store / pubsub factory used: MemoryStoreFactory (local session store only)
-2018-08-07T13:31:51,927 INFO  [] - SocketIO server started at port: 9696
+2018-08-12 12:46:06.417 [main] INFO  BrokerImpl -Load Namespaces
+2018-08-12 12:46:06.855 [main] INFO  BrokerImpl -Load Namespace: /
+2018-08-12 12:46:06.856 [main] INFO  BrokerImpl -	Namespace Instance: null
+2018-08-12 12:46:06.857 [main] INFO  BrokerImpl -Found Event: join
+2018-08-12 12:46:06.861 [main] INFO  BrokerImpl -	Event Listener: com.bluenimble.platform.servers.broker.listeners.impls.JoinEventListener@10289886
+2018-08-12 12:46:06.864 [main] INFO  BrokerImpl -	Listener join added to namespace: /
+2018-08-12 12:46:06.865 [main] INFO  BrokerImpl -Found Event: leave
+2018-08-12 12:46:06.865 [main] INFO  BrokerImpl -	Event Listener: com.bluenimble.platform.servers.broker.listeners.impls.LeaveEventListener@e3b3b2f
+2018-08-12 12:46:06.866 [main] INFO  BrokerImpl -	Listener leave added to namespace: /
+2018-08-12 12:46:06.866 [main] INFO  BrokerImpl -Found Event: publish
+2018-08-12 12:46:06.867 [main] INFO  BrokerImpl -	Event Listener: com.bluenimble.platform.servers.broker.listeners.impls.PublishEventListener@28194a50
+2018-08-12 12:46:06.868 [main] INFO  BrokerImpl -	Listener publish added to namespace: /
+2018-08-12 12:46:06.870 [main] INFO  SocketIOServer -Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2018-08-12 12:46:07.163 [nioEventLoopGroup-2-1] INFO  SocketIOServer -SocketIO server started at port: 9696
+2018-08-12 12:47:08.966 [nioEventLoopGroup-3-7] INFO  PublishEventListener -Publish from peer1, Message: {
+	"channel": [
+		"logging"
+	],
+	"data": {
+		"level": "Info",
+		"timestamp": "2018-08-12T19:47:08Z",
+		"message": "<Mod0uaoX1H> Using service GET /app (Index.json)"
+	}
+}
+2018-08-12 12:47:08.971 [nioEventLoopGroup-3-7] INFO  PublishEventListener -Publish from peer1, Message: {
+	"channel": [
+		"logging"
+	],
+	"data": {
+		"level": "Info",
+		"timestamp": "2018-08-12T19:47:08Z",
+		"message": "<Mod0uaoX1H> Interceptor will use media.processor [StreamMediaProcessor]"
+	}
+}
+2018-08-12 12:47:09.252 [nioEventLoopGroup-3-7] INFO  PublishEventListener -Publish from peer1, Message: {
+	"channel": [
+		"logging"
+	],
+	"data": {
+		"level": "Info",
+		"timestamp": "2018-08-12T19:47:09Z",
+		"message": "<Mod0uaoX1H> ExecTime-Success: Service /app - Time 313 millis"
+	}
+}

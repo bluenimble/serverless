@@ -1,17 +1,43 @@
 {
 	"port": "9696",
-	"auth": {
-		"class": "com.bluenimble.platform.servers.broker.listeners.auth.SimpleAuthorizationListener",
-		"peers": {
-			"peer1": {
-				"key": "key1", "type": "producer"
+	
+	"namespaces": {
+		"/": {
+			"listeners": {
+				"join": {
+					"class": "com.bluenimble.platform.servers.broker.listeners.impls.JoinEventListener",
+					"accessibleBy": ["consumer"]
+				},
+				"leave": {
+					"class": "com.bluenimble.platform.servers.broker.listeners.impls.LeaveEventListener",
+					"accessibleBy": ["consumer"]
+				},
+				"publish": {
+					"class": "com.bluenimble.platform.servers.broker.listeners.impls.PublishEventListener",
+					"accessibleBy": ["producer"]
+				}
 			},
-			"peer2": {
-				"key": "key2", "type": "consumer"
-			},
-			"peer3": {
-				"key": "key3", "type": "both"
+			"auths": ["simple"]
+		}
+	},
+	
+	"auths": {
+		"simple": {
+			"class": "com.bluenimble.platform.servers.broker.security.SimpleAuthorizationListener",
+			"properties": {
+				"peers": {
+					"peer1": {
+						"key": "key1", "type": "producer", "channels": ["*"]
+					},
+					"peer2": {
+						"key": "key2", "type": "consumer", "channels": ["*"]
+					},
+					"peer3": {
+						"key": "key3", "type": "joker", "channels": ["*"]
+					}
+				}
 			}
 		}
 	}
+	
 }

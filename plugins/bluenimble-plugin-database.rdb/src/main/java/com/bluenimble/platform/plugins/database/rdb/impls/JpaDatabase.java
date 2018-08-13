@@ -8,8 +8,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.persistence.Table;
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 
 import com.bluenimble.platform.Lang;
@@ -33,6 +33,10 @@ public class JpaDatabase implements Database {
 
 	private static final String 	Regexp 				= "REGEXP";
 	private static final String 	QueryEntity 		= "e";
+	
+	interface Queries {
+		String Truncate = "TRUNCATE TABLE ";
+	}
 	
 	interface Proprietary {
 		String EntityManager 	= "entityManager";
@@ -99,19 +103,16 @@ public class JpaDatabase implements Database {
 		return new JpaObjectList<DatabaseObject> (this);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void clear (String entity) throws DatabaseException {
-		
 		checkNotNull (entity);
-		
 		try {
-			Class<?> entitycls = resolve (entity);
-			CriteriaBuilder builder = entityManager.getCriteriaBuilder ();
-		    @SuppressWarnings("rawtypes")
-			CriteriaDelete query = builder.createCriteriaDelete (resolve (entity));
-		    query.from (entitycls);
-		    entityManager.createQuery (query).executeUpdate ();
+			Class<?> cls = resolve (entity);
+			Table tableAnno = cls.getAnnotation (Table.class);
+			if (tableAnno != null) {
+				entity = tableAnno.name ();
+			}
+			entityManager.createNativeQuery (Queries.Truncate + entity).executeUpdate ();
 		} catch (Exception ex) {
 			throw new DatabaseException (ex.getMessage (), ex);
 		}

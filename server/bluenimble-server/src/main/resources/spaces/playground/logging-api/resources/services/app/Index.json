@@ -1,0 +1,26 @@
+{
+	    "verb": "get",
+	"endpoint": "/",
+	
+	"spec": {
+		"fields": {
+			"path": { "value": "index.html" }
+		}
+	},
+	
+	"security": {
+		"enabled": "false"
+	},
+	
+	"media": {
+		"*/*": {
+			"processor": "stream"
+		}
+	},
+	
+	"spi": {
+		"class": "core:ResourceSpi",
+		"folder": "app"
+	} 
+	
+}

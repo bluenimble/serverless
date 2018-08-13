@@ -111,7 +111,6 @@ public class JettyPlugin extends AbstractPlugin {
 	
 	private static final JsonArray DefaultExposedHeaders = new JsonArray ();
 	static {
-		//Authorization,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,User-Agent,X-Requested-With,BNB-Execution-Time,BNB-Node-Id,BNB-Node-Type
 		DefaultExposedHeaders.add (ApiHeaders.ContentType);
 		DefaultExposedHeaders.add (ApiHeaders.ContentLength);
 		DefaultExposedHeaders.add (ApiHeaders.ContentDisposition);

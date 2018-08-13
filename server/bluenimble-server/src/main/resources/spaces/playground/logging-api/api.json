@@ -1,0 +1,11 @@
+{
+	"namespace": "logs",
+	"name": "Logs api",
+	"description": "Logs description",
+	"tracer": {
+		"class": "!tracing.log4j:default"
+	},
+	"spi": {
+		"class": "core:DefaultApi"
+	}
+}

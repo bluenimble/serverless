@@ -3,6 +3,11 @@ package com.bluenimble.platform.servers.broker;
 import java.io.Serializable;
 import java.util.Set;
 
+import com.bluenimble.platform.json.JsonObject;
+import com.corundumstudio.socketio.SocketIOClient;
+import com.corundumstudio.socketio.SocketIONamespace;
+import com.corundumstudio.socketio.SocketIOServer;
+
 public interface Peer extends Serializable {
 	
 	String Key = "Broker.Peer.Key";
@@ -15,18 +20,18 @@ public interface Peer extends Serializable {
 		String Channels 	= "channels";
 	}
 	
+	// default types
 	enum Type {
-		producer,
-		consumer,
-		both,
+		unknown,
+		joker,
 		node
 	}
 	
 	String		id				();
 	void		id				(String id);
 	
-	Type		type			();
-	void		type			(Type type);
+	String		type			();
+	void		type			(String type);
 	
 	boolean 	isDurable 		();
 	void		setDurable		(boolean durable);
@@ -36,10 +41,28 @@ public interface Peer extends Serializable {
 	
 	Set<String> channels 		();
 	void		addChannel		(String channel);
-	boolean		hasChannel		(String channel);
+	boolean		hasAccess		(String channel);
 	
-	boolean 	isConsumer 		();
-	boolean 	isProducer 		();
-	boolean 	isNode 			();
+	boolean		is 				(Set<String> peerTypes);
+	boolean		isNode 			();
+	
+	Set<String> joined 			();
+	
+	void		init 			(SocketIOServer server, SocketIONamespace namespace, SocketIOClient client);
+	
+	void		trigger 		(String event, Object... message);
+	
+	void		join 			(String channel);
+	void		leave 			(String channel);
+	
+	void 		broadcast 		(String channel, Object data);
+	
+	boolean 	canJoin			(String channel);
+	
+	boolean 	canPublish		(String channel);
+	
+	void		terminate 		(int delay);
+	
+	JsonObject	info			();
 
 }

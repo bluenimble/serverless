@@ -2,6 +2,10 @@
 	    "verb": "options",
 	"endpoint": "/tus",
 	
+	"security": {
+		"enabled": "false"
+	},
+	
 	"spi": {
 		"class": "protocols.tus:TusSpi",
 		"tus": "default"

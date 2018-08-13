@@ -17,10 +17,6 @@
 		}
 	},
 	
-	"security": {
-		"enabled": "false"
-	},
-	
 	"meta": {
 		"tags": ["[[Models]]", "List"]
 	},
