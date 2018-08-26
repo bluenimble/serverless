@@ -44,6 +44,19 @@ return {
 		}
 	},
     
+	onExecute: function (api, consumer, service, request, response) {
+        if (!consumer.id) {
+            return;
+        }
+
+        consumer.owner = consumer.get ('owner');
+
+        if (!consumer.owner) {
+			consumer.set ('owner', consumer.id);
+			consumer.owner = consumer.get ('owner');
+		}
+    },
+    
     isSecure: function (service) {
         return !service.security || (typeof service.security.enabled == 'undefined') || service.security.enabled == 'true';
     } 

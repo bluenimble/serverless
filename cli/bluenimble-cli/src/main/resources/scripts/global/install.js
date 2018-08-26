@@ -26,7 +26,7 @@ var Lang 			= native ('com.bluenimble.platform.Lang');
 
 // check if valid command args
 if (typeof Command === 'undefined') {
-	throw 'missing command arguments. eg. install api [ApiNs required] [file or url of the api model spec]';
+	throw 'missing command arguments. eg. install api [ApiNs required] [file or url of the api]';
 }
 
 var tokens = Lang.split (Command, ' ', true);

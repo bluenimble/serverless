@@ -27,7 +27,7 @@ public class JoinEventListener implements EventListener<JsonObject> {
 		
 		if (oChannel instanceof String) {
 			if (!peer.canJoin ((String)oChannel)) {
-				peer.trigger (Default.error.name (), new JsonObject ().set (Message.Status, Response.Error).set (Message.Reason, "Unauthorized action"));
+				peer.trigger (Default.error.name (), new JsonObject ().set (Message.Status, Response.Error).set (Message.Reason, "Unauthorized action. Can't join channel. MonoChannel: " + peer.isMonoChannel ()));
 				return;
 			}
 			peer.join ((String)oChannel);

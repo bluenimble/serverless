@@ -60,6 +60,9 @@ public class Create[[Model]] extends AbstractApiServiceSpi {
 			[[#eq ModelSpec.addDefaults 'true']]// set the current user as the creator of this [[Model]]
 			[[model]].set ('createdBy', new JsonObject ().set (Database.Fields.Entity, "User").set (Database.Fields.Id, consumer.get (ApiConsumer.Fields.Id));[[/eq]]
 			
+			[[#eq ModelSpec.addOwner 'true']]// set the owner of this [[Model]]
+			[[model]].set ('owner', consumer.get ("owner"));[[/eq]]
+							
 			[[#if ModelSpec.refs]][[#each ModelSpec.refs]][[#neq multiple 'true']]
 			if (payload.containsKey ("[[@key]]")) {
 			[[#eq exists 'true']]

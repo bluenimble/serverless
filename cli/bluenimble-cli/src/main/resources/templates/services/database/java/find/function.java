@@ -55,7 +55,7 @@ public class Find[[Models]] extends AbstractApiServiceSpi {
 		
 		JsonObject query = (JsonObject)request.get ("query");
 		if (query == null) {
-			query = (JsonObject)new JsonObject ().set ("where", new JsonObject ()[[#eq ModelSpec.addDefaults 'true']].set ("createdBy.id", true)[[/eq]][[#eq ModelSpec.markAsDeleted 'true']].set ("deleted", false)[[/eq]]);
+			query = (JsonObject)new JsonObject ().set ("where", new JsonObject ()[[#eq ModelSpec.markAsDeleted 'true']].set ("deleted", false)[[/eq]]);
 		} 
 		
 		JsonObject result 		= new JsonObject ();

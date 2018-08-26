@@ -2,7 +2,6 @@ package com.bluenimble.platform.servers.broker.server.boot;
 
 import java.io.File;
 
-import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.servers.broker.server.Broker;
 import com.bluenimble.platform.servers.broker.server.impls.BrokerImpl;
@@ -15,12 +14,13 @@ public class BrokerStarter {
 		String sHome = System.getProperty (BNB_HOME);
 		if (Lang.isNullOrEmpty (sHome)) {
 			sHome = Lang.BLANK;
-		} else {
-			if (!sHome.endsWith (Lang.SLASH)) {
-				sHome += Lang.SLASH;
-			}
+		} else if (!sHome.endsWith (Lang.SLASH)) {
+			sHome += Lang.SLASH;
 		}
-		Broker broker = new BrokerImpl (Json.load (new File (sHome + "broker.json")));
+		
+		File home = new File (sHome);
+		
+		Broker broker = new BrokerImpl (home);
 		broker.start ();
 	}
 	

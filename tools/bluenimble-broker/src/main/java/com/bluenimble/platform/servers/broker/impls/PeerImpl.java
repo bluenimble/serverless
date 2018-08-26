@@ -10,7 +10,6 @@ import com.bluenimble.platform.servers.broker.Peer;
 import com.bluenimble.platform.servers.broker.listeners.EventListener;
 import com.corundumstudio.socketio.BroadcastOperations;
 import com.corundumstudio.socketio.SocketIOClient;
-import com.corundumstudio.socketio.SocketIONamespace;
 import com.corundumstudio.socketio.SocketIOServer;
 
 public class PeerImpl implements Peer {
@@ -31,19 +30,43 @@ public class PeerImpl implements Peer {
 	
 	protected String 			id;
 	protected String 			type;
+	protected String 			tenant;
 	
 	protected boolean 			durable = true;
 	protected Set<String> 		channels;
 	protected boolean 			monoChannel;
 	
 	private SocketIOServer 		server;
-	private SocketIONamespace 	namespace;
 	private SocketIOClient 		client;
+	
+	@Override
+	public void init (SocketIOServer server, SocketIOClient client) {
+		this.server = server;
+		this.client = client;
+	}
 	
 	public String id () {
 		return id;
 	}
 	
+	@Override
+	public void type (String type) {
+		this.type = type;
+	}
+	@Override
+	public String type () {
+		return type;
+	}
+
+	@Override
+	public String tenant () {
+		return tenant;
+	}
+	@Override
+	public void tenant (String tenant) {
+		this.tenant = tenant;
+	}
+
 	@Override
 	public boolean isDurable () {
 		return durable;
@@ -78,16 +101,6 @@ public class PeerImpl implements Peer {
 	@Override
 	public void id (String id) {
 		this.id = id;
-	}
-
-	@Override
-	public void type (String type) {
-		this.type = type;
-	}
-
-	@Override
-	public String type () {
-		return type;
 	}
 
 	@Override
@@ -140,13 +153,6 @@ public class PeerImpl implements Peer {
 	}
 
 	@Override
-	public void init (SocketIOServer server, SocketIONamespace namespace, SocketIOClient client) {
-		this.server = server;
-		this.namespace = namespace;
-		this.client = client;
-	}
-	
-	@Override
 	public void trigger (String event, Object... data) {
 		if (client == null) {
 			return;
@@ -156,43 +162,45 @@ public class PeerImpl implements Peer {
 
 	@Override
 	public void join (String channel) {
-		client.joinRoom (channel);
+		/*
+		if (joined ().contains (channel)) {
+			return;
+		}
+		*/
+		client.joinRoom (tenant + Lang.SLASH + channel);
 	}
 
 	@Override
 	public void leave (String channel) {
-		client.leaveRoom (channel);
+		client.leaveRoom (tenant + Lang.SLASH + channel);
 	}
 
 	@Override
 	public Set<String> joined () {
-		return client.getAllRooms ();
+		Set<String> joined = client.getAllRooms ();
+		if (joined == null) {
+			return EmptySet;
+		}
+		return joined;
 	}
 	
 	@Override
 	public boolean canJoin (String channel) {
 		
+		/*
 		Set<String> joined = joined ();
-		
-		if (joined == null) {
-			joined = EmptySet;
-		}
 		
 		if (joined.contains (channel)) {
 			return false;
 		}
+		*/
 		
-		// mono
-		if (!joined.isEmpty () && isMonoChannel ()) {
+		// is mono
+		if (!joined ().isEmpty () && isMonoChannel ()) {
 			return false;
 		}
 		
-		// has right to channel
-		if (!hasAccess (channel)) {
-			return false;
-		}
-		
-		return true;
+		return hasAccess (channel);
 	}
 	
 	@Override
@@ -216,10 +224,11 @@ public class PeerImpl implements Peer {
 
 	@Override
 	public void broadcast (String channel, Object data) {
-		BroadcastOperations ops = namespace == null ? server.getRoomOperations (channel) : namespace.getRoomOperations (channel);
+		BroadcastOperations ops = server.getRoomOperations (tenant + Lang.SLASH + channel);
 		if (ops == null) {
 			return;
 		}
+		
 		ops.sendEvent (EventListener.Default.message.name (), data);
 	}
 

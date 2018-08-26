@@ -2,6 +2,7 @@ package [[package]]
 
 import com.bluenimble.platform.api.Api
 import com.bluenimble.platform.api.ApiRequest
+import com.bluenimble.platform.api.ApiResponse
 import com.bluenimble.platform.api.ApiService
 import com.bluenimble.platform.api.impls.spis.AbstractApiSpi
 
@@ -42,4 +43,13 @@ class [[Api]]Api extends AbstractApiSpi {
 
 	}
 
+	def	onExecute	(api: Api, consumer: ApiConsumer, service: ApiService, request: ApiRequest, response: ApiResponse): Unit = {
+		if (consumer.get (ApiConsumer.Fields.Id) == null) {
+            return
+        }
+
+        if (consumer.get (ApiConsumer.Fields.Owner) == null) {
+			consumer.set (ApiConsumer.Fields.Owner, consumer.get (ApiConsumer.Fields.Id))
+		}
+	}
 }

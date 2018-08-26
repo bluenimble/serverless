@@ -177,21 +177,21 @@ public class JsonArray extends JsonAbstractEntity implements List<Object> {
 
     public String toString () {
         try {
-            return '[' + join (",") + ']';
+            return '[' + join (",", true) + ']';
         } catch (Exception e) {
             return null;
         }
     }
 
-    public String join (String separator) {
+    public String join (String separator, boolean quote) {
         int len = count ();
         StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < len; i += 1) {
             if (i > 0) {
-                sb.append(separator);
+                sb.append (separator);
             }
-            sb.append (valueToString (get (i)));
+            sb.append (quote ? valueToString (get (i)) : String.valueOf (get (i)));
         }
         String s = sb.toString();
         sb.setLength (0);

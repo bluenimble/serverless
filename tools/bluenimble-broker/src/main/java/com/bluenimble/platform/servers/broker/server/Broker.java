@@ -2,6 +2,8 @@ package com.bluenimble.platform.servers.broker.server;
 
 import java.io.Serializable;
 
+import com.bluenimble.platform.servers.broker.TenantProvider;
+
 public interface Broker extends Serializable {
 
 	interface Spec {
@@ -43,14 +45,16 @@ public interface Broker extends Serializable {
 			String Password				= "password";
 		}
 		
-		String Namespaces  				= "namespaces";
+		String TenantProvider  			= "tenantProvider";
 		String Auths  					= "auths";
 		String Listeners  				= "listeners";
 		String AccessibleBy  			= "accessibleBy";
 		
 	}
+	
+	TenantProvider 	getTenantProvider ();
 
-	void start 	() throws BrokerException;
-	void stop 	();
+	void 			start 	() throws BrokerException;
+	void 			stop 	();
 	
 }

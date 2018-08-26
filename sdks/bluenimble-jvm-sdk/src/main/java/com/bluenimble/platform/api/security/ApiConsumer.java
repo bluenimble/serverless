@@ -34,6 +34,7 @@ public interface ApiConsumer extends Referenceable {
 	interface Fields {
 		String Type 		= "type";
 		String Id 			= "id";
+		String Owner 		= "owner";
 		
 		String Token 		= "token";
 

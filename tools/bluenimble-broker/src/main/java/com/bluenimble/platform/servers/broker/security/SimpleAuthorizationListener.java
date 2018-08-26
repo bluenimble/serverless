@@ -48,6 +48,16 @@ public class SimpleAuthorizationListener implements AuthorizationListener {
 			return false;
 		}
 		
+		String tenant = Json.getString (oPeer, Peer.Spec.Tenant);
+		if (Lang.isNullOrEmpty (tenant)) {
+			return false;
+		}
+		
+		String tenantParam = data.getSingleUrlParam (SelectiveAuthorizationListener.TenantParameter);
+		if (!tenant.equals (tenantParam)) {
+			return false;
+		}
+		
 		String type = Json.getString (oPeer, Peer.Spec.Type);
 		if (Lang.isNullOrEmpty (type)) {
 			type = Peer.Type.unknown.name ();

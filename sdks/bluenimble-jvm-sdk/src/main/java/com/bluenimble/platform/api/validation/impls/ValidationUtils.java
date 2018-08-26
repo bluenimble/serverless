@@ -75,7 +75,7 @@ public class ValidationUtils {
 		
 		if (_enum instanceof JsonArray) {
 			enumFailed = !((JsonArray)_enum).contains (value);
-			sEnum = ((JsonArray)_enum).join (Lang.COMMA);
+			sEnum = ((JsonArray)_enum).join (Lang.COMMA, false);
 		} else if (_enum instanceof JsonObject) {
 			enumFailed = !((JsonObject)_enum).containsKey (value);
 			sEnum = Lang.join (new ArrayList<String> (((JsonObject)_enum).keySet ()), Lang.COMMA);

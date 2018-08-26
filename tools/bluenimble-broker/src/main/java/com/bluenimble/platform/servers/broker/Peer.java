@@ -5,7 +5,6 @@ import java.util.Set;
 
 import com.bluenimble.platform.json.JsonObject;
 import com.corundumstudio.socketio.SocketIOClient;
-import com.corundumstudio.socketio.SocketIONamespace;
 import com.corundumstudio.socketio.SocketIOServer;
 
 public interface Peer extends Serializable {
@@ -14,6 +13,7 @@ public interface Peer extends Serializable {
 
 	interface Spec {
 		String Id 			= "id";
+		String Tenant 		= "tenant";
 		String Type 		= "type";
 		String Durable 		= "durable";
 		String MonoChannel 	= "monoChannel";
@@ -33,6 +33,9 @@ public interface Peer extends Serializable {
 	String		type			();
 	void		type			(String type);
 	
+	String		tenant			();
+	void		tenant			(String tenant);
+	
 	boolean 	isDurable 		();
 	void		setDurable		(boolean durable);
 	
@@ -48,7 +51,7 @@ public interface Peer extends Serializable {
 	
 	Set<String> joined 			();
 	
-	void		init 			(SocketIOServer server, SocketIONamespace namespace, SocketIOClient client);
+	void		init 			(SocketIOServer server, SocketIOClient client);
 	
 	void		trigger 		(String event, Object... message);
 	

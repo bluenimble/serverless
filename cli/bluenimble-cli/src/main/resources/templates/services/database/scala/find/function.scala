@@ -55,7 +55,7 @@ class Find[[Models]] extends AbstractApiServiceSpi {
 		if (query == null) {
 			query = new JsonObject ().set (
 				"where",
-				new JsonObject ()[[#eq ModelSpec.addDefaults 'true']].set ("createdBy.id", true)[[/eq]][[#eq ModelSpec.markAsDeleted 'true']].set ("deleted", false)[[/eq]]
+				new JsonObject ()[[#eq ModelSpec.markAsDeleted 'true']].set ("deleted", false)[[/eq]]
 			).asInstanceOf[JsonObject]
 		} 
 		

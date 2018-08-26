@@ -7,8 +7,10 @@ import com.bluenimble.platform.servers.broker.Message;
 import com.bluenimble.platform.servers.broker.Peer;
 import com.bluenimble.platform.servers.broker.PeerAck;
 import com.bluenimble.platform.servers.broker.Response;
+import com.bluenimble.platform.servers.broker.Tenant;
 import com.bluenimble.platform.servers.broker.listeners.EventListener;
 import com.bluenimble.platform.servers.broker.listeners.EventListener.Default;
+import com.bluenimble.platform.servers.broker.server.Broker;
 import com.bluenimble.platform.servers.broker.utils.PeerUtils;
 import com.corundumstudio.socketio.AckRequest;
 import com.corundumstudio.socketio.SocketIOClient;
@@ -27,20 +29,33 @@ public class DelegateListener implements DataListener<Object> {
 		}
 	};
 
-	protected EventListener<Object>		listener;
-	protected Set<String>				accessibleBy;
+	protected Broker				broker;
+	protected EventListener<Object>	listener;
 	
-	public DelegateListener (EventListener<Object> listener, Set<String> accessibleBy) {
+	protected String				event;
+	
+	protected Set<String> 			accessibleBy;
+	
+	public DelegateListener (Broker broker, String event, EventListener<Object> listener, Set<String> accessibleBy) {
+		this.broker 		= broker;
+		this.event			= event;
 		this.listener 		= listener;
-		this.accessibleBy 	= accessibleBy;
+		this.accessibleBy	= accessibleBy;
 	}
 	
 	@Override
 	public void onData (SocketIOClient client, Object data, AckRequest ackRequest) throws Exception {
 		Peer peer = PeerUtils.peer (client);
 		
+		Tenant tenant = broker.getTenantProvider ().get (peer.tenant ());
+		
+		if (!tenant.supports (event)) {
+			peer.trigger (Default.error.name (), new JsonObject ().set (Message.Status, Response.Error).set (Message.Reason, "Unauthorized tenant action"));
+			return;
+		}
+		
 		if (!peer.is (accessibleBy)) {
-			peer.trigger (Default.error.name (), new JsonObject ().set (Message.Status, Response.Error).set (Message.Reason, "Unauthorized action"));
+			peer.trigger (Default.error.name (), new JsonObject ().set (Message.Status, Response.Error).set (Message.Reason, "Unauthorized peer action"));
 			return;
 		}
 		

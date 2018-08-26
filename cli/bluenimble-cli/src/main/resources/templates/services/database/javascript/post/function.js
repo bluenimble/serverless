@@ -33,8 +33,7 @@ return {
 		var db = api.database (request).trx ();
 			
 		var [[model]] = db.create ('[[Model]]')[[#eq ModelSpec.addDefaults 'true']]// set the current user as the creator of this [[Model]]
-			.ref ('createdBy', 'User', consumer.id)[[/eq]];
-		
+			.ref ('createdBy', 'User', consumer.id)[[/eq]][[#eq ModelSpec.addOwner 'true']].set ('owner', consumer.owner)[[/eq]];
 		[[#if ModelSpec.refs]]// resolve references [[#each ModelSpec.refs]][[#neq multiple 'true']]
 		if (payload.[[@key]]) {
 		[[#eq exists 'true']]

@@ -369,7 +369,7 @@ public class JettyPlugin extends AbstractPlugin {
         String sAllowedHeaders = Lang.STAR;
         JsonArray allowedHeaders = (JsonArray)Json.find (cors, Cors.Headers, Cors.Allow);
         if (!Json.isNullOrEmpty (allowedHeaders)) {
-        	sAllowedHeaders = allowedHeaders.join (Lang.COMMA);
+        	sAllowedHeaders = allowedHeaders.join (Lang.COMMA, false);
         } 
         holder.setInitParameter ("allowedHeaders", sAllowedHeaders);
         
@@ -378,7 +378,7 @@ public class JettyPlugin extends AbstractPlugin {
         if (Json.isNullOrEmpty (exposedHeaders)) {
         	exposedHeaders = DefaultExposedHeaders;
         } 
-        holder.setInitParameter ("exposedHeaders", exposedHeaders.join (Lang.COMMA));
+        holder.setInitParameter ("exposedHeaders", exposedHeaders.join (Lang.COMMA, false));
         
         sContext.addFilter (holder, "/*", EnumSet.of (DispatcherType.INCLUDE, DispatcherType.FORWARD, DispatcherType.REQUEST, DispatcherType.ERROR));
         

@@ -1,39 +1,64 @@
 {
 	"port": "9696",
 	
-	"namespaces": {
-		"/": {
-			"listeners": {
-				"join": {
-					"class": "com.bluenimble.platform.servers.broker.listeners.impls.JoinEventListener",
-					"accessibleBy": ["consumer"]
-				},
-				"leave": {
-					"class": "com.bluenimble.platform.servers.broker.listeners.impls.LeaveEventListener",
-					"accessibleBy": ["consumer"]
-				},
-				"publish": {
-					"class": "com.bluenimble.platform.servers.broker.listeners.impls.PublishEventListener",
-					"accessibleBy": ["producer"]
-				}
-			},
-			"auths": ["simple"]
+	"tenantProvider": {
+		"class": "com.bluenimble.platform.servers.broker.impls.DefaultTenantProvider",
+		"properties": {
+			"tenantsFile": "./tenants.json"
+		}
+	},
+	
+	"listeners": {
+		"addTenant": {
+			"class": "com.bluenimble.platform.servers.broker.listeners.impls.manager.AddTenantEventListener",
+			"accessibleBy": ["admin"]
+		},
+		"blockTenant": {
+			"class": "com.bluenimble.platform.servers.broker.listeners.impls.manager.BlockTenantEventListener",
+			"accessibleBy": ["admin"]
+		},
+		"deleteTenant": {
+			"class": "com.bluenimble.platform.servers.broker.listeners.impls.manager.DeleteTenantEventListener",
+			"accessibleBy": ["admin"]
+		},
+
+		"join": {
+			"class": "com.bluenimble.platform.servers.broker.listeners.impls.JoinEventListener",
+			"accessibleBy": ["consumer"]
+		},
+		"leave": {
+			"class": "com.bluenimble.platform.servers.broker.listeners.impls.LeaveEventListener",
+			"accessibleBy": ["consumer"]
+		},
+		"publish": {
+			"class": "com.bluenimble.platform.servers.broker.listeners.impls.PublishEventListener",
+			"accessibleBy": ["producer"]
 		}
 	},
 	
 	"auths": {
-		"simple": {
+		"admin": {
+			"class": "com.bluenimble.platform.servers.broker.security.SimpleAuthorizationListener",
+			"properties": {
+				"peers": {
+					"admin": {
+						"key": "admin", "type": "admin", "tenant": "admin", "channels": ["admin"]
+					}
+				}
+			}
+		},
+		"default": {
 			"class": "com.bluenimble.platform.servers.broker.security.SimpleAuthorizationListener",
 			"properties": {
 				"peers": {
 					"peer1": {
-						"key": "key1", "type": "producer", "channels": ["*"]
+						"key": "key1", "type": "producer", "tenant": "default", "channels": ["*"]
 					},
 					"peer2": {
-						"key": "key2", "type": "consumer", "channels": ["*"]
+						"key": "key2", "type": "consumer", "tenant": "default", "channels": ["*"]
 					},
 					"peer3": {
-						"key": "key3", "type": "joker", "channels": ["*"]
+						"key": "key3", "type": "joker", "tenant": "default", "channels": ["*"]
 					}
 				}
 			}

@@ -27,18 +27,20 @@ public class PeerUtils {
 		
 		setId (peer, data.get (0));
 
-		setType (peer, data.get (1));
+		setTenant (peer, data.get (1));
 		
-		if (data.size () > 2) {
-			setDurable (peer, data.get (2));
-		}
+		setType (peer, data.get (2));
 		
 		if (data.size () > 3) {
-			setMonoChannel (peer, data.get (3));
+			setDurable (peer, data.get (3));
 		}
 		
 		if (data.size () > 4) {
-			String [] channels = Lang.split (data.get (4), Lang.SPACE, true);
+			setMonoChannel (peer, data.get (4));
+		}
+		
+		if (data.size () > 5) {
+			String [] channels = Lang.split (data.get (5), Lang.SPACE, true);
 			if (channels != null && channels.length > 0) {
 				for (String channel : channels) {
 					if (Lang.isNullOrEmpty (channel)) {
@@ -78,6 +80,13 @@ public class PeerUtils {
 		peer.type (sType.trim ());
 	}
 	
+	private static void setTenant (Peer peer, String sTenant) {
+		if (Lang.isNullOrEmpty (sTenant)) {
+			return;
+		}
+		peer.tenant (sTenant.trim ());
+	}
+	
 	private static void setDurable (Peer peer, String sDurable) {
 		boolean durable = true;
 		if (!Lang.isNullOrEmpty (sDurable)) {
@@ -100,13 +109,14 @@ public class PeerUtils {
 			return list;
 		}
 		
+		list.add (Json.getString (data, Peer.Spec.Tenant));
 		list.add (Json.getString (data, Peer.Spec.Type));
 		list.add (Json.getString (data, Peer.Spec.Durable));
 		list.add (Json.getString (data, Peer.Spec.MonoChannel));
 		
 		JsonArray channels = Json.getArray (data, Peer.Spec.Channels);
 		if (!Json.isNullOrEmpty (channels)) {
-			list.add (Json.getArray (data, Peer.Spec.Channels).join (Lang.SPACE));
+			list.add (Json.getArray (data, Peer.Spec.Channels).join (Lang.SPACE, false));
 		}
 		
 		return list;

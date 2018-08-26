@@ -4,7 +4,8 @@
 		"schemes": {
 			"token": {
 				"prefix": "Bearer",
-				"auth": { "secrets": "default" }
+				"auth": { "secrets": "default" },
+				"encrypt": ["id", "name", "owner"]
 			},
 			"key": {
 				"prefix": "BNB-API-Key",
