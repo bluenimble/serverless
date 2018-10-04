@@ -231,8 +231,14 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 	
 	public Object valueOf (String name, JsonObject fieldSpec, ApiRequest request, ApiConsumer consumer, Map<String, Object> data) {
 		
+		Object defaultValue = fieldSpec.get (Spec.Value);
+		
 		if (data != null) {
-			return data.get (name);
+			Object dValue = data.get (name);
+			if (dValue == null) {
+				dValue = defaultValue;
+			}
+			return dValue;
 		}
 		
 		Object value = null;
@@ -241,8 +247,6 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 		if (Lang.isNullOrEmpty (s)) {
 			s = DefaultScope;
 		}
-		
-		Object defaultValue = fieldSpec.get (Spec.Value);
 		
 		Scope scope = null;
 		s = s.trim ();

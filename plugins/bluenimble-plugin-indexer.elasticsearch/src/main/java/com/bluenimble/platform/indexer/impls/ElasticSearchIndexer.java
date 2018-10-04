@@ -23,7 +23,6 @@ import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.ValueHolder;
 import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.api.tracing.Tracer;
-import com.bluenimble.platform.api.tracing.Tracer.Level;
 import com.bluenimble.platform.http.HttpHeaders;
 import com.bluenimble.platform.http.utils.ContentTypes;
 import com.bluenimble.platform.indexer.Indexer;
@@ -313,8 +312,6 @@ public class ElasticSearchIndexer implements Indexer {
 			throw new IndexerException ("Document cannot be null nor empty.");
 		}
 		
-		tracer.log (Level.Info, doc);
-		
 		String id = Json.getString (doc, Internal.Id);
 		if (Lang.isNullOrEmpty (id)) {
 			doc.set (Internal.Id, Lang.rand ());
@@ -530,11 +527,11 @@ public class ElasticSearchIndexer implements Indexer {
 		}
 		
 		String types = Lang.BLANK;
-		if (entities == null || entities.length == 0) {
+		if (entities != null && entities.length > 0) {
 			types = Lang.join (entities, Lang.COMMA);
 		}
 		
-		tracer.log (Tracer.Level.Info, "search documents in [{0}] with query ", types.equals (Lang.BLANK) ? "All Entities" : Lang.join (entities), dsl);
+		tracer.log (Tracer.Level.Info, "search documents in [{0}] with query {1}", types.equals (Lang.BLANK) ? "All Entities" : Lang.join (entities), dsl);
 		
 		ValueHolder<JsonObject> result = new ValueHolder<JsonObject> ();
 		ElkError error = new ElkError ();
