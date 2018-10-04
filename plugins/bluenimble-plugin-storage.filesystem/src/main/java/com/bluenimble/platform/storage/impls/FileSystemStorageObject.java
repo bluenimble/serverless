@@ -218,7 +218,7 @@ public class FileSystemStorageObject implements StorageObject {
 
 	@Override
 	public ApiOutput toOutput (Folder.Filter filter, String altName, String altContentType) throws StorageException {
-		return new ApiFileOutput (this, filter, altName, altContentType);
+		return new FileApiOutput (this, filter, altName, altContentType);
 	}
 
 	@Override

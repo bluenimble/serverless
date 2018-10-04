@@ -135,6 +135,8 @@ public class JettyPlugin extends AbstractPlugin {
 		
 		DefaultExposedHeaders.add (ApiHeaders.ExecutionTime);
 		
+		DefaultExposedHeaders.add (ApiHeaders.Application);
+		
 		// tus
 		DefaultExposedHeaders.add (ApiHeaders.Tus.UploadOffset);
 		DefaultExposedHeaders.add (ApiHeaders.Tus.UploadLength);

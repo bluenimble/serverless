@@ -28,7 +28,7 @@ import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.streams.Chunk;
 import com.bluenimble.platform.streams.StreamDecorator;
 
-public class ApiByteArrayOutput implements ApiOutput {
+public class ByteArrayApiOutput implements ApiOutput {
 	
 	private static final long serialVersionUID = 6109917905133029178L;
 
@@ -41,7 +41,7 @@ public class ApiByteArrayOutput implements ApiOutput {
 
 	private JsonObject 	meta;
 
-	public ApiByteArrayOutput (String name, byte [] bytes, String contentType, String extension) {
+	public ByteArrayApiOutput (String name, byte [] bytes, String contentType, String extension) {
 		this.name 			= name;
 		this.bytes 			= bytes;
 		this.contentType 	= contentType;

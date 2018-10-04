@@ -25,7 +25,7 @@ import com.bluenimble.platform.api.ApiResource;
 import com.bluenimble.platform.api.ApiResourcesManagerException;
 import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.ApiServiceExecutionException;
-import com.bluenimble.platform.api.impls.ApiResourceOutput;
+import com.bluenimble.platform.api.impls.ResourceApiOutput;
 import com.bluenimble.platform.api.security.ApiConsumer;
 
 public class GetResourceApiServiceSpi extends AbstractApiServiceSpi {
@@ -63,7 +63,7 @@ public class GetResourceApiServiceSpi extends AbstractApiServiceSpi {
 		if (r == null) {
 			throw new ApiServiceExecutionException ("Resource " + path + " not found").status (ApiResponse.NOT_FOUND);
 		}
-		return new ApiResourceOutput (r);
+		return new ResourceApiOutput (r);
 	}
 	
 }

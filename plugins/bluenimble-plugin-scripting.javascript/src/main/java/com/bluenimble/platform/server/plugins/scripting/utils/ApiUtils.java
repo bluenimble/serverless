@@ -32,28 +32,19 @@ import com.bluenimble.platform.json.JsonObject;
 
 public class ApiUtils {
 	
-	interface Spec {
-		String Space 		= "space";
-		String Api 			= "api";
-		String Verb 		= "verb";
-		String Service 		= "service";
-		String Parameters 	= "parameters";
-		String Headers 		= "headers";
-	}
-
 	public static ApiOutput call (final Api api, final ApiConsumer consumer, final ApiRequest pRequest, final JsonObject oRequest) throws ApiServiceExecutionException {
 		ApiRequest request = api.space ().request (pRequest, consumer, new Endpoint () {
 			@Override
 			public String space () {
-				return Json.getString (oRequest, Spec.Space, api.space ().getNamespace ());
+				return Json.getString (oRequest, ApiRequest.Fields.Space, api.space ().getNamespace ());
 			}
 			@Override
 			public String api () {
-				return Json.getString (oRequest, Spec.Api, api.getNamespace ());
+				return Json.getString (oRequest, ApiRequest.Fields.Api, api.getNamespace ());
 			}
 			@Override
 			public String [] resource () {
-				String resource = Json.getString (oRequest, Spec.Service);
+				String resource = Json.getString (oRequest, ApiRequest.Fields.Resource);
 				if (resource.startsWith (Lang.SLASH)) {
 					resource = resource.substring (1);
 				}
@@ -69,7 +60,7 @@ public class ApiUtils {
 			public ApiVerb verb () {
 				try {
 					return ApiVerb.valueOf (
-						Json.getString (oRequest, Spec.Verb, ApiVerb.POST.name ()).toUpperCase ()
+						Json.getString (oRequest, ApiRequest.Fields.Verb, ApiVerb.POST.name ()).toUpperCase ()
 					);
 				} catch (Exception ex) {
 					return ApiVerb.POST;
@@ -77,7 +68,7 @@ public class ApiUtils {
 			}
 		});
 		
-		JsonObject parameters = Json.getObject (oRequest, Spec.Parameters);
+		JsonObject parameters = Json.getObject (oRequest, ApiRequest.Fields.Data.Parameters);
 		if (!Json.isNullOrEmpty (parameters)) {
 			Iterator<String> keys = parameters.keys ();
 			while (keys.hasNext ()) {
@@ -86,7 +77,7 @@ public class ApiUtils {
 			}
 		}
 		
-		JsonObject headers = Json.getObject (oRequest, Spec.Headers);
+		JsonObject headers = Json.getObject (oRequest, ApiRequest.Fields.Data.Headers);
 		if (!Json.isNullOrEmpty (headers)) {
 			Iterator<String> keys = headers.keys ();
 			while (keys.hasNext ()) {

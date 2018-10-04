@@ -1,4 +1,4 @@
-package com.bluenimble.platform.api.impls.media.writers.impls;
+package com.bluenimble.platform.api.media.impls;
 
 import java.io.IOException;
 
@@ -13,18 +13,32 @@ import com.bluenimble.platform.json.JsonObject;
 public class JsonWriter implements DataWriter {
 
 	private static final long serialVersionUID = -8591385465996026292L;
+	
+	private String defaultResponse = Lang.EMTPY_OBJECT;
+	
+	public JsonWriter () {
+		
+	}
+
+	public JsonWriter (String defaultResponse) {
+		this.defaultResponse = defaultResponse;
+	}
 
 	@Override
 	public void write (ApiOutput output, ApiResponse response) throws IOException {
 		
 		if (output == null) {
-			response.write (Lang.EMTPY_OBJECT);
+			if (defaultResponse != null) {
+				response.write (defaultResponse);
+			}
 			return;
 		} 
 		
 		JsonObject json = output.data ();
 		if (json == null) {
-			response.write (Lang.EMTPY_OBJECT);
+			if (defaultResponse != null) {
+				response.write (defaultResponse);
+			}
 			return;
 		} 
 		

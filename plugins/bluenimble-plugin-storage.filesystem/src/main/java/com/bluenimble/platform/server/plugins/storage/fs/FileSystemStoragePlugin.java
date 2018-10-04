@@ -62,7 +62,7 @@ public class FileSystemStoragePlugin extends AbstractPlugin {
 		feature = aFeature.name ();
 
 		if (Lang.isNullOrEmpty (root)) {
-			root = System.getProperty ("user.home") + File.separator + "bluenimble/" + getNamespace ();
+			root = home.getAbsolutePath () + File.separator + "drive";
 		}
 		
 		fRoot = new File (root);
@@ -217,7 +217,7 @@ public class FileSystemStoragePlugin extends AbstractPlugin {
 		}
 
 		@Override
-		public void finish () {
+		public void finish (boolean withError) {
 		}
 
 		@Override

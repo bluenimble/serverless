@@ -251,7 +251,7 @@ public class BinaryRemote extends BaseRemote {
 	}
 
 	@Override
-	public void finish () {
+	public void finish (boolean withError) {
 	}
 
 	@Override

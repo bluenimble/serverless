@@ -246,7 +246,7 @@ public class SocketIoMessenger implements Messenger, Recyclable {
 
 
 	@Override
-	public void finish () {
+	public void finish (boolean withError) {
 		
 	}
 

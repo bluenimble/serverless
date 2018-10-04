@@ -76,12 +76,7 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 		String Data 					= "data";
 		
 		interface onFinish	{
-			String Space 	= "space";
-			String Api 		= "api";
-			String Verb 	= "verb";
-			String Resource = "resource";
-			String ResultProperty
-							= "resultProperty";
+			String ResultProperty = "resultProperty";
 		}
 	}
 	

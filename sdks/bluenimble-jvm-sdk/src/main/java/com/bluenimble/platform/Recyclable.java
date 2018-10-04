@@ -19,6 +19,6 @@ package com.bluenimble.platform;
 import java.io.Serializable;
 
 public interface Recyclable extends Serializable {
-	void 	finish 		();
+	void 	finish 		(boolean withError);
 	void 	recycle 	();
 }

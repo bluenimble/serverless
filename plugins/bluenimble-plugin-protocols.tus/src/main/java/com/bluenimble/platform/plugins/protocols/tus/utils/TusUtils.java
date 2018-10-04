@@ -13,7 +13,7 @@ public class TusUtils {
 	private static final String 		GetProxy 	= "getProxy";
 	
 	private static final Class<?> [] 	NoTypes 	= new Class<?> [] {};
-	private static final Object [] 		NoArgs 			= new Object [] {};
+	private static final Object [] 		NoArgs 		= new Object [] {};
 
 	public static HttpServletRequest toHttpRequest (ApiRequest request) throws Exception {
 		Method getProxy = request.getClass ().getMethod (GetProxy, NoTypes);

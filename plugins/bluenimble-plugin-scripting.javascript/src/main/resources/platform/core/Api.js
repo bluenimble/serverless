@@ -250,8 +250,10 @@ function Api (proxy) {
 	};
 	
 	/**	
-	  Execute a function in a separate thread
-	  @param {Function} function - the function to be executed
+	  Call a service
+	  @param {ApiConsumer} consumer - the consumer making the request
+	  @param {ApiConsumer} request - the request
+	  @param {ApiConsumer} spec - the request spec for the target service
 	*/
 	this.call = function (consumer, request, spec) {
 		if (!consumer) {

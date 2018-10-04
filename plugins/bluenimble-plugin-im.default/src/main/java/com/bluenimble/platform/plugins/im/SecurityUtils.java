@@ -30,7 +30,6 @@ import com.bluenimble.platform.api.ApiServiceExecutionException;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.ApiSpace.Endpoint;
 import com.bluenimble.platform.api.ApiVerb;
-import com.bluenimble.platform.api.impls.im.LoginServiceSpi.Config;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
@@ -122,15 +121,15 @@ public class SecurityUtils {
 		ApiRequest request = api.space ().request (pRequest, consumer, new Endpoint () {
 			@Override
 			public String space () {
-				return Json.getString (onFinish, Config.onFinish.Space, api.space ().getNamespace ());
+				return Json.getString (onFinish, ApiRequest.Fields.Space, api.space ().getNamespace ());
 			}
 			@Override
 			public String api () {
-				return Json.getString (onFinish, Config.onFinish.Api, api.getNamespace ());
+				return Json.getString (onFinish, ApiRequest.Fields.Api, api.getNamespace ());
 			}
 			@Override
 			public String [] resource () {
-				String resource = Json.getString (onFinish, Config.onFinish.Resource);
+				String resource = Json.getString (onFinish, ApiRequest.Fields.Resource);
 				if (resource.startsWith (Lang.SLASH)) {
 					resource = resource.substring (1);
 				}
@@ -146,7 +145,7 @@ public class SecurityUtils {
 			public ApiVerb verb () {
 				try {
 					return ApiVerb.valueOf (
-						Json.getString (onFinish, Config.onFinish.Verb, ApiVerb.POST.name ()).toUpperCase ()
+						Json.getString (onFinish, ApiRequest.Fields.Verb, ApiVerb.POST.name ()).toUpperCase ()
 					);
 				} catch (Exception ex) {
 					return ApiVerb.POST;

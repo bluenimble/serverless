@@ -29,7 +29,7 @@ import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.ApiServiceExecutionException;
 import com.bluenimble.platform.api.ApiSpace;
-import com.bluenimble.platform.api.impls.ApiByteArrayOutput;
+import com.bluenimble.platform.api.impls.ByteArrayApiOutput;
 import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.apis.mgm.CommonSpec;
@@ -163,7 +163,7 @@ public class GetKeysSpi extends AbstractApiServiceSpi {
 		
 		Json.encrypt (oKeys, paraphrase, out);
 		
-		return new ApiByteArrayOutput (
+		return new ByteArrayApiOutput (
 			keysSpace.getNamespace () + Lang.DOT + Output.KeysExt, Base64.encodeBase64 (out.toByteArray ()), 
 			ApiContentTypes.Stream, Output.KeysExt
 		).set (ApiOutput.Defaults.Disposition, "attachment");

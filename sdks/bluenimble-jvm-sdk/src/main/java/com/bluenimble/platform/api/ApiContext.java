@@ -32,7 +32,7 @@ public interface ApiContext extends Referenceable {
 			return null;
 		}
 		@Override
-		public void finish () {
+		public void finish (boolean withError) {
 		}
 		@Override
 		public void recycle () {
@@ -51,7 +51,7 @@ public interface ApiContext extends Referenceable {
 	
 	Recyclable		getRecyclable 	(String name);
 	
-	void			finish			();
+	void			finish			(boolean withError);
 	
 	void			recycle			();
 

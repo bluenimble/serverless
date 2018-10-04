@@ -46,6 +46,21 @@
 					},
 					"serializer": "json"
 				}
+			},
+			"elasticsearch-assets": {
+				"provider": "remote.default",
+				"spec": {
+					"endpoint": "http://localhost:9200/assets/",
+					"serializer": "json"
+				}
+			}
+		},
+		"indexer": {
+			"assets": {
+				"provider": "indexer.elasticsearch",
+				"spec": {
+					"remote": "elasticsearch-assets"
+				}
 			}
 		}
 	},

@@ -126,25 +126,29 @@ var Indexer = function (proxy) {
 	  @example
 	  
 	  api.indexer (request).search ({
-	  	term: { price : '400' }
+	  	query: {
+	  		term: { price : '400' }
+	  	}
 	  }, [
 	  	'Orders'
 	  ]);
 	  
 	  // search in all entities
 	  api.indexer (request).search ({
-	  	term: { customer: 'john@bluenimble.com' }
+	  	query: {
+	  		term: { customer: 'john@bluenimble.com' }
+	  	}
 	  });
 	  
-	  @return {Object} [result] - delete feedback
+	  @return {Object} [result] - search result
 	*/
-	this.search = function (query, entities) {
+	this.search = function (dsl, entities) {
 		if (!entities) {
 			entities = null;
 		} else {
 			entities = Java.to (entities, "java.lang.String[]");
 		}
-		return proxy.search (JC_Converters.convert (query), entities);
+		return proxy.search (JC_Converters.convert (dsl), entities);
 	};
 	
 };

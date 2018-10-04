@@ -48,6 +48,7 @@ public class TusProtocolPlugin extends AbstractPlugin {
 	
 	public interface Spec {
 		String Tus 		= "tus";
+		
 		String Storage 	= "storage";
 		String Uri 		= "uri";
 		String Folders 	= "folders";
@@ -65,9 +66,17 @@ public class TusProtocolPlugin extends AbstractPlugin {
 		String OwnerKey	= "ownerKey";
 		String OwnerPlaceholder	
 						= "ownerPlaceholder";
+		String BypassTenantCheck
+						= "bypassTenantCheck";
 
 		String DataFile	= "dataFile";
 		String MetaFile	= "metaFile";
+		
+		String Events	= "events";
+			String Create	= "create";
+			String Append	= "append";
+			String Done		= "done";
+		
 	}
 	
 	public enum OwnerPlaceholder {

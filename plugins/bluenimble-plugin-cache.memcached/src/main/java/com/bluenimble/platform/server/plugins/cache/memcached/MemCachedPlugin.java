@@ -211,7 +211,7 @@ public class MemCachedPlugin extends AbstractPlugin {
 		}
 		
 		@Override
-		public void finish () {
+		public void finish (boolean withError) {
 		}
 
 		@Override

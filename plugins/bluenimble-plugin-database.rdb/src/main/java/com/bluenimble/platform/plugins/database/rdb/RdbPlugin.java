@@ -515,7 +515,7 @@ public class RdbPlugin extends AbstractPlugin {
 		}
 		
 		@Override
-		public void finish () {
+		public void finish (boolean withError) {
 		}
 
 		@Override
@@ -583,7 +583,7 @@ public class RdbPlugin extends AbstractPlugin {
 		}
 
 		@Override
-		public void finish () {
+		public void finish (boolean withError) {
 		}
 
 		@Override

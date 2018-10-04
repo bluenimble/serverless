@@ -5,7 +5,8 @@ var JC_Callable				= Java.type ('com.bluenimble.platform.api.ContextualCallable'
 
 var JC_ByteArrayOutputStream= Java.type ('java.io.ByteArrayOutputStream');
 
-var JC_ApiByteArrayOutput	= Java.type ('com.bluenimble.platform.api.impls.ApiByteArrayOutput');
+var JC_ByteArrayApiOutput	= Java.type ('com.bluenimble.platform.api.impls.ByteArrayApiOutput');
+var JC_JsonApiOutput		= Java.type ('com.bluenimble.platform.api.impls.JsonApiOutput');
 
 var JC_Instant				= Java.type ('java.time.Instant');
 var JC_LocalDateTime		= Java.type ('java.time.LocalDateTime');
@@ -85,7 +86,7 @@ var JC_ApiUtils 			= Java.type ('com.bluenimble.platform.server.plugins.scriptin
 
 var JC_ApiResource_Selector = Java.type ('com.bluenimble.platform.api.ApiResource.Selector');
 
-var JC_ApiResourceOutput 	= Java.type ('com.bluenimble.platform.api.impls.ApiResourceOutput');
+var JC_ResourceApiOutput 	= Java.type ('com.bluenimble.platform.api.impls.ResourceApiOutput');
 
 var JC_ApiSpace_Features 	= Java.type ('com.bluenimble.platform.api.ApiSpace.Features');
 
@@ -164,6 +165,11 @@ var JC_Libs_BN_Signer 		= Java.type ('com.bluenimble.platform.api.impls.scriptin
 	// remote	
 	if (typeof Remote === 'undefined') {
 		load (core + '/remote/Remote.js');
+	}
+
+	// indexer	
+	if (typeof Indexer === 'undefined') {
+		load (core + '/indexer/Indexer.js');
 	}
 
 	// api	

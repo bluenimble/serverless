@@ -212,7 +212,7 @@ public class ScriptableApiServiceSpi implements ApiServiceSpi {
 			ScriptObjectMirror som = (ScriptObjectMirror)result;
 			Object clazz = som.get (ClassField);
 			if (clazz == null) {
-				return new ApiSomOutput (som);
+				return new SomApiOutput (som);
 			}
 			if (clazz.equals (ApiOutputClass)) {
 				return (ApiOutput)som.getMember (ProxyField);

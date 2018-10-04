@@ -26,18 +26,18 @@ public class DefaultVariableResolver implements VariableResolver {
 
 	private interface Namespaces {
 		String Request 	= "request";
-		String Output 	= "output";
-		String Extra 	= "extra";
+		String Data 	= "data";
+		String Meta 	= "meta";
 	}
 	
 	private ApiRequest request;
-	private JsonObject output;
-	private JsonObject extra;
+	private JsonObject data;
+	private JsonObject meta;
 	
-	public DefaultVariableResolver (ApiRequest request, JsonObject output, JsonObject extra) {
+	public DefaultVariableResolver (ApiRequest request, JsonObject data, JsonObject meta) {
 		this.request = request;
-		this.output = output;
-		this.extra = extra;
+		this.data = data;
+		this.meta = meta;
 	}
 
 	@Override
@@ -49,14 +49,14 @@ public class DefaultVariableResolver implements VariableResolver {
 				return String.valueOf (v);
 			}
 			return (String)request.get (name, Scope.Parameter, Scope.Header);
-		} else if (Namespaces.Output.equals (ns) && output != null) {
-			Object v = output.find (name, Lang.DOT);
+		} else if (Namespaces.Data.equals (ns) && data != null) {
+			Object v = data.find (name, Lang.DOT);
 			if (v == null) {
 				return null;
 			}
 			return String.valueOf (v);
-		} else if (Namespaces.Extra.equals (ns) && extra != null) {
-			Object v = extra.find (name, Lang.DOT);
+		} else if (Namespaces.Meta.equals (ns) && meta != null) {
+			Object v = meta.find (name, Lang.DOT);
 			if (v == null) {
 				return null;
 			}

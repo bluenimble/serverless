@@ -35,7 +35,7 @@ import com.bluenimble.platform.streams.StreamDecorator;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
 @SuppressWarnings("restriction")
-public class ApiSomOutput implements ApiOutput {
+public class SomApiOutput implements ApiOutput {
 	
 	private static final long serialVersionUID = 6109917905133029178L;
 
@@ -55,26 +55,26 @@ public class ApiSomOutput implements ApiOutput {
 	private ScriptObjectMirror 	meta;
 	private JsonObject 			altMeta;
 	
-	public ApiSomOutput (ScriptObjectMirror data, ScriptObjectMirror meta, String name, Date timestamp) {
+	public SomApiOutput (ScriptObjectMirror data, ScriptObjectMirror meta, String name, Date timestamp) {
 		this.data 		= data;
 		this.meta 		= meta;
 		this.name 		= name;
 		this.timestamp 	= timestamp;
 	}
 	
-	public ApiSomOutput (ScriptObjectMirror data, ScriptObjectMirror meta, String name) {
+	public SomApiOutput (ScriptObjectMirror data, ScriptObjectMirror meta, String name) {
 		this (data, meta, name, null);
 	}
 
-	public ApiSomOutput (ScriptObjectMirror data, ScriptObjectMirror meta) {
+	public SomApiOutput (ScriptObjectMirror data, ScriptObjectMirror meta) {
 		this (data, meta, null);
 	}
 	
-	public ApiSomOutput (ScriptObjectMirror data) {
+	public SomApiOutput (ScriptObjectMirror data) {
 		this (data, null);
 	}
 	
-	public ApiSomOutput (ScriptObjectMirror enveloppe, boolean isEnveloppe) {
+	public SomApiOutput (ScriptObjectMirror enveloppe, boolean isEnveloppe) {
 		if (isEnveloppe) {
 			this.name 		= (String)enveloppe.getMember (Spec.Name);
 			try {

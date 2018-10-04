@@ -24,7 +24,7 @@ public class RecyclableTusService implements Recyclable {
 	}
 	
 	@Override
-	public void finish () {
+	public void finish (boolean withError) {
 		
 	}
 

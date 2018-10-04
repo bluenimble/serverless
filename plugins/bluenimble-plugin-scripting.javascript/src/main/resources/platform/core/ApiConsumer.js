@@ -11,6 +11,8 @@
   @access private
 */
 var ApiConsumer = function (proxy) {
+	
+	this.clazz 		= 'ApiConsumer';
 
 	this.proxy 	= proxy;
 
@@ -87,7 +89,7 @@ var ApiConsumer = function (proxy) {
 	  @param {ApiConsumer} reference consumer
 	*/
 	this.override = function (consumer) {
-		return proxy.override (consumer.proxy);
+		return proxy.override (consumer.clazz == 'ApiConsumer' ? consumer.proxy : consumer);
 	};
 	
 	/**	
@@ -110,6 +112,7 @@ ApiConsumer.prototype.Type = {
 ApiConsumer.prototype.Fields = {
 	Type: JC_ApiConsumer_Fields.Type,
 	Id: JC_ApiConsumer_Fields.Id,
+	Owner: JC_ApiConsumer_Fields.Owner,
 	
 	Space: JC_ApiConsumer_Fields.Space,
 	Role: JC_ApiConsumer_Fields.Role,

@@ -22,7 +22,7 @@ import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResourcesManagerException;
 import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.ApiServiceExecutionException;
-import com.bluenimble.platform.api.impls.ApiResourceOutput;
+import com.bluenimble.platform.api.impls.ResourceApiOutput;
 import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.apis.mgm.utils.MgmUtils;
@@ -35,7 +35,7 @@ public class ListTemplatesSpi extends AbstractApiServiceSpi {
 	public ApiOutput execute (Api api, ApiConsumer consumer, ApiRequest request,
 			ApiResponse response) throws ApiServiceExecutionException {
 		try {
-			return new ApiResourceOutput (api.getResourcesManager ().get (new String [] { MgmUtils.TemplatesFolder, MgmUtils.TemplatesFile }));
+			return new ResourceApiOutput (api.getResourcesManager ().get (new String [] { MgmUtils.TemplatesFolder, MgmUtils.TemplatesFile }));
 		} catch (ApiResourcesManagerException e) {
 			throw new ApiServiceExecutionException (e.getMessage (), e);
 		}

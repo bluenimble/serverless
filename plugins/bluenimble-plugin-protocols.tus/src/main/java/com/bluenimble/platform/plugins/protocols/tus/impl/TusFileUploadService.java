@@ -116,7 +116,7 @@ public class TusFileUploadService {
         return new LinkedHashSet<>(enabledFeatures.keySet());
     }
 
-    public void process (HttpServletRequest servletRequest, HttpServletResponse servletResponse,
+    public UploadInfo process (HttpServletRequest servletRequest, HttpServletResponse servletResponse,
                         String ownerKey) throws IOException {
 
         HttpMethod method = HttpMethod.getMethodIfSupported (servletRequest, supportedHttpMethods);
@@ -131,6 +131,7 @@ public class TusFileUploadService {
         } catch (TusException e) {
             log.error("Unable to lock upload for request URI " + request.getRequestURI(), e);
         }
+        return (UploadInfo)request.getAttribute (RequestHandler.UploadInfo);
     }
 
     /**
@@ -144,7 +145,6 @@ public class TusFileUploadService {
      */
     public UploadInfo getUploadInfo(String uploadURI, String ownerKey) throws IOException, TusException {
         try (UploadLock lock = uploadLockingService.lockUploadByUri(uploadURI)) {
-
             return uploadStorageService.getUploadInfo(uploadURI, ownerKey);
         }
     }

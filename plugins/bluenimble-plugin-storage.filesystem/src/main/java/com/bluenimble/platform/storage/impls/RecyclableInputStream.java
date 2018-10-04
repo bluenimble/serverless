@@ -78,7 +78,7 @@ public class RecyclableInputStream extends InputStream implements Recyclable {
 	}
 
 	@Override
-	public void finish () {
+	public void finish (boolean withError) {
 	}
 
 	@Override

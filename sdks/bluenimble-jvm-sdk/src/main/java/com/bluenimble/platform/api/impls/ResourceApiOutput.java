@@ -28,14 +28,14 @@ import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.streams.Chunk;
 import com.bluenimble.platform.streams.StreamDecorator;
 
-public class ApiResourceOutput implements ApiOutput {
+public class ResourceApiOutput implements ApiOutput {
 	
 	private static final long serialVersionUID = 6109917905133029178L;
 
 	private ApiResource	resource;
 	private JsonObject 	meta;
 
-	public ApiResourceOutput (ApiResource resource) {
+	public ResourceApiOutput (ApiResource resource) {
 		this.resource = resource;
 	}
 

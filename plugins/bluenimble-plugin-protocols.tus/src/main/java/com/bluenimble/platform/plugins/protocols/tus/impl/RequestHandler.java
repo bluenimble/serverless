@@ -8,6 +8,8 @@ import com.bluenimble.platform.plugins.protocols.tus.impl.util.TusServletRequest
 import com.bluenimble.platform.plugins.protocols.tus.impl.util.TusServletResponse;
 
 public interface RequestHandler {
+	
+	String UploadInfo = "Tus.UploadInfo";
 
     boolean supports(HttpMethod method);
 

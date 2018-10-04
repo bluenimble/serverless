@@ -61,6 +61,7 @@ public interface ApiHeaders {
 	String 	ExecutionTime 		= "BNB-Execution-Time";
 	String 	Timestamp 			= "BNB-Timestamp";
 	String 	GeoLocation 		= "BNB-GeoLocation";
+	String 	Application 		= "BNB-App";
 	
 	interface Tus {
 		String 	TusVersion 			= "Tus-Version";

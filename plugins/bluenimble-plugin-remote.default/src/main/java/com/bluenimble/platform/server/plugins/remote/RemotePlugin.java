@@ -401,7 +401,7 @@ public class RemotePlugin extends AbstractPlugin {
 		}
 		
 		@Override
-		public void finish () {
+		public void finish (boolean withError) {
 		}
 
 		@Override
@@ -425,7 +425,7 @@ public class RemotePlugin extends AbstractPlugin {
 		}
 		
 		@Override
-		public void finish () {
+		public void finish (boolean withError) {
 		}
 
 		@Override

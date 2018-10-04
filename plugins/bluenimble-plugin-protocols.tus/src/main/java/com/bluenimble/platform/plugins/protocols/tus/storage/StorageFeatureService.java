@@ -60,7 +60,7 @@ public class StorageFeatureService implements UploadStorageService {
     private Storage storage;
     private String 	folder;
     
-    private boolean multiTenant = true;
+    private boolean multiTenant;
     
     private String dataFile = "data";
     private String metaFile = "meta";
@@ -504,7 +504,7 @@ public class StorageFeatureService implements UploadStorageService {
             if (Utils.lockFileExclusively (channel) != null) {
 
                 try (Writer buffer = Channels.newWriter (channel, Encodings.UTF8)) {
-                	info.toJson ().write (new AbstractEmitter () {
+                	info.toJson (false).write (new AbstractEmitter () {
             			@Override
             			public JsonEmitter write (String chunk) {
             				try {

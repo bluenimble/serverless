@@ -219,6 +219,7 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 				return;
 			}
 			
+			Exception executeError = null;
 			ApiOutput output = null;
 			
 			JsonObject mock = Json.getObject (service.toJson (), ApiService.Spec.Mock);
@@ -226,16 +227,27 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 				output = new JsonApiOutput (Json.getObject (mock, ApiService.Spec.Output));
 				logInfo (api, "<" + request.getId () + "> Service using mock output");
 			} else {
-				// api life cycle - onExecute
-				api.getSpi ().onExecute (api, consumer, service, request, response);
-				
-				output = service.getSpi ().execute (api, consumer, request, response);
-				
-				// api life cycle - afterExecute
-				api.getSpi ().afterExecute (api, consumer, service, request, response);
+				try {
+					// api life cycle - onExecute
+					api.getSpi ().onExecute (api, consumer, service, request, response);
+					
+					output = service.getSpi ().execute (api, consumer, request, response);
+					
+					// api life cycle - afterExecute
+					api.getSpi ().afterExecute (api, consumer, service, request, response);
+				} catch (Exception ex) {
+					executeError = ex;
+					
+				}
 			}
 			
-			request.finish ();
+			// call finish with error status
+			request.finish (executeError != null);
+			
+			// throw error
+			if (executeError != null) {
+				throw executeError;
+			}
 			
 			if (request instanceof ContainerApiRequest) {
 				request.set (ApiRequest.Output, output);
@@ -253,7 +265,7 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 							ApiResponse.Error.Message, time
 						)
 					);
-					logInfo (api, " <" + request.getId () + "> ExecTime-Cancel: Service " + Json.getString (service.toJson (), ApiService.Spec.Endpoint) + " - Time " + time + " millis");
+					logInfo (api, " <" + request.getId () + "> ExecTime-Cancel: Service " + service.getVerb () + ":" + Json.getString (service.toJson (), ApiService.Spec.Endpoint) + " - Time " + time + " millis");
 					return;
 				}
 			
@@ -277,7 +289,7 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 				)
 			);
 			
-			logInfo (api, "<" + request.getId () + "> ExecTime-Success: Service " + Json.getString (service.toJson (), ApiService.Spec.Endpoint) + " - Time " + time + " millis");
+			logInfo (api, "<" + request.getId () + "> ExecTime-Success: Service " + service.getVerb () + ":" + Json.getString (service.toJson (), ApiService.Spec.Endpoint) + " - Time " + time + " millis");
 			
 		} catch (Throwable th) {
 			
@@ -390,7 +402,7 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 			}
 			ApiUtils.logError (api, response, server.tracer ());
 			long time = System.currentTimeMillis () - request.getTimestamp ().getTime ();
-			logInfo (api, "<" + request.getId () + "> ExecTime-Error: " + (service != null ? Json.getString (service.toJson (), ApiService.Spec.Endpoint) : "Unknown Service") + " - ExecutionTime " + time + " millis");
+			logInfo (api, "<" + request.getId () + "> ExecTime-Error: " + (service != null ? service.getVerb () + ":" + Json.getString (service.toJson (), ApiService.Spec.Endpoint) : "Unknown Service") + " - ExecutionTime " + time + " millis");
 			return;
 		}
 			
@@ -408,7 +420,7 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 			}
 		} finally {
 			long time = System.currentTimeMillis () - request.getTimestamp ().getTime ();
-			logInfo (api, "<" + request.getId () + "> ExecTime-Error: " + (service != null ? Json.getString (service.toJson (), ApiService.Spec.Endpoint) : "Unknown Service") + " - ExecutionTime " + time + " millis");
+			logInfo (api, "<" + request.getId () + "> ExecTime-Error: " + (service != null ? service.getVerb () + ":" + Json.getString (service.toJson (), ApiService.Spec.Endpoint) : "Unknown Service") + " - ExecutionTime " + time + " millis");
 		}
 		
 	}

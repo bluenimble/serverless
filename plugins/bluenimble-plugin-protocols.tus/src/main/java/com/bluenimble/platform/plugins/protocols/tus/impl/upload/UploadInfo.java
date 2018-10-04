@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.UUID;
 
 import javax.xml.bind.DatatypeConverter;
@@ -17,6 +15,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.bluenimble.platform.Json;
+import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 
@@ -45,6 +44,7 @@ public class UploadInfo implements Serializable {
     }
 
     public UploadInfo (JsonObject data) {
+    	System.out.println ("Create UploadInfo with data: " + data);
         setId (UUID.fromString (Json.getString (data, "id")));
         if (data.containsKey ("length")) {
             setLength (Json.getLong (data, "length", 0));
@@ -70,14 +70,18 @@ public class UploadInfo implements Serializable {
         }
     }
     
-    public JsonObject toJson () {
+    public JsonObject toJson (boolean parseMetadata) {
     	JsonObject json = new JsonObject ();
     	
     	json.set ("id", id.toString ());
     	json.set ("length", length);
     	json.set ("offset", offset);
     	json.set ("owner", ownerKey);
-    	json.set ("metadata", encodedMetadata);
+    	if (!Lang.isNullOrEmpty (encodedMetadata) && parseMetadata) {
+        	json.set ("metadata", getMetadata ());
+    	} else {
+        	json.set ("metadata", encodedMetadata);
+    	}
     	json.set ("expiration", expirationTimestamp);
     	json.set ("concatHeader", uploadConcatHeaderValue);
     	if (uploadType != null) {
@@ -110,8 +114,8 @@ public class UploadInfo implements Serializable {
         this.encodedMetadata = encodedMetadata;
     }
 
-    public Map<String, String> getMetadata() {
-        Map<String, String> metadata = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    public JsonObject getMetadata () {
+        JsonObject metadata = new JsonObject ();
         for (String valuePair : splitToArray(encodedMetadata, ",")) {
             String[] keyValue = splitToArray(valuePair, "\\s");
             String key = null;
@@ -129,7 +133,7 @@ public class UploadInfo implements Serializable {
                     value = decode(keyValue[i]);
                 }
 
-                metadata.put(key, value);
+                metadata.set (key, value);
             }
         }
         return metadata;
@@ -157,7 +161,7 @@ public class UploadInfo implements Serializable {
      * - the total length does not match the current offset
      * @return true if the upload is still in progress, false otherwise
      */
-    public boolean isUploadInProgress() {
+    public boolean isUploadInProgress () {
         return length == null || !offset.equals(length);
     }
 
@@ -256,10 +260,10 @@ public class UploadInfo implements Serializable {
      * @return A potential file name
      */
     public String getFileName() {
-        Map<String, String> metadata = getMetadata();
+        JsonObject metadata = getMetadata();
         for (String fileNameKey : fileNameKeys) {
-            if (metadata.containsKey(fileNameKey)) {
-                return metadata.get(fileNameKey);
+            if (metadata.containsKey (fileNameKey)) {
+                return metadata.getString (fileNameKey);
             }
         }
 
@@ -274,10 +278,10 @@ public class UploadInfo implements Serializable {
      * @return A potential file name
      */
     public String getFileMimeType() {
-        Map<String, String> metadata = getMetadata();
+    	JsonObject metadata = getMetadata();
         for (String fileNameKey : mimeTypeKeys) {
-            if (metadata.containsKey(fileNameKey)) {
-                return metadata.get(fileNameKey);
+            if (metadata.containsKey (fileNameKey)) {
+                return metadata.getString (fileNameKey);
             }
         }
 

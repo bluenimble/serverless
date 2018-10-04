@@ -21,7 +21,7 @@ import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.ApiContext;
 import com.bluenimble.platform.api.ApiSpace;
-import com.bluenimble.platform.api.impls.DefaultApiContext;
+import com.bluenimble.platform.api.tracing.Tracer.Level;
 import com.bluenimble.platform.indexer.Indexer;
 import com.bluenimble.platform.indexer.impls.ElasticSearchIndexer;
 import com.bluenimble.platform.plugins.Plugin;
@@ -33,8 +33,6 @@ import com.bluenimble.platform.server.ServerFeature;
 public class ElasticSearchPlugin extends AbstractPlugin {
 
 	private static final long serialVersionUID = 3203657740159783537L;
-	
-	private static final ApiContext Context = new DefaultApiContext ();
 	
 	interface Spec {
 		String Remote = "remote";
@@ -69,10 +67,10 @@ public class ElasticSearchPlugin extends AbstractPlugin {
 			@Override
 			public Object get (ApiSpace space, String name) {
 				String remoteFeature = (String)Json.find (space.getFeatures (), feature, name, ApiSpace.Features.Spec, Spec.Remote);
-				
+				tracer.log (Level.Info, "Indexer Feature Remote " + remoteFeature);
 				Remote remote = null;
 				if (!Lang.isNullOrEmpty (remoteFeature)) {
-					remote = space.feature (Remote.class, remoteFeature, Context);
+					remote = space.feature (Remote.class, remoteFeature, ApiContext.Instance);
 				}
 				
 				return new ElasticSearchIndexer (remote, tracer);

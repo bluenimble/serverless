@@ -1,4 +1,4 @@
-package com.bluenimble.platform.api.impls.media.writers.impls;
+package com.bluenimble.platform.api.media.impls;
 
 import java.io.IOException;
 import java.io.OutputStream;

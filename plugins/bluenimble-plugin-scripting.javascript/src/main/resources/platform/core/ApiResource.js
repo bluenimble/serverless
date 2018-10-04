@@ -67,7 +67,7 @@ var ApiResource = function (proxy) {
 	  @returns {ApiOutput} an api output
 	*/
 	this.toOutput = function () {
-		return new ApiOutput (new JC_ApiResourceOutput (proxy));
+		return new ApiOutput (new JC_ResourceApiOutput (proxy));
 	};
 	
 	/**	

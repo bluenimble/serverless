@@ -20,17 +20,21 @@ import java.util.Map;
 
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
+import com.bluenimble.platform.ValueHolder;
+import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.api.tracing.Tracer;
+import com.bluenimble.platform.api.tracing.Tracer.Level;
 import com.bluenimble.platform.http.HttpHeaders;
 import com.bluenimble.platform.http.utils.ContentTypes;
 import com.bluenimble.platform.indexer.Indexer;
 import com.bluenimble.platform.indexer.IndexerException;
+import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.remote.Remote;
 import com.bluenimble.platform.remote.Serializer;
 
 public class ElasticSearchIndexer implements Indexer {
-		
+	
 	private interface Internal {
 		String 	Id 			= "id";
 		String 	Timestamp 	= "timestamp";
@@ -39,7 +43,8 @@ public class ElasticSearchIndexer implements Indexer {
 			String Update 	= "_update";
 			String Search 	= "_search";
 			String Doc 		= "doc";
-			String Source 	= "source";
+			String Hits 	= "hits";
+			String Source 	= "_source";
 			String Mapping 	= "_mapping";
 			String Query 	= "query";
 			String MatchAll = "match_all";
@@ -68,7 +73,7 @@ public class ElasticSearchIndexer implements Indexer {
 		
 		tracer.log (Tracer.Level.Info, "Checking if entity [{0}] exists.", entity);
 		
-		Error error = new Error ();
+		ElkError error = new ElkError ();
 		
 		remote.head (
 			(JsonObject)new JsonObject ().set (Remote.Spec.Path, Internal.Elk.Mapping + Lang.SLASH + entity),
@@ -153,7 +158,7 @@ public class ElasticSearchIndexer implements Indexer {
 		tracer.log (Tracer.Level.Info, "Creating entity [{0}] with definition {1}", entity, definition);
 		
 		JsonObject result = new JsonObject ();
-		Error error = new Error ();
+		ElkError error = new ElkError ();
 		
 		JsonObject oEntity = (JsonObject)new JsonObject ()
 			.set (Remote.Spec.Path, entity + Lang.SLASH + Internal.Elk.Mapping)
@@ -208,7 +213,7 @@ public class ElasticSearchIndexer implements Indexer {
 		tracer.log (Tracer.Level.Info, "Deleting all documents in entity [{0}]", entity);
 		
 		JsonObject result = new JsonObject ();
-		Error error = new Error ();
+		ElkError error = new ElkError ();
 		
 		remote.post (
 			(JsonObject)new JsonObject ()
@@ -258,7 +263,7 @@ public class ElasticSearchIndexer implements Indexer {
 		tracer.log (Tracer.Level.Info, "Describe entity [{0}]", entity);
 		
 		JsonObject result = new JsonObject ();
-		Error error = new Error ();
+		ElkError error = new ElkError ();
 		
 		remote.get (
 			(JsonObject)new JsonObject ()
@@ -304,9 +309,11 @@ public class ElasticSearchIndexer implements Indexer {
 			throw new IndexerException ("Entity cannot be null nor empty.");
 		}
 		
-		if (doc == null || doc.isEmpty ()) {
+		if (Json.isNullOrEmpty (doc)) {
 			throw new IndexerException ("Document cannot be null nor empty.");
 		}
+		
+		tracer.log (Level.Info, doc);
 		
 		String id = Json.getString (doc, Internal.Id);
 		if (Lang.isNullOrEmpty (id)) {
@@ -320,7 +327,7 @@ public class ElasticSearchIndexer implements Indexer {
 		tracer.log (Tracer.Level.Info, "Indexing document [{0}]", id);
 		
 		JsonObject result = new JsonObject ();
-		Error error = new Error ();
+		ElkError error = new ElkError ();
 		
 		remote.put (
 			(JsonObject)new JsonObject ()
@@ -370,7 +377,7 @@ public class ElasticSearchIndexer implements Indexer {
 		tracer.log (Tracer.Level.Info, "Lookup document [{0}]", id);
 		
 		JsonObject result = new JsonObject ();
-		Error error = new Error ();
+		ElkError error = new ElkError ();
 		
 		remote.get (
 			(JsonObject)new JsonObject ()
@@ -433,7 +440,7 @@ public class ElasticSearchIndexer implements Indexer {
 		doc.remove (Internal.Id);
 		
 		JsonObject result = new JsonObject ();
-		Error error = new Error ();
+		ElkError error = new ElkError ();
 		
 		remote.post (
 			(JsonObject)new JsonObject ()
@@ -481,7 +488,7 @@ public class ElasticSearchIndexer implements Indexer {
 		}
 		
 		JsonObject result = new JsonObject ();
-		Error error = new Error ();
+		ElkError error = new ElkError ();
 		
 		tracer.log (Tracer.Level.Info, "Delete document [{0}]", id);
 		
@@ -517,7 +524,7 @@ public class ElasticSearchIndexer implements Indexer {
 	}
 
 	@Override
-	public JsonObject search (JsonObject query, String [] entities) throws IndexerException {
+	public JsonObject search (JsonObject dsl, String [] entities) throws IndexerException {
 		if (remote == null) {
 			throw new IndexerException ("No Remoting feature attached to this indexer");
 		}
@@ -527,18 +534,18 @@ public class ElasticSearchIndexer implements Indexer {
 			types = Lang.join (entities, Lang.COMMA);
 		}
 		
-		tracer.log (Tracer.Level.Info, "search documents in [{0}] with query ", types.equals (Lang.BLANK) ? "All Entities" : Lang.join (entities), query);
+		tracer.log (Tracer.Level.Info, "search documents in [{0}] with query ", types.equals (Lang.BLANK) ? "All Entities" : Lang.join (entities), dsl);
 		
-		JsonObject result = new JsonObject ();
-		Error error = new Error ();
+		ValueHolder<JsonObject> result = new ValueHolder<JsonObject> ();
+		ElkError error = new ElkError ();
 		
-		remote.get (
+		remote.post (
 			(JsonObject)new JsonObject ()
 				.set (Remote.Spec.Path, types + (types.equals (Lang.BLANK) ? Lang.BLANK : Lang.SLASH) + Internal.Elk.Search)
 				.set (Remote.Spec.Headers, 
 					new JsonObject ()
 						.set (HttpHeaders.CONTENT_TYPE, ContentTypes.Json)
-				).set (Remote.Spec.Data, new JsonObject ().set (Internal.Elk.Source, Lang.encode (query.toString ())))
+				).set (Remote.Spec.Data, dsl)
 				.set (Remote.Spec.Serializer, Serializer.Name.json), 
 			new Remote.Callback () {
 				@Override
@@ -554,7 +561,7 @@ public class ElasticSearchIndexer implements Indexer {
 				@Override
 				public void onDone (int code, Object data) {
 					if (data != null) {
-						result.putAll ((JsonObject)data);
+						result.set (result ((JsonObject)data));
 					}
 				}
 			}
@@ -564,10 +571,36 @@ public class ElasticSearchIndexer implements Indexer {
 			throw new IndexerException ("Error occured while calling Indexer: Code=" + error.code + ", Message: " + error.message);
 		}
 		
-		return result;
+		return result.get ();
 	}
 	
-	class Error {
+	private JsonObject result (JsonObject result) {
+		
+		JsonObject newResult = (JsonObject)new JsonObject ().set (ApiOutput.Defaults.Items, new JsonArray ());
+		
+		if (Json.isNullOrEmpty (result)) {
+			return newResult;
+		}
+		
+		JsonArray hits = Json.getArray (result, Internal.Elk.Hits);
+		
+		if (Json.isNullOrEmpty (hits)) {
+			return newResult;
+		}
+		
+		JsonArray array = Json.getArray (newResult, ApiOutput.Defaults.Items);
+		
+		for (int i = 0; i < hits.count (); i++) {
+			array.add (Json.getObject ((JsonObject)hits.get (i), Internal.Elk.Source));
+		}
+		
+		result.remove (Internal.Elk.Hits);
+		
+		return newResult.merge (result);
+		
+	}
+	
+	class ElkError {
 		int code;
 		Object message;
 		void set (int code, Object message) {
@@ -579,3 +612,4 @@ public class ElasticSearchIndexer implements Indexer {
 		}
 	}
 }
+	

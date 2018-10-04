@@ -1,5 +1,6 @@
 package com.bluenimble.platform.plugins.protocols.tus.impl.util;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,7 +35,7 @@ public class TusServletResponse extends HttpServletResponseWrapper {
         overwriteHeader(name, Objects.toString(date));
     }
 
-    @Override
+	@Override
     public void addDateHeader(String name, long date) {
         super.addDateHeader(name, date);
         recordHeader(name, Objects.toString(date));
@@ -74,6 +75,16 @@ public class TusServletResponse extends HttpServletResponseWrapper {
         }
         return StringUtils.trimToNull(value);
     }
+
+    @Override
+	public void sendError(int sc, String msg) throws IOException {
+		super.sendError(sc, msg);
+	}
+
+	@Override
+	public void sendError(int sc) throws IOException {
+		super.sendError(sc);
+	}
 
     private void recordHeader(String name, String value) {
         List<String> values = headers.get(name);

@@ -80,7 +80,7 @@ public class VirtualConcatenationService implements UploadConcatenationService {
                 UploadInfo childInfo = uploadStorageService.getUploadInfo(childUri, info.getOwnerKey());
                 if (childInfo == null) {
                     throw new UploadNotFoundException("Upload with URI " + childUri
-                            + " was not found for owner " + info.getOwnerKey());
+                            + " was not found for owner " + info.getOwnerKey ());
                 } else {
                     output.add(childInfo);
                 }

@@ -102,7 +102,7 @@ public class MediaRoutingUtils {
 								response.setStatus (ApiResponse.MOVED_PERMANENTLY);
 							}
 							response.set (ApiHeaders.Location, hv);
-						} if (ApiHeaders.Location.toLowerCase ().equals (name.toLowerCase ())) {
+						} else if (ApiHeaders.Location.toLowerCase ().equals (name.toLowerCase ())) {
 							if (status <= 0) {
 								response.setStatus (ApiResponse.MOVED_PERMANENTLY);
 							}

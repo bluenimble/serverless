@@ -13,9 +13,7 @@ import com.bluenimble.platform.plugins.protocols.tus.impl.upload.UploadStorageSe
  */
 public abstract class AbstractRequestHandler implements RequestHandler {
 
-	private static final String UploadInfo = "Tus.UploadInfo";
-	
-    @Override
+	@Override
     public boolean isErrorHandler() {
         return false;
     }

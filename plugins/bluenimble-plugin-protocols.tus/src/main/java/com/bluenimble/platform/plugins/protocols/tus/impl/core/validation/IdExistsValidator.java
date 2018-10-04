@@ -17,11 +17,11 @@ import com.bluenimble.platform.plugins.protocols.tus.impl.upload.UploadStorageSe
 public class IdExistsValidator implements RequestValidator {
 
     @Override
-    public void validate(HttpMethod method, HttpServletRequest request,
+    public void validate (HttpMethod method, HttpServletRequest request,
                          UploadStorageService uploadStorageService, String ownerKey)
             throws TusException, IOException {
 
-        if (uploadStorageService.getUploadInfo(request.getRequestURI(), ownerKey) == null) {
+        if (uploadStorageService.getUploadInfo (request.getRequestURI(), ownerKey) == null) {
             throw new UploadNotFoundException("The upload for path " + request.getRequestURI()
                     + " and owner " + ownerKey + " was not found.");
         }

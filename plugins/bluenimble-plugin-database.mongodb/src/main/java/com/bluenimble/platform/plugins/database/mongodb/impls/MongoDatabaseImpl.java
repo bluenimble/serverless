@@ -280,9 +280,13 @@ public class MongoDatabaseImpl implements Database {
 	}
 
 	@Override
-	public void finish () {
+	public void finish (boolean withError) {
 		try {
-			commit ();
+			if (withError) {
+				rollback ();
+			} else {
+				commit ();
+			}
 		} catch (DatabaseException ex) {
 			throw new RuntimeException (ex.getMessage (), ex);
 		}

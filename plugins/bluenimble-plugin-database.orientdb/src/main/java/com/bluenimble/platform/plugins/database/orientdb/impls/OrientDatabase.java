@@ -171,7 +171,9 @@ public class OrientDatabase implements Database {
 
 	@Override
 	public OrientDatabase trx () {
-		db.begin ();
+		if (!isTransaction) {
+			db.begin ();
+		}
 		isTransaction = true;
 		return this;
 	}
@@ -320,13 +322,17 @@ public class OrientDatabase implements Database {
 	}
 
 	@Override
-	public void finish () {
+	public void finish (boolean withError) {
 		if (db == null) {
 			return;
 		}
 		
 		try {
-			commit ();
+			if (withError) {
+				rollback ();
+			} else {
+				commit ();
+			}
 		} catch (DatabaseException ex) {
 			throw new RuntimeException (ex.getMessage (), ex);
 		}

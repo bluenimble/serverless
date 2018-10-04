@@ -31,7 +31,7 @@ import com.bluenimble.platform.storage.StorageException;
 import com.bluenimble.platform.streams.Chunk;
 import com.bluenimble.platform.streams.StreamDecorator;
 
-public class ApiFileOutput implements ApiOutput {
+public class FileApiOutput implements ApiOutput {
 
 	private static final long serialVersionUID = -4371715321710893775L;
 	
@@ -42,7 +42,7 @@ public class ApiFileOutput implements ApiOutput {
 	private Folder.Filter 				filter;
 	private JsonObject					meta;
 	
-	public ApiFileOutput (FileSystemStorageObject object, Folder.Filter filter, String altName, String altContentType) {
+	public FileApiOutput (FileSystemStorageObject object, Folder.Filter filter, String altName, String altContentType) {
 		this.object 		= object;
 		this.filter 		= filter;
 		this.name 			= altName != null ? altName : object.name ();

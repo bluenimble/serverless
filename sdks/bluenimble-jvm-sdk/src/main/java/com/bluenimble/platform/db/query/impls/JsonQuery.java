@@ -158,5 +158,13 @@ public class JsonQuery implements Query {
 		}
 		return new JsonHaving (oHaving);
 	}
+	
+	@Override
+	public String toString () {
+		if (source == null) {
+			return null;
+		}
+		return source.toString ();
+	}
 
 }
