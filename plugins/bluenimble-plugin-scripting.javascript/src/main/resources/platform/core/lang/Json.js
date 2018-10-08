@@ -70,6 +70,10 @@ var Json = {
 	
 	date: function (data, property) {
 		return JC_Json.getDate (JC_Converters.convert (data), property);
-	} 
+	}, 
+	
+	template: function (model, data) {
+		return JC_Json.template (JC_Converters.convert (model), JC_Converters.convert (data));
+	}
 	
 };

@@ -40,8 +40,12 @@ import com.bluenimble.platform.security.EncryptionProvider.Mode;
 import com.bluenimble.platform.security.EncryptionProviderException;
 import com.bluenimble.platform.templating.ExpressionCompiler;
 import com.bluenimble.platform.templating.VariableResolver;
+import com.bluenimble.platform.templating.impls.BasicVariableResolver;
+import com.bluenimble.platform.templating.impls.DefaultExpressionCompiler;
 
 public class Json {
+
+	private static final DefaultExpressionCompiler ExpressionCompiler = new DefaultExpressionCompiler ().cacheSize (100);
 
 	public static JsonObject load (String name) throws Exception {
 		return load (Thread.currentThread ().getContextClassLoader (), name);
@@ -468,6 +472,13 @@ public class Json {
 			}
 		} 
 		
+    }
+    
+    public static Object template (JsonObject model, JsonObject data) {
+    	if (Json.isNullOrEmpty (model)) {
+    		return model;
+    	}
+    	return (JsonObject)resolve (model.duplicate (), ExpressionCompiler, new BasicVariableResolver (data));
     }
     
 	public static Object resolve (Object obj, ExpressionCompiler compiler, VariableResolver vr) {

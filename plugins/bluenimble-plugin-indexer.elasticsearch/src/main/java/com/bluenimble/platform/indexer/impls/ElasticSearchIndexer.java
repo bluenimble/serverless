@@ -41,7 +41,6 @@ public class ElasticSearchIndexer implements Indexer {
 		interface Elk {
 			String Update 	= "_update";
 			String Search 	= "_search";
-			String Doc 		= "doc";
 			String Hits 	= "hits";
 			String Source 	= "_source";
 			String Mapping 	= "_mapping";
@@ -205,10 +204,6 @@ public class ElasticSearchIndexer implements Indexer {
 			throw new IndexerException ("No Remoting feature attached to this indexer");
 		}
 		
-		if (Lang.isNullOrEmpty (entity)) {
-			throw new IndexerException ("Entity cannot be null nor empty.");
-		}
-		
 		tracer.log (Tracer.Level.Info, "Deleting all documents in entity [{0}]", entity);
 		
 		JsonObject result = new JsonObject ();
@@ -216,7 +211,7 @@ public class ElasticSearchIndexer implements Indexer {
 		
 		remote.post (
 			(JsonObject)new JsonObject ()
-				.set (Remote.Spec.Path, entity + Lang.SLASH + Internal.Elk.DeleteQ)
+				.set (Remote.Spec.Path, entity (entity) + Internal.Elk.DeleteQ)
 				.set (Remote.Spec.Headers, 
 					new JsonObject ()
 						.set (HttpHeaders.CONTENT_TYPE, ContentTypes.Json)
@@ -304,10 +299,6 @@ public class ElasticSearchIndexer implements Indexer {
 			throw new IndexerException ("No Remoting feature attached to this indexer");
 		}
 		
-		if (Lang.isNullOrEmpty (entity)) {
-			throw new IndexerException ("Entity cannot be null nor empty.");
-		}
-		
 		if (Json.isNullOrEmpty (doc)) {
 			throw new IndexerException ("Document cannot be null nor empty.");
 		}
@@ -328,7 +319,7 @@ public class ElasticSearchIndexer implements Indexer {
 		
 		remote.put (
 			(JsonObject)new JsonObject ()
-				.set (Remote.Spec.Path, entity + Lang.SLASH + id)
+				.set (Remote.Spec.Path, entity (entity) + id)
 				.set (Remote.Spec.Headers, 
 					new JsonObject ()
 						.set (HttpHeaders.CONTENT_TYPE, ContentTypes.Json)
@@ -378,7 +369,7 @@ public class ElasticSearchIndexer implements Indexer {
 		
 		remote.get (
 			(JsonObject)new JsonObject ()
-				.set (Remote.Spec.Path, entity + Lang.SLASH + id)
+				.set (Remote.Spec.Path, entity (entity) + id)
 				.set (Remote.Spec.Serializer, Serializer.Name.json), 
 			new Remote.Callback () {
 				@Override
@@ -423,10 +414,6 @@ public class ElasticSearchIndexer implements Indexer {
 			throw new IndexerException ("Document Id cannot be null.");
 		}
 		
-		if (!doc.containsKey (Internal.Timestamp)) {
-			doc.set (Internal.Timestamp, Lang.utc ());
-		}
-		
 		if (!partial) {
 			tracer.log (Tracer.Level.Info, "It's not partial update. Create document [{0}]", id);
 			return create (entity, doc);
@@ -441,11 +428,11 @@ public class ElasticSearchIndexer implements Indexer {
 		
 		remote.post (
 			(JsonObject)new JsonObject ()
-				.set (Remote.Spec.Path, entity + Lang.SLASH + id + Lang.SLASH + Internal.Elk.Update)
+				.set (Remote.Spec.Path, entity (entity) + id + Lang.SLASH + Internal.Elk.Update)
 				.set (Remote.Spec.Headers, 
 					new JsonObject ()
 						.set (HttpHeaders.CONTENT_TYPE, ContentTypes.Json)
-				).set (Remote.Spec.Data, new JsonObject ().set (Internal.Elk.Doc, doc))
+				).set (Remote.Spec.Data, doc)
 				.set (Remote.Spec.Serializer, Serializer.Name.json), 
 			new Remote.Callback () {
 				@Override
@@ -491,7 +478,7 @@ public class ElasticSearchIndexer implements Indexer {
 		
 		remote.delete (
 			(JsonObject)new JsonObject ()
-				.set (Remote.Spec.Path, entity + Lang.SLASH + id)
+				.set (Remote.Spec.Path, entity (entity) + id)
 				.set (Remote.Spec.Serializer, Serializer.Name.json), 
 			new Remote.Callback () {
 				@Override
@@ -558,7 +545,7 @@ public class ElasticSearchIndexer implements Indexer {
 				@Override
 				public void onDone (int code, Object data) {
 					if (data != null) {
-						result.set (result ((JsonObject)data));
+						result.set (result ( Json.getObject ((JsonObject)data, Internal.Elk.Hits) ) );
 					}
 				}
 			}
@@ -595,6 +582,10 @@ public class ElasticSearchIndexer implements Indexer {
 		
 		return newResult.merge (result);
 		
+	}
+	
+	private String entity (String entity) {
+		return entity == null ? entity + Lang.SLASH : Lang.BLANK;
 	}
 	
 	class ElkError {

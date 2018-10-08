@@ -54,7 +54,7 @@ var Indexer = function (proxy) {
 	  @return {Object} [result] - document getting indexed
 	*/
 	this.put = function (entity, doc) {
-		return proxy.put (entity, JC_Converters.convert (doc));
+		return proxy.put (typeof entity === 'undefined' ? null : entity, JC_Converters.convert (doc));
 	};
 	
 	/**	
@@ -68,7 +68,7 @@ var Indexer = function (proxy) {
 	  @return {Object} [result] - document data
 	*/
 	this.get = function (entity, id) {
-		return proxy.get (entity, id);
+		return proxy.get (typeof entity === 'undefined' ? null : entity, id);
 	};
 	
 	/**	
@@ -80,7 +80,9 @@ var Indexer = function (proxy) {
 	  
 	  api.indexer (request).update ('Orders', {
 	  	id: '123456789',
-	  	price: 500
+	  	doc: {
+	  		price: 500
+	  	}
 	  }, true );
 	  
 	  @return {Object} [result] - document getting re-indexed
@@ -89,7 +91,7 @@ var Indexer = function (proxy) {
 		if (typeof partial === 'undefined' || partial === null) {
 			partial = false;
 		}
-		return proxy.update (entity, JC_Converters.convert (doc), partial);
+		return proxy.update (typeof entity === 'undefined' ? null : entity, JC_Converters.convert (doc), partial);
 	};
 	
 	/**	
@@ -102,7 +104,7 @@ var Indexer = function (proxy) {
 	  @return {Object} [result] - document getting re-indexed
 	*/
 	this.clear = function (entity) {
-		return proxy.clear (entity);
+		return proxy.clear (typeof entity === 'undefined' ? null : entity);
 	};
 	
 	/**	
@@ -116,7 +118,7 @@ var Indexer = function (proxy) {
 	  @return {Object} [result] - delete feedback
 	*/
 	this.delete = function (entity, id) {
-		return proxy.delete (entity, id);
+		return proxy.delete (typeof entity === 'undefined' ? null : entity, id);
 	};
 	
 	/**	
