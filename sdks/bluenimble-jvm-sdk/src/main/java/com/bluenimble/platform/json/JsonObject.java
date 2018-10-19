@@ -523,9 +523,9 @@ public class JsonObject extends JsonAbstractEntity implements Map {
     	return find (exp, FIND_SEP);
     }
     
-    public void shrink () {
+    public JsonObject shrink () {
     	if (isEmpty ()) {
-    		return;
+    		return this;
     	}
     	Iterator<String> keys = keys ();
     	while (keys.hasNext ()) {
@@ -557,6 +557,7 @@ public class JsonObject extends JsonAbstractEntity implements Map {
     			}
     		} 
     	}
+    	return this;
     }
     
     private void shrinkArray (JsonArray child) {

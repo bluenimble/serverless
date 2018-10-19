@@ -1,0 +1,17 @@
+{
+	"namespace": "shell.apache",
+	"name": "Shell Client Implementation - Apache Commons Exec",
+	
+	"spi": {
+		"class": "com.bluenimble.platform.server.plugins.shell.ace.AceShellPlugin",
+		"properties": {
+			"version": "[version]",
+			"vendor": {
+				"name": "BlueNimble, Inc",
+				"links": [{
+					"Read More": "https://www.bluenimble.com"
+				}]
+			}
+		}
+	}
+}	

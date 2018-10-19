@@ -87,8 +87,8 @@ public class TusProtocolPlugin extends AbstractPlugin {
 	
 	interface Defaults {
 		String 	Uri 		= "/tus";
-		String 	DataFolder 	= "data";
-		String 	LocksFolder = "locks";
+		String 	DataFolder 	= "tus-files";
+		String 	LocksFolder = "tus-locks";
 		Long 	MaxSize 	= (long)(1024 * 1024 * 1024); // 1G
 		Long 	ExpiresAfter= (long)(5 * 60); // 5 minutes
 		boolean MultiTenant	= false;

@@ -36,6 +36,7 @@ public interface ApiService extends Manageable {
 			String Roles		= "roles";
 			String Schemes		= "schemes";
 			String Placeholder	= "placeholder";
+			String TokenName	= "tokenName";
 		}
 		
 		interface Media	{

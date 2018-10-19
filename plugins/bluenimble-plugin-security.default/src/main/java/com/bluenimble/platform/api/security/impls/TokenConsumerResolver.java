@@ -46,6 +46,7 @@ public class TokenConsumerResolver implements ApiConsumerResolver {
 
 	interface Defaults {
 		String 	Prefix 			= "Bearer";
+		String 	TokenName 		= "_bnb_tkn_";
 	}
 	
 	interface Spec {
@@ -68,22 +69,33 @@ public class TokenConsumerResolver implements ApiConsumerResolver {
 		
 		String placeholder = Json.getString (service.getSecurity (), ApiService.Spec.Security.Placeholder, Scope.Header.name ());
 		
-		String authHeader 	= (String)request.get (ApiHeaders.Authorization, Scope.valueOf (placeholder));
+		String token = null;
 		
-		if (Lang.isNullOrEmpty (authHeader)) {
-			return null;
-		}
-		
-		String [] pair = Lang.split (authHeader, Lang.SPACE, true);
-		if (pair.length < 2) {
-			return null;
-		}
-		
-		String app 		= pair [0];
-		String token 	= pair [1];
+		Scope scope = Scope.valueOf (placeholder);
+		if (scope.equals (Scope.Header)) {
+			String authHeader 	= (String)request.get (ApiHeaders.Authorization, Scope.valueOf (placeholder));
+			
+			if (Lang.isNullOrEmpty (authHeader)) {
+				return null;
+			}
+			
+			String [] pair = Lang.split (authHeader, Lang.SPACE, true);
+			if (pair.length < 2) {
+				return null;
+			}
+			
+			String app 		= pair [0];
+			token 			= pair [1];
 
-		if (!app.equalsIgnoreCase (scheme)) {
-			return null;
+			if (!app.equalsIgnoreCase (scheme)) {
+				return null;
+			}
+		} else {
+			String tokenParam = Json.getString (service.getSecurity (), ApiService.Spec.Security.TokenName, Defaults.TokenName);
+			token 	= (String)request.get (tokenParam);
+			if (Lang.isNullOrEmpty (token)) {
+				return null;
+			}
 		}
 		
 		ApiConsumer consumer = new DefaultApiConsumer (ApiConsumer.Type.Token);

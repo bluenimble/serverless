@@ -41,6 +41,8 @@
 		
 		<module>bluenimble-plugin-im.default</module>
 
+		<module>bluenimble-plugin-shell.apache</module>
+
 		<module>bluenimble-plugin-inbound.binary.netty</module>
 
 		<module>bluenimble-plugin-inbound.http.jetty</module>
@@ -53,6 +55,7 @@
 		<module>bluenimble-plugin-messenger.socketio</module>			
 		
 		<module>bluenimble-plugin-remote.default</module>
+
 		<module>bluenimble-plugin-scheduler.quartz</module>
 		
 		<module>bluenimble-plugin-scripting.javascript</module>

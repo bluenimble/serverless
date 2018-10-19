@@ -250,6 +250,22 @@ function Api (proxy) {
 	};
 	
 	/**	
+	  Create a new Shell feature object.
+	  If called from the service execute function, the context parameter should be the ApiRequest argument of the execute method
+	  If called from the api findCosumer, the context parameter should be the ApiContext
+	  @param {ApiContext|ApiRequest} [context] the context or the request in which the cache handle will be associated with
+	  @param {string} [feature=default] the name of the cache feature
+	  @returns {Messenger} an instance of a cache object
+	*/
+	this.shell = function (context, feature) {
+		if (!context) {
+			throw "missing argument context";
+		}
+		feature = this._feature ('shell', feature);
+		return new Shell (JC_FeaturesUtils.feature (proxy.space (), JC_FeaturesUtils.Features.Shell, context.proxy, feature));
+	};
+	
+	/**	
 	  Call a service
 	  @param {ApiConsumer} consumer - the consumer making the request
 	  @param {ApiConsumer} request - the request

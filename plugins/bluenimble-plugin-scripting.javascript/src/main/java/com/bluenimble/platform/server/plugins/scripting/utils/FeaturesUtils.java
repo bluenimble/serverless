@@ -26,18 +26,19 @@ import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.indexer.Indexer;
 import com.bluenimble.platform.messaging.Messenger;
 import com.bluenimble.platform.remote.Remote;
+import com.bluenimble.platform.shell.Shell;
 import com.bluenimble.platform.storage.Storage;
 
 public class FeaturesUtils {
 	
 	public interface Features {
 		String Database 	= "database";
-		String DataSource 	= "datasource";
 		String Storage 		= "storage";
 		String Messenger 	= "messenger";
 		String Cache 		= "cache";
 		String Remote 		= "remote";
 		String Indexer 		= "indexer";
+		String Shell		= "shell";
 	}
 	
 	private static final Map<String, Class<?>> FeaturesMap = new HashMap<String, Class<?>> ();
@@ -48,6 +49,7 @@ public class FeaturesUtils {
 		FeaturesMap.put (Features.Cache, Cache.class);
 		FeaturesMap.put (Features.Remote, Remote.class);
 		FeaturesMap.put (Features.Indexer, Indexer.class);
+		FeaturesMap.put (Features.Shell, Shell.class);
 	}
 	
 	@SuppressWarnings("unchecked")
