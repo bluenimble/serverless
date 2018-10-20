@@ -172,6 +172,11 @@ var JC_Libs_BN_Signer 		= Java.type ('com.bluenimble.platform.api.impls.scriptin
 		load (core + '/indexer/Indexer.js');
 	}
 
+	// shell	
+	if (typeof Shell === 'undefined') {
+		load (core + '/shell/Shell.js');
+	}
+
 	// api	
 	if (typeof ApiContext === 'undefined') {
 		load (core + '/ApiContext.js');

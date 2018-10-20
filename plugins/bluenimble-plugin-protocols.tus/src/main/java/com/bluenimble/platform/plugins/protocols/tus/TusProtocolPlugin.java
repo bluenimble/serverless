@@ -86,7 +86,7 @@ public class TusProtocolPlugin extends AbstractPlugin {
 	}
 	
 	interface Defaults {
-		String 	Uri 		= "/tus";
+		String 	Uri 		= "/storage";
 		String 	DataFolder 	= "tus-files";
 		String 	LocksFolder = "tus-locks";
 		Long 	MaxSize 	= (long)(1024 * 1024 * 1024); // 1G

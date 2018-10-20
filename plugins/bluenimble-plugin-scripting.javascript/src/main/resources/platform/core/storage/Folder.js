@@ -75,8 +75,8 @@ Folder.prototype.count = function () {
 };
 
 /**	
-  Check if the object given by name exists under this folder
-  @param {string} - the child name
+  Check if the object given by path exists under this folder
+  @param {string} - the child path
 
   @returns {boolean} - true/false
 */

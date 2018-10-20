@@ -79,13 +79,16 @@
 		"tus": {
 			"default": {
 				"storage": "default",
-                "multiTenant": "false"
+				"multiTenant": "true",
+				"folders": {
+					"data": "raw"
+				}
 			}
 		},
 		"rewrite": {
             "path": {
                 "rules": [{
-                    "if": "ends: /tus", "negate": "true", "methods": ["OPTIONS"], "then": { "bypass": "true" }
+                    "if": "ends: /storage", "negate": "true", "methods": ["OPTIONS"], "then": { "bypass": "true" }
                 }]
             }
         }

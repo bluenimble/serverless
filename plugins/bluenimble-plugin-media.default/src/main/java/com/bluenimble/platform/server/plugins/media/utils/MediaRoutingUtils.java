@@ -38,6 +38,7 @@ public class MediaRoutingUtils {
 	
 	public static final String Charset 		= "charset";
 	public static final String XLocation	= "xLocation";
+	public static final String Ignore		= "__ignore";
 
 	public static final String Success 		= "success";
 	public static final String Error 		= "error";
@@ -92,11 +93,17 @@ public class MediaRoutingUtils {
 						}
 						List<String> values = new ArrayList<String> ();
 						for (int i = 0; i < arr.count (); i++) {
-							values.add (Lang.resolve (String.valueOf (arr.get (i)), vr));
+							String av = Lang.resolve (String.valueOf (arr.get (i)), vr);
+							if (!Ignore.equals (av)) {
+								values.add (av);
+							}
 						}
 						response.set (name, values);
 					} else {
 						hv = Lang.resolve (hv.toString (), vr);
+						if (Ignore.equals (hv)) {
+							continue;
+						}
 						if (XLocation.toLowerCase ().equals (name.toLowerCase ())) {
 							if (status <= 0) {
 								response.setStatus (ApiResponse.MOVED_PERMANENTLY);
