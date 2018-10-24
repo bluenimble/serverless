@@ -53,7 +53,8 @@ public interface Api extends Traceable, Manageable {
 			String Function		= "function";
 		}
 		interface Runtime		{
-			
+			String OnStart		= "onStart";
+			String OnStop		= "onStop";
 		}
 		
 	}

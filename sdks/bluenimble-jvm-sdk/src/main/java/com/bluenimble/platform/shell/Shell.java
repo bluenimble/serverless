@@ -30,6 +30,6 @@ public interface Shell extends Serializable {
 		String Data 	= "data";
 	}
 
-	JsonObject run (String command, JsonObject params) throws ShellException;
+	JsonObject run (String command, JsonObject params);
 	
 }

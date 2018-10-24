@@ -65,9 +65,9 @@
 		},
 		"shell": {
 			"default": {
-				"provider": "shell.apache",
+				"provider": "shell.default",
 				"spec": {
-					"workingDirectory": "~/displaystream/shells"
+					"baseDirectory": "~/displaystream/shells"
 				}
 			}
 		}

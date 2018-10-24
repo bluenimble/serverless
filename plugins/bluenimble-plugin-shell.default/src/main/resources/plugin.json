@@ -1,9 +1,9 @@
 {
-	"namespace": "shell.apache",
-	"name": "Shell Client Implementation - Apache Commons Exec",
+	"namespace": "shell.default",
+	"name": "Default Shell Client Implementation",
 	
 	"spi": {
-		"class": "com.bluenimble.platform.server.plugins.shell.ace.AceShellPlugin",
+		"class": "com.bluenimble.platform.server.plugins.shell.DefaultShellPlugin",
 		"properties": {
 			"version": "[version]",
 			"vendor": {

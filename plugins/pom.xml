@@ -41,7 +41,7 @@
 		
 		<module>bluenimble-plugin-im.default</module>
 
-		<module>bluenimble-plugin-shell.apache</module>
+		<module>bluenimble-plugin-shell.default</module>
 
 		<module>bluenimble-plugin-inbound.binary.netty</module>
 
