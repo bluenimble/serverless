@@ -30,6 +30,7 @@ import com.bluenimble.platform.api.ApiServiceExecutionException;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.ApiSpace.Endpoint;
 import com.bluenimble.platform.api.ApiVerb;
+import com.bluenimble.platform.api.impls.JsonApiOutput;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
@@ -115,7 +116,7 @@ public class SecurityUtils {
 			throws ApiServiceExecutionException {
 		
 		if (onFinish == null || onFinish.isEmpty ()) {
-			return null;
+			return new JsonApiOutput (account);
 		}
 		
 		ApiRequest request = api.space ().request (pRequest, consumer, new Endpoint () {

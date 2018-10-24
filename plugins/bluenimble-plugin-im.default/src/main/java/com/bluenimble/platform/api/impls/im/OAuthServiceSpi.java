@@ -223,18 +223,13 @@ public class OAuthServiceSpi extends AbstractApiServiceSpi {
 			oAuthResult.set (k, oEmail.get (k));
 		}
 
-		// call extend if any
-		JsonObject onFinish = Json.getObject (config, Config.onFinish.class.getSimpleName ());
-		ApiOutput onFinishOutput = SecurityUtils.onFinish (api, consumer, request, onFinish, oAuthResult);
+		// call onFinish if any
+		return SecurityUtils.onFinish (
+			api, consumer, request, 
+			Json.getObject (config, Config.onFinish.class.getSimpleName ()), 
+			oAuthResult
+		);
 		
-		if (onFinishOutput != null) {
-			oAuthResult.set (
-				Json.getString (onFinish, Config.onFinish.ResultProperty, Config.onFinish.class.getSimpleName ()),
-				onFinishOutput.data ()
-			);
-		}
-		
-		return new JsonApiOutput (oAuthResult);
 	}
 
 }

@@ -65,7 +65,10 @@
 		},
 		"shell": {
 			"default": {
-				"provider": "shell.apache"
+				"provider": "shell.apache",
+				"spec": {
+					"workingDirectory": "~/displaystream/shells"
+				}
 			}
 		}
 	},
@@ -81,7 +84,7 @@
 				"storage": "default",
 				"multiTenant": "true",
 				"folders": {
-					"data": "raw"
+					"data": "raw-files"
 				}
 			}
 		},

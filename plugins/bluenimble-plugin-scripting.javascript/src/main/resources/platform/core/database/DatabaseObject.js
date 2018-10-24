@@ -40,6 +40,10 @@ var DatabaseObject = function (database, proxy) {
 			return this;
 		}
 		this.proxy.load (JC_Converters.convert (values));
+		
+		// refresh id if it's part of the payload
+		this.id = proxy.getId ();
+		
 		return this;
 	};
 	
@@ -114,6 +118,10 @@ var DatabaseObject = function (database, proxy) {
 		} 
 		
 		proxy.set (key, value);
+		
+		if (key == 'id') {
+			this.id = proxy.getId ();
+		}
 	
 		return this;
 	};

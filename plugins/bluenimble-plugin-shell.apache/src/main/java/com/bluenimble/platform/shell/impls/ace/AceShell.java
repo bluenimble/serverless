@@ -54,14 +54,16 @@ public class AceShell implements Shell {
 			exitCode = executor.execute (commandLine);
 		} catch (ExecuteException ee) {
 			result.set (Spec.Code, ee.getExitValue ());
-			result.set (Spec.Code, out.toString ().trim ());
+			result.set (Spec.Message, out.toString ().trim ());
+			return result;
 		} catch (Exception ge) {
 			result.set (Spec.Code, 1000);
-			result.set (Spec.Code, Lang.toString (ge));
+			result.set (Spec.Message, Lang.toString (ge));
+			return result;
 		}
 		
 		result.set (Spec.Code, exitCode);
-		result.set (Spec.Code, out.toString ().trim ());
+		result.set (Spec.Message, out.toString ().trim ());
 		
 		return result;
 	}

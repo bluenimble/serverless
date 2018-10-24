@@ -40,6 +40,9 @@ public class CreateTokenSpi extends AbstractApiServiceSpi {
 			throws ApiServiceExecutionException {
 		
 		JsonObject payload = (JsonObject)request.get (ApiRequest.Payload);
+		if (payload == null) {
+			payload = new JsonObject ();
+		}
 		
 		long age = Json.getLong (payload, ApiSpace.Spec.secrets.Age, 0);
 		

@@ -223,18 +223,12 @@ public class SignupServiceSpi extends AbstractApiServiceSpi {
 			}
 		}
 		
-		// call extend if any
-		JsonObject onFinish = Json.getObject (config, Config.onFinish.class.getSimpleName ());
-		ApiOutput onFinishOutput = SecurityUtils.onFinish (api, consumer, request, onFinish, result);
-		
-		if (onFinishOutput != null) {
-			result.set (
-				Json.getString (onFinish, Config.onFinish.ResultProperty, Config.onFinish.class.getSimpleName ()),
-				onFinishOutput.data ()
-			);
-		}
-		
-		return new JsonApiOutput (result);
+		// call onFinish if any
+		return SecurityUtils.onFinish (
+			api, consumer, request, 
+			Json.getObject (config, Config.onFinish.class.getSimpleName ()),
+			result
+		);
 	}
 
 }

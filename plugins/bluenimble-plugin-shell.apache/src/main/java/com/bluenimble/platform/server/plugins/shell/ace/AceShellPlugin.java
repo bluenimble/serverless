@@ -25,11 +25,11 @@ import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.json.JsonObject;
-import com.bluenimble.platform.messaging.Messenger;
 import com.bluenimble.platform.plugins.Plugin;
 import com.bluenimble.platform.plugins.impls.AbstractPlugin;
 import com.bluenimble.platform.server.ApiServer;
 import com.bluenimble.platform.server.ServerFeature;
+import com.bluenimble.platform.shell.Shell;
 import com.bluenimble.platform.shell.impls.ace.AceShell;
 
 public class AceShellPlugin extends AbstractPlugin {
@@ -45,7 +45,7 @@ public class AceShellPlugin extends AbstractPlugin {
 	@Override
 	public void init (final ApiServer server) throws Exception {
 		
-		Feature aFeature = Messenger.class.getAnnotation (Feature.class);
+		Feature aFeature = Shell.class.getAnnotation (Feature.class);
 		if (aFeature == null || Lang.isNullOrEmpty (aFeature.name ())) {
 			return;
 		}
@@ -59,7 +59,7 @@ public class AceShellPlugin extends AbstractPlugin {
 			}
 			@Override
 			public Class<?> type () {
-				return Messenger.class;
+				return Shell.class;
 			}
 			@Override
 			public Object get (ApiSpace space, String name) {
@@ -93,8 +93,8 @@ public class AceShellPlugin extends AbstractPlugin {
 		
 		DefaultExecutor executor = new DefaultExecutor ();
 		String workingDir = Json.getString (spec, Spec.WorkingDirectory, userHome);
-		if (Lang.TILDE.equals (workingDir)) {
-			workingDir = userHome;
+		if (workingDir.startsWith (Lang.TILDE)) {
+			workingDir = userHome + workingDir;
 		}
 		executor.setWorkingDirectory (new File (workingDir));
 		

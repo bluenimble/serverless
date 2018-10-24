@@ -27,7 +27,6 @@ import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.ApiServiceExecutionException;
 import com.bluenimble.platform.api.ApiSpace;
-import com.bluenimble.platform.api.impls.JsonApiOutput;
 import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.db.Database;
@@ -161,21 +160,12 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 			oAccount.set (ApiConsumer.Fields.ExpiryDate, tokenAndExpiration [1]);
 		} 
 		
-		// call extend if any
-		JsonObject onFinish = Json.getObject (config, Config.onFinish.class.getSimpleName ());
-		
-		ApiOutput onFinishOutput = SecurityUtils.onFinish (api, consumer, request, onFinish, oAccount);
-		
-		oAccount.remove (Database.Fields.Id);
-		
-		if (onFinishOutput != null) {
-			oAccount.set (
-				Json.getString (onFinish, Config.onFinish.ResultProperty, Config.onFinish.class.getSimpleName ()),
-				onFinishOutput.data ()
-			);
-		}
-		
-		return new JsonApiOutput (oAccount);
+		// call onFinish if any
+		return SecurityUtils.onFinish (
+			api, consumer, request, 
+			Json.getObject (config, Config.onFinish.class.getSimpleName ()), 
+			oAccount
+		);
 	}
 	
 }

@@ -85,7 +85,7 @@ var Tracer = function (proxy) {
 		if (args == null || args.length < 2) {
 			throw 'wrong number of arguments';
 		}
-		proxy.log (args [0], args [1], Array.prototype.slice.call (args, 2));
+		proxy.log (args [0], JC_Converters.convert (args [1]), Array.prototype.slice.call (args, 2));
 	};
 	
 };
