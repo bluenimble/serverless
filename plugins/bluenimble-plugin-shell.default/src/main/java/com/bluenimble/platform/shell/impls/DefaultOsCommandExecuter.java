@@ -134,7 +134,7 @@ public class DefaultOsCommandExecuter implements OsCommandExecuter {
 		Object shell = createShell(command);
 
 		if (shell == null) {
-			throw new OsCommandExecuterException (1000, "No command to execute");
+			throw new OsCommandExecuterException (OsCommandExecuterException.OtherError, "No command to execute");
 		}
 
 		Process p = null;
@@ -144,7 +144,7 @@ public class DefaultOsCommandExecuter implements OsCommandExecuter {
 			} else if (shell instanceof String[]) {
 				p = rt.exec ((String[]) shell, env, baseDir);
 			} else {
-				throw new OsCommandExecuterException (1000, "Command not supported");
+				throw new OsCommandExecuterException (OsCommandExecuterException.OtherError, "Command not supported");
 			}
 			p.waitFor ();
 		} catch (Exception e) {

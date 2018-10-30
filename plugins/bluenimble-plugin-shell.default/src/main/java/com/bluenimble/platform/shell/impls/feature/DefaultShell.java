@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.shell.impls.ace;
+package com.bluenimble.platform.shell.impls.feature;
 
 import java.io.File;
 
@@ -39,6 +39,14 @@ public class DefaultShell implements Shell {
 		this.executer = executer;
 	}
 	
+	public DefaultShell (String baseDirectory, OsCommandExecuter executer) {
+		if (baseDirectory.startsWith (Lang.TILDE)) {
+			baseDirectory = System.getProperty ("user.home") + baseDirectory.substring (1);
+		}
+		this.baseDirectory = new File (baseDirectory);
+		this.executer = executer;
+	}
+	
 	@Override
 	public JsonObject run (String command, JsonObject params) {
 		
@@ -56,14 +64,16 @@ public class DefaultShell implements Shell {
 							throws OsCommandExecuterCallbackException {
 						result.set (Spec.Code, exitValue);
 						result.set (Spec.Data, response);
+						handle.destroy ();
 					}
 				}
 			);
 		} catch (OsCommandExecuterException ee) {
+			ee.printStackTrace ();
 			result.set (Spec.Code, ee.getExitValue ());
-			result.set (Spec.Message, ee.getMessage ());
+			result.set (Spec.Message, ee.getMessage () != null ? ee.getMessage ().trim () : Lang.BLANK);
 		} catch (Exception ge) {
-			result.set (Spec.Code, 1000);
+			result.set (Spec.Code, OsCommandExecuterException.OtherError);
 			result.set (Spec.Message, Lang.toString (ge));
 		}
 		

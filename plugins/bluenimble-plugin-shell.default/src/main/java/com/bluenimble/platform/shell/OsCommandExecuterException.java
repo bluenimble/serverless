@@ -3,6 +3,8 @@ package com.bluenimble.platform.shell;
 public class OsCommandExecuterException extends Exception {
 
 	private static final long serialVersionUID = 445615871551158801L;
+	
+	public static final int OtherError = 10000;
 
 	private int exitValue;
 	
@@ -13,6 +15,7 @@ public class OsCommandExecuterException extends Exception {
 
 	public OsCommandExecuterException (int exitValue, String message) {
 		super (message);
+		this.exitValue = exitValue;
 	}
 
 	public OsCommandExecuterException (Throwable th) {

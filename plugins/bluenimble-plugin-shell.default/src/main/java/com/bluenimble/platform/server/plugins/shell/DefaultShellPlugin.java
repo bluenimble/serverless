@@ -41,7 +41,7 @@ import com.bluenimble.platform.server.ServerFeature;
 import com.bluenimble.platform.shell.OsCommandExecuter;
 import com.bluenimble.platform.shell.Shell;
 import com.bluenimble.platform.shell.impls.DefaultOsCommandExecuter;
-import com.bluenimble.platform.shell.impls.ace.DefaultShell;
+import com.bluenimble.platform.shell.impls.feature.DefaultShell;
 
 public class DefaultShellPlugin extends AbstractPlugin {
 
@@ -179,12 +179,7 @@ public class DefaultShellPlugin extends AbstractPlugin {
 			return;
 		}
 		
-		String userHome = System.getProperty ("user.home");
-		
-		String baseDirectory = Json.getString (spec, Spec.BaseDirectory, userHome);
-		if (baseDirectory.startsWith (Lang.TILDE)) {
-			baseDirectory = userHome + baseDirectory.substring (1);
-		}
+		String baseDirectory = Json.getString (spec, Spec.BaseDirectory, System.getProperty ("user.home"));
 		
 		Set<Integer> sSuccessCodes = null;
 		
@@ -196,7 +191,7 @@ public class DefaultShellPlugin extends AbstractPlugin {
 			}
 		}
 
-		RecyclableOsCommandExecuter roce = new RecyclableOsCommandExecuter (new File (baseDirectory), new DefaultOsCommandExecuter (sSuccessCodes));
+		RecyclableOsCommandExecuter roce = new RecyclableOsCommandExecuter (baseDirectory, new DefaultOsCommandExecuter (sSuccessCodes));
 		
 		space.addRecyclable (dataSourceKey, roce);
 	}
@@ -220,10 +215,10 @@ public class DefaultShellPlugin extends AbstractPlugin {
 	class RecyclableOsCommandExecuter implements Recyclable {
 		private static final long serialVersionUID = 50882416501226306L;
 
-		private File				baseDirectory;
+		private String				baseDirectory;
 		private OsCommandExecuter 	osCommandExecuter;
 		
-		public RecyclableOsCommandExecuter (File baseDirectory, OsCommandExecuter osCommandExecuter) {
+		public RecyclableOsCommandExecuter (String baseDirectory, OsCommandExecuter osCommandExecuter) {
 			this.baseDirectory 		= baseDirectory;
 			this.osCommandExecuter 	= osCommandExecuter;
 		}
@@ -232,7 +227,7 @@ public class DefaultShellPlugin extends AbstractPlugin {
 			return osCommandExecuter;
 		}
 		
-		public File getBaseDirectory () {
+		public String getBaseDirectory () {
 			return baseDirectory;
 		}
 		
