@@ -32,6 +32,7 @@ import com.bluenimble.platform.api.ApiSpace.Endpoint;
 import com.bluenimble.platform.api.ApiVerb;
 import com.bluenimble.platform.api.impls.JsonApiOutput;
 import com.bluenimble.platform.api.security.ApiConsumer;
+import com.bluenimble.platform.api.tracing.Tracer.Level;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 
@@ -74,9 +75,13 @@ public class SecurityUtils {
 		if (age == 0) {
 			age = Json.getLong (auth, ApiSpace.Spec.secrets.Age, Json.getLong (secrets, ApiSpace.Spec.secrets.Age, 60));
 		} 
-		age = age  * 60 * 1000;
+		age = age * 60 * 1000;
+		
+		api.tracer ().log (Level.Info, "Encrypt -> Token Age: {0}", age);
 		
 		long expiresOn = now.getTime () + age;
+		
+		api.tracer ().log (Level.Info, "Encrypt -> Token Expires On: {0}", expiresOn);
 
 		// encrypt
 		String toEncrypt = expiresOn + Lang.SPACE + thing;
@@ -98,7 +103,12 @@ public class SecurityUtils {
 		}
 		StringBuilder sb = new StringBuilder ();
 		for (int i = 0; i < fields.count (); i++) {
-			Object v = Json.find (entity, Lang.split (String.valueOf (fields.get (i)), Lang.DOT));
+			String field = String.valueOf (fields.get (i));
+			int indexOfGt = field.indexOf (Lang.GREATER);
+			if (indexOfGt > 0) {
+				field = field.substring (0, indexOfGt);
+			}
+			Object v = Json.find (entity, Lang.split (field, Lang.DOT));
 			if (v != null) {
 				sb.append (String.valueOf (v));
 			}

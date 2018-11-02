@@ -33,8 +33,11 @@ import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.security.ApiConsumerResolver;
 import com.bluenimble.platform.api.security.ApiConsumerResolverAnnotation;
 import com.bluenimble.platform.api.tracing.Tracer;
+import com.bluenimble.platform.api.tracing.Tracer.Level;
 import com.bluenimble.platform.json.JsonArray;
+import com.bluenimble.platform.json.JsonException;
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.json.JsonParser;
 import com.bluenimble.platform.server.security.impls.DefaultApiConsumer;
 
 @ApiConsumerResolverAnnotation (name = TokenConsumerResolver.Scheme)
@@ -43,6 +46,10 @@ public class TokenConsumerResolver implements ApiConsumerResolver {
 	private static final long serialVersionUID = 889277317993642120L;
 	
 	protected static final String Scheme = "token";
+	
+	interface Casts {
+		String 	Json 			= "json";
+	}
 
 	interface Defaults {
 		String 	Prefix 			= "Bearer";
@@ -164,11 +171,17 @@ public class TokenConsumerResolver implements ApiConsumerResolver {
 		String sExpiry 	= decrypted.substring (0, indexOfSpace);
 		
 		long expiry = Long.valueOf (sExpiry);
+		
+		api.tracer ().log (Level.Info, "Check -> Token Expires in date/millis : {0}", expiry);
+		
+		api.tracer ().log (Level.Info, "Check -> Compare to Now : {0}", System.currentTimeMillis ());
+		
 		if (expiry < System.currentTimeMillis ()) {
 			if (isServiceSecure) {
 				throw new ApiAuthenticationException ("token expired");
 			} 
 		}
+		
 		consumer.set (ApiConsumer.Fields.ExpiryDate, Lang.toUTC (new Date (expiry)));
 		
 		String sInfo 	= decrypted.substring (indexOfSpace + 1);
@@ -177,13 +190,38 @@ public class TokenConsumerResolver implements ApiConsumerResolver {
 		if (fields == null || fields.isEmpty ()) {
 			consumer.set (ApiConsumer.Fields.Id, sInfo);
 		} else {
+			JsonObject data = new JsonObject ();
 			String [] values = Lang.split (sInfo, Lang.SEMICOLON);
 			for (int i = 0; i < fields.count (); i++) {
 				if (i >= values.length) {
 					break;
 				}
-				consumer.set ((String)fields.get (i), values [i]);
+				String sValue = values [i];
+				if (Lang.BLANK.equals(sValue)) {
+					continue;
+				}
+				
+				String field = (String)fields.get (i);
+				
+				Object value = sValue;
+				
+				int indexOfGt = field.indexOf (Lang.GREATER);
+				if (indexOfGt > 0) {
+					field = field.substring (0, indexOfGt);
+					String converter = field.substring (indexOfGt + 1).trim ();
+					if (Lang.BLANK.equals (converter) || Casts.Json.equals (converter)) {
+						try {
+							value = JsonParser.parse (sValue);
+						} catch (JsonException ex) {
+							throw new ApiAuthenticationException ("Issue to read token value of " + field, ex);
+						}
+					}
+				}
+				
+				Json.set (data, field, value);
 			}
+			
+			((DefaultApiConsumer)consumer).load (data.shrink ());
 		}
 		
 		consumer.set (ApiConsumer.Fields.Permissions, secrets.get (ApiConsumer.Fields.Permissions));

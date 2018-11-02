@@ -117,6 +117,9 @@ public class HttpRemote extends BaseRemote {
 		
 		String path = Json.getString (spec, Spec.Path);
 		if (!Lang.isNullOrEmpty (path)) {
+			if (!path.startsWith (Lang.SLASH) && !endpoint.endsWith (Lang.SLASH)) {
+				path = Lang.SLASH + path;
+			}
 			endpoint += path;
 		}
 		
@@ -381,7 +384,7 @@ public class HttpRemote extends BaseRemote {
 			}
 			String password = Json.getString (oSign, Spec.Password);
 			if (Lang.isNullOrEmpty (password)) {
-				throw new Exception ("basic-auth password not found in spec");
+				password = Lang.BLANK;
 			}
 			
 			return request.newBuilder ().header (

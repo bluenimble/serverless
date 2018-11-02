@@ -171,11 +171,11 @@ public class DefaultShellPlugin extends AbstractPlugin {
 			return;
 		}
 		
-		String dataSourceKey = createKey (name);
+		String shellKey = createKey (name);
 		
-		tracer ().log (Tracer.Level.Info, "Create OsCommandExecutor {0}", dataSourceKey);
+		tracer ().log (Tracer.Level.Info, "Create OsCommandExecutor {0}", shellKey);
 		
-		if (space.containsRecyclable (dataSourceKey)) {
+		if (space.containsRecyclable (shellKey)) {
 			return;
 		}
 		
@@ -193,7 +193,9 @@ public class DefaultShellPlugin extends AbstractPlugin {
 
 		RecyclableOsCommandExecuter roce = new RecyclableOsCommandExecuter (baseDirectory, new DefaultOsCommandExecuter (sSuccessCodes));
 		
-		space.addRecyclable (dataSourceKey, roce);
+		space.addRecyclable (shellKey, roce);
+		
+		feature.set (ApiSpace.Spec.Installed, true);
 	}
 	
 	private void removeClient (ApiSpace space, String featureName) {

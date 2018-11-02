@@ -16,19 +16,25 @@
  */
 package com.bluenimble.platform.server.plugins.indexer.elasticsearch;
 
+import java.util.Iterator;
+
 import com.bluenimble.platform.Feature;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.ApiContext;
 import com.bluenimble.platform.api.ApiSpace;
+import com.bluenimble.platform.api.Manageable;
 import com.bluenimble.platform.api.tracing.Tracer.Level;
 import com.bluenimble.platform.indexer.Indexer;
 import com.bluenimble.platform.indexer.impls.ElasticSearchIndexer;
+import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.Plugin;
+import com.bluenimble.platform.plugins.PluginRegistryException;
 import com.bluenimble.platform.plugins.impls.AbstractPlugin;
 import com.bluenimble.platform.remote.Remote;
 import com.bluenimble.platform.server.ApiServer;
 import com.bluenimble.platform.server.ServerFeature;
+import com.bluenimble.platform.server.ApiServer.Event;
 
 public class ElasticSearchPlugin extends AbstractPlugin {
 
@@ -36,6 +42,7 @@ public class ElasticSearchPlugin extends AbstractPlugin {
 	
 	interface Spec {
 		String Remote = "remote";
+		String Index = "index";
 	}
 	
 	private String feature;
@@ -67,13 +74,14 @@ public class ElasticSearchPlugin extends AbstractPlugin {
 			@Override
 			public Object get (ApiSpace space, String name) {
 				String remoteFeature = (String)Json.find (space.getFeatures (), feature, name, ApiSpace.Features.Spec, Spec.Remote);
+				String index 		 = (String)Json.find (space.getFeatures (), feature, name, ApiSpace.Features.Spec, Spec.Index);
 				tracer.log (Level.Info, "Indexer Feature Remote " + remoteFeature);
 				Remote remote = null;
 				if (!Lang.isNullOrEmpty (remoteFeature)) {
 					remote = space.feature (Remote.class, remoteFeature, ApiContext.Instance);
 				}
 				
-				return new ElasticSearchIndexer (remote, tracer);
+				return new ElasticSearchIndexer (remote, index, tracer);
 			}
 			
 			@Override
@@ -87,74 +95,42 @@ public class ElasticSearchPlugin extends AbstractPlugin {
 			}
 		});
 	}
-
-	/*
-	public JsonObject getRemote () {
-		return remote;
-	}
-
-	public void setRemote (JsonObject remote) {
-		this.remote = remote;
-	}
-
-	private String buildUrl (ApiSpace space, String name) {
-		JsonObject spec = getSpec (space, name);
-		if (spec == null) {
-			return null;
+	
+	@Override
+	public void onEvent (Event event, Manageable target, Object... args) throws PluginRegistryException {
+		if (!ApiSpace.class.isAssignableFrom (target.getClass ())) {
+			return;
 		}
 		
-		String host 	= Json.getString (spec, SpaceSpec.Host);
+		ApiSpace space = (ApiSpace)target;
 		
-		String index 	= Json.getString (spec, SpaceSpec.Index);
-		if (Lang.isNullOrEmpty (host) || Lang.isNullOrEmpty (index)) {
-			return null;
+		JsonObject allFeatures = Json.getObject (space.getFeatures (), feature);
+		
+		if (Json.isNullOrEmpty (allFeatures)) {
+			return;
 		}
 		
-		if (!host.endsWith (Lang.SLASH)) {
-			host += Lang.SLASH;
+		switch (event) {
+			case Create:
+				Iterator<String> keys = allFeatures.keys ();
+				while (keys.hasNext ()) {
+					String name = keys.next ();
+					JsonObject feature = Json.getObject (allFeatures, name);
+					if (!this.getNamespace ().equalsIgnoreCase (Json.getString (feature, ApiSpace.Features.Provider))) {
+						continue;
+					}
+					feature.set (ApiSpace.Spec.Installed, true);
+				}
+				break;
+			case AddFeature:
+				JsonObject feature = Json.getObject (allFeatures, (String)args [0]);
+				if (this.getNamespace ().equalsIgnoreCase (Json.getString (feature, ApiSpace.Features.Provider))) {
+					feature.set (ApiSpace.Spec.Installed, true);
+				}
+				break;
+			default:
+				break;
 		}
-		
-		return host + index + Lang.SLASH;
 	}
 	
-	private String buildAuthToken (ApiSpace space, String name) {
-
-		JsonObject spec = getSpec (space, name);
-		if (spec == null) {
-			return null;
-		}
-		
-		JsonObject auth = Json.getObject (spec, SpaceSpec.Auth);
-		if (Json.isNullOrEmpty (auth)) {
-			return null;
-		}
-		
-		String userName = Json.getString (auth, SpaceSpec.User);
-		String userPwd 	= Json.getString (auth, SpaceSpec.Password);
-		if (Lang.isNullOrEmpty (userName) || Lang.isNullOrEmpty (userPwd)) {
-			return null;
-		}
-		
-		String combination = userName + Lang.COLON + userPwd;
-		return "Basic " + Base64.getEncoder ().encodeToString (combination.getBytes ());
-	}
-	
-	private JsonObject getSpec (ApiSpace space, String name) {
-		JsonObject indexerFeatures = Json.getObject (space.getFeatures (), feature);
-		if (indexerFeatures == null || indexerFeatures.isEmpty ()) {
-			return null;
-		}
-		
-		JsonObject indexerFeature = Json.getObject (indexerFeatures, name);
-		if (indexerFeature == null || indexerFeature.isEmpty ()) {
-			return null;
-		}
-		
-		if (!this.getNamespace ().equalsIgnoreCase (Json.getString (indexerFeature, ApiSpace.Features.Provider))) {
-			return null;
-		}
-		
-		return Json.getObject (indexerFeature, ApiSpace.Features.Spec);
-	}
-	*/
 }

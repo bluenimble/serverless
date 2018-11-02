@@ -78,5 +78,9 @@ public class DefaultApiConsumer implements ApiConsumer {
 		type 		= dConsumer.type;
 		reference 	= dConsumer.reference;
 	}
+	
+	public void load (JsonObject values) {
+		data.putAll (values);
+	}
 
 }

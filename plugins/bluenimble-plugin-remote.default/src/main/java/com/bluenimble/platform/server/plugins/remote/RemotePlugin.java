@@ -204,8 +204,7 @@ public class RemotePlugin extends AbstractPlugin {
 		
 		String recyclableKey = createKey (name);
 		
-		Recyclable recyclable = space.getRecyclable (recyclableKey);
-		if (recyclable != null) {
+		if (space.containsRecyclable (recyclableKey)) {
 			return;
 		}
 		

@@ -237,7 +237,6 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 					api.getSpi ().afterExecute (api, consumer, service, request, response);
 				} catch (Exception ex) {
 					executeError = ex;
-					
 				}
 			}
 			

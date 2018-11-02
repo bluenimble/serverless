@@ -51,10 +51,13 @@ public class ElasticSearchIndexer implements Indexer {
 	}
 	
 	private 			Remote remote;
+	private 			String index;
+	
 	private 			Tracer tracer;
 
-	public ElasticSearchIndexer (Remote remote, Tracer tracer) {
+	public ElasticSearchIndexer (Remote remote, String index, Tracer tracer) {
 		this.remote 	= remote;
+		this.index 		= index;
 		this.tracer 	= tracer;
 	}
 	
@@ -518,14 +521,14 @@ public class ElasticSearchIndexer implements Indexer {
 			types = Lang.join (entities, Lang.COMMA);
 		}
 		
-		tracer.log (Tracer.Level.Info, "search documents in [{0}] with query {1}", types.equals (Lang.BLANK) ? "All Entities" : Lang.join (entities), dsl);
+		tracer.log (Tracer.Level.Info, "search documents in index {0} / [{1}] with query {2}", index, types.equals (Lang.BLANK) ? "All Entities" : Lang.join (entities), dsl);
 		
 		ValueHolder<JsonObject> result = new ValueHolder<JsonObject> ();
 		ElkError error = new ElkError ();
 		
 		remote.post (
 			(JsonObject)new JsonObject ()
-				.set (Remote.Spec.Path, types + (types.equals (Lang.BLANK) ? Lang.BLANK : Lang.SLASH) + Internal.Elk.Search)
+				.set (Remote.Spec.Path, index + Lang.SLASH + types + (types.equals (Lang.BLANK) ? Lang.BLANK : Lang.SLASH) + Internal.Elk.Search)
 				.set (Remote.Spec.Headers, 
 					new JsonObject ()
 						.set (HttpHeaders.CONTENT_TYPE, ContentTypes.Json)
@@ -585,7 +588,15 @@ public class ElasticSearchIndexer implements Indexer {
 	}
 	
 	private String entity (String entity) {
-		return entity == null ? entity + Lang.SLASH : Lang.BLANK;
+		String path = index;
+		
+		if (!Lang.isNullOrEmpty (path)) {
+			path += Lang.SLASH;
+		}
+		if (!Lang.isNullOrEmpty (entity)) {
+			path += entity;
+		} 
+		return Lang.isNullOrEmpty (path) ? Lang.BLANK : path + Lang.SLASH;
 	}
 	
 	class ElkError {

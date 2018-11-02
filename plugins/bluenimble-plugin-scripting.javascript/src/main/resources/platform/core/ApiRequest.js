@@ -225,6 +225,33 @@ var ApiRequest = function (proxy) {
 		return selected;
 	};
 	
+	/**	
+	  Get parameters starting with a specific prefix
+	  @param {string} - character string
+	  @param {ApiRequest.Scope} [scope=ApiRequest.Parameter] - the scope. ApiRequest.Parameter, ApiRequest.Header or ApiRequest.Stream
+	  @returns {JsonObject} an object with all parameters and corresponding values 
+	*/
+	this.having = function (str, scope) {
+		if (!scope) {
+			scope = JC_ApiRequest_Scope.Parameter;
+		} else {
+			scope = JC_ApiRequest_Scope.valueOf (scope);
+		}
+		var pKeys = proxy.keys (scope);
+		if (!pKeys) {
+			return;
+		}
+		var selected = {};
+		while (pKeys.hasNext ()) {
+			var key = pKeys.next ();
+			if (key.indexOf (str) >= 0) {
+				continue;
+			}
+			selected [key] = proxy.get (key, scope);
+		}
+		return selected;
+	};
+	
 };
 ApiRequest.prototype.Scope = {
 	Header: 	'Header',
