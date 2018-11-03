@@ -40,6 +40,7 @@ public class ElasticSearchIndexer implements Indexer {
 		
 		interface Elk {
 			String Update 	= "_update";
+			String Create	= "_create";
 			String Search 	= "_search";
 			String Hits 	= "hits";
 			String Source 	= "_source";
@@ -105,46 +106,6 @@ public class ElasticSearchIndexer implements Indexer {
 		
 		throw new IndexerException ("Error occured while calling Indexer: Code=" + error.code + ", Message: " + error.message);
 	}
-	
-	/*
-	
-	@Override
-	public JsonObject init () throws IndexerException {
-		JsonObject result 	= new JsonObject ();
-		Error error 		= new Error ();
-		
-		JsonObject oEntity 	= (JsonObject)new JsonObject ()
-			.set (Remote.Spec.Endpoint, url)
-			.set (Remote.Spec.Headers, 
-				new JsonObject ()
-					.set (HttpHeaders.AUTHORIZATION, authToken)
-					.set (HttpHeaders.CONTENT_TYPE, ContentTypes.Json)
-			).set (Remote.Spec.Serializer, Serializer.Name.json);
-		
-		remote.put (
-			oEntity, 
-			new Remote.Callback () {
-				@Override
-				public void onData (int code, byte [] data) {
-					if (data != null) {
-						result.putAll ((JsonObject)data);
-					}
-				}
-				@Override
-				public void onError (int code, Object message) {
-					error.set (code, message);
-				}
-			}
-		);
-		
-		if (error.happened ()) {
-			throw new IndexerException ("Error occured while calling Indexer: Code=" + error.code + ", Message: " + error.message);
-		}
-		
-		return result;
-	}
-	
-	*/
 	
 	@Override
 	public JsonObject create (String entity, JsonObject definition) throws IndexerException {
@@ -322,7 +283,7 @@ public class ElasticSearchIndexer implements Indexer {
 		
 		remote.put (
 			(JsonObject)new JsonObject ()
-				.set (Remote.Spec.Path, entity (entity) + id)
+				.set (Remote.Spec.Path, entity (entity) + id + Lang.SLASH + Internal.Elk.Create)
 				.set (Remote.Spec.Headers, 
 					new JsonObject ()
 						.set (HttpHeaders.CONTENT_TYPE, ContentTypes.Json)
@@ -588,15 +549,10 @@ public class ElasticSearchIndexer implements Indexer {
 	}
 	
 	private String entity (String entity) {
-		String path = index;
-		
-		if (!Lang.isNullOrEmpty (path)) {
-			path += Lang.SLASH;
+		if (Lang.isNullOrEmpty (entity)) {
+			return index + Lang.SLASH;
 		}
-		if (!Lang.isNullOrEmpty (entity)) {
-			path += entity;
-		} 
-		return Lang.isNullOrEmpty (path) ? Lang.BLANK : path + Lang.SLASH;
+		return index + Lang.SLASH + entity + Lang.SLASH;
 	}
 	
 	class ElkError {

@@ -45,6 +45,7 @@ var JC_ApiRequest 			= Java.type ('com.bluenimble.platform.api.ApiRequest');
 var JC_ContainerApiRequest 	= Java.type ('com.bluenimble.platform.api.impls.ContainerApiRequest');
 var JC_ApiRequest_Scope 	= Java.type ('com.bluenimble.platform.api.ApiRequest.Scope');
 var JC_ApiStreamSource 		= Java.type ('com.bluenimble.platform.api.impls.DefaultApiStreamSource');
+var JC_ForEachCallback 		= Java.type ('com.bluenimble.platform.api.ApiRequest.ForEachCallback');
 
 var JC_ApiResponse 			= Java.type ('com.bluenimble.platform.api.ApiResponse');
 

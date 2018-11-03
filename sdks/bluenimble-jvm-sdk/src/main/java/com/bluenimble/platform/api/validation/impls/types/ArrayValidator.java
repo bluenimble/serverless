@@ -17,6 +17,7 @@
 package com.bluenimble.platform.api.validation.impls.types;
 
 import com.bluenimble.platform.Json;
+import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.security.ApiConsumer;
@@ -58,8 +59,12 @@ public class ArrayValidator extends AbstractTypeValidator {
 		if (value instanceof JsonArray) {
 			array = (JsonArray)value;
 		} else {
+			String sValue = String.valueOf (value);
+			if (!sValue.startsWith (Lang.ARRAY_OPEN)) {
+				sValue = Lang.ARRAY_OPEN + sValue + Lang.ARRAY_CLOSE;
+			}
 			try {
-				array = new JsonArray (String.valueOf (value));
+				array = new JsonArray (sValue);
 			} catch (JsonException e) {
 				return ValidationUtils.feedback (
 					null, spec, Spec.Type, 
@@ -83,7 +88,11 @@ public class ArrayValidator extends AbstractTypeValidator {
 		for (int i = 0; i < array.count (); i++) {
 			Object feedback = tValidator.validate (api, consumer, request, validator, name, label + "->index " + i, spec, array.get (i));
 			if (feedback != null) {
-				return feedback;
+				if (feedback instanceof JsonObject) {
+					return feedback;
+				} else {
+					array.set (i, feedback);
+				}
 			}
 		}
 		

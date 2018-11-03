@@ -82,8 +82,12 @@ public class MapValidator extends AbstractTypeValidator {
 			}
 			updateRequest = true;
 		} else {
+			String sValue = String.valueOf (value);
+			if (!sValue.startsWith (Lang.ARRAY_OPEN)) {
+				sValue = Lang.OBJECT_OPEN + sValue + Lang.OBJECT_CLOSE;
+			}
 			try {
-				object = new JsonObject (String.valueOf (value));
+				object = new JsonObject (sValue);
 			} catch (JsonException e) {
 				return ValidationUtils.feedback (
 					null, spec, Spec.Type, 
@@ -107,7 +111,7 @@ public class MapValidator extends AbstractTypeValidator {
 			Set<String> fields = object.keySet ();
 			for (String field : fields) {
 				if (!object.containsKey (field)) {
-					
+					failingFields.add (field);
 				}
 			}
 			if (!failingFields.isEmpty ()) {

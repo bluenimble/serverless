@@ -16,6 +16,7 @@
  */
 package com.bluenimble.platform.plugins.inbound.http.impl;
 
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -190,6 +191,62 @@ public class HttpApiRequest extends AbstractApiRequest {
 		return EmptyIterator;
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	public void forEach (Scope scope, ForEachCallback callback) {
+		Iterator<String> keys = null;
+		switch (scope) {
+			case Header:
+				Enumeration<String> headers = proxy.getHeaderNames ();
+				if (headers == null) {
+					break;
+				}
+				while (headers.hasMoreElements ()) {
+					String key = headers.nextElement ();
+					callback.visit (key, proxy.getHeader (key));
+				}
+				break;
+			case Stream:
+				if (streams == null || streams.isEmpty ()) {
+					break;
+				}
+				keys = streams.keySet ().iterator ();
+				while (keys.hasNext ()) {
+					String key = keys.next ();
+					callback.visit (key, streams.get (key));
+				}
+				break;
+			case Parameter:
+				if (application != null && !application.isEmpty ()) {
+					keys = application.keySet ().iterator ();
+					while (keys.hasNext ()) {
+						String key = keys.next ();
+						callback.visit (key, application.get (key));
+					}
+				}
+				
+				if (fields != null && !fields.isEmpty ()) {
+					keys = fields.keySet ().iterator ();
+					while (keys.hasNext ()) {
+						String key = keys.next ();
+						callback.visit (key, fields.get (key));
+					}
+				}
+				
+				Map params = proxy.getParameterMap ();
+				if (params != null && !params.isEmpty ()) {
+					keys = params.keySet ().iterator ();
+					while (keys.hasNext ()) {
+						String key = keys.next ();
+						callback.visit (key, params.get (key));
+					}
+				}
+				break;
+			default:
+				break;
+		}
+	}
+
 	@Override
 	public void destroy () {
 		super.destroy ();

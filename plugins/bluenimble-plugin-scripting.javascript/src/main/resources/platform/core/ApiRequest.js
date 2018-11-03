@@ -200,56 +200,21 @@ var ApiRequest = function (proxy) {
 	
 	/**	
 	  Get parameters starting with a specific prefix
-	  @param {string} - prefix
 	  @param {ApiRequest.Scope} [scope=ApiRequest.Parameter] - the scope. ApiRequest.Parameter, ApiRequest.Header or ApiRequest.Stream
-	  @returns {JsonObject} an object with all parameters and corresponding values 
+	  @param {Function} - callback (key, value)
 	*/
-	this.withPrefix = function (prefix, scope) {
+	this.forEach = function (scope, callback) {
 		if (!scope) {
 			scope = JC_ApiRequest_Scope.Parameter;
 		} else {
 			scope = JC_ApiRequest_Scope.valueOf (scope);
 		}
-		var pKeys = proxy.keys (scope);
-		if (!pKeys) {
-			return;
-		}
-		var selected = {};
-		while (pKeys.hasNext ()) {
-			var key = pKeys.next ();
-			if (key.indexOf (prefix) != 0) {
-				continue;
+		var JC_Callback = Java.extend (JC_ForEachCallback, {
+			visit: function (key, value) {
+				callback (key, value);
 			}
-			selected [key] = proxy.get (key, scope);
-		}
-		return selected;
-	};
-	
-	/**	
-	  Get parameters starting with a specific prefix
-	  @param {string} - character string
-	  @param {ApiRequest.Scope} [scope=ApiRequest.Parameter] - the scope. ApiRequest.Parameter, ApiRequest.Header or ApiRequest.Stream
-	  @returns {JsonObject} an object with all parameters and corresponding values 
-	*/
-	this.having = function (str, scope) {
-		if (!scope) {
-			scope = JC_ApiRequest_Scope.Parameter;
-		} else {
-			scope = JC_ApiRequest_Scope.valueOf (scope);
-		}
-		var pKeys = proxy.keys (scope);
-		if (!pKeys) {
-			return;
-		}
-		var selected = {};
-		while (pKeys.hasNext ()) {
-			var key = pKeys.next ();
-			if (key.indexOf (str) >= 0) {
-				continue;
-			}
-			selected [key] = proxy.get (key, scope);
-		}
-		return selected;
+		});
+		return proxy.forEach (scope, new JC_Callback ());
 	};
 	
 };

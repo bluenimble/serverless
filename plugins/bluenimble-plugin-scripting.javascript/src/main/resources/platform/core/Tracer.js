@@ -85,7 +85,13 @@ var Tracer = function (proxy) {
 		if (args == null || args.length < 2) {
 			throw 'wrong number of arguments';
 		}
-		proxy.log (args [0], JC_Converters.convert (args [1]), Array.prototype.slice.call (args, 2));
+		var level = args [0];
+		var message = args [1];
+		
+		// remove level and message from args
+		args.splice (0, 2)
+		
+		proxy.log (level, JC_Converters.convert (message), Java.to (args, "java.lang.Object[]"));
 	};
 	
 };

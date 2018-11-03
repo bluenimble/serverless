@@ -38,6 +38,10 @@ public interface ApiRequest extends ApiContext {
 
 	String Transport			= "transport";
 	String Payload				= "payload";
+	
+	interface ForEachCallback {
+		void visit (String key, Object value);
+	}
 
 	interface Fields {
 		String Id 				= "id";
@@ -115,6 +119,7 @@ public interface ApiRequest extends ApiContext {
 	Object 				get 			(String name, Scope... 	scope);
 	void 				set 			(String name, Object 	value, Scope... 	scope);
 	Iterator<String>	keys 			(Scope 	scope);
+	void				forEach			(Scope 	scope, ForEachCallback callback);
 	
 	JsonObject			toJson 			();
 	

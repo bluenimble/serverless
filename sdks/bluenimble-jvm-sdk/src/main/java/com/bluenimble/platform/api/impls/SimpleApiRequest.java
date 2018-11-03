@@ -113,6 +113,33 @@ public class SimpleApiRequest extends AbstractApiRequest {
 	}
 	
 	@Override
+	public void forEach (Scope scope, ForEachCallback callback) {
+		Iterator<String> keys = null;
+		switch (scope) {
+			case Header:
+				if (headers != null && !headers.isEmpty ()) {
+					keys = headers.keySet ().iterator ();
+					while (keys.hasNext ()) {
+						String key = keys.next ();
+						callback.visit (key, headers.get (key));
+					}
+				}
+				break;
+			case Parameter:
+				if (application != null && !application.isEmpty ()) {
+					keys = application.keySet ().iterator ();
+					while (keys.hasNext ()) {
+						String key = keys.next ();
+						callback.visit (key, application.get (key));
+					}
+				}
+				break;
+			default:
+				break;
+		}
+	}
+
+	@Override
 	protected void setHeader (String name, Object value) {
 		if (headers == null) {
 			headers = new HashMap<String, Object> ();
