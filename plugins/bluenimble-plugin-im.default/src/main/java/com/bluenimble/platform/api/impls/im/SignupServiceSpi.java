@@ -49,7 +49,6 @@ import com.bluenimble.platform.messaging.impls.JsonActor;
 import com.bluenimble.platform.messaging.impls.JsonRecipient;
 import com.bluenimble.platform.messaging.impls.JsonSender;
 import com.bluenimble.platform.plugins.im.SecurityUtils;
-import com.bluenimble.platform.reflect.beans.impls.DefaultBeanSerializer;
 
 public class SignupServiceSpi extends AbstractApiServiceSpi {
 
@@ -117,6 +116,7 @@ public class SignupServiceSpi extends AbstractApiServiceSpi {
 			
 			JsonObject extraData = Json.getObject (config, Config.Data);
 			if (extraData != null && !extraData.isEmpty ()) {
+				extraData = (JsonObject)Json.template (extraData, payload);
 				Iterator<String> keys = extraData.keys ();
 				while (keys.hasNext ()) {
 					String key = keys.next ();
@@ -149,7 +149,9 @@ public class SignupServiceSpi extends AbstractApiServiceSpi {
 		
 		payload.remove (Spec.Password);
 		
-		JsonObject result = account.toJson (DefaultBeanSerializer.Default);
+		JsonObject result = account.toJson (LoginServiceSpi.BeanSerializer);
+		
+		result.set (Config.Owner, Defaults.Yes);
 		
 		String email = Json.getString (payload, Spec.Email); 
 		if (Lang.isNullOrEmpty (email)) {

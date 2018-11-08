@@ -426,7 +426,11 @@ public abstract class AbstractApiServer implements ApiServer {
 			
 			if (request.get (ApiRequest.Reject) != null) {
 				Status status = (Status)request.get (ApiRequest.Reject);
-				sendError (response, status, status.getMessage ());
+				String message = (String)request.get (ApiRequest.RejectMessage);
+				if (Lang.isNullOrEmpty (message)) {
+					message = status.getMessage ();
+				}
+				sendError (response, status, message);
 				request.destroy ();
 				return;
 			}

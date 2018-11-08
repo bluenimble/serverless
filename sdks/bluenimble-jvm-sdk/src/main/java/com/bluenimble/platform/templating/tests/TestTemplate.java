@@ -17,7 +17,6 @@
 package com.bluenimble.platform.templating.tests;
 
 import com.bluenimble.platform.Json;
-import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.templating.SimpleVariableResolver;
 import com.bluenimble.platform.templating.VariableResolver;
@@ -48,11 +47,9 @@ public class TestTemplate {
 
 			@Override
 			public Object resolve (String namespace, String... property) {
-				System.out.println (namespace);
 				if (namespace == null) {
 					return null;
 				}
-				System.out.println (Lang.join (property, Lang.DOT));
 				if (namespace == null || namespace.equals ("model")) {
 					return Json.find (model, property);
 				}

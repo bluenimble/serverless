@@ -42,8 +42,8 @@ public class DefaultApiConsumer implements ApiConsumer {
 	}
 
 	@Override
-	public Object get (String property) {
-		return data.get (property);
+	public Object get (String... property) {
+		return Json.find (data, property);
 	}
 
 	@Override

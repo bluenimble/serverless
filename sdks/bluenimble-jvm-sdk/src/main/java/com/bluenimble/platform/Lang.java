@@ -26,6 +26,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -33,7 +34,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -210,7 +210,7 @@ public class Lang {
         sb.setLength (0);
         return s;
     }
-    
+    /*
 	public static String [] split (String str, String separator, boolean trim) {
 		if (str == null) {
 			return null;
@@ -227,6 +227,33 @@ public class Lang {
 		while (st.hasMoreTokens ()) {
 			values [pos++] = (trim ? st.nextToken ().trim () : st.nextToken ()) ;
 		}
+		
+		return values;
+	}
+	*/
+
+	public static String [] split (String str, String separator, boolean trim) {
+		if (str == null) {
+			return null;
+		}
+		if (separator == null || str.indexOf (separator) < 0) {
+			return new String [] { trim ? str.trim () : str};
+		}
+
+		List<String> list = new ArrayList<String> ();
+		
+		int index = str.indexOf (separator);
+		while (index >= 0) {
+			String v = str.substring (0, index);
+			list.add (trim ? v.trim () : v);
+			str = str.substring (index + separator.length ());
+			index = str.indexOf (separator);
+		}
+		
+		list.add (trim ? str.trim () : str);
+		
+		String [] values = new String [list.size ()];
+		list.toArray (values);
 		
 		return values;
 	}
@@ -959,7 +986,9 @@ public class Lang {
     }
     
     public static void main (String [] args) {
-		System.out.println (template ("hello [alpha]", (JsonObject)new JsonObject ().set ("alpha", "Simo")));
+    	String str = "this.port | '9090'";
+		String [] values = Lang.split (str, "|", true);
+		System.out.println (Lang.join (values, "|"));
 	}
     
 }

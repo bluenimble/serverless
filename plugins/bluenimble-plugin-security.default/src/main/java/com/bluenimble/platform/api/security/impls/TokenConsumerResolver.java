@@ -217,7 +217,6 @@ public class TokenConsumerResolver implements ApiConsumerResolver {
 						}
 					}
 				}
-				
 				Json.set (data, field, value);
 			}
 			

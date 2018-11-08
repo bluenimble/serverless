@@ -108,7 +108,7 @@ public class ProcessTusSpi extends AbstractApiServiceSpi {
 		
 		switch (tsr.tenantPlaceholder ()) {
 			case consumer:
-				tenant = (String)consumer.get (tsr.tenantKey ());
+				tenant = (String)consumer.get (Lang.split (tsr.tenantKey (), Lang.DOT));
 				break;
 			case request:
 				tenant = (String)request.get (tsr.tenantKey ());

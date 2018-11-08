@@ -22,11 +22,13 @@ import java.util.Set;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.PackageClassLoader;
+import com.bluenimble.platform.Recyclable;
 import com.bluenimble.platform.api.ApiContext;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.Manageable;
 import com.bluenimble.platform.api.protocols.tus.impls.ProcessTusSpi;
 import com.bluenimble.platform.api.security.ApiConsumer;
+import com.bluenimble.platform.api.tracing.Tracer.Level;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.PluginRegistryException;
@@ -63,9 +65,9 @@ public class TusProtocolPlugin extends AbstractPlugin {
 		
 		String MultiTenant	
 						= "multiTenant";
-		String OwnerKey	= "ownerKey";
-		String OwnerPlaceholder	
-						= "ownerPlaceholder";
+		String TenantKey	= "tenantKey";
+		String TenantPlaceholder	
+						= "tenantPlaceholder";
 		String BypassTenantCheck
 						= "bypassTenantCheck";
 
@@ -147,14 +149,15 @@ public class TusProtocolPlugin extends AbstractPlugin {
 	
 	private void createClients (ApiSpace space) throws PluginRegistryException {
 		JsonObject allTus = (JsonObject)space.getRuntime (Spec.Tus);
-		
+		tracer.log (Level.Info, "All Tus -> " + allTus);
 		if (Json.isNullOrEmpty (allTus)) {
 			return;
 		}
 		
 		Iterator<String> keys = allTus.keys ();
 		while (keys.hasNext ()) {
-			createClient (space, allTus, keys.next ());
+			String key = keys.next ();
+			createClient (space, allTus, key);
 		}
 	}
 	
@@ -222,11 +225,11 @@ public class TusProtocolPlugin extends AbstractPlugin {
 				
 		// set multi-tenancy params
 		
-		String tenantKey = Json.getString (oTus, Spec.OwnerKey, ApiConsumer.Fields.Id);
+		String tenantKey = Json.getString (oTus, Spec.TenantKey, ApiConsumer.Fields.Id);
 		
 		OwnerPlaceholder tenantPlaceholder = 
 			OwnerPlaceholder.valueOf (
-				Json.getString (oTus, Spec.OwnerPlaceholder, OwnerPlaceholder.consumer.name ()).toLowerCase ()
+				Json.getString (oTus, Spec.TenantPlaceholder, OwnerPlaceholder.consumer.name ()).toLowerCase ()
 			);
 		
 		space.addRecyclable (createKey (name), new RecyclableTusService (service, tenantKey, tenantPlaceholder, tracer));
@@ -235,7 +238,7 @@ public class TusProtocolPlugin extends AbstractPlugin {
 	}
 	
 	private void updateClients (ApiSpace space) throws PluginRegistryException {
-		// remove deleted services
+		// remove clients
 		Set<String> keys = space.getRecyclables ();
 		if (keys != null && !keys.isEmpty ()) {
 			for (String key : keys) {
@@ -246,8 +249,8 @@ public class TusProtocolPlugin extends AbstractPlugin {
 	}
 	
 	private void removeClient (ApiSpace space, String key) {
-		RecyclableTusService recyclable = (RecyclableTusService)space.getRecyclable (key);
-		if (recyclable == null) {
+		Recyclable recyclable = space.getRecyclable (key);
+		if (!(recyclable instanceof RecyclableTusService)) {
 			return;
 		}
 		// remove from recyclables

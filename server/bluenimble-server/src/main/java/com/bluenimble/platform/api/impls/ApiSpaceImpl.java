@@ -674,7 +674,7 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 				runtime.merge (change);
 			}
 			// notify runtime changed
-			server.getPluginsRegistry ().onEvent (Event.Update, this, ApiServer.EventSubject.Runtime);
+			server.getPluginsRegistry ().onEvent (Event.Update, space, ApiServer.EventSubject.Runtime);
 		} catch (Exception e) {
 			throw new ApiManagementException (e.getMessage (), e);
 		}

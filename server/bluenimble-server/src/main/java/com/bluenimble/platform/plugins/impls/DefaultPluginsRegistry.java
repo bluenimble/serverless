@@ -437,7 +437,7 @@ public class DefaultPluginsRegistry implements PluginsRegistry, ClassLoaderRegis
 		final Iterator<String> names = getNames ();
 		while (names.hasNext ()) {
 			String plugin = names.next ();
-			lockup (plugin).onEvent (event, target);
+			lockup (plugin).onEvent (event, target, args);
 		}
 	}
 

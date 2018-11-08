@@ -35,11 +35,14 @@ import com.bluenimble.platform.db.query.Query;
 import com.bluenimble.platform.db.query.impls.JsonQuery;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.im.SecurityUtils;
+import com.bluenimble.platform.reflect.beans.BeanSerializer;
 import com.bluenimble.platform.reflect.beans.impls.DefaultBeanSerializer;
 
 public class LoginServiceSpi extends AbstractApiServiceSpi {
 
 	private static final long serialVersionUID = -5297356423303847595L;
+	
+	public static final BeanSerializer BeanSerializer = new DefaultBeanSerializer (1, 1);
 	
 	interface ActivationCodeTypes {
 		String UUID = "uuid";
@@ -48,13 +51,22 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 	}
 	
 	interface Defaults {
+		String 	Organization	= "organization";	
 		String 	User 			= "User";
 		String 	ActivationCode	= "activationCode";
+		String 	Yes				= "y";
+		String 	No				= "n";
 	}
 
 	public interface Config {
+		String Lookup					= "lookup";
+		String Check					= "check";
 		String Database 				= "database";
+		String Entity					= "entity";
 		String Query					= "query";
+		String SetField					= "setField";
+		String Organization				= "organization";
+		String IfPresent				= "ifPresent";
 		String RequiresActivation		= "requiresActivation";
 		String UseUserAsEmailAddress	= "useUserAsEmailAddress";
 		
@@ -73,6 +85,8 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 		String SignupEmail				= "email";
 		
 		String Data 					= "data";
+		
+		String Owner					= "owner";
 		
 		interface onFinish	{
 			String ResultProperty = "resultProperty";
@@ -119,6 +133,8 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 					Json.getString (config, Config.PasswordProperty, Fields.Password), 
 					encryptPassword ? Crypto.md5 (Json.getString (payload, Spec.Password), Encodings.UTF8) : Json.getString (payload, Spec.Password)
 				);
+			} else {
+				query = (JsonObject)Json.template (query, payload);
 			}
 						
 			account = db.findOne (Json.getString (config, Config.UsersEntity, Defaults.User), new JsonQuery (query));
@@ -139,10 +155,50 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 			active = false;
 		}
 		
-		JsonObject oAccount = account.toJson (DefaultBeanSerializer.Default);
+		JsonObject oAccount = account.toJson (BeanSerializer);
 		
 		oAccount.remove (Json.getString (config, Config.PasswordProperty, Spec.Password));
 
+		JsonObject 	org 				= Json.getObject (config, Config.Organization);
+		String 		ifPresentField 		= (String)Json.find (config, Config.Organization, Config.IfPresent);
+		
+		if (org != null && payload.get (ifPresentField) != null) {
+			JsonObject lookup 		= Json.getObject (org, Config.Lookup);
+			JsonObject lookupQuery 	= Json.getObject (lookup, Config.Query);
+			JsonObject check 		= Json.getObject (org, Config.Check);
+			JsonObject checkQuery 	= Json.getObject (check, Config.Query);
+			
+			if (lookupQuery != null && checkQuery != null) {
+				lookupQuery = (JsonObject)Json.template (lookupQuery, payload);
+				checkQuery = (JsonObject)Json.template (checkQuery, payload);
+
+				DatabaseObject oOrg = null;
+				try {
+					oOrg = db.findOne (Json.getString (lookup, Config.Entity, Defaults.Organization), new JsonQuery (lookupQuery));
+				} catch (Exception ex) {
+					throw new ApiServiceExecutionException (ex.getMessage (), ex);
+				}
+				if (oOrg == null) {
+					throw new ApiServiceExecutionException ("organization not found").status (ApiResponse.UNAUTHORIZED);
+				}
+				
+				// check if part of this org
+				DatabaseObject checkRecord = null;
+				try {
+					checkRecord = db.findOne (Json.getString (check, Config.Entity, Defaults.Organization), new JsonQuery (checkQuery));
+				} catch (Exception ex) {
+					throw new ApiServiceExecutionException (ex.getMessage (), ex);
+				}
+				if (checkRecord == null) {
+					throw new ApiServiceExecutionException ("organization link not found").status (ApiResponse.UNAUTHORIZED);
+				}
+				
+				oAccount.set (Json.getString (org, Config.SetField, Defaults.Organization), oOrg.toJson (DefaultBeanSerializer.Default));
+			}
+		} else {
+			oAccount.set (Config.Owner, Defaults.Yes);
+		}
+		
 		if (active) {
 			Date now = new Date ();
 			

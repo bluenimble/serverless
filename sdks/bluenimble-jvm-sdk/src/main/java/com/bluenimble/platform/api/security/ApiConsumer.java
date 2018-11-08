@@ -55,7 +55,7 @@ public interface ApiConsumer extends Referenceable {
 	
 	Type 		type ();
 
-	Object 		get (String property);
+	Object 		get (String... property);
 	void 		set (String property, Object value);
 	
 	JsonObject 	toJson ();

@@ -36,7 +36,9 @@ import org.apache.commons.fileupload.servlet.ServletRequestContext;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.ApiContentTypes;
 import com.bluenimble.platform.api.ApiHeaders;
+import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiRequestBodyReader;
+import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.ApiStreamSource;
 import com.bluenimble.platform.api.ApiVerb;
 import com.bluenimble.platform.api.impls.AbstractApiRequest;
@@ -105,46 +107,52 @@ public class HttpApiRequest extends AbstractApiRequest {
 		if (!ApiVerb.POST.equals (verb) && !ApiVerb.PUT.equals (verb)) {
 			return;
 		}
-		if (FileUploadBase.isMultipartContent (new ServletRequestContext (proxy))) {
-			ServletFileUpload upload = new ServletFileUpload (Factory);
-			streams = new HashMap<String, ApiStreamSource> ();
-			fields 	= new HashMap<String, Object> ();
-			List<FileItem> items = upload.parseRequest (proxy);
-			Iterator<FileItem> iter = items.iterator ();
-			while (iter.hasNext ()) {
-			    FileItem item = iter.next ();
-			    tracer.log (Tracer.Level.Debug, "\t Upload Field {0}", item.getFieldName ());
-			    if (item.isFormField ()) {
-			    	fields.put (item.getFieldName (), item.getString ());
-			    } else {
-			    	streams.put (
-			    		item.getFieldName (), 
-			    		new DefaultApiStreamSource (item.getFieldName (), item.getName (), item.getContentType (), item.getInputStream ())
-			    			.setClosable (true)
-			    	);
-			    }
+		try {
+			if (FileUploadBase.isMultipartContent (new ServletRequestContext (proxy))) {
+				ServletFileUpload upload = new ServletFileUpload (Factory);
+				streams = new HashMap<String, ApiStreamSource> ();
+				fields 	= new HashMap<String, Object> ();
+				List<FileItem> items = upload.parseRequest (proxy);
+				Iterator<FileItem> iter = items.iterator ();
+				while (iter.hasNext ()) {
+				    FileItem item = iter.next ();
+				    tracer.log (Tracer.Level.Debug, "\t Upload Field {0}", item.getFieldName ());
+				    if (item.isFormField ()) {
+				    	fields.put (item.getFieldName (), item.getString ());
+				    } else {
+				    	streams.put (
+				    		item.getFieldName (), 
+				    		new DefaultApiStreamSource (item.getFieldName (), item.getName (), item.getContentType (), item.getInputStream ())
+				    			.setClosable (true)
+				    	);
+				    }
+				}
+				return;
+			} 
+			
+			String contentType = proxy.getContentType ();
+			
+			if (contentType == null) {
+				return;
 			}
-			return;
+			
+			int indexOfSemiColon = contentType.indexOf (Lang.SEMICOLON);
+			if (indexOfSemiColon > 0) {
+				contentType = contentType.substring (0, indexOfSemiColon);
+			}
+			
+			if (!NonPayloadTypes.contains (contentType)) {
+				ApiRequestBodyReader reader = plugin.getReader (contentType.toLowerCase ());
+				if (reader == null) {
+					reader = plugin.getReader (ApiContentTypes.Stream);
+				}
+				set (Payload, reader.read (proxy.getInputStream (), contentType), Scope.Parameter);
+			}
+		} catch (Exception ex) {
+			tracer.log (Tracer.Level.Warning, ex.getMessage (), ex);
+			set (ApiRequest.Reject, ApiResponse.EXPECTATION_FAILED);
+			set (ApiRequest.RejectMessage, ex.getMessage ());
 		} 
-		
-		String contentType = proxy.getContentType ();
-		
-		if (contentType == null) {
-			return;
-		}
-		
-		int indexOfSemiColon = contentType.indexOf (Lang.SEMICOLON);
-		if (indexOfSemiColon > 0) {
-			contentType = contentType.substring (0, indexOfSemiColon);
-		}
-		
-		if (!NonPayloadTypes.contains (contentType)) {
-			ApiRequestBodyReader reader = plugin.getReader (contentType.toLowerCase ());
-			if (reader == null) {
-				reader = plugin.getReader (ApiContentTypes.Stream);
-			}
-			set (Payload, reader.read (proxy.getInputStream (), contentType), Scope.Parameter);
-		}
 	}
 
 	@Override
