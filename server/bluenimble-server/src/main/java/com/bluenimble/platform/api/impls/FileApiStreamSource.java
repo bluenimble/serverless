@@ -82,4 +82,9 @@ public class FileApiStreamSource implements ApiStreamSource {
 		IOUtils.closeQuietly (stream);
 	}
 
+	@Override
+	public long length () {
+		return file.length ();
+	}
+
 }

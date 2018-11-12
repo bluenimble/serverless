@@ -12,7 +12,7 @@ public class TextApiRequestBodyReader implements ApiRequestBodyReader {
 	private static final long serialVersionUID = -9161966870378744014L;
 
 	@Override
-	public Object read (InputStream payload, String contentType) throws IOException {
+	public Object read (InputStream payload, String contentType, long length) throws IOException {
 		try {
 			return IOUtils.toString (payload);
 		} catch (Exception ex) {

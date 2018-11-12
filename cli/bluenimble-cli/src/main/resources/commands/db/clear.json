@@ -1,7 +1,7 @@
 {
 	"handlers": {
 		"entity": {
-			"description": "drop an entity. Please use with caution, data is not recoverable",
+			"description": "clear entity data. Please use with caution, data is not recoverable",
 			
 			"args": [{
 				"name": "entity", "desc": "database entity name"

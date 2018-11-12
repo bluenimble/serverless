@@ -37,6 +37,7 @@ import com.bluenimble.platform.api.ApiResource;
 import com.bluenimble.platform.api.ApiStreamSource;
 import com.bluenimble.platform.api.impls.FileApiStreamSource;
 import com.bluenimble.platform.api.media.MediaTypeUtils;
+import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.streams.Chunk;
 import com.bluenimble.platform.streams.StreamDecorator;
 
@@ -246,6 +247,17 @@ public class FileApiResource implements ApiResource {
 
 	public boolean exists () {
 		return file.exists ();
+	}
+
+	@Override
+	public Object template (JsonObject data) throws IOException {
+		InputStream is = null;
+		try {
+			is = new FileInputStream (file);
+			return Lang.template (IOUtils.toString (is), data);
+		} finally {
+			IOUtils.closeQuietly (is);
+		}
 	}
 
 }

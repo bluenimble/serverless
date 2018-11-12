@@ -13,8 +13,8 @@ public class StreamApiRequestBodyReader implements ApiRequestBodyReader {
 	private static final long serialVersionUID = -9161966870378744014L;
 
 	@Override
-	public Object read (InputStream payload, String contentType) throws IOException {
-		return new DefaultApiStreamSource (ApiRequest.Payload, ApiRequest.Payload, contentType, payload).setClosable (true);
+	public Object read (InputStream payload, String contentType, long length) throws IOException {
+		return new DefaultApiStreamSource (ApiRequest.Payload, ApiRequest.Payload, contentType, length, payload).setClosable (true);
 	}
 
 	@Override

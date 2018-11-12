@@ -112,6 +112,11 @@ public class ApiServiceImpl implements ApiService {
 	}
 
 	@Override
+	public String getId () {
+		return Json.getString (source, Spec.Id);
+	}
+
+	@Override
 	public String getName () {
 		String name = Json.getString (source, Spec.Name);
 		if (Lang.isNullOrEmpty (name)) {

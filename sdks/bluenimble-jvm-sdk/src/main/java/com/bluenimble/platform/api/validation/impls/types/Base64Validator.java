@@ -16,12 +16,17 @@
  */
 package com.bluenimble.platform.api.validation.impls.types;
 
+import java.io.UnsupportedEncodingException;
+
+import com.bluenimble.platform.Encodings;
+import com.bluenimble.platform.Json;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.validation.ApiServiceValidator;
 import com.bluenimble.platform.api.validation.ApiServiceValidator.Spec;
 import com.bluenimble.platform.api.validation.FieldType;
+import com.bluenimble.platform.api.validation.TypeValidator;
 import com.bluenimble.platform.api.validation.impls.AbstractTypeValidator;
 import com.bluenimble.platform.api.validation.impls.ValidationUtils;
 import com.bluenimble.platform.encoding.Base64;
@@ -68,7 +73,32 @@ public class Base64Validator extends AbstractTypeValidator {
 			);
 		}
 		
-		return content;
+		try {
+			sValue = new String (content, Json.getString (spec, Spec.Charset, Encodings.UTF8));
+		} catch (UnsupportedEncodingException e) {
+			return ValidationUtils.feedback (
+				null, spec, Spec.Type,
+				e.getMessage ()
+			);
+		}
+		
+		String sType = Json.getString (spec, Spec.SType, FieldType.String);
+		
+		TypeValidator tValidator = validator.getTypeValidator (sType);
+		if (tValidator == null) {
+			tValidator = validator.getTypeValidator (FieldType.Object);
+		}
+		
+		Object feedback = tValidator.validate (api, consumer, request, validator, name, label, spec, sValue);
+		if (feedback != null) {
+			return feedback;
+		}
+		
+		if (!MapValidator.class.equals (tValidator.getClass ()) && !ArrayValidator.class.equals (tValidator.getClass ())) {
+			return sValue;
+		}
+		
+		return null;
 
 	}
 

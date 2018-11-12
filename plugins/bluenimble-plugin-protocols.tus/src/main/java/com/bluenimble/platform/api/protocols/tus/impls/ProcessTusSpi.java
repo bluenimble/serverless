@@ -178,6 +178,8 @@ public class ProcessTusSpi extends AbstractApiServiceSpi {
 					} else {
 						output = fireEvent (api, consumer, request, tusKey, Json.getObject (events, Events.done.name ()), info);
 					}
+					// hResponse.addHeader (HttpHeader.UPLOAD_OFFSET, Objects.toString(info.getOffset ()));
+					// hResponse.setStatus (HttpServletResponse.SC_NO_CONTENT);
 					break;
 	
 				default:
@@ -195,6 +197,9 @@ public class ProcessTusSpi extends AbstractApiServiceSpi {
 			response.commit ();
 			
 		} catch (Exception ex) {
+			if (ex instanceof ApiServiceExecutionException) {
+				throw (ApiServiceExecutionException)ex;
+			}
 			throw new ApiServiceExecutionException (ex.getMessage (), ex)
 				.status (request.getService ().getVerb ().equals (ApiVerb.HEAD) ? ApiResponse.NOT_FOUND : ApiResponse.INTERNAL_SERVER_ERROR);
 		}

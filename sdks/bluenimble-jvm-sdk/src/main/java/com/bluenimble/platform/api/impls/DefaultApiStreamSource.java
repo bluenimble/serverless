@@ -30,11 +30,13 @@ public class DefaultApiStreamSource implements ApiStreamSource {
 	private String 		contentType;
 	private InputStream stream;
 	private boolean		closable;
+	private long 		length;
 	
-	public DefaultApiStreamSource (String id, String name, String contentType, InputStream stream) {
+	public DefaultApiStreamSource (String id, String name, String contentType, long length, InputStream stream) {
 		this.id 			= id;
 		this.name 			= name;
 		this.contentType 	= contentType;
+		this.length 		= length;
 		this.stream 		= stream;
 	}
 	
@@ -52,11 +54,17 @@ public class DefaultApiStreamSource implements ApiStreamSource {
 	public String contentType () {
 		return contentType;
 	}
+
 	@Override
 	public InputStream stream () {
 		return stream;
 	}
 	
+	@Override
+	public long length () {
+		return length;
+	}
+
 	@Override
 	public void close () {
 		if (!closable) {

@@ -28,6 +28,9 @@ public class ApiServiceExecutionException extends Exception {
 
 	public ApiServiceExecutionException (String message, Throwable cause) {
 		super (message, cause);
+		if (cause != null && cause instanceof ApiServiceExecutionException) {
+			status = ((ApiServiceExecutionException)cause).status ();
+		}
 	}
 
 	public ApiServiceExecutionException (String message) {
@@ -36,6 +39,9 @@ public class ApiServiceExecutionException extends Exception {
 
 	public ApiServiceExecutionException (Throwable cause) {
 		super (cause);
+		if (cause != null && cause instanceof ApiServiceExecutionException) {
+			status = ((ApiServiceExecutionException)cause).status ();
+		}
 	}
 	
 	public ApiServiceExecutionException status (ApiResponse.Status status) {

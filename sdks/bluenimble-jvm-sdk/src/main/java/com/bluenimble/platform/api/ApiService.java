@@ -70,6 +70,7 @@ public interface ApiService extends Manageable {
 	ApiVerb 					getVerb 			();
 	String 						getEndpoint 		();
 	
+	String 						getId 				();
 	String 						getName 			();
 	String 						getDescription 		();
 	

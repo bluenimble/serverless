@@ -44,6 +44,11 @@ public class UUIDValidator extends AbstractTypeValidator {
 	public Object validate (Api api, ApiConsumer consumer, ApiRequest request, 
 			ApiServiceValidator validator, String name, String label, JsonObject spec, Object value) {
 		
+		Object message = isRequired (validator, api, request, label, spec, value);
+		if (message != null) {
+			return message;
+		}
+		
 		if (value == null) {
 			return null;
 		}

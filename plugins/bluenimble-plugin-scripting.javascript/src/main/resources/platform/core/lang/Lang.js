@@ -168,4 +168,14 @@ var Lang = {
 		return JC_Lang.replace (source, os, ns);
 	}
 	
+	/**	
+	  Template a string with data provided in argument
+	  @param {string} - the template
+	  @param {Object} - the data
+	  @returns {string}
+	*/
+	template: function (template, data) {
+		return JC_Lang.template (template, JC_Converters.convert (data));
+	}
+	
 };

@@ -50,6 +50,15 @@ var ApiResource = function (proxy) {
 	  @readonly
 	*/
 	this.extension 		= proxy.extension ();
+	
+	/**	
+	  Template the content of this resource using the data provided
+
+	  @returns {Object|string} the content
+	*/
+	this.template = function (data) {
+		return proxy.template (JC_Converters.convert (data));
+	};
 
 	/**	
 	  Get a StreamSource instance from this resource<br/>

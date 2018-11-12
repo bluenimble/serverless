@@ -320,7 +320,7 @@ var LocalDateTime = function (proxy) {
 	  
 	  @returns {boolean} true if this datetime instance is before the datetime in argument
 	*/
-	this.isBefore = function (format) {
+	this.isBefore = function (date) {
 		return proxy.isBefore (date.proxy);
 	};
 	/**	
@@ -329,7 +329,7 @@ var LocalDateTime = function (proxy) {
 	  
 	  @returns {boolean} true if this datetime instance is equal to the datetime in argument
 	*/
-	this.isEqual = function (format) {
+	this.isEqual = function (date) {
 		return proxy.isEqual (date.proxy);
 	};
 	/**	

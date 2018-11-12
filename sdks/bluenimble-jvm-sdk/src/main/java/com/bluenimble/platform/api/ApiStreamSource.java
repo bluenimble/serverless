@@ -24,6 +24,7 @@ public interface ApiStreamSource extends Serializable {
 	String 		id 			();
 	String 		name 		();
 	String 		contentType ();
+	long 		length 		();
 	InputStream stream 		();
 	
 	void 		close 		();

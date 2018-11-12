@@ -234,7 +234,7 @@ public class FileSystemStorageObject implements StorageObject {
 			altContentType = contentType ();
 		}
 		try {
-			return new DefaultApiStreamSource (altName, altName, altContentType, new FileInputStream (source));
+			return new DefaultApiStreamSource (altName, altName, altContentType, source.length (), new FileInputStream (source));
 		} catch (FileNotFoundException e) {
 			throw new StorageException (e.getMessage (), e);
 		}

@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import com.bluenimble.platform.Json;
@@ -68,9 +67,9 @@ public class MapValidator extends AbstractTypeValidator {
 		
 		boolean updateRequest = false;
 		
-		Map<String, Object> object = null;
+		JsonObject object = null;
 		if (value instanceof JsonObject) {
-			object = (Map<String, Object>)value;
+			object = (JsonObject)value;
 		} else if (value instanceof InputStream) {
 			try {
 				object = new JsonObject (Json.load ((InputStream)value));
@@ -83,7 +82,7 @@ public class MapValidator extends AbstractTypeValidator {
 			updateRequest = true;
 		} else {
 			String sValue = String.valueOf (value);
-			if (!sValue.startsWith (Lang.ARRAY_OPEN)) {
+			if (!sValue.startsWith (Lang.OBJECT_OPEN)) {
 				sValue = Lang.OBJECT_OPEN + sValue + Lang.OBJECT_CLOSE;
 			}
 			try {
@@ -97,6 +96,11 @@ public class MapValidator extends AbstractTypeValidator {
 			updateRequest = true;
 		}
 		
+		// shrink
+		if (Json.getBoolean (spec, Spec.Shrink, Json.getBoolean (api.getRuntime (), Spec.Shrink, false))) {
+			object.shrink ();
+		}
+		
 		if (object.isEmpty () && Json.getBoolean (spec, Spec.Required, true)) {
 			return ValidationUtils.feedback (
 				null, spec, null, 
@@ -105,7 +109,7 @@ public class MapValidator extends AbstractTypeValidator {
 		}
 		
 		// check strict
-		boolean strict = Json.getBoolean (spec, Spec.Strict, false);
+		boolean strict = Json.getBoolean (spec, Spec.Strict, Json.getBoolean (api.getRuntime (), Spec.Strict, false));
 		if (strict && !object.isEmpty ()) {
 			List<String> failingFields = new ArrayList<String> ();
 			Set<String> fields = object.keySet ();
@@ -130,6 +134,7 @@ public class MapValidator extends AbstractTypeValidator {
 		}
 		
 		if (updateRequest) {
+			System.out.println ("updateRequest: " + name + " -> " + object);
 			request.set (name, object, ApiRequest.Scope.Parameter);
 		}
 		

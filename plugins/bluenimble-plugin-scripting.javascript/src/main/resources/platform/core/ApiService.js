@@ -15,6 +15,13 @@ var ApiService = function (proxy) {
 	this.proxy 			= proxy;
 
 	/**	
+	  The id of this service 
+	  @type {string}
+	  @readonly
+	*/
+	this.id 			= proxy.getId ();
+
+	/**	
 	  The name of this service
 	  @type {string}
 	  @readonly

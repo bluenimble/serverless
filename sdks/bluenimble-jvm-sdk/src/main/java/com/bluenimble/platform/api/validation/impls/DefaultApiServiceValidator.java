@@ -95,6 +95,8 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 		addTypeValidator (FieldType.Base64.toLowerCase (), 			new Base64Validator ());
 		addTypeValidator (FieldType.Binary.toLowerCase (), 			new BinaryValidator ());
 		
+		addTypeValidator (FieldType.UUID.toLowerCase (), 			new UUIDValidator ());
+		
 		// vtypes
 		addTypeValidator (FieldType.Facets.StartsWith.toLowerCase (),new StartsWithValidator ());
 		addTypeValidator (FieldType.Facets.EndsWith.toLowerCase (), new EndsWithValidator ());
@@ -105,8 +107,6 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 		addTypeValidator (FieldType.Facets.Phone.toLowerCase (), 	new PhoneValidator ());
 		
 		addTypeValidator (FieldType.Facets.Regex.toLowerCase (), 	new RegexValidator ());
-		
-		addTypeValidator (FieldType.UUID.toLowerCase (), 			new UUIDValidator ());
 
 	}
 	

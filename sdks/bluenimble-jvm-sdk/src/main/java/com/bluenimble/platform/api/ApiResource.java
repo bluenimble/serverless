@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.streams.Chunk;
 import com.bluenimble.platform.streams.StreamDecorator;
 
@@ -47,6 +48,8 @@ public interface ApiResource extends Serializable {
 	InputStream 		toInput 		() 												throws IOException;
 	
 	ApiStreamSource 	toStreamSource 	();
+	
+	Object				template		(JsonObject data) throws IOException;
 
 	String 				extension 		();
 	List<ApiResource> 	children 		(Selector selector);

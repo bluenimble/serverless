@@ -175,7 +175,7 @@ var ApiRequest = function (proxy) {
 		}
 		
 		var v = proxy.get (key, JC_ApiRequest_Scope.valueOf (scope));
-		if (typeof v == undefined) {
+		if (!v || typeof v == undefined) {
 			return;
 		}
 		
@@ -183,7 +183,7 @@ var ApiRequest = function (proxy) {
 			return new ApiConsumer (v);
 		}
 		
-		if (scope == this.Scope.Stream) {
+		if (scope == this.Scope.Stream || v.getClass ().getName () == 'com.bluenimble.platform.api.impls.DefaultApiStreamSource') {
 			return new ApiStreamSource (v);
 		} 
 		return v;

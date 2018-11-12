@@ -54,6 +54,12 @@ public class StreamResponseReader implements ResponseReader {
 			public String contentType () {
 				return contentType;
 			}
+			
+			@Override
+			public long length () {
+				return 0;
+			}
+			
 			@Override
 			public void close () {
 				IOUtils.closeQuietly (stream);

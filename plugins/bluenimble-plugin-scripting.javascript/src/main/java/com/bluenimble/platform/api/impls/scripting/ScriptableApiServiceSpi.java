@@ -43,6 +43,7 @@ import com.bluenimble.platform.server.plugins.scripting.utils.Converters;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import jdk.nashorn.internal.runtime.Undefined;
+import jdk.nashorn.api.scripting.NashornException;
 
 @SuppressWarnings("restriction")
 public class ScriptableApiServiceSpi implements ApiServiceSpi {
@@ -197,7 +198,18 @@ public class ScriptableApiServiceSpi implements ApiServiceSpi {
 			result = engine.invoke (spi, Functions.Execute, jsApi, consumer, request, response);
 		} catch (ScriptingEngineException ex) {
 			ex.setScript (Json.getString (request.getService ().getSpiDef (), ApiService.Spec.Spi.Function));
-			throw new ApiServiceExecutionException (ex.getMessage (), ex);
+			Throwable cause = ex;
+			if (ex.getCause () != null) {
+				cause = ex.getCause ();
+			}
+			ApiResponse.Status status = null;
+			if (cause instanceof NashornException && cause.getCause () != null) {
+				if (cause.getCause () instanceof ApiServiceExecutionException) {
+					ApiServiceExecutionException see = (ApiServiceExecutionException)cause.getCause ();
+					status = see.status ();
+				}
+			}
+			throw new ApiServiceExecutionException (cause.getMessage (), cause).status (status);
 		}		
 		
 		if (result == null || (result instanceof Undefined)) {

@@ -64,6 +64,10 @@ public class StringValidator extends AbstractTypeValidator {
 		
 		String sValue = String.valueOf (value);
 		
+		if (Lang.isNullOrEmpty (sValue)) {
+			return null;
+		}
+		
 		String displayValue = Json.getBoolean (spec, Spec.Secret, false) ? SecretValue : sValue;
 		
 		// validate length

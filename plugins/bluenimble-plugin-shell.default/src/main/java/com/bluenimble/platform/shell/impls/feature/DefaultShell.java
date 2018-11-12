@@ -69,7 +69,6 @@ public class DefaultShell implements Shell {
 				}
 			);
 		} catch (OsCommandExecuterException ee) {
-			ee.printStackTrace ();
 			result.set (Spec.Code, ee.getExitValue ());
 			result.set (Spec.Message, ee.getMessage () != null ? ee.getMessage ().trim () : Lang.BLANK);
 		} catch (Exception ge) {

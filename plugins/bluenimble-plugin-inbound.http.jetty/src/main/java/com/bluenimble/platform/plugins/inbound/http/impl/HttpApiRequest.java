@@ -122,8 +122,12 @@ public class HttpApiRequest extends AbstractApiRequest {
 				    } else {
 				    	streams.put (
 				    		item.getFieldName (), 
-				    		new DefaultApiStreamSource (item.getFieldName (), item.getName (), item.getContentType (), item.getInputStream ())
-				    			.setClosable (true)
+				    		new DefaultApiStreamSource (
+				    			item.getFieldName (), 
+				    			item.getName (), 
+				    			item.getContentType (), 
+				    			item.getSize(), 
+				    			item.getInputStream ()).setClosable (true)
 				    	);
 				    }
 				}
@@ -146,7 +150,7 @@ public class HttpApiRequest extends AbstractApiRequest {
 				if (reader == null) {
 					reader = plugin.getReader (ApiContentTypes.Stream);
 				}
-				set (Payload, reader.read (proxy.getInputStream (), contentType), Scope.Parameter);
+				set (Payload, reader.read (proxy.getInputStream (), contentType, proxy.getContentLengthLong ()), Scope.Parameter);
 			}
 		} catch (Exception ex) {
 			tracer.log (Tracer.Level.Warning, ex.getMessage (), ex);

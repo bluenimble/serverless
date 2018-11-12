@@ -57,7 +57,10 @@ public interface ApiServiceValidator extends Serializable {
 		
 		String Enum			= "enum";
 		
+		String Charset		= "charset";
+		
 		String Strict		= "strict";
+		String Shrink		= "shrink";
 		
 		String Exclusive	= "!";
 

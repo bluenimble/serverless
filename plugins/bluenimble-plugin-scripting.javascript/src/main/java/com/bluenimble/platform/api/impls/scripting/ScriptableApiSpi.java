@@ -36,8 +36,12 @@ import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.scripting.ScriptContext;
 import com.bluenimble.platform.scripting.ScriptingEngine;
 import com.bluenimble.platform.scripting.ScriptingEngine.Supported;
+
+import jdk.nashorn.api.scripting.NashornException;
+
 import com.bluenimble.platform.scripting.ScriptingEngineException;
 
+@SuppressWarnings("restriction")
 public class ScriptableApiSpi implements ApiSpi {
 
 	private static final long serialVersionUID = 1507561751507700274L;
@@ -181,7 +185,18 @@ public class ScriptableApiSpi implements ApiSpi {
 			engine.invoke (spi, Functions.OnRequest, jsApi, request, response);
 		} catch (ScriptingEngineException ex) {
 			ex.setScript (Json.getString (api.getSpiDef (), Api.Spec.Spi.Function));
-			throw new ApiServiceExecutionException (ex.getMessage (), ex);
+			Throwable cause = ex;
+			if (ex.getCause () != null) {
+				cause = ex.getCause ();
+			}
+			ApiResponse.Status status = null;
+			if (cause instanceof NashornException && cause.getCause () != null) {
+				if (cause.getCause () instanceof ApiServiceExecutionException) {
+					ApiServiceExecutionException see = (ApiServiceExecutionException)cause.getCause ();
+					status = see.status ();
+				}
+			}
+			throw new ApiServiceExecutionException (cause.getMessage (), cause).status (status);
 		}		
 	}
 
@@ -213,7 +228,18 @@ public class ScriptableApiSpi implements ApiSpi {
 			engine.invoke (spi, Functions.OnService, jsApi, service, request, response);
 		} catch (ScriptingEngineException ex) {
 			ex.setScript (Json.getString (api.getSpiDef (), Api.Spec.Spi.Function));
-			throw new ApiServiceExecutionException (ex.getMessage (), ex);
+			Throwable cause = ex;
+			if (ex.getCause () != null) {
+				cause = ex.getCause ();
+			}
+			ApiResponse.Status status = null;
+			if (cause instanceof NashornException && cause.getCause () != null) {
+				if (cause.getCause () instanceof ApiServiceExecutionException) {
+					ApiServiceExecutionException see = (ApiServiceExecutionException)cause.getCause ();
+					status = see.status ();
+				}
+			}
+			throw new ApiServiceExecutionException (cause.getMessage (), cause).status (status);
 		}		
 	}
 
@@ -253,7 +279,18 @@ public class ScriptableApiSpi implements ApiSpi {
 			
 		} catch (ScriptingEngineException ex) {
 			ex.setScript (Json.getString (api.getSpiDef (), Api.Spec.Spi.Function));
-			throw new ApiServiceExecutionException (ex.getMessage (), ex);
+			Throwable cause = ex;
+			if (ex.getCause () != null) {
+				cause = ex.getCause ();
+			}
+			ApiResponse.Status status = null;
+			if (cause instanceof NashornException && cause.getCause () != null) {
+				if (cause.getCause () instanceof ApiServiceExecutionException) {
+					ApiServiceExecutionException see = (ApiServiceExecutionException)cause.getCause ();
+					status = see.status ();
+				}
+			}
+			throw new ApiServiceExecutionException (cause.getMessage (), cause).status (status);
 		}	
 	}
 
@@ -282,13 +319,21 @@ public class ScriptableApiSpi implements ApiSpi {
 		}		
 		
 		try {
-			
-			// invoke afterExecute
 			engine.invoke (spi, Functions.AfterExecute, jsApi, consumer, service, request, response);
-			
 		} catch (ScriptingEngineException ex) {
 			ex.setScript (Json.getString (api.getSpiDef (), Api.Spec.Spi.Function));
-			throw new ApiServiceExecutionException (ex.getMessage (), ex);
+			Throwable cause = ex;
+			if (ex.getCause () != null) {
+				cause = ex.getCause ();
+			}
+			ApiResponse.Status status = null;
+			if (cause instanceof NashornException && cause.getCause () != null) {
+				if (cause.getCause () instanceof ApiServiceExecutionException) {
+					ApiServiceExecutionException see = (ApiServiceExecutionException)cause.getCause ();
+					status = see.status ();
+				}
+			}
+			throw new ApiServiceExecutionException (cause.getMessage (), cause).status (status);
 		}	
 	}
 

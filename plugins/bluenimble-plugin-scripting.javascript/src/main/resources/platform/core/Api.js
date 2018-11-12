@@ -92,7 +92,7 @@ function Api (proxy) {
 		var lang 	= args [0];
 		var key 	= args [1];
 		
-		return proxy.message (lang, key, Array.prototype.slice.call (args, 2));
+		return proxy.message (lang, key, args.slice (2));
 	};
 	/**	
 	  Get all messages in this api for a specific language

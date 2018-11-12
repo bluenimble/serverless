@@ -197,7 +197,7 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 			} catch (ApiServiceValidatorException e) {
 				if (response instanceof ContainerApiResponse) {
 					((ContainerApiResponse)response).setException (
-						new ApiServiceExecutionException (e.getMessage (), e)
+						new ApiServiceExecutionException (e.getMessage (), e).status (ApiResponse.UNPROCESSABLE_ENTITY)
 					);
 				} else {
 					writeValidationError (api, consumer, service, request, response, mediaProcessor, e);
@@ -291,6 +291,14 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 			logInfo (api, "<" + request.getId () + "> ExecTime-Success: Service " + service.getVerb () + ":" + Json.getString (service.toJson (), ApiService.Spec.Endpoint) + " - Time " + time + " millis");
 			
 		} catch (Throwable th) {
+			ApiResponse.Status status = null;
+			
+			if (th instanceof ApiServiceExecutionException) {
+				status = ((ApiServiceExecutionException)th).status ();
+			} 
+			if (status == null) {
+				status = ApiResponse.INTERNAL_SERVER_ERROR;
+			}
 			
 			if (response instanceof ContainerApiResponse) {
 				if (th instanceof ApiServiceExecutionException) {
@@ -299,21 +307,10 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 					((ContainerApiResponse)response).setException (new ApiServiceExecutionException (th.getMessage (), th));
 				}
 				
-				//String [] msg = Lang.toMessage (th);
 				track.finish (
-					(JsonObject)Lang.toError (th).set (ApiResponse.Error.Code, ApiResponse.INTERNAL_SERVER_ERROR.getCode ())
+					(JsonObject)Lang.toError (th).set (ApiResponse.Error.Code, status.getCode ())
 				);
-				
 			} else {
-				ApiResponse.Status status = null;
-				
-				if (th instanceof ApiServiceExecutionException) {
-					status = ((ApiServiceExecutionException)th).status ();
-				} 
-				if (status == null) {
-					status = ApiResponse.INTERNAL_SERVER_ERROR;
-				}
-				
 				boolean isValidationError = false;
 				if (th instanceof ApiServiceExecutionException) {
 					Throwable rootCause = ((ApiServiceExecutionException)th).getRootCause ();

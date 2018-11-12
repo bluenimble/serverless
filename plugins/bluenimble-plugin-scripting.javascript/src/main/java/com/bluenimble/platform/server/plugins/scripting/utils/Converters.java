@@ -26,6 +26,11 @@ import jdk.nashorn.internal.runtime.Undefined;
 
 @SuppressWarnings("restriction")
 public class Converters {
+	
+	private static final String Clazz = "class";
+	private static final String Proxy = "proxy";
+	
+	private static final String LocalDateTime = "LocalDateTime";
 
 	public static Object convert (Object o) {
 		if (o == null || o instanceof Undefined) {
@@ -56,7 +61,11 @@ public class Converters {
 		return value instanceof Date;
 	}
 	
-	private static JsonObject toObject (ScriptObjectMirror som) {
+	private static Object toObject (ScriptObjectMirror som) {
+		Object oc = som.getMember (Clazz);
+		if (LocalDateTime.equals (oc) && som.containsKey (Proxy)) {
+			return som.getMember (Proxy);
+		}
 		JsonObject json = new JsonObject ();
 		if (som.isEmpty ()) {
 			return json;
