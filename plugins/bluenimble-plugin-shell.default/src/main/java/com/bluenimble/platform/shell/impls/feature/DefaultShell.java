@@ -54,7 +54,7 @@ public class DefaultShell implements Shell {
 		
 		try {
 			executer.execute (
-				(String)Lang.template (command, params), 
+				(String)Lang.template (command, params, true), 
 				null, 
 				baseDirectory, 
 				new OsCommandExecuterStringCallback () {

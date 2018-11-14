@@ -39,11 +39,11 @@ import com.bluenimble.platform.scripting.ScriptContext;
 import com.bluenimble.platform.scripting.ScriptingEngine;
 import com.bluenimble.platform.scripting.ScriptingEngine.Supported;
 import com.bluenimble.platform.scripting.ScriptingEngineException;
-import com.bluenimble.platform.server.plugins.scripting.utils.Converters;
+import com.bluenimble.platform.templating.impls.converters.JsValueConverter;
 
+import jdk.nashorn.api.scripting.NashornException;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import jdk.nashorn.internal.runtime.Undefined;
-import jdk.nashorn.api.scripting.NashornException;
 
 @SuppressWarnings("restriction")
 public class ScriptableApiServiceSpi implements ApiServiceSpi {
@@ -231,7 +231,7 @@ public class ScriptableApiServiceSpi implements ApiServiceSpi {
 			}
 		}
 		
-		Object converted = Converters.convert (result);
+		Object converted = JsValueConverter.convert (result);
 		
 		if (converted instanceof JsonArray) {
 			converted = new JsonObject ().set (ApiOutput.Defaults.Items, converted);

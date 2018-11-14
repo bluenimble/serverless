@@ -254,7 +254,7 @@ public class FileApiResource implements ApiResource {
 		InputStream is = null;
 		try {
 			is = new FileInputStream (file);
-			return Lang.template (IOUtils.toString (is), data);
+			return Lang.template (IOUtils.toString (is), data, true);
 		} finally {
 			IOUtils.closeQuietly (is);
 		}

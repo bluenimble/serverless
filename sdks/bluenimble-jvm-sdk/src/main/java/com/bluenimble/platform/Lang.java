@@ -44,6 +44,7 @@ import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.regex.WildcardCompiler;
 import com.bluenimble.platform.regex.WildcardMatcher;
 import com.bluenimble.platform.scripting.ScriptingEngineException;
+import com.bluenimble.platform.templating.ExpressionCompiler;
 import com.bluenimble.platform.templating.impls.BasicVariableResolver;
 import com.bluenimble.platform.templating.impls.DefaultExpressionCompiler;
 
@@ -52,8 +53,11 @@ import jdk.nashorn.api.scripting.NashornException;
 @SuppressWarnings("restriction")
 public class Lang {
 	
-	public static final DefaultExpressionCompiler ExpressionCompiler = new DefaultExpressionCompiler ().cacheSize (100);
-
+	public static final DefaultExpressionCompiler ExpressionCompiler 			 
+															= new DefaultExpressionCompiler ().cacheSize (200);
+	public static final DefaultExpressionCompiler ScriptedExpressionCompiler
+															= new DefaultExpressionCompiler ().withScripting (true).cacheSize (200);
+	
 	public static final Null		Null 					= new Null ();
 	
 	private static final String 	ExpStart				= "{";
@@ -978,17 +982,12 @@ public class Lang {
 	    }).start();
 	}
 	
-    public static Object template (String template, JsonObject data) {
+    public static Object template (String template, JsonObject data, boolean withScripting) {
     	if (Lang.isNullOrEmpty (template) || Json.isNullOrEmpty (data)) {
     		return template;
     	}
-    	return ExpressionCompiler.compile (template, null).eval (new BasicVariableResolver (data));
+    	ExpressionCompiler compiler = withScripting ? ScriptedExpressionCompiler : ExpressionCompiler;
+    	return compiler.compile (template, null).eval (new BasicVariableResolver (data));
     }
-    
-    public static void main (String [] args) {
-    	String str = "this.port | '9090'";
-		String [] values = Lang.split (str, "|", true);
-		System.out.println (Lang.join (values, "|"));
-	}
     
 }

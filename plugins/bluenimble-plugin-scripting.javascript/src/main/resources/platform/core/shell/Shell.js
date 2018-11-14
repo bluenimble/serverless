@@ -20,7 +20,7 @@ var Shell = function (proxy) {
 	  @return {JsonObject} - result
 	*/
 	this.run = function (command, params) {
-		return proxy.run (command, JC_Converters.convert (params));
+		return proxy.run (command, JC_ValueConverter.convert (params));
 	};
 	
 };

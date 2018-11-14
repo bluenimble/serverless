@@ -243,7 +243,7 @@ function Api (proxy) {
 		if (typeof message === 'string') {
 			sMessage = message;
 		} else if (typeof message === 'object') {
-			sMessage = JC_Converters.convert (message).toString ();
+			sMessage = JC_ValueConverter.convert (message).toString ();
 		}
 		
 		messenger.send (null, recipients, null, sMessage);
@@ -281,7 +281,7 @@ function Api (proxy) {
 		if (!spec) {
 			throw "request spec is required";
 		}
-		return new ApiOutput (JC_ApiUtils.call (proxy, consumer.proxy, request.proxy, JC_Converters.convert (spec)));
+		return new ApiOutput (JC_ApiUtils.call (proxy, consumer.proxy, request.proxy, JC_ValueConverter.convert (spec)));
 	};
 
 	// private

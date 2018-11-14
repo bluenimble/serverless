@@ -26,6 +26,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 
+import com.bluenimble.platform.templating.impls.converters.JsValueConverter;
+
 public class ScriptNode implements Node {
 
 	private static final long serialVersionUID = 5233545719136265499L;
@@ -54,7 +56,7 @@ public class ScriptNode implements Node {
 				String var = vars.next ();
 				sBindings.put (var, bindings.get (var));
 			}
-			return script.eval (sBindings);
+			return JsValueConverter.convert (script.eval (sBindings));
 		}
 	}
 	

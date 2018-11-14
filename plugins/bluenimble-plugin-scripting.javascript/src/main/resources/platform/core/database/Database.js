@@ -155,7 +155,7 @@ var Database = function (api, proxy) {
 		
 		return proxy.delete (
 			entity,
-			new JC_JsonQuery (JC_Converters.convert (query), bindings ? JC_Converters.convert (bindings) : null)
+			new JC_JsonQuery (JC_ValueConverter.convert (query), bindings ? JC_ValueConverter.convert (bindings) : null)
 		);
 	};
 
@@ -227,7 +227,7 @@ var Database = function (api, proxy) {
 		
 		proxy.find (
 			entity,
-			new JC_JsonQuery (JC_Converters.convert (query), bindings ? JC_Converters.convert (bindings) : null), 
+			new JC_JsonQuery (JC_ValueConverter.convert (query), bindings ? JC_ValueConverter.convert (bindings) : null), 
 			new JVisitor ()
 		);
 	};
@@ -261,7 +261,7 @@ var Database = function (api, proxy) {
 		
 		var dbo = proxy.findOne (
 			entity,
-			new JC_JsonQuery (JC_Converters.convert (query), bindings ? JC_Converters.convert (bindings) : null)
+			new JC_JsonQuery (JC_ValueConverter.convert (query), bindings ? JC_ValueConverter.convert (bindings) : null)
 		);
 		if (!dbo) {
 			return;
@@ -327,7 +327,7 @@ var Database = function (api, proxy) {
 		
 		proxy.pop (
 			entity,
-			new JC_JsonQuery (JC_Converters.convert (query), bindings ? JC_Converters.convert (bindings) : null), 
+			new JC_JsonQuery (JC_ValueConverter.convert (query), bindings ? JC_ValueConverter.convert (bindings) : null), 
 			new JVisitor ()
 		);
 	};
@@ -363,7 +363,7 @@ var Database = function (api, proxy) {
 		
 		var dbo = proxy.popOne (
 			entity,
-			new JC_JsonQuery (JC_Converters.convert (query), bindings ? JC_Converters.convert (bindings) : null)
+			new JC_JsonQuery (JC_ValueConverter.convert (query), bindings ? JC_ValueConverter.convert (bindings) : null)
 		);
 		if (!dbo) {
 			return;
@@ -418,7 +418,7 @@ var Database = function (api, proxy) {
 			throw "missing data argument";
 		}
 		
-		return proxy.bulk (JC_Converters.convert (values));
+		return proxy.bulk (JC_ValueConverter.convert (values));
 	};
 
 };

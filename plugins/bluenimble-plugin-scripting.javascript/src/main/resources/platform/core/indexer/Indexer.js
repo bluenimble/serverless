@@ -36,7 +36,7 @@ var Indexer = function (proxy) {
 	  @return {Object} [result] - entity created
 	*/
 	this.create = function (entity, definiton) {
-		return proxy.create (entity, JC_Converters.convert (definition));
+		return proxy.create (entity, JC_ValueConverter.convert (definition));
 	};
 	
 	/**	
@@ -54,7 +54,7 @@ var Indexer = function (proxy) {
 	  @return {Object} [result] - document getting indexed
 	*/
 	this.put = function (entity, doc) {
-		return proxy.put (typeof entity === 'undefined' ? null : entity, JC_Converters.convert (doc));
+		return proxy.put (typeof entity === 'undefined' ? null : entity, JC_ValueConverter.convert (doc));
 	};
 	
 	/**	
@@ -91,7 +91,7 @@ var Indexer = function (proxy) {
 		if (typeof partial === 'undefined' || partial === null) {
 			partial = false;
 		}
-		return proxy.update (typeof entity === 'undefined' ? null : entity, JC_Converters.convert (doc), partial);
+		return proxy.update (typeof entity === 'undefined' ? null : entity, JC_ValueConverter.convert (doc), partial);
 	};
 	
 	/**	
@@ -150,7 +150,7 @@ var Indexer = function (proxy) {
 		} else {
 			entities = Java.to (entities, "java.lang.String[]");
 		}
-		return proxy.search (JC_Converters.convert (dsl), entities);
+		return proxy.search (JC_ValueConverter.convert (dsl), entities);
 	};
 	
 };

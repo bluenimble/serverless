@@ -134,7 +134,6 @@ public class MapValidator extends AbstractTypeValidator {
 		}
 		
 		if (updateRequest) {
-			System.out.println ("updateRequest: " + name + " -> " + object);
 			request.set (name, object, ApiRequest.Scope.Parameter);
 		}
 		

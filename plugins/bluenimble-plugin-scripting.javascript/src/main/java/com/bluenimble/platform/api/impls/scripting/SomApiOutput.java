@@ -28,9 +28,9 @@ import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.json.AbstractEmitter;
 import com.bluenimble.platform.json.JsonEmitter;
 import com.bluenimble.platform.json.JsonObject;
-import com.bluenimble.platform.server.plugins.scripting.utils.Converters;
 import com.bluenimble.platform.streams.Chunk;
 import com.bluenimble.platform.streams.StreamDecorator;
+import com.bluenimble.platform.templating.impls.converters.JsValueConverter;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
@@ -110,7 +110,7 @@ public class SomApiOutput implements ApiOutput {
 
 	@Override
 	public JsonObject data () {
-		return (JsonObject)Converters.convert (data);
+		return (JsonObject)JsValueConverter.convert (data);
 	}
 
 	@Override
@@ -153,7 +153,7 @@ public class SomApiOutput implements ApiOutput {
 		if (meta == null) {
 			return null;
 		}
-		return (JsonObject)Converters.convert (meta);
+		return (JsonObject)JsValueConverter.convert (meta);
 	}
 
 	@Override

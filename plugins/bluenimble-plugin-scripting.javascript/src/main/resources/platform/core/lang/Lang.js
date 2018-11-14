@@ -166,7 +166,7 @@ var Lang = {
 	*/
 	replace: function (source, oldString, newString) {
 		return JC_Lang.replace (source, os, ns);
-	}
+	},
 	
 	/**	
 	  Template a string with data provided in argument
@@ -174,8 +174,11 @@ var Lang = {
 	  @param {Object} - the data
 	  @returns {string}
 	*/
-	template: function (template, data) {
-		return JC_Lang.template (template, JC_Converters.convert (data));
+	template: function (template, datawithScripting) {
+		if (typeof withScripting == 'undefined') {
+			withScripting = false;
+		}
+		return JC_Lang.template (template, JC_ValueConverter.convert (data), withScripting);
 	}
 	
 };

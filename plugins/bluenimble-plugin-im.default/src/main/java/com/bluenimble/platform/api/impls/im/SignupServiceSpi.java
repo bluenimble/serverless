@@ -116,7 +116,7 @@ public class SignupServiceSpi extends AbstractApiServiceSpi {
 			
 			JsonObject extraData = Json.getObject (config, Config.Data);
 			if (extraData != null && !extraData.isEmpty ()) {
-				extraData = (JsonObject)Json.template (extraData, payload);
+				extraData = (JsonObject)Json.template (extraData, payload, false);
 				Iterator<String> keys = extraData.keys ();
 				while (keys.hasNext ()) {
 					String key = keys.next ();

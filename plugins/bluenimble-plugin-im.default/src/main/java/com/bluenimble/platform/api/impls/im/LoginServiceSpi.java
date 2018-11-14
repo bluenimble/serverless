@@ -134,7 +134,7 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 					encryptPassword ? Crypto.md5 (Json.getString (payload, Spec.Password), Encodings.UTF8) : Json.getString (payload, Spec.Password)
 				);
 			} else {
-				query = (JsonObject)Json.template (query, payload);
+				query = (JsonObject)Json.template (query, payload, false);
 			}
 						
 			account = db.findOne (Json.getString (config, Config.UsersEntity, Defaults.User), new JsonQuery (query));
@@ -169,8 +169,8 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 			JsonObject checkQuery 	= Json.getObject (check, Config.Query);
 			
 			if (lookupQuery != null && checkQuery != null) {
-				lookupQuery = (JsonObject)Json.template (lookupQuery, payload);
-				checkQuery = (JsonObject)Json.template (checkQuery, payload);
+				lookupQuery = (JsonObject)Json.template (lookupQuery, payload, false);
+				checkQuery = (JsonObject)Json.template (checkQuery, payload, false);
 
 				DatabaseObject oOrg = null;
 				try {

@@ -5,7 +5,7 @@ function toJavaSender (sender) {
 	delete sender.callbacks;
 	sender.callbacks = null;
 	
-	var jSender = new JC_Messenger_Sender (JC_Converters.convert (sender));
+	var jSender = new JC_Messenger_Sender (JC_ValueConverter.convert (sender));
 
 	if (!callbacks) {
 		return jSender;
@@ -29,7 +29,7 @@ function toJavaRecipients (recipients) {
 	}
 	var jRecipients = [];
 	for (var i = 0; i < recipients.length; i++) {
-		jRecipients.push (new JC_Messenger_Recipient (JC_Converters.convert (recipients [i])));
+		jRecipients.push (new JC_Messenger_Recipient (JC_ValueConverter.convert (recipients [i])));
 	}
 	return jRecipients;
 }
@@ -91,7 +91,7 @@ var Messenger = function (proxy) {
 			toJavaRecipients (recipients), 
 			subject, 
 			template.proxy,
-			JC_Converters.convert (data),
+			JC_ValueConverter.convert (data),
 			toJavaAttachments (attachments)
 		);
 	};

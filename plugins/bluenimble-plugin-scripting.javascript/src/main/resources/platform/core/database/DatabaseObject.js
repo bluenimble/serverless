@@ -39,7 +39,7 @@ var DatabaseObject = function (database, proxy) {
 		if (!values) {
 			return this;
 		}
-		this.proxy.load (JC_Converters.convert (values));
+		this.proxy.load (JC_ValueConverter.convert (values));
 		
 		// refresh id if it's part of the payload
 		this.id = proxy.getId ();
@@ -114,7 +114,7 @@ var DatabaseObject = function (database, proxy) {
 		} else if (value.clazz && value.clazz == 'LocalDateTime') {
 			value = value.proxy;
 		} else {
-			value = JC_Converters.convert (value);
+			value = JC_ValueConverter.convert (value);
 		} 
 		
 		proxy.set (key, value);
@@ -152,7 +152,7 @@ var DatabaseObject = function (database, proxy) {
 		if (!value) {
 			return null;
 		}
-		if (JC_Converters.isDate (value)) {
+		if (JC_ValueConverter.isDate (value)) {
 			return new LocalDateTime ( JC_LocalDateTime.ofInstant (value.toInstant (), JC_ZoneId.systemDefault ()) );
 		} else if (database.proxy.isEntity (value)) {
 			return new DatabaseObject (database, value);

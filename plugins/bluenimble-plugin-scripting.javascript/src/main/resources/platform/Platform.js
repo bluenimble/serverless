@@ -81,7 +81,7 @@ var JC_Sender_Callbacks		= Java.type ('com.bluenimble.platform.messaging.Sender.
 
 var JC_Remote_Callback		= Java.type ('com.bluenimble.platform.remote.Remote.Callback');
 
-var JC_Converters 			= Java.type ('com.bluenimble.platform.server.plugins.scripting.utils.Converters');
+var JC_ValueConverter 		= Java.type ('com.bluenimble.platform.templating.impls.converters.JsValueConverter');
 
 var JC_ApiUtils 			= Java.type ('com.bluenimble.platform.server.plugins.scripting.utils.ApiUtils');
 

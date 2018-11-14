@@ -91,7 +91,7 @@ var Tracer = function (proxy) {
 		// remove level and message from args
 		args.splice (0, 2)
 		
-		proxy.log (level, JC_Converters.convert (message), Java.to (args, "java.lang.Object[]"));
+		proxy.log (level, JC_ValueConverter.convert (message), Java.to (args, "java.lang.Object[]"));
 	};
 	
 };

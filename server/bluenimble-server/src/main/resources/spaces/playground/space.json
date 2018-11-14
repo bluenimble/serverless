@@ -68,7 +68,7 @@
 		"rewrite": {
             "path": {
                 "rules": [{
-                    "if": "ends: /storage", "negate": "true", "methods": ["OPTIONS"], "then": { "bypass": "true" }
+                    "methods": ["OPTIONS"], "if": "ends: /storage", "negate": "true", "then": { "bypass": "true" }
                 }]
             }
         }

@@ -34,6 +34,7 @@ import java.util.Set;
 import com.bluenimble.platform.encoding.Base64;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonEntity;
+import com.bluenimble.platform.json.JsonException;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.security.EncryptionProvider;
 import com.bluenimble.platform.security.EncryptionProvider.Mode;
@@ -471,11 +472,15 @@ public class Json {
 		
     }
     
-    public static Object template (JsonObject model, JsonObject data) {
+    public static Object template (JsonObject model, JsonObject data, boolean withScripting) {
     	if (Json.isNullOrEmpty (model) || Json.isNullOrEmpty (data)) {
     		return model;
     	}
-    	return (JsonObject)resolve (model.duplicate (), Lang.ExpressionCompiler, new BasicVariableResolver (data));
+    	return (JsonObject)resolve (
+    		model.duplicate (), 
+    		withScripting ? Lang.ScriptedExpressionCompiler : Lang.ExpressionCompiler, 
+    		new BasicVariableResolver (data)
+    	);
     }
     
 	public static Object resolve (Object obj, ExpressionCompiler compiler, VariableResolver vr) {
@@ -627,5 +632,58 @@ public class Json {
 			return s;
 		}
 	}
+    
+    public static void main (String [] args) throws JsonException {
+		JsonObject data = new JsonObject ();
+		
+		JsonObject runtime = new JsonObject ();
+		runtime.set ("RootDirectory", "~/");
+		runtime.set ("space", "playground");
+		runtime.set ("owner", "22386dc6-ec1e-483b-a467-8719105978c7");
+		
+		JsonObject object = new JsonObject ();
+		object.set ("id", "c77a327d-a3c0-44f7-9eae-fae1847a63f4");
+		object.set ("timestamp", "Tue Nov 13 19:42:58 PST 2018");
+		object.set ("length", "3891219");
+		
+		JsonObject metadata = new JsonObject ();
+		metadata.set ("name", "4k-wallpaper-beautiful-bloom-1263986.jpg");
+		metadata.set ("type", "image/jpeg");
+		metadata.set ("target", "UserAvatar");
+		metadata.set ("width", "5472");
+		metadata.set ("height", "3648");
+		metadata.set ("isSvg", "n");
+		
+		data.set ("optimizer", 
+		new JsonObject ("{" +
+			"\"sizes\": {" +
+				"\"sync\": \"200,400\"" +
+			"}," +
+			"\"prefix\": \"public\"" +
+		"}"));
+		
+
+		data.set ("runtime", runtime);
+		data.set ("object", object);
+		data.set ("metadata", metadata);
+
+		JsonObject spec = new JsonObject ("{ params: {" +
+			"payload: {" +
+				"avatar: {" +
+					"id: \"[ object.id ]\"," +
+					"sizes: \"[= optimizer.sizes.sync.split(',') ]\"" +
+				"}" +
+			"}" +
+		"}}");
+		
+		System.out.println (
+			Json.template (
+				spec,
+				data, 
+				true
+			)
+		);
+		
+    }
     
 }

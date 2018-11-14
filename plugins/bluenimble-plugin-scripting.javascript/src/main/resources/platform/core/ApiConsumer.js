@@ -31,7 +31,7 @@ var ApiConsumer = function (proxy) {
 	this.type 	= proxy.type ().name ();
 	
 	this.set = function (key, value) {
-		proxy.set (key, JC_Converters.convert (value));
+		proxy.set (key, JC_ValueConverter.convert (value));
 		if (key == JC_ApiConsumer_Fields.Id) {
 			this.id = this.get (JC_ApiConsumer_Fields.Id);
 		}

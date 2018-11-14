@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.server.plugins.scripting.utils;
+package com.bluenimble.platform.templating.impls.converters;
 
 import java.util.Date;
 
@@ -25,7 +25,7 @@ import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import jdk.nashorn.internal.runtime.Undefined;
 
 @SuppressWarnings("restriction")
-public class Converters {
+public class JsValueConverter {
 	
 	private static final String Clazz = "class";
 	private static final String Proxy = "proxy";

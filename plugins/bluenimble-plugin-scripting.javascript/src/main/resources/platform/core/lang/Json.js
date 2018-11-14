@@ -19,7 +19,7 @@ var Json = {
 	  @returns {JsonObject} the json object
 	*/
 	object: function (data) {
-		var jd = JC_Converters.convert (data);
+		var jd = JC_ValueConverter.convert (data);
 		var o = new JC_JsonObject ();
 		if (jd) {
 			o.putAll (jd);
@@ -37,13 +37,13 @@ var Json = {
 	},
 	
 	merge: function (root, extra) {
-		var merged = JC_Converters.convert (root);
-		merged.merge (JC_Converters.convert (extra));
+		var merged = JC_ValueConverter.convert (root);
+		merged.merge (JC_ValueConverter.convert (extra));
 		return merged;
 	},
 	
 	duplicate: function (data) {
-		var data = JC_Converters.convert (data);
+		var data = JC_ValueConverter.convert (data);
 		return data.duplicate ();
 	},
 	
@@ -51,29 +51,32 @@ var Json = {
 		if (typeof defaultValue == 'undefined') {
 			defaultValue = 0;
 		}
-		return JC_Json.getInteger (JC_Converters.convert (data), property, defaultValue);
+		return JC_Json.getInteger (JC_ValueConverter.convert (data), property, defaultValue);
 	}, 
 	
 	boolean: function (data, property, defaultValue) {
 		if (typeof defaultValue == 'undefined') {
 			defaultValue = true;
 		}
-		return JC_Json.getBoolean (JC_Converters.convert (data), property, defaultValue);
+		return JC_Json.getBoolean (JC_ValueConverter.convert (data), property, defaultValue);
 	}, 
 	
 	double: function (data, property, defaultValue) {
 		if (typeof defaultValue == 'undefined') {
 			defaultValue = 0;
 		}
-		return JC_Json.getDouble (JC_Converters.convert (data), property, defaultValue);
+		return JC_Json.getDouble (JC_ValueConverter.convert (data), property, defaultValue);
 	}, 
 	
 	date: function (data, property) {
-		return JC_Json.getDate (JC_Converters.convert (data), property);
+		return JC_Json.getDate (JC_ValueConverter.convert (data), property);
 	}, 
 	
-	template: function (model, data) {
-		return JC_Json.template (JC_Converters.convert (model), JC_Converters.convert (data));
+	template: function (model, data, withScripting) {
+		if (typeof withScripting == 'undefined') {
+			withScripting = false;
+		}
+		return JC_Json.template (JC_ValueConverter.convert (model), JC_ValueConverter.convert (data), withScripting);
 	}
 	
 };

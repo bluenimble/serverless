@@ -55,7 +55,7 @@ var Remote = function (proxy) {
 	*/
 	this.get = function (spec, callback) {
 		proxy.get (
-			JC_Converters.convert (spec),
+			JC_ValueConverter.convert (spec),
 			this._callback (callback)
 		);
 	};
@@ -91,7 +91,7 @@ var Remote = function (proxy) {
 	*/
 	this.post = function (spec, callback, attachments) {
 		proxy.post (
-			JC_Converters.convert (spec),
+			JC_ValueConverter.convert (spec),
 			this._callback (callback),
 			toJavaAttachments (attachments)
 		);
@@ -126,7 +126,7 @@ var Remote = function (proxy) {
 	*/
 	this.put = function (spec, callback, attachments) {
 		proxy.put (
-			JC_Converters.convert (spec),
+			JC_ValueConverter.convert (spec),
 			this._callback (callback),
 			toJavaAttachments (attachments)
 		);
@@ -155,7 +155,7 @@ var Remote = function (proxy) {
 	*/
 	this.delete = function (spec, callback) {
 		proxy.delete (
-			JC_Converters.convert (spec),
+			JC_ValueConverter.convert (spec),
 			this._callback (callback)
 		);
 	};
@@ -183,7 +183,7 @@ var Remote = function (proxy) {
 	*/
 	this.head = function (spec, callback) {
 		proxy.head (
-			JC_Converters.convert (spec),
+			JC_ValueConverter.convert (spec),
 			this._callback (callback)
 		);
 	};
@@ -211,7 +211,7 @@ var Remote = function (proxy) {
 	*/
 	this.patch = function (spec, callback) {
 		proxy.patch (
-			JC_Converters.convert (spec),
+			JC_ValueConverter.convert (spec),
 			this._callback (callback)
 		);
 	};
