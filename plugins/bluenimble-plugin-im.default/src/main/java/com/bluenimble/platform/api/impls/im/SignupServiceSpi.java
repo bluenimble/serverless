@@ -31,7 +31,6 @@ import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.ApiServiceExecutionException;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.CodeExecutor;
-import com.bluenimble.platform.api.impls.JsonApiOutput;
 import com.bluenimble.platform.api.impls.im.LoginServiceSpi.ActivationCodeTypes;
 import com.bluenimble.platform.api.impls.im.LoginServiceSpi.Config;
 import com.bluenimble.platform.api.impls.im.LoginServiceSpi.Defaults;
@@ -177,7 +176,12 @@ public class SignupServiceSpi extends AbstractApiServiceSpi {
 			result.set (ApiConsumer.Fields.Token, tokenAndExpiration [0]);
 			result.set (ApiConsumer.Fields.ExpiryDate, tokenAndExpiration [1]);
 			
-			return new JsonApiOutput (result);
+			// call onFinish if any
+			return SecurityUtils.onFinish (
+				api, consumer, request, 
+				Json.getObject (config, Config.onFinish.class.getSimpleName ()),
+				result
+			);
 		}
 		
 		// requires activation and email is present in payload

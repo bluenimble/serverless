@@ -124,8 +124,8 @@ public class SecurityUtils {
 
 	public static ApiOutput onFinish (Api api, ApiConsumer consumer, ApiRequest pRequest, final JsonObject onFinish, JsonObject account) 
 			throws ApiServiceExecutionException {
-		
-		if (onFinish == null || onFinish.isEmpty ()) {
+
+		if (Json.isNullOrEmpty (onFinish)) {
 			return new JsonApiOutput (account);
 		}
 		
