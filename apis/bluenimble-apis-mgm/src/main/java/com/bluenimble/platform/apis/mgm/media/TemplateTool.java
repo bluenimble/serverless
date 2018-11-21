@@ -146,7 +146,7 @@ public class TemplateTool {
 	} 
 	
 	public String oasSchema (String space, String api, JsonObject spec, Map<String, Object> components) throws ApiAccessDeniedException {
-		return jOasSchema (space, api, spec, components).toString (0);
+		return jOasSchema (space, api, spec, components).toString (0, false);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -282,7 +282,7 @@ public class TemplateTool {
 			type = OasGenericObject + components.size ();
 		}
 
-		components.put (type, oasSchema.toString (0));
+		components.put (type, oasSchema.toString (0, false));
 		
 		refTarget.set (OasSpec.Schema.Ref, "#/components/schemas/" + type);
 		
@@ -313,7 +313,7 @@ public class TemplateTool {
 		if (object == null) {
 			return Lang.BLANK;
 		}
-		return object.toString (0);
+		return object.toString (0, false);
 	}
 	
 	public Object guess (String space, String api, String name, JsonObject spec) throws ApiAccessDeniedException {
@@ -321,12 +321,12 @@ public class TemplateTool {
 		Object value = ValidationUtils.guessValue (validator, name, spec);
 		if (value == null) {
 			if (isObjectType (validator, space, api, spec)) {
-				return new JsonObject ().toString (0);
+				return new JsonObject ().toString (0, false);
 			}
 			return Lang.BLANK;
 		}
 		if (value instanceof JsonObject) {
-			return ((JsonObject)value).toString (0);
+			return ((JsonObject)value).toString (0, false);
 		}
 		return String.valueOf (value);
 	}

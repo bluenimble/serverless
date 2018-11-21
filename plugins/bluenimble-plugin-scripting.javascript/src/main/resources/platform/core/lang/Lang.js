@@ -156,6 +156,20 @@ var Lang = {
 	},
 	
 	/**	
+	  get an integer from the given string
+	*/
+	toInteger: function (value) {
+		return JC_Integer.valueOf (value);
+	},
+	
+	/**	
+	  get an double from the given string
+	*/
+	toDouble: function (value) {
+		return JC_Double.valueOf (value);
+	},
+	
+	/**	
 	  replace a portion of a string with a new one in the entire source string
 	  @param {string} - the source sring
 	  @param {string} - the string to replace
@@ -174,7 +188,7 @@ var Lang = {
 	  @param {Object} - the data
 	  @returns {string}
 	*/
-	template: function (template, datawithScripting) {
+	template: function (template, data, withScripting) {
 		if (typeof withScripting == 'undefined') {
 			withScripting = false;
 		}

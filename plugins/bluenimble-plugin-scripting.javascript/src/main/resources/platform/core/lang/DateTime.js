@@ -273,7 +273,7 @@ var LocalDateTime = function (proxy) {
 	  @returns {integer} Returns the month of the year.
 	*/
 	this.month = function () {
-		return proxy.getMonth ();
+		return proxy.getDayOfMonth ();
 	};
 	/**	
 	  Gets the nano of second.

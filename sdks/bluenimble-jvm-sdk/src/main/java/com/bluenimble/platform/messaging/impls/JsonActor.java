@@ -25,8 +25,9 @@ public class JsonActor implements Actor {
 	private static final long serialVersionUID = -4228904077619093695L;
 	
 	public interface Spec {
-		String Id 	= "id";
-		String Name = "name";
+		String Id 		= "id";
+		String Name 	= "name";
+		String Features = "features";
 	}
 	
 	protected JsonObject source;
@@ -59,6 +60,10 @@ public class JsonActor implements Actor {
 		}
 		return source.get (name);
 	}
-	
+
+	@Override
+	public JsonObject features () {
+		return Json.getObject (source, Spec.Features);
+	}
 
 }

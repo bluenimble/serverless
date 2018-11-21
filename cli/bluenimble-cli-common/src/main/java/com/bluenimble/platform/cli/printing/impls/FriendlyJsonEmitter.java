@@ -69,9 +69,15 @@ public class FriendlyJsonEmitter extends AbstractEmitter {
 				value = sValue.substring (InputValue.length ()).trim ();
 			}
 		}
-		tool.write (Lang.QUOTE);
+		if (!CastTypes.contains (value.getClass ())) {
+			write (Lang.QUOTE);
+		}
+		
 		tool.printer ().text (-100, Json.escape (String.valueOf (value)), color, null);
-		tool.write (Lang.QUOTE);
+		
+		if (!CastTypes.contains (value.getClass ())) {
+			write (Lang.QUOTE);
+		}
 	}
 
 	@Override

@@ -44,6 +44,7 @@ public interface ApiService extends Manageable {
 			String Engine		= "engine";
 			String Processor	= "processor";
 			String Extends		= "extends";
+			String Cast			= "cast";
 		}
 
 		interface Meta	{

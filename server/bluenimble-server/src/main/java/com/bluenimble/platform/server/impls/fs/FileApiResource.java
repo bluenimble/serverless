@@ -250,11 +250,11 @@ public class FileApiResource implements ApiResource {
 	}
 
 	@Override
-	public Object template (JsonObject data) throws IOException {
+	public Object template (JsonObject data, boolean withScripting) throws IOException {
 		InputStream is = null;
 		try {
 			is = new FileInputStream (file);
-			return Lang.template (IOUtils.toString (is), data, true);
+			return Lang.template (IOUtils.toString (is), data, withScripting);
 		} finally {
 			IOUtils.closeQuietly (is);
 		}

@@ -344,15 +344,23 @@ public class JsonObject extends JsonAbstractEntity implements Map {
 
 	public String toString () {
 		try {
-			return toString (2);
+			return toString (2, false);
 		} catch (Exception e) {
 			throw new RuntimeException (e.getMessage (), e);
 		}
 	}
 
-	public String toString (int indentFactor) {
+	public String toString (boolean cast) {
+		try {
+			return toString (2, cast);
+		} catch (Exception e) {
+			throw new RuntimeException (e.getMessage (), e);
+		}
+	}
+
+	public String toString (int indentFactor, boolean cast) {
 		StringBuilder buff = new StringBuilder ();
-		StringEmitter emitter = new StringEmitter (buff);
+		StringEmitter emitter = new StringEmitter (buff, cast);
 		if (indentFactor > 0) {
 			emitter.prettify ();
 		}

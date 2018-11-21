@@ -111,7 +111,11 @@ public class Json {
 	}
     
     public static void store (JsonObject source, File file) throws IOException {
-    	store (source, file, null);
+    	store (source, file, false);
+    }
+    
+    public static void store (JsonObject source, File file, boolean cast) throws IOException {
+    	store (source, file, null, false, cast);
     }
     
     public static void store (JsonObject source, File file, String paraphrase) throws IOException {
@@ -119,13 +123,16 @@ public class Json {
     }
 
     public static void store (JsonObject source, File file, String paraphrase, boolean base64) throws IOException {
+    	store (source, file, paraphrase, base64, false);
+    }
+    public static void store (JsonObject source, File file, String paraphrase, boolean base64, boolean cast) throws IOException {
     	if (source == null) {
     		source = new JsonObject ();
     	}
     	OutputStream os = null;
     	try {
     		os = Lang.isNullOrEmpty (paraphrase) ? new FileOutputStream (file) : new ByteArrayOutputStream ();
-    		IOUtils.copy (new ByteArrayInputStream (source.toString (2).getBytes ()), os);
+    		IOUtils.copy (new ByteArrayInputStream (source.toString (2, cast).getBytes ()), os);
     	} finally {
     		if (Lang.isNullOrEmpty (paraphrase)) {
         		IOUtils.closeQuietly (os);
@@ -472,7 +479,7 @@ public class Json {
 		
     }
     
-    public static Object template (JsonObject model, JsonObject data, boolean withScripting) {
+    public static JsonObject template (JsonObject model, JsonObject data, boolean withScripting) {
     	if (Json.isNullOrEmpty (model) || Json.isNullOrEmpty (data)) {
     		return model;
     	}
@@ -521,13 +528,14 @@ public class Json {
 				array.add (i, resolved); 
 			}
 			return array;
-		} else {
+		} else if (obj instanceof String) {
 			String exp = String.valueOf (obj);
 			if (Lang.isNullOrEmpty (exp)) {
 				return obj;
 			}
 			return compiler.compile (exp, null).eval (vr);
-		}
+		} 
+		return obj;
 	}
 	
 	public static boolean isNullOrEmpty (JsonObject o) {
@@ -656,6 +664,7 @@ public class Json {
 		
 		data.set ("optimizer", 
 		new JsonObject ("{" +
+			
 			"\"sizes\": {" +
 				"\"sync\": \"200,400\"" +
 			"}," +
@@ -669,6 +678,7 @@ public class Json {
 
 		JsonObject spec = new JsonObject ("{ params: {" +
 			"payload: {" +
+				"\"age\": 5," +
 				"avatar: {" +
 					"id: \"[ object.id ]\"," +
 					"sizes: \"[= optimizer.sizes.sync.split(',') ]\"" +
@@ -681,7 +691,7 @@ public class Json {
 				spec,
 				data, 
 				true
-			)
+			).toString (2, true)
 		);
 		
     }

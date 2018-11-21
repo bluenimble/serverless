@@ -20,6 +20,7 @@ import java.io.Serializable;
 
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiService;
+import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.ApiStatus;
 
 public interface StatusManager extends Serializable {
@@ -32,5 +33,7 @@ public interface StatusManager extends Serializable {
 
 	void 		delete 	(Api api);
 	void 		delete 	(Api api, ApiService service);
+	
+	void		init 	(ApiSpace space) throws Exception;
 
 }

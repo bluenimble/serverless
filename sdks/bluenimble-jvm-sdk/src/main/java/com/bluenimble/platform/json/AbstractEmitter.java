@@ -16,10 +16,22 @@
  */
 package com.bluenimble.platform.json;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 
 public abstract class AbstractEmitter implements JsonEmitter {
+	
+	protected static final Set<Class<?>> CastTypes = new HashSet<Class<?>> ();
+	static {
+		CastTypes.add (Integer.class); CastTypes.add (Integer.TYPE);
+		CastTypes.add (Long.class); CastTypes.add (Long.TYPE);
+		CastTypes.add (Double.class); CastTypes.add (Double.TYPE);
+		CastTypes.add (Float.class); CastTypes.add (Float.TYPE);
+		CastTypes.add (Boolean.class); CastTypes.add (Boolean.TYPE);
+	}
 	
 	private boolean		pretty;
 	
@@ -27,6 +39,7 @@ public abstract class AbstractEmitter implements JsonEmitter {
 	private String 		space 	= Lang.SPACE;
 	
 	protected int 		indent;
+	protected boolean	cast; 
 	
 	@Override
 	public void onStartObject (JsonObject o, boolean root) {
@@ -98,9 +111,15 @@ public abstract class AbstractEmitter implements JsonEmitter {
 		if (value == null) {
 			write (Lang.NULL);
 		} else {
-			write (Lang.QUOTE);
+			if (!cast || !CastTypes.contains (value.getClass ())) {
+				write (Lang.QUOTE);
+			}
+			
 			write (Json.escape (String.valueOf (value)));
-			write (Lang.QUOTE);
+			
+			if (!cast || !CastTypes.contains (value.getClass ())) {
+				write (Lang.QUOTE);
+			}
 		}
 	}
 
@@ -137,6 +156,11 @@ public abstract class AbstractEmitter implements JsonEmitter {
 	
 	public AbstractEmitter tab (String tab) {
 		this.tab = tab;
+		return this;
+	}
+	
+	public AbstractEmitter cast (boolean cast) {
+		this.cast = cast;
 		return this;
 	}
 	

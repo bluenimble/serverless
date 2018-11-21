@@ -315,7 +315,7 @@ public class ApiImpl implements Api {
 							.append (Lang.PARENTH_OPEN).append (service.status ().name ().substring (0, 1)).append (Lang.PARENTH_CLOSE).append (Lang.SPACE)
 							.append (service.getVerb ()).append (Lang.COLON).append (Json.getString (service.toJson (), ApiService.Spec.Endpoint));
 							if (ApiStatus.Failed.equals (service.status ())) {
-								sb.append (Lang.ENDLN).append (service.getFailure ().toString (2));
+								sb.append (Lang.ENDLN).append (service.getFailure ().toString (2, false));
 							}
 							sb.append (Lang.ENDLN);
 						return false;
@@ -506,6 +506,7 @@ public class ApiImpl implements Api {
 		if (msg == null) {
 			return space.getServer ().message (lang, key, args);
 		}
+		
 		return MessageFormat.format (msg, args);
 	}
 

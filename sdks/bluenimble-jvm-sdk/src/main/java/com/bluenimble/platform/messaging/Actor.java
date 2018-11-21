@@ -18,6 +18,8 @@ package com.bluenimble.platform.messaging;
 
 import java.io.Serializable;
 
+import com.bluenimble.platform.json.JsonObject;
+
 public interface Actor extends Serializable {
 	
 	String id 	();
@@ -25,5 +27,7 @@ public interface Actor extends Serializable {
 	
 	void 	set	(String name, Object value);
 	Object 	get	(String name);
+	
+	JsonObject	features ();
 	
 }

@@ -27,6 +27,7 @@ import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiService;
+import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.ApiStatus;
 import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.json.JsonObject;
@@ -56,6 +57,7 @@ public class DefaultStatusManager implements StatusManager {
 	
 	private long						delay 	= 0;
 	private long						period 	= 20;
+	private boolean						readOnly;
 	
 	private ScheduledExecutorService 	listener;
 	
@@ -65,7 +67,13 @@ public class DefaultStatusManager implements StatusManager {
 	
 	private Tracer						tracer;
 	
-	public DefaultStatusManager (ApiSpaceImpl space) throws Exception {
+	public DefaultStatusManager () throws Exception {
+	}
+	
+	@Override
+	public void init (ApiSpace aSpace) throws Exception {
+		
+		ApiSpaceImpl space = (ApiSpaceImpl)aSpace;
 		
 		tracer = space.tracer ();
 		
@@ -93,51 +101,24 @@ public class DefaultStatusManager implements StatusManager {
 	}
 
 	public void start () {
-		listener = Executors.newScheduledThreadPool (1);
+		if (readOnly) {
+			return;
+		}
+		listener = Executors.newSingleThreadScheduledExecutor ();
 		listener.scheduleAtFixedRate (new Runnable () {
 			@Override
 			public void run () {
-				while (true) {
-					
-					Change change = null;
-					try {
-						change = changes.poll (3, TimeUnit.SECONDS);
-					} catch (InterruptedException e) {
+				Change change = null;
+				try {
+					while ((change = changes.poll (3, TimeUnit.SECONDS)) != null) {
+						_update (change);
 					}
-					
-					if (change == null) {
-						break;
-					}
-					
-					JsonObject oApi = Json.getObject (status, change.api);
-					JsonObject services = Json.getObject (oApi, Spec.Services);
-					
-					if (DeletedStatus.equals (change.status)) {
-						if (change.service == null) {
-							status.remove (change.api);
-						} else if (services != null) {
-							services.remove (change.service);
-						}
-						continue;
-					}
-					
-					if (oApi == null) {
-						oApi = new JsonObject ();
-						status.set (change.api, oApi);
-					}
-					
-					if (change.service != null) {
-						if (services == null) {
-							services = new JsonObject ();
-							oApi.set (Spec.Services, services);
-						}
-						services.set (change.service, change.status);
-					} else {
-						oApi.set (Spec.Status, change.status);
-					}
+				} catch (InterruptedException e) {
 				}
 				try {
-					Json.store (status, statusFile);
+					if (change != null && !readOnly) {
+						Json.store (status, statusFile);
+					}
 				} catch (Exception e) {
 					tracer.log (Tracer.Level.Error, Lang.BLANK, e);
 				}
@@ -189,22 +170,103 @@ public class DefaultStatusManager implements StatusManager {
 
 	@Override
 	public void update (Api api, ApiStatus status) {
-		changes.offer (new Change (api.getNamespace (), status.name ()));
+		Change change = new Change (api.getNamespace (), status.name ());
+		if (readOnly) {
+			_update (change);
+		} else {
+			changes.offer (change);
+		}
 	}
 
 	@Override
 	public void update (Api api, ApiService service, ApiStatus status) {
-		changes.offer (new Change (api.getNamespace (), service.getVerb ().name () + Json.getString (service.toJson (), ApiService.Spec.Endpoint), status.name ()));
+		Change change = new Change (
+			api.getNamespace (), 
+			service.getVerb ().name () + Json.getString (service.toJson (), ApiService.Spec.Endpoint), 
+			status.name ()
+		);
+		if (readOnly) {
+			_update (change);
+		} else {
+			changes.offer (change);
+		}
 	}
 
 	@Override
 	public void delete (Api api) {
-		changes.offer (new Change (api.getNamespace (), DeletedStatus));
+		Change change = new Change (api.getNamespace (), DeletedStatus);
+		if (readOnly) {
+			_update (change);
+		} else {
+			changes.offer (change);
+		}
 	}
 
 	@Override
 	public void delete (Api api, ApiService service) {
-		changes.offer (new Change (api.getNamespace (), service.getVerb ().name () + Json.getString (service.toJson (), ApiService.Spec.Endpoint), DeletedStatus));
+		Change change = new Change (
+			api.getNamespace (), 
+			service.getVerb ().name () + Json.getString (service.toJson (), ApiService.Spec.Endpoint), 
+			DeletedStatus
+		);
+		if (readOnly) {
+			_update (change);
+		} else {
+			changes.offer (change);
+		}
+	}
+	
+	public long getDelay () {
+		return delay;
+	}
+	public void setDelay (long delay) {
+		this.delay = delay;
+	}
+
+	public long getPeriod () {
+		return period;
+	}
+	public void setPeriod (long period) {
+		this.period = period;
+	}
+
+	public boolean isReadOnly () {
+		return readOnly;
+	}
+	public void setReadOnly (boolean readOnly) {
+		this.readOnly = readOnly;
+	}
+
+	private void _update (Change change) {
+		if (change == null) {
+			return;
+		}
+		JsonObject oApi = Json.getObject (status, change.api);
+		JsonObject services = Json.getObject (oApi, Spec.Services);
+		
+		if (DeletedStatus.equals (change.status)) {
+			if (change.service == null) {
+				status.remove (change.api);
+			} else if (services != null) {
+				services.remove (change.service);
+			}
+			return;
+		}
+		
+		if (oApi == null) {
+			oApi = new JsonObject ();
+			status.set (change.api, oApi);
+		}
+		
+		if (change.service != null) {
+			if (services == null) {
+				services = new JsonObject ();
+				oApi.set (Spec.Services, services);
+			}
+			services.set (change.service, change.status);
+		} else {
+			oApi.set (Spec.Status, change.status);
+		}
 	}
 
 }

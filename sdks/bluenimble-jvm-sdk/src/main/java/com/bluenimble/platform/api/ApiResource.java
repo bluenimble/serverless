@@ -49,7 +49,7 @@ public interface ApiResource extends Serializable {
 	
 	ApiStreamSource 	toStreamSource 	();
 	
-	Object				template		(JsonObject data) throws IOException;
+	Object				template		(JsonObject data, boolean withScripting) throws IOException;
 
 	String 				extension 		();
 	List<ApiResource> 	children 		(Selector selector);

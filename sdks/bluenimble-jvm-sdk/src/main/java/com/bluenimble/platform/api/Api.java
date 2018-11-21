@@ -39,6 +39,7 @@ public interface Api extends Traceable, Manageable {
 		
 		interface Media	{
 			String Default		= "default";
+			String Cast			= "cast";
 		}
 
 		interface Security		{

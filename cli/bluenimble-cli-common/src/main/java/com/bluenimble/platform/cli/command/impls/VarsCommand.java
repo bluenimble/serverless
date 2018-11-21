@@ -61,7 +61,7 @@ public class VarsCommand extends AbstractCommand {
 				Object value = vars.get (key);
 				String sValue = null;
 				if (value instanceof JsonObject) {
-					sValue = ((JsonObject)value).toString (0);
+					sValue = ((JsonObject)value).toString (0, true);
 				} else {
 					sValue = String.valueOf (value);
 				}

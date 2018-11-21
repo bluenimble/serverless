@@ -231,9 +231,9 @@ public class JsonArray extends JsonAbstractEntity implements List<Object> {
     	
     }
 
-    public String toString (int indentFactor) {
+    public String toString (int indentFactor, boolean cast) {
 		StringBuilder buff = new StringBuilder ();
-		StringEmitter emitter = new StringEmitter (buff);
+		StringEmitter emitter = new StringEmitter (buff, cast);
 		if (indentFactor > 0) {
 			emitter.prettify ();
 		}

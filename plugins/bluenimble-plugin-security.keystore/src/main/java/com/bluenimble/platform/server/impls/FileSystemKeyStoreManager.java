@@ -58,21 +58,23 @@ public class FileSystemKeyStoreManager implements KeyStoreManager {
 	
 	private long						delay;
 	private long						period;
+	private boolean						readOnly;
 	private ScheduledExecutorService 	listener;
 	
 	private int							flushRate;
 
-	public FileSystemKeyStoreManager (long delay, long period, String keyStoreFile, int flushRate) {
+	public FileSystemKeyStoreManager (long delay, long period, String keyStoreFile, int flushRate, boolean readOnly) {
 		this.delay 			= delay;
 		this.period 		= period;
 		this.keyStoreFile 	= keyStoreFile;
 		this.flushRate 		= flushRate;
+		this.readOnly 		= readOnly;
 	}
 	
 	@Override
 	public SpaceKeyStore read (ApiSpace space) throws IOException {
 		
-		SpaceKeyStoreImpl ks = new SpaceKeyStoreImpl (this, space);
+		SpaceKeyStoreImpl ks = new SpaceKeyStoreImpl (this, space, readOnly);
 		
 		// load default keys
 		JsonArray aKeys = space.keys ();
@@ -101,6 +103,10 @@ public class FileSystemKeyStoreManager implements KeyStoreManager {
 
 	@Override
 	public void write (ApiSpace space) throws IOException {
+		
+		if (readOnly) {
+			throw new UnsupportedOperationException ("KeyStore Manager is read-only");
+		}
 		
 		SpaceKeyStoreImpl iKeystore = (SpaceKeyStoreImpl)((AbstractApiSpace)space).keystore ();
 		
@@ -262,6 +268,10 @@ public class FileSystemKeyStoreManager implements KeyStoreManager {
 	}
 	
 	void notifyUpdate (ApiSpace space) {
+		if (readOnly) {
+			return;
+		}
+		
 		if (updates.contains (space)) {
 			return;
 		}
@@ -270,7 +280,10 @@ public class FileSystemKeyStoreManager implements KeyStoreManager {
 
 	@Override
 	public void start () {
-		listener = Executors.newScheduledThreadPool (1);
+		if (readOnly) {
+			return;
+		}
+		listener = Executors.newSingleThreadScheduledExecutor ();
 		listener.scheduleAtFixedRate (new Runnable () {
 			@Override
 			public void run () {

@@ -45,7 +45,7 @@ public class AddRecordSpi extends AbstractApiServiceSpi {
 		String 	provider 	= (String)request.get (CommonSpec.Provider);
 		String 	sEntity 	= (String)request.get (CommonSpec.Entity);
 		
-		final JsonObject payload = (JsonObject)request.get (ApiRequest.Payload); 
+		final JsonObject payload = (JsonObject)request.get (ApiRequest.Payload);
 		
 		ApiSpace space;
 		try {

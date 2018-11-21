@@ -25,6 +25,6 @@ public interface Sender extends Actor {
 		String Ack 			= "ack";
 	}
 	
-	Callback callback (String callbackId);
+	Callback 	callback (String callbackId);
 	
 }

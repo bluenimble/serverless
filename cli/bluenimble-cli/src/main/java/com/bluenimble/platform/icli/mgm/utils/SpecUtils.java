@@ -162,7 +162,7 @@ public class SpecUtils {
 		
 		String spec;
 		try {
-			spec = specFile.getName ().endsWith (".json") ? Json.load (specFile).toString (2) : FileUtils.content (specFile);
+			spec = specFile.getName ().endsWith (".json") ? Json.load (specFile).toString (2, false) : FileUtils.content (specFile);
 		} catch (Exception ex) {
 			throw new CommandExecutionException (ex.getMessage (), ex);
 		}

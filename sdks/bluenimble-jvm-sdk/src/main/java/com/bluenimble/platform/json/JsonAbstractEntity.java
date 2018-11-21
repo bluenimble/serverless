@@ -138,7 +138,7 @@ public abstract class JsonAbstractEntity implements JsonEntity {
 		return quote (null, value.toString());
 	}
 	
-	public abstract String toString (int indentFactor);
+	public abstract String toString (int indentFactor, boolean cast);
 	
 	public abstract void write (JsonEmitter emitter);
 

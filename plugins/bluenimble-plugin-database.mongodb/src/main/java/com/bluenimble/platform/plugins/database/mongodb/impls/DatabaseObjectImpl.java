@@ -553,7 +553,7 @@ public class DatabaseObjectImpl implements DatabaseObject {
 	}
 	
 	public String toString () {
-		return describe ().toString (2);
+		return describe ().toString (2, true);
 	}
 	
 	private JsonObject describe () {

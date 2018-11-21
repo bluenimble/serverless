@@ -403,7 +403,7 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 		}
 			
 		try {
-			logError (api, "<" + request.getId () + "> Send Error Response\n" + response.getError ().toString (2), null);
+			logError (api, "<" + request.getId () + "> Send Error Response\n" + response.getError ().toString (2, false), null);
 			mediaProcessor.process (api, service, consumer, null, request, response);
 		} catch (Exception mex) {
 			logError (api, "\tMediaProcessor - Writing Error - caused an error\n", mex);

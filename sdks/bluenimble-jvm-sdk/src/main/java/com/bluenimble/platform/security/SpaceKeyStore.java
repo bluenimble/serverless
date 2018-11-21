@@ -41,6 +41,8 @@ public interface SpaceKeyStore extends Serializable {
 																throws SpaceKeyStoreException;
 	boolean 		exists 	(Object id)							throws SpaceKeyStoreException;
 	
+	boolean 		isReadOnly ();		
+	
 	List<KeyPair> 	create 	(int pack, Date expiryDate, Map<String, Object> properties)		
 																throws SpaceKeyStoreException;
 

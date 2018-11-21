@@ -2,9 +2,12 @@ package com.bluenimble.platform.api.media.impls;
 
 import java.io.IOException;
 
+import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
+import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.api.ApiResponse;
+import com.bluenimble.platform.api.ApiService;
 import com.bluenimble.platform.api.media.DataWriter;
 import com.bluenimble.platform.json.AbstractEmitter;
 import com.bluenimble.platform.json.JsonEmitter;
@@ -17,15 +20,13 @@ public class JsonWriter implements DataWriter {
 	private String defaultResponse = Lang.EMTPY_OBJECT;
 	
 	public JsonWriter () {
-		
 	}
-
 	public JsonWriter (String defaultResponse) {
 		this.defaultResponse = defaultResponse;
 	}
 
 	@Override
-	public void write (ApiOutput output, ApiResponse response) throws IOException {
+	public void write (Api api, ApiService service, ApiOutput output, ApiResponse response) throws IOException {
 		
 		if (output == null) {
 			if (defaultResponse != null) {
@@ -42,6 +43,19 @@ public class JsonWriter implements DataWriter {
 			return;
 		} 
 		
+		boolean cast = false;
+
+		Object oCast = output.get (ApiOutput.Defaults.Cast);
+		if (oCast == null) {
+			cast = Json.getBoolean (
+				service.getMedia (), 
+				ApiService.Spec.Media.Cast, 
+				Json.getBoolean (api.getMedia (), Api.Spec.Media.Cast, true)
+			);
+		} else {
+			cast = oCast instanceof Boolean && ((Boolean)oCast);
+		}
+		
 		json.write (new AbstractEmitter () {
 			@Override
 			public JsonEmitter write (String chunk) {
@@ -52,7 +66,7 @@ public class JsonWriter implements DataWriter {
 				}
 				return this;
 			}
-		});
+		}.cast (cast));
 		
 	}
 

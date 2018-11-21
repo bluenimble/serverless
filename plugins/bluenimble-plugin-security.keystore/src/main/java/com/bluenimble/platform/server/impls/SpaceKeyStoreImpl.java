@@ -39,14 +39,19 @@ public class SpaceKeyStoreImpl implements SpaceKeyStore {
 	
 	private FileSystemKeyStoreManager 	manager;
 	private ApiSpace 					space;
+	private boolean 					readOnly;
 	
-	public SpaceKeyStoreImpl (FileSystemKeyStoreManager manager, ApiSpace space) {
+	public SpaceKeyStoreImpl (FileSystemKeyStoreManager manager, ApiSpace space, boolean readOnly) {
 		this.manager 	= manager;
 		this.space 		= space;
+		this.readOnly 	= readOnly;
 	}
 	
 	@Override
 	public void delete (Object ak) {
+		if (readOnly) {
+			throw new UnsupportedOperationException ("KeyStore is read-only");
+		}
 		keys.remove (ak);
 	}
 
@@ -105,6 +110,9 @@ public class SpaceKeyStoreImpl implements SpaceKeyStore {
 
 	@Override
 	public void put (KeyPair kp) {
+		if (readOnly) {
+			throw new UnsupportedOperationException ("KeyStore is read-only");
+		}
 		_put (kp);
 		manager.notifyUpdate (space);
 	}
@@ -122,6 +130,9 @@ public class SpaceKeyStoreImpl implements SpaceKeyStore {
 
 	@Override
 	public List<KeyPair> create (int pack, final Date expiryDate, final Map<String, Object> properties) throws SpaceKeyStoreException {
+		if (readOnly) {
+			throw new UnsupportedOperationException ("KeyStore is read-only");
+		}
 		if (pack < 1) {
 			return null;
 		}
@@ -269,6 +280,11 @@ public class SpaceKeyStoreImpl implements SpaceKeyStore {
 		
 		return include;
 		
+	}
+
+	@Override
+	public boolean isReadOnly () {
+		return readOnly;
 	}
 
 }

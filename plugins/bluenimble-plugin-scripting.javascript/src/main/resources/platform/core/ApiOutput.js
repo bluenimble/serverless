@@ -57,8 +57,23 @@ ApiOutput.prototype.fromBytes = function (name, bytes, contentType, extension) {
 	return new JC_ApiByteArrayOutput (name, bytes, contentType, extension);
 };
 ApiOutput.prototype.fromJson = function (json) {
-	return new JC_JsonApiOutput (json);
+	return new JC_JsonApiOutput (JC_ValueConverter.convert (json));
 };
 ApiOutput.prototype.create = function () {
 	return new JC_JsonApiOutput (Json.object ());
+};
+ApiRequest.prototype.Defaults = {
+	Id 			: JC_ApiOutput_Defaults.Id,
+	Timestamp 	: JC_ApiOutput_Defaults.Timestamp,
+	Cache 		: JC_ApiOutput_Defaults.Cache,
+	Disposition : JC_ApiOutput_Defaults.Disposition,
+	Charset 	: JC_ApiOutput_Defaults.Charset,
+	Items 		: JC_ApiOutput_Defaults.Items,
+	Count 		: JC_ApiOutput_Defaults.Count,
+	Expires		: JC_ApiOutput_Defaults.Expires,
+	Cast		: JC_ApiOutput_Defaults.Cast
+};
+ApiRequest.prototype.Disposition = {
+	Inline 		: JC_ApiOutput_Disposition.Inline,
+	Attachment 	: JC_ApiOutput_Disposition.Attachment
 };

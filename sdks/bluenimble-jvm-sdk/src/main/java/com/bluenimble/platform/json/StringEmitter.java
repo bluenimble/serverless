@@ -20,9 +20,10 @@ public class StringEmitter extends AbstractEmitter {
 	
 	private StringBuilder 	buff;
 	
-	public StringEmitter (StringBuilder buff) {
+	public StringEmitter (StringBuilder buff, boolean cast) {
 		super ();
 		this.buff = buff;
+		this.cast = cast;
 	}
 
 	public JsonEmitter write (String text) {

@@ -175,7 +175,7 @@ public class PlainMediaProcessor implements ApiMediaProcessor {
 				dataWriter = writers.get (extendsContentType);
 			}
 
-			dataWriter.write (output, response);
+			dataWriter.write (api, service, output, response);
 			
 			response.close ();
 

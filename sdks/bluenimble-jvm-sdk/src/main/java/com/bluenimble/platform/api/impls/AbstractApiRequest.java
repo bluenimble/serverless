@@ -188,7 +188,7 @@ public abstract class AbstractApiRequest extends AbstractApiContext implements A
 
 	@Override
 	public String toString () {
-		return toJson ().toString (2);
+		return toJson ().toString (2, false);
 	}
 	
 	public void setResource (String [] resource) {

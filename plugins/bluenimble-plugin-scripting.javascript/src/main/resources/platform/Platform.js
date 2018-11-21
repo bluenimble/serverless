@@ -1,11 +1,15 @@
 var JC_Byte					= Java.type ('java.lang.Byte');
 var JC_String				= Java.type ('java.lang.String');
+var JC_Integer				= Java.type ('java.lang.Integer');
+var JC_Double				= Java.type ('java.lang.Double');
 var JC_Thread 				= Java.type ('java.lang.Thread');
 var JC_Callable				= Java.type ('com.bluenimble.platform.api.ContextualCallable');
 
 var JC_ByteArrayOutputStream= Java.type ('java.io.ByteArrayOutputStream');
 
 var JC_ByteArrayApiOutput	= Java.type ('com.bluenimble.platform.api.impls.ByteArrayApiOutput');
+var JC_ApiOutput_Defaults	= Java.type ('com.bluenimble.platform.api.ApiOutput.Defaults');
+var JC_ApiOutput_Disposition= Java.type ('com.bluenimble.platform.api.ApiOutput.Disposition');
 var JC_JsonApiOutput		= Java.type ('com.bluenimble.platform.api.impls.JsonApiOutput');
 
 var JC_Instant				= Java.type ('java.time.Instant');

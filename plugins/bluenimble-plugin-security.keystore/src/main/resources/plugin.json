@@ -14,11 +14,13 @@
 			},
 			"closable": "false",
 			
+			"file": "[ this.file | 'space.keystore' ]",
+			"readOnly": "[ this.readOnly | 'false' ]",
+			"flushRate": "[ this.flushRate | '10' ]",
+			
 			"listener": {
 				"delay": "[ this.listener.delay | '5' ]",
-				"period": "[ this.listener.period | '300' ]",
-				"file": "[ this.listener.file | 'space.keystore' ]",
-				"flushRate": "[ this.listener.flushRate | '10' ]"
+				"period": "[ this.listener.period | '300' ]"
 			}
 		}
 	}

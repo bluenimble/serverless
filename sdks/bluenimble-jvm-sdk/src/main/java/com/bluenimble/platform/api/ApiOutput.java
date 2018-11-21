@@ -27,7 +27,7 @@ import com.bluenimble.platform.streams.Chunk;
 import com.bluenimble.platform.streams.StreamDecorator;
 
 public interface ApiOutput extends Serializable {
-
+	
 	interface Defaults {
 		String Id 			= "id";
 		String Timestamp 	= "timestamp";
@@ -37,6 +37,7 @@ public interface ApiOutput extends Serializable {
 		String Items 		= "items";
 		String Count 		= "count";
 		String Expires		= "expires";
+		String Cast			= "cast";
 	}
 
 	interface Disposition 		{

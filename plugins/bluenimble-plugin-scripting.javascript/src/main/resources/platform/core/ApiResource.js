@@ -56,8 +56,11 @@ var ApiResource = function (proxy) {
 
 	  @returns {Object|string} the content
 	*/
-	this.template = function (data) {
-		return proxy.template (JC_ValueConverter.convert (data));
+	this.template = function (data, withScripting) {
+		if (typeof withScripting == 'undefined') {
+			withScripting = false;
+		}
+		return proxy.template (JC_ValueConverter.convert (data), withScripting);
 	};
 
 	/**	

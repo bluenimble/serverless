@@ -320,17 +320,17 @@ public class RemoteUtils {
 
 				if (ContentTypes.Json.equals (contentType)) {
 					
-					Object ov = null;
+					JsonObject ov = null;
 					
 					if (value instanceof JsonObject) {
-						ov = value;
+						ov = (JsonObject)value;
 					} else {
 						String varName = String.valueOf (value);
 						
 						if (EmptyPayload.equals (varName)) {
 							ov = JsonObject.Blank;
 						} else {
-							ov = ((Map<String, Object>)tool.getContext (Tool.ROOT_CTX).get (ToolContext.VARS)).get (varName);
+							ov = (JsonObject)((Map<String, Object>)tool.getContext (Tool.ROOT_CTX).get (ToolContext.VARS)).get (varName);
 							if (ov == null) {
 								throw new Exception ("variable " + value + " not found");
 							}
@@ -341,7 +341,7 @@ public class RemoteUtils {
 					}
 					
 					body.add (
-						new StringHttpMessageBodyPart (ov.toString ())
+						new StringHttpMessageBodyPart (ov.toString (0, true))
 					);
 					
 					continue;

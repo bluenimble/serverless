@@ -121,7 +121,7 @@ function saveService (service, file) {
 				action = duplicata.verb.substring (0, 1).toUpperCase () + duplicata.verb.substring (1);
 			}
 			// store new spec
-			Json.store (duplicata, new File (file.getParentFile (),  action + file.getName ()));
+			Json.store (duplicata, new File (file.getParentFile (),  action + file.getName ()), true);
             
             // delete original
             file.delete ();
@@ -129,7 +129,7 @@ function saveService (service, file) {
 		}
 	} else {
 		// store new spec
-		Json.store (service, file);
+		Json.store (service, file, true);
 	}
 };
 
@@ -410,7 +410,7 @@ if (!Pattern.matches ("^[a-zA-Z0-9_-]*$", apiNs)) {
 }
 
 // save api.json file
-Json.store (apiSpec, apiSpecFile);
+Json.store (apiSpec, apiSpecFile, true);
 
 // transform, generate, compile and package data models
 BuildUtils.generate (apiFolder, Json.find (apiSpec, 'runtime', 'dataModels'), transformData);

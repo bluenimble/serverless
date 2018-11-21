@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -39,6 +40,7 @@ import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.TemplateSource;
 import com.bluenimble.platform.IOUtils;
+import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.ApiContentTypes;
 import com.bluenimble.platform.api.ApiResource;
@@ -89,6 +91,14 @@ public class SmtpMessenger implements Messenger {
 			}
 			
 			Message message = new MimeMessage (session);
+			
+			if (!Json.isNullOrEmpty (sender.features ())) {
+				Iterator<String> keys = sender.features ().keys ();
+				while (keys.hasNext ()) {
+					String key = keys.next ();
+					message.setHeader (key, sender.features ().getString (key));
+				}
+			}
 
 			String senderEmail = sender.id ();
 			if (Lang.isNullOrEmpty (senderEmail)) {

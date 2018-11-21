@@ -29,13 +29,18 @@ public class KeyStorePlugin extends AbstractPlugin {
 	private static final String DefaultKeystoreFile = "space.keystore";
 	
 	interface Spec {
-		String Pool 		= "pool";
 		String Delay 		= "delay";
 		String Period 		= "period";
 
 		String File 		= "file";
 		String FlushRate 	= "flushRate";
+		
+		String ReadOnly		= "readOnly";
 	}
+	
+	private String 	file = DefaultKeystoreFile;
+	private int  	flushRate = 10;
+	private boolean readOnly;
 	
 	private JsonObject listener;
 
@@ -45,8 +50,9 @@ public class KeyStorePlugin extends AbstractPlugin {
 			new FileSystemKeyStoreManager (
 				Json.getLong 	(listener, Spec.Delay, 5),
 				Json.getLong 	(listener, Spec.Period, 300),
-				Json.getString 	(listener, Spec.File, DefaultKeystoreFile),
-				Json.getInteger (listener, Spec.FlushRate, 10)
+				file,
+				flushRate,
+				readOnly
 			)
 		);
 	}
@@ -54,9 +60,29 @@ public class KeyStorePlugin extends AbstractPlugin {
 	public JsonObject getListener () {
 		return listener;
 	}
-
 	public void setListener (JsonObject listener) {
 		this.listener = listener;
+	}
+
+	public String getFile () {
+		return file;
+	}
+	public void setFile (String file) {
+		this.file = file;
+	}
+
+	public int getFlushRate () {
+		return flushRate;
+	}
+	public void setFlushRate (int flushRate) {
+		this.flushRate = flushRate;
+	}
+
+	public boolean isReadOnly () {
+		return readOnly;
+	}
+	public void setReadOnly (boolean readOnly) {
+		this.readOnly = readOnly;
 	}
 
 }

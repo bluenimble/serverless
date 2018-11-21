@@ -68,7 +68,7 @@ public class GetRecordSpi extends AbstractApiServiceSpi {
 			return null;
 		}
 		
-		return new JsonApiOutput (dbo.toJson (null));
+		return new JsonApiOutput (dbo.toJson (null)).set (ApiOutput.Defaults.Cast, true);
 	}
 
 }

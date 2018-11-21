@@ -882,8 +882,10 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 			statusManager = (StatusManager)BeanUtils.create (ApiSpaceImpl.class.getClassLoader (), oStatusManager, getServer ().getPluginsRegistry ());
 		}
 		if (statusManager == null) {
-			statusManager = new DefaultStatusManager (this);
-		} 
+			statusManager = new DefaultStatusManager ();
+		}
+		
+		statusManager.init (this);
 		
 		tracer.log (Tracer.Level.Info, "Loading {0} keystore", getNamespace ());
 		

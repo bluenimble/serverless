@@ -99,7 +99,7 @@ public class QueryEntitySpi extends AbstractApiServiceSpi {
 			aRecords.add (records.get (i).toJson (new DefaultBeanSerializer (allStopLevel, minStopLevel)));
 		}
 		
-		return new JsonApiOutput (result);
+		return new JsonApiOutput (result).set (ApiOutput.Defaults.Cast, true);
 	}
 
 }

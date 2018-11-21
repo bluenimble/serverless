@@ -33,7 +33,7 @@ public class ApiUtils {
 		}
 
 		try {
-			String s = error.toString (2);
+			String s = error.toString (2, false);
 			if (api != null) {
 				api.tracer ().log (Level.Error, s);
 			}
