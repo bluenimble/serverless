@@ -16,8 +16,9 @@
  */
 package com.bluenimble.platform.api.impls.im;
 
+import com.bluenimble.platform.Crypto;
+import com.bluenimble.platform.Encodings;
 import com.bluenimble.platform.Json;
-import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.api.ApiRequest;
@@ -50,7 +51,10 @@ public class ChangePasswordSpi extends AbstractApiServiceSpi {
 		DatabaseObject account = null;
 		try {
 			account = db.get (Json.getString (config, Config.UsersEntity, Defaults.User), (String)consumer.get (ApiConsumer.Fields.Id));
-			account.set (Json.getString (config, Config.PasswordProperty, Spec.Password), Lang.md5 ((String)request.get (Spec.Password)));
+			account.set (
+				Json.getString (config, Config.PasswordProperty, Spec.Password), 
+				Crypto.md5 ((String)request.get (Spec.Password), Encodings.UTF8)
+			);
 			account.save ();
 		} catch (Exception ex) {
 			throw new ApiServiceExecutionException (ex.getMessage (), ex);

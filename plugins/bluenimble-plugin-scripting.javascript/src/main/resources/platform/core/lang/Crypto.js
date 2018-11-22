@@ -44,7 +44,7 @@ var Crypto = {
 	  @param {string} - the encryption paraphrase
 	  @param {('AES'|'DES')} [alg=AES] - the encryption algorithm
 	  
-	  @returns {byte[]} the encrypted data
+	  @returns {ByteArray} the encrypted data
 	*/
 	encrypt: function (data, key, algorithm) {
 		if (!algorithm) {
@@ -68,7 +68,7 @@ var Crypto = {
 		if (!algorithm) {
 			algorithm = 'AES';
 		}
-		algorithm = algorthm.toUpperCase ();
+		algorithm = algorithm.toUpperCase ();
 		if (algorithm != 'DES' && algorithm != 'AES') {
 			throw 'unsupported algorithm ' + algorithm;
 		}

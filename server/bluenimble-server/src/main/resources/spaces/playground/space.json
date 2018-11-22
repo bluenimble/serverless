@@ -2,12 +2,28 @@
 	"namespace": "playground",
 	"name": "Playground Space",
 	
+	"executor": {
+		"class": "com.bluenimble.platform.api.impls.DefaultCodeExecutor",
+		"properties": {
+			"service": {
+				"group": "[ this.executor.group | 'default' ]",
+				"priority": "[ this.executor.priority | 'norm' ]",
+				"coreSize": "[ this.executor.coreSize | '10' ]",
+				"maxSize": "[ this.executor.maxSize | '10' ]",
+				"keepAlive": "[ this.executor.maxSize | '0' ]",
+				"queue": "[ this.executor.queue | '50' ]",
+				"timeout": "[ this.executor.timeout | '10000' ]",
+				"awaitTermination": "[ this.executor.awaitTermination | '60000' ]"
+			}
+		}
+	},
+	
 	"statusManager": {
 		"class": "com.bluenimble.platform.api.impls.DefaultStatusManager",
 		"properties": {
-			"readOnly": "[ this.readOnly | 'false' ]",
-			"delay": "[ this.delay | '0' ]",
-			"period": "[ this.period | '20' ]"
+			"readOnly": "[ this.statusManager.readOnly | 'false' ]",
+			"delay": "[ this.statusManager.delay | '0' ]",
+			"period": "[ this.statusManager.period | '20' ]"
 		}
 	},
 	

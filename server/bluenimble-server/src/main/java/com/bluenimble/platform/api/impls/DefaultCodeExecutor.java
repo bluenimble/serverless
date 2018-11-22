@@ -67,7 +67,7 @@ public class DefaultCodeExecutor implements CodeExecutor {
 							= "awaitTermination";
 	}
 	
-	public static final CodeExecutor 	Instance = new DefaultCodeExecutor (); 
+	protected JsonObject _service;
 	
 	private static final Future<Void> 	NoFuture = new Future<Void> () {
 		@Override
@@ -95,8 +95,6 @@ public class DefaultCodeExecutor implements CodeExecutor {
 	
 	protected ThreadGroup		group;
 	protected ExecutorService 	service;
-	
-	protected JsonObject		workers;
 	
 	protected long				timeout;
 	protected long				awaitTermination;
@@ -208,6 +206,36 @@ public class DefaultCodeExecutor implements CodeExecutor {
 	}
 
 	@Override
+	public CodeExecutor start () {
+		if (Json.isNullOrEmpty (_service)) {
+			return this;
+		}
+		
+		group = new ThreadGroup (Json.getString (_service, Spec.Group, DefaultGroup));
+	
+		String sPriority = Json.getString (_service, Spec.Priority, DefaultPriority).toLowerCase ();
+		
+		Integer priority = Priorities.get (sPriority);
+		if (priority == null) {
+			priority = Thread.NORM_PRIORITY;
+		}
+		group.setMaxPriority (priority);
+
+		service = new ThreadPoolExecutor (
+			Json.getInteger (_service, Spec.CoreSize, 10), Json.getInteger (_service, Spec.MaxSize, 10),
+			Json.getLong (_service, Spec.KeepAlive, 0L), TimeUnit.MILLISECONDS,
+			new ArrayBlockingQueue<Runnable> (Json.getInteger (_service, Spec.Queue, 10)), 
+			new SpaceThreadFactory (group)
+		);
+		
+		timeout 			= Json.getLong (_service, Spec.Timeout, 10000);
+		awaitTermination 	= Json.getLong (_service, Spec.AwaitTermination, 60000);
+		
+		return this;
+		
+	}
+	
+	@Override
 	public void shutdown () {
 		if (service == null) {
 			return;
@@ -231,35 +259,12 @@ public class DefaultCodeExecutor implements CodeExecutor {
 		}
 	}
 
-	public void setWorkers (JsonObject workers) {
-		if (Json.isNullOrEmpty (workers)) {
-			return;
-		}
-		
-		group = new ThreadGroup (Json.getString (workers, Spec.Group, DefaultGroup));
-	
-		String sPriority = Json.getString (workers, Spec.Priority, DefaultPriority).toLowerCase ();
-		
-		Integer priority = Priorities.get (sPriority);
-		if (priority == null) {
-			priority = Thread.NORM_PRIORITY;
-		}
-		group.setMaxPriority (priority);
-
-		service = new ThreadPoolExecutor (
-			Json.getInteger (workers, Spec.CoreSize, 10), Json.getInteger (workers, Spec.MaxSize, 10),
-			Json.getLong (workers, Spec.KeepAlive, 0L), TimeUnit.MILLISECONDS,
-			new ArrayBlockingQueue<Runnable> (Json.getInteger (workers, Spec.Queue, 10)), 
-			new SpaceThreadFactory (group)
-		);
-		
-		timeout 			= Json.getLong (workers, Spec.Timeout, 10000);
-		awaitTermination 	= Json.getLong (workers, Spec.AwaitTermination, 60000);
-		
+	public void setService (JsonObject _service) {
+		this._service = _service;
 	}
 
-	public JsonObject getWorkers () {
-		return workers;
+	public JsonObject getService () {
+		return _service;
 	}
 
 	private Thread [] listThreads () {

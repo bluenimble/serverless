@@ -19,11 +19,8 @@ package com.bluenimble.platform;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -406,28 +403,6 @@ public class Lang {
 	public static Date utcTime () {
 		return Calendar.getInstance (UTC_TZ).getTime ();
 	}
-
-    public static String md5 (byte [] data) {
-        MessageDigest m;
-		try {
-			m = MessageDigest.getInstance ("MD5");
-		} catch (NoSuchAlgorithmException e) {
-			return new String (data);
-		}
-        m.update (data, 0, data.length);
-        BigInteger i = new BigInteger (1, m.digest ());
-        return String.format ("%1$032X", i);
-    }
-    
-    public static String password (String pwd) {
-    	byte [] bytes = null;
-    	try {
-			bytes = pwd.getBytes (Encodings.UTF8);
-		} catch (UnsupportedEncodingException e) {
-			bytes = pwd.getBytes ();
-		}
-    	return md5 (bytes);
-    }
     
 	public static Date toDate (String date, String format) throws ParseException {
 		return toDate (date, format, (Locale)null);
@@ -757,21 +732,6 @@ public class Lang {
 		}
 		return sb.toString();
 	}
-	
-	public static String md5 (String message) throws Exception {
-		MessageDigest md = MessageDigest.getInstance ("MD5"); 
-		byte [] hash = md.digest (message.getBytes ("UTF-8")); 
-
-		StringBuilder sb = new StringBuilder (2 * hash.length); 
-		for (byte b : hash) { 
-			sb.append (String.format ("%02x", b&0xff)); 
-		} 
-		
-		String md5 = sb.toString ();
-		sb.setLength (0);
-		
-		return md5;
-	}
 
 	public static String [] keys () throws Exception {
 		return keys (30, 40);
@@ -799,7 +759,7 @@ public class Lang {
 	}
 	*/
 	
-    public static byte[] decodeHex(final char[] data) throws Exception {
+    public static byte[] decodeHex (final char[] data) throws Exception {
 
         final int len = data.length;
 
@@ -989,5 +949,9 @@ public class Lang {
     	ExpressionCompiler compiler = withScripting ? ScriptedExpressionCompiler : ExpressionCompiler;
     	return compiler.compile (template, null).eval (new BasicVariableResolver (data));
     }
+    
+    public static void main(String[] args) {
+		System.out.println (Lang.UUID (16));
+	}
     
 }

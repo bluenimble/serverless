@@ -891,15 +891,17 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 		
 		keystore = server.getKeyStoreManager () == null ? null : server.getKeyStoreManager ().read (this);
 
-		// init tracer
+		// init executor
 		JsonObject oExecutor = Json.getObject (descriptor, ConfigKeys.Executor);
 		if (!Json.isNullOrEmpty (oExecutor)) {
 			tracer.log (Tracer.Level.Info, "Starting Space {0} Executor", getNamespace ());
 			executor = (CodeExecutor)BeanUtils.create (ApiSpaceImpl.class.getClassLoader (), oExecutor, getServer ().getPluginsRegistry ());
 		}
 		if (executor == null) {
-			executor = DefaultCodeExecutor.Instance;
+			executor = new DefaultCodeExecutor ();
 		}
+		
+		executor.start ();
 		
 		return true;
 	}

@@ -20,6 +20,10 @@
 			"idleTimeout": "[ this.idleTimeout | '30' ]",
 			"monitor": "[ this.monitor | 'false' ]",
 			
+			"executor": {
+				"async": "[ this.executor.async | 'false' ]"
+			},
+			
 			"pool": {
 				"min": "[ this.pool.min | '10' ]",
 				"max": "[ this.pool.max | '200' ]",

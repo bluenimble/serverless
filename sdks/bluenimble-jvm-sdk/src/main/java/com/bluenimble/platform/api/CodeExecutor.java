@@ -35,6 +35,8 @@ public interface CodeExecutor extends Serializable {
 	JsonObject		describe 	();
 	
 	boolean			interrupt 	(long worker);
+	
+	CodeExecutor	start 		();
 
 	void			shutdown 	();
 

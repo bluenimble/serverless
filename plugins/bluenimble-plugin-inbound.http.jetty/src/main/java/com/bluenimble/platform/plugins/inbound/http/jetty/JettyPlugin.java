@@ -109,6 +109,10 @@ public class JettyPlugin extends AbstractPlugin {
 	        String Expose 		= "expose";
 	}
 	
+	interface Executor {
+        String Async 			= "async";
+	}
+	
 	private static final JsonArray DefaultExposedHeaders = new JsonArray ();
 	static {
 		DefaultExposedHeaders.add (ApiHeaders.ContentType);
@@ -159,6 +163,8 @@ public class JettyPlugin extends AbstractPlugin {
 	// idleTimeout in seconds
 	private int			idleTimeout = 30;
 	
+	private JsonObject	executor;
+
 	private JsonObject	ssl;
 	
 	private JsonObject	cors;
@@ -348,7 +354,9 @@ public class JettyPlugin extends AbstractPlugin {
 	        			request.getNode ().set (ApiRequest.Fields.Node.Type, server.type ());
 	        			request.getNode ().set (ApiRequest.Fields.Node.Version, server.version ());
 	        			
-	        			server.execute (request, new HttpApiResponse (request.getNode (), request.getId (), resp), CodeExecutor.Mode.Async);
+	        			boolean async = Json.getBoolean (executor, Executor.Async, false);
+	        			
+	        			server.execute (request, new HttpApiResponse (request.getNode (), request.getId (), resp), async ? CodeExecutor.Mode.Async : CodeExecutor.Mode.Sync);
 	        			
 	        			return request;
 	        			
@@ -474,9 +482,15 @@ public class JettyPlugin extends AbstractPlugin {
 	public boolean isMonitor () {
 		return monitor;
 	}
-
 	public void setMonitor (boolean monitor) {
 		this.monitor = monitor;
+	}
+
+	public JsonObject getExecutor () {
+		return executor;
+	}
+	public void setExecutor (JsonObject executor) {
+		this.executor = executor;
 	}
 
 	public JsonArray getRequestBodyReaders () {
