@@ -17,9 +17,7 @@
 package com.bluenimble.platform.api.impls;
 
 import java.io.File;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -53,11 +51,9 @@ public class DefaultStatusManager implements StatusManager {
 		Change (String api, String service, String status) { this (api, status); this.service = service; }
 	}
 	
-	private BlockingQueue<Change> 		changes = new LinkedBlockingQueue<Change> ();
-	
 	private long						delay 	= 0;
 	private long						period 	= 20;
-	private boolean						readOnly;
+	private boolean						persistent;
 	
 	private ScheduledExecutorService 	listener;
 	
@@ -66,6 +62,8 @@ public class DefaultStatusManager implements StatusManager {
 	private JsonObject 					status;
 	
 	private Tracer						tracer;
+	
+	private boolean 					changed;
 	
 	public DefaultStatusManager () throws Exception {
 	}
@@ -101,26 +99,21 @@ public class DefaultStatusManager implements StatusManager {
 	}
 
 	public void start () {
-		if (readOnly) {
+		if (!persistent) {
 			return;
 		}
 		listener = Executors.newSingleThreadScheduledExecutor ();
+		
 		listener.scheduleAtFixedRate (new Runnable () {
 			@Override
 			public void run () {
-				Change change = null;
-				try {
-					while ((change = changes.poll (3, TimeUnit.SECONDS)) != null) {
-						_update (change);
-					}
-				} catch (InterruptedException e) {
-				}
-				try {
-					if (change != null && !readOnly) {
+				if (changed) {
+					try {
 						Json.store (status, statusFile);
+						changed = false;
+					} catch (Exception e) {
+						tracer.log (Tracer.Level.Error, Lang.BLANK, e);
 					}
-				} catch (Exception e) {
-					tracer.log (Tracer.Level.Error, Lang.BLANK, e);
 				}
 			}
 		}, delay, period, TimeUnit.SECONDS);
@@ -171,11 +164,7 @@ public class DefaultStatusManager implements StatusManager {
 	@Override
 	public void update (Api api, ApiStatus status) {
 		Change change = new Change (api.getNamespace (), status.name ());
-		if (readOnly) {
-			_update (change);
-		} else {
-			changes.offer (change);
-		}
+		_update (change);
 	}
 
 	@Override
@@ -185,21 +174,13 @@ public class DefaultStatusManager implements StatusManager {
 			service.getVerb ().name () + Json.getString (service.toJson (), ApiService.Spec.Endpoint), 
 			status.name ()
 		);
-		if (readOnly) {
-			_update (change);
-		} else {
-			changes.offer (change);
-		}
+		_update (change);
 	}
 
 	@Override
 	public void delete (Api api) {
 		Change change = new Change (api.getNamespace (), DeletedStatus);
-		if (readOnly) {
-			_update (change);
-		} else {
-			changes.offer (change);
-		}
+		_update (change);
 	}
 
 	@Override
@@ -209,11 +190,7 @@ public class DefaultStatusManager implements StatusManager {
 			service.getVerb ().name () + Json.getString (service.toJson (), ApiService.Spec.Endpoint), 
 			DeletedStatus
 		);
-		if (readOnly) {
-			_update (change);
-		} else {
-			changes.offer (change);
-		}
+		_update (change);
 	}
 	
 	public long getDelay () {
@@ -230,17 +207,20 @@ public class DefaultStatusManager implements StatusManager {
 		this.period = period;
 	}
 
-	public boolean isReadOnly () {
-		return readOnly;
+	public boolean isPersistent () {
+		return persistent;
 	}
-	public void setReadOnly (boolean readOnly) {
-		this.readOnly = readOnly;
+	public void setPersistent (boolean persistent) {
+		this.persistent = persistent;
 	}
 
 	private void _update (Change change) {
 		if (change == null) {
 			return;
 		}
+		
+		changed = true;
+		
 		JsonObject oApi = Json.getObject (status, change.api);
 		JsonObject services = Json.getObject (oApi, Spec.Services);
 		

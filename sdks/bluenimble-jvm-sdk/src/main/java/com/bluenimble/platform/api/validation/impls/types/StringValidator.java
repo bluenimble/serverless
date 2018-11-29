@@ -108,7 +108,7 @@ public class StringValidator extends AbstractTypeValidator {
 			return enumFeedback;
 		}
 		
-		return null;
+		return sValue;
 	}
 
 	@Override

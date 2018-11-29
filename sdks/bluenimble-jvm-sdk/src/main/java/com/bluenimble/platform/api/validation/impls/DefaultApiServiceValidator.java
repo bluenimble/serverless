@@ -149,10 +149,7 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 			
 			JsonObject fSpec = (JsonObject)oSpec;
 			
-			String type = fSpec.getString (Spec.Type);
-			if (Lang.isNullOrEmpty (type)) {
-				type = FieldType.String;
-			}
+			String type = Json.getString (fSpec, Spec.Type, FieldType.String);
 			
 			if (type.equalsIgnoreCase (FieldType.Raw)) {
 				continue;

@@ -109,12 +109,12 @@ public class Crypto {
 		return cipher.doFinal (data);
 	}
 	
-	public static byte [] decrypt (byte [] data, String key, Algorithm algorthm) throws Exception {
-		return crypt (data, key, algorthm, Cipher.DECRYPT_MODE);
+	public static byte [] decrypt (byte [] data, String key, Algorithm algorithm) throws Exception {
+		return crypt (data, key, algorithm, Cipher.DECRYPT_MODE);
 	}
 	
-	public static byte [] encrypt (byte [] data, String key, Algorithm algorthm) throws Exception {
-		return crypt (data, key, algorthm, Cipher.ENCRYPT_MODE);
+	public static byte [] encrypt (byte [] data, String key, Algorithm algorithm) throws Exception {
+		return crypt (data, key, algorithm, Cipher.ENCRYPT_MODE);
 	}
 	
 	private static SecretKey getSecretKey (String key, Algorithm algorithm) throws Exception {

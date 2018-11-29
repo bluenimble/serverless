@@ -881,6 +881,7 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 		if (!Json.isNullOrEmpty (oStatusManager)) {
 			statusManager = (StatusManager)BeanUtils.create (ApiSpaceImpl.class.getClassLoader (), oStatusManager, getServer ().getPluginsRegistry ());
 		}
+		
 		if (statusManager == null) {
 			statusManager = new DefaultStatusManager ();
 		}

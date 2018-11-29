@@ -34,9 +34,21 @@ public class SocketIoMessengerPlugin extends AbstractPlugin {
 
 	private static final long serialVersionUID = 3203657740159783537L;
 	
-	interface Spec {
+	public interface Spec {
 		String Uri 			= "uri";
 		String AuthField	= "authField";
+		String ForceNew		= "forceNew";
+		String Multiplex	= "multiplex";
+		String Secure		= "secure";
+		String Timeout		= "timeout";
+		String RememberUpgrade
+							= "rememberUpgrade";
+		interface Reconnect	{
+			String Enabled	= "enabled";
+			String Attempts	= "attempts";
+			String Delay	= "delay";
+			String MaxDelay	= "maxDelay";
+		}
 	}
 	
 	private String 		feature;
@@ -67,7 +79,7 @@ public class SocketIoMessengerPlugin extends AbstractPlugin {
 					throw new RuntimeException ("feature " + feature + " / " + name + "/ spec not found");
 				}
 				try {
-					return new SocketIoMessenger (tracer, Json.getString (oSpec, Spec.Uri), Json.getString (oSpec, Spec.AuthField));
+					return new SocketIoMessenger (tracer, oSpec);
 				} catch (URISyntaxException ex) {
 					throw new RuntimeException (ex.getMessage (), ex);
 				}

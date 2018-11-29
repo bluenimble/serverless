@@ -13,7 +13,7 @@
 var Indexer = function (proxy) {
 
 	/**	
-	  create a type with a mapping data definition
+	  Create a type with a mapping data definition
 	  @param {string} - entity name
 	  @param {Object} - mapping definiton
 	  @example
@@ -40,7 +40,7 @@ var Indexer = function (proxy) {
 	};
 	
 	/**	
-	  put/index a document 
+	  Put/index a document 
 	  @param {string} - entity name
 	  @param {Object} - document
 	  @example
@@ -58,7 +58,7 @@ var Indexer = function (proxy) {
 	};
 	
 	/**	
-	  get a document by id
+	  Get a document by id
 	  @param {string} - entity name
 	  @param {string} - document id
 	  @example
@@ -72,7 +72,7 @@ var Indexer = function (proxy) {
 	};
 	
 	/**	
-	  re-index fully or partially a document 
+	  Re-index fully or partially a document 
 	  @param {string} - entity name
 	  @param {Object} - document
 	  @param {boolean} - true to partially update the document
@@ -95,7 +95,7 @@ var Indexer = function (proxy) {
 	};
 	
 	/**	
-	  clear all documents in an entity 
+	  Clear all documents in an entity 
 	  @param {string} - entity name
 	  @example
 	  
@@ -108,7 +108,7 @@ var Indexer = function (proxy) {
 	};
 	
 	/**	
-	  delete a document by id
+	  Delete a document by id
 	  @param {string} - entity name
 	  @param {string} - document id
 	  @example
@@ -122,7 +122,7 @@ var Indexer = function (proxy) {
 	};
 	
 	/**	
-	  search documents by query
+	  Search documents by query
 	  @param {Object} - query
 	  @param {Array} [entities] - array of entities names
 	  @example
@@ -151,6 +151,38 @@ var Indexer = function (proxy) {
 			entities = Java.to (entities, "java.lang.String[]");
 		}
 		return proxy.search (JC_ValueConverter.convert (dsl), entities);
+	};
+	
+	/**	
+	  Count documents by query
+	  @param {Object} - query
+	  @param {Array} [entities] - array of entities names
+	  @example
+	  
+	  api.indexer (request).count ({
+	  	query: {
+	  		term: { price : '400' }
+	  	}
+	  }, [
+	  	'Orders'
+	  ]);
+	  
+	  // search in all entities
+	  api.indexer (request).count ({
+	  	query: {
+	  		term: { customer: 'john@bluenimble.com' }
+	  	}
+	  });
+	  
+	  @return {Number} [count] - number of documents matching the query
+	*/
+	this.count = function (dsl, entities) {
+		if (!entities) {
+			entities = null;
+		} else {
+			entities = Java.to (entities, "java.lang.String[]");
+		}
+		return proxy.count (JC_ValueConverter.convert (dsl), entities);
 	};
 	
 };

@@ -34,4 +34,5 @@ public interface Indexer {
 	JsonObject 		delete 		(String entity, String id) 										throws IndexerException;
 	
 	JsonObject 		search 		(JsonObject query, String [] entities) 							throws IndexerException;
+	long 			count 		(JsonObject query, String [] entities) 							throws IndexerException;
 }

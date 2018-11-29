@@ -344,7 +344,7 @@ public class JsonObject extends JsonAbstractEntity implements Map {
 
 	public String toString () {
 		try {
-			return toString (2, false);
+			return toString (2, true);
 		} catch (Exception e) {
 			throw new RuntimeException (e.getMessage (), e);
 		}

@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -28,6 +29,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.bluenimble.platform.IOUtils;
+import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.Recyclable;
 import com.bluenimble.platform.api.ApiResource;
@@ -50,6 +52,7 @@ import io.socket.client.Ack;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
+import com.bluenimble.platform.server.plugins.messenger.socketio.SocketIoMessengerPlugin.Spec;
 
 public class SocketIoMessenger implements Messenger, Recyclable {
 
@@ -57,10 +60,13 @@ public class SocketIoMessenger implements Messenger, Recyclable {
 	
 	private static final String PublishEvent 	= "publish";
 	
-	private static final String Event 			= "event";
+	interface SenderFields {
+		String Event 	= "event";
+		String Params 	= "params";
+	}
+
 	private static final String Channel 		= "channel";
 	private static final String Data 			= "data";
-	
 	private static final String Subject 		= "subject";
 	private static final String Content 		= "content";
 	
@@ -80,17 +86,11 @@ public class SocketIoMessenger implements Messenger, Recyclable {
 	
 	private Map<String, Socket> sockets = new HashMap<String, Socket> ();
 	
-	private String 	uri;
-	private String 	authField;
+	private JsonObject spec;
 	
-	public SocketIoMessenger (Tracer tracer, String uri, String authField) throws URISyntaxException {
+	public SocketIoMessenger (Tracer tracer, JsonObject spec) throws URISyntaxException {
 		this.tracer = tracer;
-		this.uri = uri;
-		this.authField = authField;
-		
-		if (Lang.isNullOrEmpty (this.authField)) {
-			this.authField = DefaultAuthField;
-		}
+		this.spec = spec;
 		
 		engine.startDelimiter (StartDelimitter);
 		engine.endDelimiter (EndDelimitter);
@@ -109,7 +109,7 @@ public class SocketIoMessenger implements Messenger, Recyclable {
 			throw new MessengerException ("no sender id found");
 		}
 		
-		Object oEvent = sender.get (Event);
+		Object oEvent = sender.get (SenderFields.Event);
 		if (oEvent == null) {
 			oEvent = PublishEvent;
 		}
@@ -119,18 +119,41 @@ public class SocketIoMessenger implements Messenger, Recyclable {
 		
 		tracer.log (Level.Info, "Create socket");
 		
-		Socket socket = sockets.get (sender.id ());
+		String authField = Json.getString (spec, Spec.AuthField, DefaultAuthField);
+		
+		JsonArray aQuery = new JsonArray ();
+		aQuery.add (authField + Lang.EQUALS + sender.id ());
+		
+		Object params = sender.get (SenderFields.Params);
+		if (params != null && params instanceof JsonObject) {
+			JsonObject oParams = (JsonObject)params;
+			Iterator<String> keys = oParams.keys ();
+			while (keys.hasNext ()) {
+				String key = keys.next ();
+				aQuery.add (key + Lang.EQUALS + oParams.get (key));
+			}
+		}
+		
+		String query = aQuery.join (Lang.AMP, false);
+		
+		Socket socket = sockets.get (query);
 		
 		if (socket == null || !socket.connected ()) {
 			IO.Options opts = new IO.Options ();
-			opts.forceNew = true;
-			opts.reconnection = false;
+			opts.forceNew  = Json.getBoolean (spec, Spec.ForceNew, true);
+			opts.multiplex = Json.getBoolean (spec, Spec.Multiplex, true);
+			opts.timeout = Json.getInteger (spec, Spec.Timeout, 60000);
 			
-			// should be part of the feature config
-			opts.query = authField + "=" + sender.id ();
+			JsonObject oReconnect = Json.getObject (spec, Spec.Reconnect.class.getSimpleName ().toLowerCase ());
+			opts.reconnection 			= Json.getBoolean (oReconnect, Spec.Reconnect.Enabled, true);
+			opts.reconnectionAttempts 	= Json.getInteger (oReconnect, Spec.Reconnect.Attempts, 1000);
+			opts.reconnectionDelay 		= Json.getInteger (oReconnect, Spec.Reconnect.Delay, Integer.MAX_VALUE);
+			opts.reconnectionDelayMax 	= Json.getInteger (oReconnect, Spec.Reconnect.MaxDelay, 5000);
+			
+			opts.query = query;
 			
 			try {
-				socket = IO.socket (uri, opts);
+				socket = IO.socket (Json.getString (spec, Spec.Uri), opts);
 			} catch (URISyntaxException ex) {
 				throw new MessengerException (ex.getMessage (), ex);
 			}
@@ -151,7 +174,7 @@ public class SocketIoMessenger implements Messenger, Recyclable {
 			
 			socket.connect ();
 			
-			sockets.put (sender.id (), socket);
+			sockets.put (query, socket);
 			
 		}
 		
@@ -167,9 +190,9 @@ public class SocketIoMessenger implements Messenger, Recyclable {
 			message.set (Data, content);
 		} else {
 			JsonObject data = new JsonObject ();
-			message.set (Data, data);
 			data.set (Subject, subject);
 			data.set (Content, content);
+			message.set (Data, data);
 		}
 		
 		socket.emit (String.valueOf (oEvent), new Object [] { message }, new Ack () {

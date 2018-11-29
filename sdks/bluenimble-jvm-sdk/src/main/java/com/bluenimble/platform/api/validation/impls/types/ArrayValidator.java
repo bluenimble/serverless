@@ -84,7 +84,9 @@ public class ArrayValidator extends AbstractTypeValidator {
 		String sType = Json.getString (spec, Spec.SType, FieldType.Object);
 		
 		TypeValidator tValidator = validator.getTypeValidator (sType);
-		
+		if (tValidator == null) {
+			tValidator = validator.getTypeValidator (FieldType.Object);
+		}
 		for (int i = 0; i < array.count (); i++) {
 			Object feedback = tValidator.validate (api, consumer, request, validator, name, label + "->index " + i, spec, array.get (i));
 			if (feedback != null) {

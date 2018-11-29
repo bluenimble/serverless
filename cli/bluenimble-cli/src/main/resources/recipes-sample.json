@@ -1,0 +1,36 @@
+{
+    "common": {
+    },
+    "filter-services-example": {
+        "api": {
+            "services": [{
+                "matches": "/tus**",
+                "apply": {
+                    "security": {
+                        "enabled": "false"
+                    }
+                }
+            }]
+        }
+    },
+    "streaming-dev": {
+        "api": {
+            "namespace": "streaming{%= R.version ? '-' + R.version.replace('.', '-')  : '' %}",
+            "features": {
+                "database": {
+                    "default": "jpa#shopping"
+                }
+            },
+            "runtime": {
+                "dataModels": {
+                    "shopping": "jpa"
+                }
+            }
+		}
+    },
+    "streaming-qa": {
+        "api": {
+            "namespace": "streaming{%= R.version ? '-' + R.version.replace('.', '-')  : '' %}"
+		}
+    }
+}

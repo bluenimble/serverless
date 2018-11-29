@@ -45,6 +45,8 @@ import com.bluenimble.platform.cli.Tool;
 import com.bluenimble.platform.cli.command.CommandExecutionException;
 import com.bluenimble.platform.icli.mgm.BlueNimble;
 import com.bluenimble.platform.icli.mgm.CliSpec.Templates;
+import com.bluenimble.platform.icli.mgm.utils.functions.BuildFunction;
+import com.bluenimble.platform.icli.mgm.utils.functions.RandFunction;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.templating.VariableResolver;
 import com.bluenimble.platform.templating.impls.DefaultExpressionCompiler;
@@ -77,6 +79,11 @@ public class BuildUtils {
 	}							
 	
 	private static final String DoNotApply 		= "do-not-apply";
+	
+	private static final Map<String, BuildFunction> Functions = new HashMap<String, BuildFunction>();
+	static {
+		Functions.put ("rand", new RandFunction ());
+	}
 	
 	private static DefaultExpressionCompiler ExpressionCompiler = new DefaultExpressionCompiler ("{%", "%}").withScripting (true).cacheSize (1000);
 
@@ -347,6 +354,15 @@ public class BuildUtils {
 			public Object resolve (String namespace, String... property) {
 				if (Lang.isNullOrEmpty (namespace)) {
 					return null;
+				}
+				
+				if (namespace.equalsIgnoreCase ("Fn")) {
+					String fnId = property [0];
+					BuildFunction fn = Functions.get (fnId);
+					if (fn == null) {
+						return null;
+					}
+					return fn.eval (property);
 				}
 				
 				Object target = data.get (namespace);

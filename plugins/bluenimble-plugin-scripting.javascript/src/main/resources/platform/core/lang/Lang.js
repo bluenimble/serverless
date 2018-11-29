@@ -178,7 +178,7 @@ var Lang = {
 	  @returns {string} 
 
 	*/
-	replace: function (source, oldString, newString) {
+	replace: function (source, os, ns) {
 		return JC_Lang.replace (source, os, ns);
 	},
 	

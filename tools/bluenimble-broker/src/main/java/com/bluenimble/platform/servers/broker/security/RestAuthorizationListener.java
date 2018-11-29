@@ -152,6 +152,4 @@ public class RestAuthorizationListener implements AuthorizationListener {
 		this.passwordField = passwordField;
 	}
 	
-	
-	
 }

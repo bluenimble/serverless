@@ -2,15 +2,6 @@
 	"namespace": "sys",
 	"name": "BlueNimble SysAdmin Space",
 	
-	"statusManager": {
-		"class": "com.bluenimble.platform.api.impls.DefaultStatusManager",
-		"properties": {
-			"readOnly": "[ this.readOnly | 'false' ]",
-			"delay": "[ this.delay | '0' ]",
-			"period": "[ this.period | '20' ]"
-		}
-	},
-	
 	"features": {
 		"scripting": {
 			"default": {

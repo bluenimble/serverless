@@ -42,12 +42,16 @@ public class ElasticSearchIndexer implements Indexer {
 			String Update 	= "_update";
 			String Create	= "_create";
 			String Search 	= "_search";
+			String Count 	= "_count";
+			String CountField
+							= "count";
 			String Hits 	= "hits";
 			String Source 	= "_source";
 			String Mapping 	= "_mapping";
 			String Query 	= "query";
 			String MatchAll = "match_all";
 			String DeleteQ 	= "_delete_by_query?conflicts=proceed";
+			String Size		= "size";
 		}
 	}
 	
@@ -472,7 +476,16 @@ public class ElasticSearchIndexer implements Indexer {
 	}
 
 	@Override
-	public JsonObject search (JsonObject dsl, String [] entities) throws IndexerException {
+	public JsonObject search (JsonObject query, String [] entities) throws IndexerException {
+		return _search (query, entities, false);
+	}
+	
+	@Override
+	public long count (JsonObject query, String [] entities) throws IndexerException {
+		return Json.getLong (_search (query, entities, true), Internal.Elk.CountField, 0);
+	}
+
+	public JsonObject _search (JsonObject query, String [] entities, boolean isCount) throws IndexerException {
 		if (remote == null) {
 			throw new IndexerException ("No Remoting feature attached to this indexer");
 		}
@@ -482,19 +495,32 @@ public class ElasticSearchIndexer implements Indexer {
 			types = Lang.join (entities, Lang.COMMA);
 		}
 		
-		tracer.log (Tracer.Level.Info, "search documents in index {0} / [{1}] with query {2}", index, types.equals (Lang.BLANK) ? "All Entities" : Lang.join (entities), dsl);
+		long size = Json.getLong (query, Internal.Elk.Size, -1);
+		if (size == -1) {
+			query.remove (Internal.Elk.Size);
+		}
+		
+		tracer.log (
+			Tracer.Level.Info, 
+			"search documents in index {0} / [{1}] with query {2}", 
+			index, 
+			types.equals (Lang.BLANK) ? "All Entities" : Lang.join (entities), 
+			query
+		);
 		
 		ValueHolder<JsonObject> result = new ValueHolder<JsonObject> ();
 		ElkError error = new ElkError ();
 		
 		remote.post (
 			(JsonObject)new JsonObject ()
-				.set (Remote.Spec.Path, index + Lang.SLASH + types + (types.equals (Lang.BLANK) ? Lang.BLANK : Lang.SLASH) + Internal.Elk.Search)
+				.set (Remote.Spec.Path, index + Lang.SLASH + types + 
+						(types.equals (Lang.BLANK) ? Lang.BLANK : Lang.SLASH) + 
+						(isCount ? Internal.Elk.Count : Internal.Elk.Search))
 				.set (Remote.Spec.Headers, 
 					new JsonObject ()
 						.set (HttpHeaders.CONTENT_TYPE, ContentTypes.Json)
-				).set (Remote.Spec.Data, dsl)
-				.set (Remote.Spec.Serializer, Serializer.Name.json), 
+				).set (Remote.Spec.Data, query)
+				.set (Remote.Spec.Serializer, Serializer.Name.json),
 			new Remote.Callback () {
 				@Override
 				public void onStatus (int status, boolean chunked, Map<String, Object> headers) {
@@ -508,9 +534,14 @@ public class ElasticSearchIndexer implements Indexer {
 				}
 				@Override
 				public void onDone (int code, Object data) {
-					if (data != null) {
-						result.set (result ( Json.getObject ((JsonObject)data, Internal.Elk.Hits) ) );
+					if (data == null) {
+						return;
 					}
+					JsonObject oData = (JsonObject)data;
+					if (!isCount) {
+						oData = result (Json.getObject (oData, Internal.Elk.Hits));
+					}
+					result.set (oData);
 				}
 			}
 		);

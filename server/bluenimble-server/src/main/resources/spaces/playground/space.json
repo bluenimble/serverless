@@ -21,9 +21,9 @@
 	"statusManager": {
 		"class": "com.bluenimble.platform.api.impls.DefaultStatusManager",
 		"properties": {
-			"readOnly": "[ this.statusManager.readOnly | 'false' ]",
+			"persistent": "[ this.statusManager.persistent | 'true' ]",
 			"delay": "[ this.statusManager.delay | '0' ]",
-			"period": "[ this.statusManager.period | '20' ]"
+			"period": "[ this.statusManager.period | '10' ]"
 		}
 	},
 	
