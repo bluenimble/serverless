@@ -68,7 +68,7 @@ public class SocketIoMessenger implements Messenger, Recyclable {
 	private static final String Channel 		= "channel";
 	private static final String Data 			= "data";
 	private static final String Subject 		= "subject";
-	private static final String Content 		= "content";
+	private static final String Body 			= "body";
 	
 	private static final String DefaultAuthField= "token";
 	
@@ -88,7 +88,7 @@ public class SocketIoMessenger implements Messenger, Recyclable {
 	
 	private JsonObject spec;
 	
-	public SocketIoMessenger (Tracer tracer, JsonObject spec) throws URISyntaxException {
+	public SocketIoMessenger (Tracer tracer, JsonObject spec) {
 		this.tracer = tracer;
 		this.spec = spec;
 		
@@ -97,7 +97,7 @@ public class SocketIoMessenger implements Messenger, Recyclable {
 	}
 	
 	@Override
-	public void send (Sender sender, Recipient [] recipients, String subject, String content, ApiStreamSource... attachments) throws MessengerException {
+	public void send (Sender sender, Recipient [] recipients, String subject, Object body, ApiStreamSource... attachments) throws MessengerException {
 		
 		tracer.log (Level.Info, "Send to socketio");
 		
@@ -116,8 +116,6 @@ public class SocketIoMessenger implements Messenger, Recyclable {
 		if (recipients == null || recipients.length == 0) {
 			throw new MessengerException ("no recipients found");
 		}
-		
-		tracer.log (Level.Info, "Create socket");
 		
 		String authField = Json.getString (spec, Spec.AuthField, DefaultAuthField);
 		
@@ -138,7 +136,29 @@ public class SocketIoMessenger implements Messenger, Recyclable {
 		
 		Socket socket = sockets.get (query);
 		
+		tracer.log (Level.Info, "SocketsMap: " + sockets);
+		tracer.log (Level.Info, "SocketQuery: " + query);
+		
+		JsonArray channels = new JsonArray ();
+		for (Recipient r : recipients) {
+			channels.add (r.id ());
+		}
+		
+		JsonObject message = new JsonObject ();
+		message.set (Channel, channels);
+		
+		if (Lang.isNullOrEmpty (subject)) {
+			message.set (Data, body);
+		} else {
+			JsonObject data = new JsonObject ();
+			data.set (Subject, subject);
+			data.set (Body, body);
+			message.set (Data, data);
+		}
+		
 		if (socket == null || !socket.connected ()) {
+			tracer.log (Level.Info, "Create socket");
+			
 			IO.Options opts = new IO.Options ();
 			opts.forceNew  = Json.getBoolean (spec, Spec.ForceNew, true);
 			opts.multiplex = Json.getBoolean (spec, Spec.Multiplex, true);
@@ -150,6 +170,8 @@ public class SocketIoMessenger implements Messenger, Recyclable {
 			opts.reconnectionDelay 		= Json.getInteger (oReconnect, Spec.Reconnect.Delay, Integer.MAX_VALUE);
 			opts.reconnectionDelayMax 	= Json.getInteger (oReconnect, Spec.Reconnect.MaxDelay, 5000);
 			
+			tracer.log (Level.Info, "Socket URI: " + Json.getString (spec, Spec.Uri));
+			
 			opts.query = query;
 			
 			try {
@@ -158,68 +180,61 @@ public class SocketIoMessenger implements Messenger, Recyclable {
 				throw new MessengerException (ex.getMessage (), ex);
 			}
 			
+			Socket _socket 	= socket;
+			String event 	= String.valueOf (oEvent);
+			
 			socket.on (Socket.EVENT_CONNECT, new Emitter.Listener () {
 				@Override
 				public void call (Object... args) {
+					tracer.log (Level.Info, "Socket Connected");
 					fireCallback (sender, Sender.Callbacks.Connect, GenericMessage, args);
+					emit (_socket, sender, event, message);
+				}
+			});
+			
+			socket.on (Socket.EVENT_CONNECT_ERROR, new Emitter.Listener () {
+				@Override
+				public void call (Object... args) {
+					tracer.log (Level.Error, "Socket Connect Error {0}", args [0]);
 				}
 			});
 			
 			socket.on (Socket.EVENT_ERROR, new Emitter.Listener () {
 				@Override
 				public void call (Object... args) {
+					tracer.log (Level.Error, "Socket Error {0}", args [0]);
 					fireCallback (sender, Sender.Callbacks.Error, GenericError, args);
 				}
 			});
+			
+			tracer.log (Level.Info, "New Socket Created " + socket);
 			
 			socket.connect ();
 			
 			sockets.put (query, socket);
 			
-		}
-		
-		JsonArray channels = new JsonArray ();
-		for (Recipient r : recipients) {
-			channels.add (r.id ());
-		}
-		
-		JsonObject message = new JsonObject ();
-		message.set (Channel, channels);
-		
-		if (Lang.isNullOrEmpty (subject)) {
-			message.set (Data, content);
 		} else {
-			JsonObject data = new JsonObject ();
-			data.set (Subject, subject);
-			data.set (Content, content);
-			message.set (Data, data);
+			emit (socket, sender, String.valueOf (oEvent), message);
 		}
-		
-		socket.emit (String.valueOf (oEvent), new Object [] { message }, new Ack () {
-			@Override
-			public void call (Object... args) {
-				fireCallback (sender, Sender.Callbacks.Ack, GenericMessage, args);
-			}
-		});
 		
 	}
 
 	@Override
-	public void send (Sender sender, Recipient [] recipients, String subject, final ApiResource content, JsonObject data,
+	public void send (Sender sender, Recipient [] recipients, String subject, final ApiResource body, JsonObject data,
 			ApiStreamSource... attachments) throws MessengerException {
 		
-		final String uuid = content.owner () + Lang.SLASH + content.name ();
+		final String uuid = body.owner () + Lang.SLASH + body.name ();
 		
 		CachedTemplate cTemplate = templates.get (uuid);
 		
-		if (cTemplate == null || cTemplate.timestamp < content.timestamp ().getTime ()) {
+		if (cTemplate == null || cTemplate.timestamp < body.timestamp ().getTime ()) {
 			cTemplate = new CachedTemplate ();
-			cTemplate.timestamp = content.timestamp ().getTime ();
+			cTemplate.timestamp = body.timestamp ().getTime ();
 			
 			TemplateSource source = new TemplateSource () {
 				@Override
 				public long lastModified () {
-					return content.timestamp ().getTime ();
+					return body.timestamp ().getTime ();
 				}
 				@Override
 				public String filename () {
@@ -231,7 +246,7 @@ public class SocketIoMessenger implements Messenger, Recyclable {
 					InputStream is = null;
 					
 					try {
-						is = content.toInput ();
+						is = body.toInput ();
 						return IOUtils.toString (is);
 					} finally {
 						IOUtils.closeQuietly (is);
@@ -275,7 +290,9 @@ public class SocketIoMessenger implements Messenger, Recyclable {
 
 	@Override
 	public void recycle () {
-		/*
+	}
+	
+	public void clear () {
 		try {
 			for (Socket socket : sockets.values ()) {
 				socket.disconnect ();
@@ -284,8 +301,16 @@ public class SocketIoMessenger implements Messenger, Recyclable {
 			// ignore
 		}
 		sockets.clear ();
-		sockets = null;
-		*/
+	}
+	
+	private void emit (Socket socket, Sender sender, String event, Object message) {
+		tracer.log (Level.Info, "Send/Emit Message " + message);
+		socket.emit (event, new Object [] { message }, new Ack () {
+			@Override
+			public void call (Object... args) {
+				fireCallback (sender, Sender.Callbacks.Ack, GenericMessage, args);
+			}
+		});
 	}
 	
 	private void fireCallback (Sender sender, String callback, JsonObject genericMessage, Object [] args) {

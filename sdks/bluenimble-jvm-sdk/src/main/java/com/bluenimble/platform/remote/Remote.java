@@ -49,6 +49,7 @@ public interface Remote extends Recyclable {
 		String Data 		= "data";
 		String Headers 		= "headers";
 		String Cast 		= "cast";
+		String Body 		= "$body";
 		
 		String Ssl			= "ssl";
 			String TrustAll 	= "trustAll";

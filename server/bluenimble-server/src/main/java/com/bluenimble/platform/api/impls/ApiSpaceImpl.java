@@ -405,7 +405,7 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 		}
 		
 		if (Lang.isNullOrEmpty (name)) {
-			throw new FeatureNotFoundException ("provider can't be null or empty");
+			throw new FeatureNotFoundException ("feature name can't be null or empty");
 		}
 		
 		Feature aFeature = t.getAnnotation (Feature.class);

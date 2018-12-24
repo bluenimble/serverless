@@ -25,7 +25,9 @@ import java.util.ListIterator;
 import java.util.Map;
 
 import com.bluenimble.platform.Lang;
+import com.bluenimble.platform.templating.impls.converters.JsValueConverter;
 
+@SuppressWarnings("rawtypes")
 public class JsonArray extends JsonAbstractEntity implements List<Object> {
 
 	private static final long serialVersionUID = 5969290028072204587L;
@@ -41,7 +43,7 @@ public class JsonArray extends JsonAbstractEntity implements List<Object> {
 		this (new JsonParser (json));
 	}
 	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	public JsonArray (List<Object> values) {
 		if (values == null) {
 			return;
@@ -111,9 +113,18 @@ public class JsonArray extends JsonAbstractEntity implements List<Object> {
 		return values.size ();
 	}
 	
+	@SuppressWarnings({ "unchecked" })
 	public boolean add (Object value) {
 		if (values == null) {
 			values = new ArrayList<Object> ();
+		}
+		value = JsValueConverter.convert (value);
+		if (value instanceof JsonObject || value instanceof JsonArray) {
+			return values.add (value);
+		} else if (Map.class.isAssignableFrom (value.getClass ())) {
+			return values.add (new JsonObject ((Map)value));
+		} else if (List.class.isAssignableFrom (value.getClass ())) {
+			return values.add (new JsonArray ((List)value));
 		}
 		return values.add (value);
 	}

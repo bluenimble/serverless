@@ -28,14 +28,11 @@ public interface ApiServiceValidator extends Serializable {
 	interface Spec {
 		
 		String Title 		= "title";
+		String Type 		= "type";
+		String Value		= "value";
+		String Required 	= "required";
 		
 		String Fields		= "fields";
-		
-		String Type 		= "type";
-		
-		String Value		= "value";
-		
-		String Required 	= "required";
 		
 		String Secret 		= "secret";
 		
@@ -61,6 +58,7 @@ public interface ApiServiceValidator extends Serializable {
 		
 		String Strict		= "strict";
 		String Shrink		= "shrink";
+		String Cast			= "cast";
 		
 		String Exclusive	= "!";
 

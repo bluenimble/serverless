@@ -76,6 +76,7 @@ public class RestAuthorizationListener implements AuthorizationListener {
 				HttpPost httpPost = new HttpPost (endpoint);
 				
 				httpPost.addHeader (ApiHeaders.Accept, ApiContentTypes.Json);
+				httpPost.addHeader (ApiHeaders.UserAgent, "BlueNimble Broker - Authorization Listener");
 			    
 			    if (AuthType.Basic.equals (type)) {
 					logger.info ("Add Basic auth header");

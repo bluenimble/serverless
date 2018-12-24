@@ -116,7 +116,10 @@ public abstract class AbstractDateValidator extends AbstractTypeValidator {
 		}
 		
 		if (feedback == null) {
-			return date;
+			if (Json.getBoolean (spec, Spec.Cast, true)) {
+				return date;
+			}
+			return value;
 		}
 		
 		return feedback;

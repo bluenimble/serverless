@@ -100,7 +100,7 @@ var DatabaseObject = function (database, proxy) {
 	  @returns {DatabaseObject} the database object
 	*/
 	this.set = function (key, value) {
-		if (!key || !value) {
+		if (!key || value == null || typeof value == 'undefined') {
 			return this;
 		}
 		
@@ -149,7 +149,7 @@ var DatabaseObject = function (database, proxy) {
 	*/
 	this.get		= function (key) {
 		var value = proxy.get (key);
-		if (!value) {
+		if (value == null || typeof value == 'undefined') {
 			return null;
 		}
 		if (JC_ValueConverter.isDate (value)) {

@@ -366,7 +366,7 @@ public class BuildUtils {
 				}
 				
 				Object target = data.get (namespace);
-				if (target == null || (target instanceof JsonObject)) {
+				if (target == null || !(target instanceof JsonObject)) {
 					return null;
 				}
 				
@@ -394,7 +394,7 @@ public class BuildUtils {
 				}
 				
 				Object target = data.get (namespace);
-				if (target == null || (target instanceof JsonObject)) {
+				if (target == null || !(target instanceof JsonObject)) {
 					return null;
 				}
 				

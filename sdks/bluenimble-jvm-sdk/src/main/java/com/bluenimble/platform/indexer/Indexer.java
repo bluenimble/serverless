@@ -22,6 +22,12 @@ import com.bluenimble.platform.json.JsonObject;
 @Feature ( name = "indexer" )
 public interface Indexer {
 	
+	interface Bulk {
+		String Create = "create";
+		String Update = "update";
+		String Delete = "delete";
+	}
+	
 	boolean 		exists 		(String entity) 												throws IndexerException;
 	JsonObject 		create 		(String entity, JsonObject definition) 							throws IndexerException;
 	JsonObject 		describe 	(String entity) 												throws IndexerException;
@@ -30,8 +36,10 @@ public interface Indexer {
 	
 	JsonObject 		put 		(String entity, JsonObject doc) 								throws IndexerException;
 	JsonObject 		get 		(String entity, String id) 										throws IndexerException;
+	//JsonObject 		update 		(String [] entities, JsonObject query, JsonObject doc) 			throws IndexerException;
 	JsonObject 		update 		(String entity, JsonObject doc, boolean partial) 				throws IndexerException;
 	JsonObject 		delete 		(String entity, String id) 										throws IndexerException;
+	JsonObject 		bulk 		(JsonObject payload) 											throws IndexerException;
 	
 	JsonObject 		search 		(JsonObject query, String [] entities) 							throws IndexerException;
 	long 			count 		(JsonObject query, String [] entities) 							throws IndexerException;

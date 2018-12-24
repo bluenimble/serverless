@@ -89,9 +89,14 @@ var Tracer = function (proxy) {
 		var message = args [1];
 		
 		// remove level and message from args
-		args.splice (0, 2)
+		args.splice (0, 2);
 		
-		proxy.log (level, JC_ValueConverter.convert (message), Java.to (args, "java.lang.Object[]"));
+		if (args.length > 0 && args [0].printStackTrace) {
+			// Level level, Object o, Throwable th
+			proxy['log(com.bluenimble.platform.api.tracing.Tracer.Level,java.lang.Object,java.lang.Throwable)'](level, JC_ValueConverter.convert (message), args [0]);
+		} else {
+			proxy.log (level, JC_ValueConverter.convert (message), Java.to (args, "java.lang.Object[]"));
+		}
 	};
 	
 };

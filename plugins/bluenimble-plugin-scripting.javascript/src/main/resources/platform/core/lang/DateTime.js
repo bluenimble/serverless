@@ -13,7 +13,7 @@
 */
 var LocalDateTime = function (proxy) {
 	
-	this.proxy = proxy;
+	this.proxy 		= proxy;
 	
 	this.clazz 		= 'LocalDateTime';
 	
@@ -381,7 +381,7 @@ var DateTime = {
 			tz = JC_ZoneId.systemDefault ();
 		}
 		
-		return new LocalDateTime ( JC_LocalDateTime.ofInstant (JC_Instant.ofEpochMilli (test_timestamp), tz) ); 
+		return new LocalDateTime ( JC_LocalDateTime.ofInstant (JC_Instant.ofEpochMilli (timestamp), tz) ); 
 	},
 	/**	
 	  Creates a LocalDateTime instance by parsing a string using a specific date format

@@ -46,7 +46,7 @@ public class CreateTokenSpi extends AbstractApiServiceSpi {
 		
 		long age = Json.getLong (payload, ApiSpace.Spec.secrets.Age, 0);
 		
-		payload.set (ApiConsumer.Fields.Id, consumer.get (ApiConsumer.Fields.Id));
+		payload.merge (consumer.toJson ());
 		
 		payload.remove (ApiSpace.Spec.secrets.Age);
 		

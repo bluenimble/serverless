@@ -71,6 +71,8 @@ public class HttpRemote extends BaseRemote {
 		MediaTypes.put (ContentTypes.FormUrlEncoded, MediaType.parse (ContentTypes.FormUrlEncoded));
 		MediaTypes.put (ContentTypes.Multipart, MediaType.parse (ContentTypes.Multipart));
 		MediaTypes.put (ContentTypes.Text, MediaType.parse (ContentTypes.Text));
+		MediaTypes.put (ContentTypes.Xml, MediaType.parse (ContentTypes.Xml));
+		MediaTypes.put (ContentTypes.XndJson, MediaType.parse (ContentTypes.XndJson));
 	}
 	
 	private static final AccessSecretKeysBasedHttpRequestSigner BnBSigner = new AccessSecretKeysBasedHttpRequestSigner ();
@@ -171,6 +173,9 @@ public class HttpRemote extends BaseRemote {
 			contentType = contentType.trim ();
 
 			MediaType mediaType = MediaTypes.get (contentType);
+			if (mediaType == null) {
+				mediaType = MediaType.parse (contentType);
+			}
 
 			RequestBody body = null;
 			
@@ -187,7 +192,7 @@ public class HttpRemote extends BaseRemote {
 				
 				for (ApiStreamSource ss : attachments) {
 					try {
-						builder.addFormDataPart (ss.name (), ss.name (), RequestBody.create (MediaType.parse (contentType), IOUtils.toByteArray (ss.stream ())));
+						builder.addFormDataPart (ss.name (), ss.name (), RequestBody.create (mediaType, IOUtils.toByteArray (ss.stream ())));
 					} catch (Exception ex) {
 						callback.onError (Error.Other, ex.getMessage ());
 						return;
@@ -196,6 +201,10 @@ public class HttpRemote extends BaseRemote {
 			} else if (contentType.startsWith (ContentTypes.Json)) {
 				body = RequestBody.create (
 					mediaType, rdata == null ? Lang.EMTPY_OBJECT : rdata.toString (Json.getBoolean (spec, Spec.Cast, false))
+				);
+			} else if (rdata.containsKey (Spec.Body)) {
+				body = RequestBody.create (
+					mediaType.type ().equals (ContentTypes.XndJson) ? null : mediaType, Json.getString (rdata, Spec.Body).getBytes ()
 				);
 			} else {
 				if (!Json.isNullOrEmpty (rdata)) {
@@ -288,7 +297,7 @@ public class HttpRemote extends BaseRemote {
 						
 			if (response.code () > Json.getInteger (spec, Spec.SuccessCode, 399)) {
 				callback.onError (
-					response.code (), 
+					response.code (),
 					response.body ().string ()
 				);
 				return;

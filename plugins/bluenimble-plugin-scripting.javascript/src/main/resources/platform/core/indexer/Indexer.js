@@ -185,4 +185,8 @@ var Indexer = function (proxy) {
 		return proxy.count (JC_ValueConverter.convert (dsl), entities);
 	};
 	
+	this.bulk = function (doc) {
+		return proxy.bulk (JC_ValueConverter.convert (doc));
+	};
+	
 };

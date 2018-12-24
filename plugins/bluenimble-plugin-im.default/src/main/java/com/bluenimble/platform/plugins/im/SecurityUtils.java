@@ -72,7 +72,10 @@ public class SecurityUtils {
 			alg = Crypto.Algorithm.AES;
 		}
 		
-		if (age == 0) {
+		// non expiring token
+		if (age == -1) {
+			age = 12 * 30 * 24 * 60; // appx. 1 year
+		} else if (age == 0) {
 			age = Json.getLong (auth, ApiSpace.Spec.secrets.Age, Json.getLong (secrets, ApiSpace.Spec.secrets.Age, 60));
 		} 
 		age = age * 60 * 1000;

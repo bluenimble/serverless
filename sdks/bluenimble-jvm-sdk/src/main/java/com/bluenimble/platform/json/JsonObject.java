@@ -28,6 +28,7 @@ import java.util.Set;
 
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.Null;
+import com.bluenimble.platform.templating.impls.converters.JsValueConverter;
 
 @SuppressWarnings("rawtypes")
 public class JsonObject extends JsonAbstractEntity implements Map {
@@ -167,6 +168,8 @@ public class JsonObject extends JsonAbstractEntity implements Map {
 		if (values == null) {
 			values = new LinkedHashMap<String, Object>();
 		}
+		
+		value = JsValueConverter.convert (value);
 		
 		if (value instanceof JsonObject || value instanceof JsonArray) {
 			values.put (name, value);

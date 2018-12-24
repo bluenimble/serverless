@@ -23,7 +23,15 @@ var Task = function (api, fn, options) {
 			if (Lang.isInteger (options.delay)) {
 				JC_Thread.sleep (parseInt (options.delay));
 			}
-			fn (new ApiContext (context));
+			try {
+				fn (new ApiContext (context));
+			} catch (error) {
+				if (error.printStackTrace) {
+					api.tracer.error (options.taskName || 'Background-Task', error);
+				} else {
+					api.tracer.error (options.taskName || 'Background-Task -> ' + error);
+				}
+			}
 		}
 	});
 	

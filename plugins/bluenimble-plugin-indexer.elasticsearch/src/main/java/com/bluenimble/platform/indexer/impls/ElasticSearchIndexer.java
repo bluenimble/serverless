@@ -16,6 +16,8 @@
  */
 package com.bluenimble.platform.indexer.impls;
 
+import java.text.SimpleDateFormat;
+import java.util.Iterator;
 import java.util.Map;
 
 import com.bluenimble.platform.Json;
@@ -34,14 +36,23 @@ import com.bluenimble.platform.remote.Serializer;
 
 public class ElasticSearchIndexer implements Indexer {
 	
+	private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+	
 	private interface Internal {
 		String 	Id 			= "id";
 		String 	Timestamp 	= "timestamp";
 		
 		interface Elk {
-			String Update 	= "_update";
+			String Id 		= "_id";
+			String Index 	= "_index";
+			String Type 	= "_type";
 			String Create	= "_create";
+			String Update 	= "_update";
+			//String UpdateByQuery
+			//				= "_update_by_query";
+			String Bulk 	= "_bulk";
 			String Search 	= "_search";
+			
 			String Count 	= "_count";
 			String CountField
 							= "count";
@@ -52,6 +63,10 @@ public class ElasticSearchIndexer implements Indexer {
 			String MatchAll = "match_all";
 			String DeleteQ 	= "_delete_by_query?conflicts=proceed";
 			String Size		= "size";
+			
+			interface Operations {
+				String Index = "index";
+			}
 		}
 	}
 	
@@ -277,7 +292,7 @@ public class ElasticSearchIndexer implements Indexer {
 		}
 		
 		if (!doc.containsKey (Internal.Timestamp)) {
-			doc.set (Internal.Timestamp, Lang.utc ());
+			doc.set (Internal.Timestamp, utc ());
 		}
 		
 		tracer.log (Tracer.Level.Info, "Indexing document [{0}]", id);
@@ -372,7 +387,7 @@ public class ElasticSearchIndexer implements Indexer {
 			throw new IndexerException ("No Remoting feature attached to this indexer");
 		}
 		
-		if (doc == null || doc.isEmpty ()) {
+		if (Json.isNullOrEmpty (doc)) {
 			throw new IndexerException ("Document cannot be null nor empty.");
 		}
 		
@@ -428,6 +443,70 @@ public class ElasticSearchIndexer implements Indexer {
 		
 		return result;
 	}
+	
+	/*
+	@Override
+	public JsonObject update (String [] entities, JsonObject query, JsonObject doc) throws IndexerException {
+		if (remote == null) {
+			throw new IndexerException ("No Remoting feature attached to this indexer");
+		}
+		
+		if (Json.isNullOrEmpty (doc)) {
+			throw new IndexerException ("Document cannot be null nor empty.");
+		}
+		
+		String types = Lang.BLANK;
+		if (entities != null && entities.length > 0) {
+			types = Lang.join (entities, Lang.COMMA);
+		}
+		
+		tracer.log (
+			Tracer.Level.Info, 
+			"search documents in index {0} / [{1}] with query {2}", 
+			index, 
+			types.equals (Lang.BLANK) ? "All Entities" : Lang.join (entities), 
+			query
+		);
+			
+		JsonObject result = new JsonObject ();
+		ElkError error = new ElkError ();
+		
+		remote.post (
+			(JsonObject)new JsonObject ()
+				.set (Remote.Spec.Path, index + Lang.SLASH + types + 
+						(types.equals (Lang.BLANK) ? Lang.BLANK : Lang.SLASH) + Internal.Elk.UpdateByQuery)
+				.set (Remote.Spec.Headers, 
+					new JsonObject ()
+						.set (HttpHeaders.CONTENT_TYPE, ContentTypes.Json)
+				).set (Remote.Spec.Data, new JsonObject ().set (name, value))
+				.set (Remote.Spec.Serializer, Serializer.Name.json), 
+			new Remote.Callback () {
+				@Override
+				public void onStatus (int status, boolean chunked, Map<String, Object> headers) {
+				}
+				@Override
+				public void onData (int code, byte [] data) {
+				}
+				@Override
+				public void onError (int code, Object message) {
+					error.set (code, message);
+				}
+				@Override
+				public void onDone (int code, Object data) {
+					if (data != null) {
+						result.putAll ((JsonObject)data);
+					}
+				}
+			}
+		);
+		
+		if (error.happened ()) {
+			throw new IndexerException ("Error occured while calling Indexer: Code=" + error.code + ", Message: " + error.message);
+		}
+		
+		return result;
+	}
+	*/
 	
 	@Override
 	public JsonObject delete (String entity, String id) throws IndexerException {
@@ -597,5 +676,155 @@ public class ElasticSearchIndexer implements Indexer {
 			return code > 0;
 		}
 	}
+
+	@Override
+	public JsonObject bulk (JsonObject payload) throws IndexerException {
+		if (remote == null) {
+			throw new IndexerException ("No Remoting feature attached to this indexer");
+		}
+		
+		if (Json.isNullOrEmpty (payload)) {
+			throw new IndexerException ("Document cannot be null nor empty.");
+		}
+		
+		StringBuilder sPayload = new StringBuilder ();
+		
+		// prepare payload
+		JsonObject 	create 		= Json.getObject (payload, Bulk.Create);
+		boolean first = true;
+		if (!Json.isNullOrEmpty (create)) {
+			Iterator<String> entities = create.keys ();
+			while (entities.hasNext ()) {
+				String entity = entities.next ();
+				JsonArray createItems = Json.getArray (create, entity);
+				for (int i = 0; i < createItems.size (); i++) {
+					if (!first) {
+						sPayload.append (Lang.ENDLN);
+					}
+					JsonObject item = (JsonObject)createItems.get (i);
+					JsonObject document = (JsonObject)new JsonObject ().set (
+						Internal.Elk.Operations.Index,
+						new JsonObject ()
+							.set (Internal.Elk.Index, index)
+							.set (Internal.Elk.Type, entity)
+							.set (Internal.Elk.Id, Json.getString (item, Internal.Id))
+					);
+					sPayload.append (document.toString (0, true)).append (Lang.ENDLN);
+					
+					item.remove (Internal.Id);
+					
+					sPayload.append (item.toString (0, true));
+					
+					first = false;
+				}
+			}
+		}
+		JsonObject 	update 		= Json.getObject (payload, Bulk.Update);
+		if (!Json.isNullOrEmpty (update)) {
+			Iterator<String> entities = update.keys ();
+			while (entities.hasNext ()) {
+				String entity = entities.next ();
+				JsonArray updateItems = Json.getArray (update, entity);
+				for (int i = 0; i < updateItems.size (); i++) {
+					if (!first) {
+						sPayload.append (Lang.ENDLN);
+					}
+					JsonObject item = (JsonObject)updateItems.get (i);
+					JsonObject document = (JsonObject)new JsonObject ().set (
+						Bulk.Update,
+						new JsonObject ()
+							.set (Internal.Elk.Index, index)
+							.set (Internal.Elk.Type, entity)
+							.set (Internal.Elk.Id, Json.getString (item, Internal.Id))
+					);
+					sPayload.append (document.toString (0, true)).append (Lang.ENDLN);
+					
+					item.remove (Internal.Id);
+					
+					sPayload.append (item.toString (0, true));
+					
+					first = false;
+				}
+			}
+		}
+		JsonObject 	delete = Json.getObject (payload, Bulk.Delete);
+		if (!Json.isNullOrEmpty (delete)) {
+			Iterator<String> entities = delete.keys ();
+			while (entities.hasNext ()) {
+				String entity = entities.next ();
+				JsonArray deleteItems = Json.getArray (delete, entity);
+				for (int i = 0; i < deleteItems.size (); i++) {
+					if (!first) {
+						sPayload.append (Lang.ENDLN);
+					}
+					JsonObject item = (JsonObject)deleteItems.get (i);
+					JsonObject document = (JsonObject)new JsonObject ().set (
+						Bulk.Delete,
+						new JsonObject ()
+							.set (Internal.Elk.Index, index)
+							.set (Internal.Elk.Type, entity)
+							.set (Internal.Elk.Id, Json.getString (item, Internal.Id))
+					);
+					sPayload.append (document.toString (0, true));
+					
+					first = false;
+				}
+			}
+		}
+		
+		sPayload.append (Lang.ENDLN);
+		
+		tracer.log (
+			Tracer.Level.Info, 
+			"Bulk Paylod [{0}]", 
+			sPayload.toString ()
+		);
+		
+		JsonObject result = new JsonObject ();
+		ElkError error = new ElkError ();
+		
+		remote.post (
+			(JsonObject)new JsonObject ()
+				.set (Remote.Spec.Path, Internal.Elk.Bulk)
+				.set (Remote.Spec.Headers, 
+					new JsonObject ()
+						.set (HttpHeaders.CONTENT_TYPE, ContentTypes.XndJson)
+				).set (Remote.Spec.Data, new JsonObject ().set (Remote.Spec.Body, sPayload.toString ()))
+				.set (Remote.Spec.Serializer, Serializer.Name.json),
+			new Remote.Callback () {
+				@Override
+				public void onStatus (int status, boolean chunked, Map<String, Object> headers) {
+				}
+				@Override
+				public void onData (int code, byte [] data) {
+				}
+				@Override
+				public void onError (int code, Object message) {
+					error.set (code, message);
+				}
+				@Override
+				public void onDone (int code, Object data) {
+					if (data != null) {
+						result.putAll ((JsonObject)data);
+					}
+				}
+			}
+		);
+		
+		sPayload.setLength (0);
+		
+		if (error.happened ()) {
+			throw new IndexerException ("Error occured while calling Indexer: Code=" + error.code + ", Message: " + error.message);
+		}
+		
+		return result;
+	}
+	
+	private static String utc () {
+		SimpleDateFormat formatter = new SimpleDateFormat (DATE_FORMAT);
+		formatter.setTimeZone (Lang.UTC_TZ);
+		return formatter.format (Lang.utcTime ());
+	}
+	
 }
 	

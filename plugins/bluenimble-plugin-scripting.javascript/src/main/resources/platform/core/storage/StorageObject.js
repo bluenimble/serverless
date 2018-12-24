@@ -28,12 +28,6 @@ var StorageObject = function (proxy) {
 	*/
 	this.timestamp 		= proxy.timestamp ();
 	/**	
-	  The length/size in bytes of this storage object. 0 if it's a folder
-	  @type {integer}
-	  @readonly
-	*/
-	this.length 		= proxy.length ();
-	/**	
 	  The most close contentType for this storage object based on it's extension. It's undefined if this storage object is a folder.
 	  @type {string}
 	  @readonly
@@ -45,7 +39,13 @@ var StorageObject = function (proxy) {
 	  @readonly
 	*/
 	this.isFolder		= proxy.isFolder ();
-	
+	/**	
+	  The length/size in bytes of this storage object. 0 if it's a folder
+	  @type {integer}
+	  @readonly
+	*/
+	this.length 		= this.isFolder ? 0 : proxy.length ();
+
 	/**	
 	  Check if this object exists
 	  @param {string} - the new name

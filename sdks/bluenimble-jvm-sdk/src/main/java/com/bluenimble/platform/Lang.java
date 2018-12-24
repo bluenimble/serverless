@@ -35,7 +35,6 @@ import java.util.TimeZone;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import com.bluenimble.platform.Crypto.Algorithm;
 import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
@@ -950,14 +949,5 @@ public class Lang {
     	ExpressionCompiler compiler = withScripting ? ScriptedExpressionCompiler : ExpressionCompiler;
     	return compiler.compile (template, null).eval (new BasicVariableResolver (data));
     }
-    
-    public static void main(String[] args) throws Exception {
-		System.out.println (Lang.rand ());
-		
-		System.out.println (
-			new String (Lang.encodeHex (Crypto.encrypt ("885108d2-030c".getBytes (), "iajinjeygbcRSDEs", Algorithm.AES))).length ()
-		);
-		
-	}
     
 }

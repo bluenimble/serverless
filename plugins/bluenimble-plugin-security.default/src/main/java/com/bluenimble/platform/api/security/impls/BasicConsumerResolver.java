@@ -33,6 +33,7 @@ import com.bluenimble.platform.api.security.ApiAuthenticationException;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.security.ApiConsumerResolver;
 import com.bluenimble.platform.api.security.ApiConsumerResolverAnnotation;
+import com.bluenimble.platform.api.utils.Features;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseObject;
 import com.bluenimble.platform.db.query.impls.JsonQuery;
@@ -133,7 +134,7 @@ public class BasicConsumerResolver implements ApiConsumerResolver {
 		
 		DatabaseObject odb = null;
 		try {
-			odb = api.space ().feature (Database.class, feature, request).findOne (null, q);
+			odb = Features.get (api, Database.class, feature, request).findOne (null, q);
 		} catch (Exception ex) {
 			throw new ApiAuthenticationException (ex.getMessage (), ex);
 		}

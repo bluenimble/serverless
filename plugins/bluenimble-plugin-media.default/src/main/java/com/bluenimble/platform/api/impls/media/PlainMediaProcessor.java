@@ -108,7 +108,7 @@ public class PlainMediaProcessor implements ApiMediaProcessor {
 
 		String contentType = (String)request.get (ApiRequest.SelectedMedia);
 		
-		plugin.tracer ().log (Level.Info, "SelectedMedia resolved to {0}", contentType);
+		// plugin.tracer ().log (Level.Info, "SelectedMedia resolved to {0}", contentType);
 		
 		if (Lang.isNullOrEmpty (contentType) || ApiMediaProcessor.Any.equals  (contentType)) {
 			contentType = Json.getString (api.getMedia (), Api.Spec.Media.Default, ApiContentTypes.Json);

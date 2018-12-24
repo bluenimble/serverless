@@ -39,7 +39,7 @@ public class JoinEventListener implements EventListener<JsonObject> {
 			}
 			List<String> cantJoin = null;
 			for (Object oc : channels) {
-				if (!peer.canJoin ((String)oChannel)) {
+				if (!peer.canJoin ((String)oc)) {
 					if (cantJoin == null) {
 						cantJoin = new ArrayList<String> ();
 					}

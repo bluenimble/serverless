@@ -26,8 +26,8 @@ public interface ContentTypes {
 	String Html 				= "text/html";
 	String Json 				= "application/json";
 	String Xml          		= "application/xml";
+	String XndJson          	= "application/x-ndjson";
 	
 	String Stream				= "application/octet-stream";
-
 
 }

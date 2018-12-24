@@ -26,7 +26,7 @@ import com.bluenimble.platform.json.JsonObject;
 @Feature ( name = "messenger" )
 public interface Messenger extends Serializable {
 	
-	void send (Sender sender, Recipient [] recipients, String subject, String content, ApiStreamSource... attachments) throws MessengerException;
+	void send (Sender sender, Recipient [] recipients, String subject, Object content, ApiStreamSource... attachments) throws MessengerException;
 	void send (Sender sender, Recipient [] recipients, String subject, ApiResource template, JsonObject data, ApiStreamSource... attachments) throws MessengerException;
 	
 }

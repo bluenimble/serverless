@@ -77,7 +77,7 @@ public class SmtpMessenger implements Messenger {
 	}
 	
 	@Override
-	public void send (Sender sender, Recipient [] recipients, String subject, String content, ApiStreamSource... attachments) throws MessengerException {
+	public void send (Sender sender, Recipient [] recipients, String subject, Object content, ApiStreamSource... attachments) throws MessengerException {
 	
 		ClassLoader pcl = Thread.currentThread ().getContextClassLoader ();
 		

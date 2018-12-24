@@ -3,6 +3,9 @@ package com.bluenimble.platform.servers.broker.impls;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
@@ -15,6 +18,8 @@ import com.corundumstudio.socketio.SocketIOServer;
 public class PeerImpl implements Peer {
 
 	private static final long serialVersionUID = 4588408497056063439L;
+	
+	private static final Logger logger = LoggerFactory.getLogger (PeerImpl.class);
 	
 	private static final String AnyChannel = Lang.STAR;
 	
@@ -224,7 +229,8 @@ public class PeerImpl implements Peer {
 
 	@Override
 	public void broadcast (String channel, Object data) {
-		BroadcastOperations ops = server.getRoomOperations (tenant + Lang.SLASH + channel);
+		logger.info ("broadcast to " + channel);
+		BroadcastOperations ops = server.getRoomOperations (channel);
 		if (ops == null) {
 			return;
 		}

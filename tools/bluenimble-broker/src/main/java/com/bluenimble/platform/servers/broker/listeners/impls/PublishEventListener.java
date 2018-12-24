@@ -13,7 +13,7 @@ import com.bluenimble.platform.servers.broker.Response;
 import com.bluenimble.platform.servers.broker.listeners.EventListener;
 
 public class PublishEventListener implements EventListener<JsonObject> {
-
+	
 	private static final long serialVersionUID = 4331863772457952104L;
 	
 	@Override
