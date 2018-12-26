@@ -107,8 +107,6 @@ public class SmtpMessenger implements Messenger {
 			
 			String senderName = sender.name ();
 			
-			System.out.println ("senderName: " + senderName);
-			
 			if (Lang.isNullOrEmpty (senderName)) {
 				message.setFrom (new InternetAddress (senderEmail));
 			} else {
