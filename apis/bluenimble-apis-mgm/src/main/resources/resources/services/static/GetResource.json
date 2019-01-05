@@ -4,7 +4,7 @@
 	
 	"security": {
 		/* should turn true or remove this property as by default services are secure */
-		"enabled": "false", 
+		"enabled": "[ this.secure | 'false' ]",
 		"roles": ["super"]
 	},
 	

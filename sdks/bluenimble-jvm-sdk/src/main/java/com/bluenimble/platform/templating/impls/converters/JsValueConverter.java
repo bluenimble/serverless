@@ -16,8 +16,6 @@
  */
 package com.bluenimble.platform.templating.impls.converters;
 
-import java.util.Date;
-
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 
@@ -27,10 +25,10 @@ import jdk.nashorn.internal.runtime.Undefined;
 @SuppressWarnings("restriction")
 public class JsValueConverter {
 	
-	private static final String Clazz = "class";
+	// private static final String Clazz = "class";
 	private static final String Proxy = "proxy";
 	
-	private static final String LocalDateTime = "LocalDateTime";
+	// private static final String LocalDateTime = "LocalDateTime";
 
 	public static Object convert (Object o) {
 		if (o == null || o instanceof Undefined) {
@@ -57,14 +55,10 @@ public class JsValueConverter {
 		return json;
 	}
 	
-	public static boolean isDate (Object value) {
-		return value instanceof Date;
-	}
-	
 	private static Object toObject (ScriptObjectMirror som) {
-		Object oc = som.getMember (Clazz);
-		if (LocalDateTime.equals (oc) && som.containsKey (Proxy)) {
-			return som.getMember (Proxy);
+		Object proxy = som.get (Proxy);
+		if (proxy != null && proxy.getClass ().equals (java.time.LocalDateTime.class)) {
+			return proxy;
 		}
 		JsonObject json = new JsonObject ();
 		if (som.isEmpty ()) {

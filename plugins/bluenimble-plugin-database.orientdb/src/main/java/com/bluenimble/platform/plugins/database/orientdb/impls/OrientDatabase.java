@@ -242,7 +242,7 @@ public class OrientDatabase implements Database {
 			return null;
 		}
 		
-		return toList (entity, result, visitor);
+		return toList (Lang.isNullOrEmpty (entity) ? query.entity () : entity, result, visitor);
 	}
 
 	@Override

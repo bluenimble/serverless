@@ -18,7 +18,10 @@ package com.bluenimble.platform.plugins.database.mongodb.impls;
 
 import static com.mongodb.client.model.Filters.eq;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -55,6 +58,10 @@ import com.bluenimble.platform.plugins.database.mongodb.impls.filters.NilFilterA
 import com.bluenimble.platform.plugins.database.mongodb.impls.filters.RegexFilterAppender;
 import com.bluenimble.platform.plugins.database.mongodb.impls.filters.TextFilterAppender;
 import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClient;
+import com.mongodb.TransactionOptions;
+import com.mongodb.WriteConcern;
+import com.mongodb.client.ClientSession;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -76,6 +83,8 @@ public class MongoDatabaseImpl implements Database {
 
 	private static final long serialVersionUID = 3547537996525908902L;
 	
+	String IdPostfix = ".id";
+
 	interface Describe {
 		String Size 		= "size";
 		String Entities 	= "entities";
@@ -116,19 +125,26 @@ public class MongoDatabaseImpl implements Database {
 	
 	private Map<String, BasicDBObject> QueriesCache = new ConcurrentHashMap<String, BasicDBObject> ();
 	
+	private MongoClient			client;
 	private MongoDatabase		db;
-	private Tracer				tracer;
-	private boolean 			allowProprietaryAccess;
 	
-	public MongoDatabaseImpl (MongoDatabase db, Tracer tracer, boolean allowProprietaryAccess) {
-		this.db 					= db;
+	private ClientSession 		session;
+	
+	private Tracer				tracer;
+	private boolean 			caseSensitive;
+	private boolean 			allowProprietaryAccess;
+	private boolean				isTransaction;
+	
+	public MongoDatabaseImpl (MongoClient client, String databaseName, Tracer tracer, boolean caseSensitive, boolean allowProprietaryAccess) {
+		this.client					= client;
+		this.db 					= client.getDatabase (databaseName);
 		this.tracer 				= tracer;
 		this.allowProprietaryAccess = allowProprietaryAccess;
 	}
 
 	@Override
 	public DatabaseObject create (String entity) throws DatabaseException {
-		return new DatabaseObjectImpl (this, entity);
+		return new DatabaseObjectImpl (this, entity (entity));
 	}
 
 	@Override
@@ -138,19 +154,36 @@ public class MongoDatabaseImpl implements Database {
 
 	@Override
 	public MongoDatabaseImpl trx () {
-		// Not Supported
+		if (!isTransaction) {
+			if (session == null) {
+				session = client.startSession ();
+			}
+			session.startTransaction (TransactionOptions.builder ().writeConcern (WriteConcern.MAJORITY).build ());
+		}
+		isTransaction = true;
 		return this;
 	}
 	
 	@Override
 	public MongoDatabaseImpl commit () throws DatabaseException {
-		// Not Supported
+		if (!isTransaction) {
+			return this;
+		}
+		tracer.log (Tracer.Level.Info, "Commit Transaction {0}", db);
+		session.commitTransaction ();
+		isTransaction = false;
 		return this;
 	}
 
 	@Override
 	public MongoDatabaseImpl rollback () throws DatabaseException {
-		// Not Supported
+		if (!isTransaction) {
+			return this;
+		}
+		if (session == null) {
+			return this;
+		}
+		session.abortTransaction ();
 		return this;
 	}
 
@@ -161,6 +194,9 @@ public class MongoDatabaseImpl implements Database {
 
 	@Override
 	public DatabaseObject get (String entity, Object id) throws DatabaseException {
+		
+		entity = entity (entity);
+		
 		Document document = _get (entity, id);
 	    if (document == null) {
 		    return null;
@@ -202,7 +238,7 @@ public class MongoDatabaseImpl implements Database {
 			return null;
 		}
 		
-		return toList (entity, result, visitor, query.select () != null);
+		return toList (entity (Lang.isNullOrEmpty (entity) ? query.entity () : entity), result, visitor, query.select () != null);
 	}
 
 	@Override
@@ -224,6 +260,8 @@ public class MongoDatabaseImpl implements Database {
 		
 		checkNotNull (entity);
 		
+		entity = entity (entity);
+		
 		if (id == null) {
 			throw new DatabaseException ("can't delete object (missing object id)");
 		}
@@ -243,6 +281,8 @@ public class MongoDatabaseImpl implements Database {
 	public void clear (String entity) throws DatabaseException {
 		checkNotNull (entity);
 		
+		entity = entity (entity);
+		
 		MongoCollection<Document> collection = db.getCollection (entity);
 		if (collection == null) {
 			return;
@@ -256,12 +296,14 @@ public class MongoDatabaseImpl implements Database {
 		
 		checkNotNull (entity);
 		
+		entity = entity (entity);
+		
 		MongoCollection<Document> collection = db.getCollection (entity);
 		if (collection == null) {
 			return 0;
 		}
 		
-		return collection.count ();
+		return collection.countDocuments ();
 	}
 
 	@Override
@@ -294,6 +336,12 @@ public class MongoDatabaseImpl implements Database {
 
 	@Override
 	public void recycle () {
+		if (session == null) {
+			return;
+		}
+		
+		tracer.log (Tracer.Level.Info, "Recycling database {0}", db);
+		session.close ();
 	}
 
 	@Override
@@ -355,6 +403,9 @@ public class MongoDatabaseImpl implements Database {
 
 	@Override
 	public DatabaseObject popOne (String entity, Query query) throws DatabaseException {
+		
+		entity = entity (entity);
+		
 		DatabaseObject dbo = findOne (entity, query);
 		
 		if (dbo != null) {
@@ -370,6 +421,7 @@ public class MongoDatabaseImpl implements Database {
 		delete (entity, query);
 		return list;
 	}
+	
 	private List<DatabaseObject> toList (String entity, FindIterable<Document> documents, Visitor visitor, boolean partial) {
 		
 		if (visitor == null) {
@@ -386,6 +438,7 @@ public class MongoDatabaseImpl implements Database {
 				dbo.document = document;
 			} else {
 				dbo = new DatabaseObjectImpl (this, entity, document);
+				dbo.partial = partial;
 			}
 			boolean cancel = visitor.onRecord (dbo);
 			if (cancel) {
@@ -406,12 +459,15 @@ public class MongoDatabaseImpl implements Database {
 		if (Lang.isNullOrEmpty (query.entity ())) {
 			queryHasEntity = false;
 		} else {
+			
 			entity = query.entity ();
 		}
 		
 		checkNotNull (entity);
 		
-		tracer.log (Tracer.Level.Debug, "Query Entity {0}", entity);
+		entity = entity (entity);
+		
+		tracer.log (Tracer.Level.Info, "Query Entity {0}", entity);
 		
 		String cacheKey = construct.name () + query.name ();
 		
@@ -422,7 +478,7 @@ public class MongoDatabaseImpl implements Database {
 		
 		if (cacheable) {
 			mQuery 		= (BasicDBObject)QueriesCache.get (cacheKey);
-			tracer.log (Tracer.Level.Debug, "Query meta loaded from cache {0}", mQuery);
+			tracer.log (Tracer.Level.Info, "Query meta loaded from cache {0}", mQuery);
 		} 
 		
 		if (mQuery == null) {
@@ -440,8 +496,8 @@ public class MongoDatabaseImpl implements Database {
 		
 		mQuery = cacheable ? applyBindings (mQuery, bindings) : mQuery;
 
-		tracer.log (Tracer.Level.Debug, "       Query {0}", mQuery);
-		tracer.log (Tracer.Level.Debug, "    Bindings {0}", bindings);
+		tracer.log (Tracer.Level.Info, "       Query {0}", mQuery);
+		tracer.log (Tracer.Level.Info, "    Bindings {0}", bindings);
 		
 		if (Query.Construct.select.equals (construct)) {
 			FindIterable<Document> cursor = db.getCollection (entity).find (mQuery);
@@ -479,7 +535,6 @@ public class MongoDatabaseImpl implements Database {
 			if (select != null && select.count () > 0) {
 				String [] pFields = new String [select.count ()];
 				for (int i = 0; i < select.count (); i++) {
-					System.out.println (select.get (i));
 					pFields [i] = select.get (i);
 				}
 				cursor.projection (Projections.include (pFields));
@@ -535,27 +590,47 @@ public class MongoDatabaseImpl implements Database {
 			String f = fields.next ();
 			Object condOrFilter = where.get (f);
 			if (Condition.class.isAssignableFrom (condOrFilter.getClass ())) {
-				Condition c = (Condition)condOrFilter;
-				BasicDBObject criteria = (BasicDBObject)mq.get (c.field ());
+				Condition condition = (Condition)condOrFilter;
+				String field = condition.field ();
+				
+				BasicDBObject criteria = (BasicDBObject)mq.get (field);
 				
 				boolean newlyCreated = false;
 				if (criteria == null) {
 					newlyCreated = true;
 					criteria = new BasicDBObject ();
-					mq.put (c.field (), criteria);
+					mq.put (condition.field (), criteria);
 				}
 				
-				FilterAppender fa = FilterAppenders.get (c.operator ());
+				FilterAppender fa = FilterAppenders.get (condition.operator ());
 				if (fa == null) {
 					fa = DefaultFilterAppender;
 				}
 				
-				BasicDBObject filter = fa.append (c, criteria);
+				Object value = condition.value ();
+				
+				if (value instanceof LocalDateTime) {
+					LocalDateTime ldt = ((LocalDateTime)value);
+					value = Date.from (ldt.atZone (ZoneId.systemDefault ()).toInstant ());
+				}
+				
+				if (field.endsWith (IdPostfix) && ObjectId.isValid (String.valueOf (value))) {
+					value = new ObjectId (String.valueOf (value));
+				}
+				
+				BasicDBObject filter = fa.append (condition, criteria, value);
 				if (filter != null) {
 					mq.putAll ((Map<String, Object>)filter);
 					if (newlyCreated) {
-						mq.remove (c.field ());
+						mq.remove (field);
 					}
+				} else if (field.endsWith (IdPostfix)) {
+					mq.put (
+						field.substring (0, field.length () - IdPostfix.length ()) 
+						+ Lang.DOT + DatabaseObjectImpl.ObjectIdKey, 
+						criteria
+					);
+					mq.remove (field);
 				}
 			}
 		}
@@ -582,6 +657,16 @@ public class MongoDatabaseImpl implements Database {
 			return null;
 		}
 		return getInternal ();
+	}
+	
+	public String entity (String entity) {
+		if (Lang.isNullOrEmpty (entity)) {
+			return entity;
+		}
+		if (!caseSensitive) {
+			entity = entity.toUpperCase ();
+		}
+		return entity;
 	}
 	
 }

@@ -7,7 +7,7 @@ import com.mongodb.BasicDBObject;
 public class NilFilterAppender implements FilterAppender {
 
 	@Override
-	public BasicDBObject append (Condition condition, BasicDBObject criteria) {
+	public BasicDBObject append (Condition condition, BasicDBObject criteria, Object value) {
 		OperatorSpec spec = Operators.get (condition.operator ());
 		if (spec == null) {
 			return null;

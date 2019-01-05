@@ -4,7 +4,7 @@ import com.bluenimble.platform.db.query.Condition;
 import com.mongodb.BasicDBObject;
 
 public interface FilterAppender {
-
-	BasicDBObject append (Condition condition, BasicDBObject critera);
+	
+	BasicDBObject append (Condition condition, BasicDBObject critera, Object value);
 	
 }

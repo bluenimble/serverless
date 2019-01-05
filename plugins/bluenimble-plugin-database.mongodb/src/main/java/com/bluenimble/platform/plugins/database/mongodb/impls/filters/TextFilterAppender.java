@@ -7,7 +7,7 @@ import com.mongodb.BasicDBObject;
 public class TextFilterAppender implements FilterAppender {
 
 	@Override
-	public BasicDBObject append (Condition condition, BasicDBObject criteria) {
+	public BasicDBObject append (Condition condition, BasicDBObject criteria, Object value) {
 		OperatorSpec spec = Operators.get (condition.operator ());
 		if (spec == null) {
 			return null;
@@ -16,7 +16,7 @@ public class TextFilterAppender implements FilterAppender {
 		BasicDBObject filter = new BasicDBObject ();
 
 		BasicDBObject text = new BasicDBObject ();
-		text.append (Operators.Search, condition.value ());
+		text.append (Operators.Search, value);
 		
 		filter.append (Operators.Text, text);
 		

@@ -19,7 +19,7 @@ echo       ""
 # Set BNB_RUNTIME to an empty directory outside the installation directory. Recommended for clean upgrades!  
 #                 Default to . (install directory)
 # Set BNB_TENANT  to an empty directory outside the installation directory if you are going to run multiple bluenimble nodes 
-#                 in the same machine using the same binaries. Default to single 
+#                 in the same machine using the same binaries. Default to none 
 BNB_RUNTIME=. 
 BNB_TENANT=none
 

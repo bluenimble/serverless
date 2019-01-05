@@ -9,7 +9,7 @@ import com.mongodb.BasicDBObject;
 public class RegexFilterAppender implements FilterAppender {
 
 	@Override
-	public BasicDBObject append (Condition condition, BasicDBObject criteria) {
+	public BasicDBObject append (Condition condition, BasicDBObject criteria, Object value) {
 		OperatorSpec spec = Operators.get (condition.operator ());
 		if (spec == null) {
 			return null;
@@ -21,7 +21,7 @@ public class RegexFilterAppender implements FilterAppender {
 			operator = Operators.Not;
 		} 
 		
-		criteria.append (operator, Pattern.compile (String.valueOf (condition.value ())));
+		criteria.append (operator, Pattern.compile (String.valueOf (value)));
 		
 		return null;
 		

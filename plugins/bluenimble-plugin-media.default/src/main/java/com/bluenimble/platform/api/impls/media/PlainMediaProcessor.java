@@ -39,7 +39,6 @@ import com.bluenimble.platform.api.media.DataWriter;
 import com.bluenimble.platform.api.media.impls.JsonWriter;
 import com.bluenimble.platform.api.media.impls.TextWriter;
 import com.bluenimble.platform.api.security.ApiConsumer;
-import com.bluenimble.platform.api.tracing.Tracer.Level;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.server.plugins.media.MediaPlugin;
 import com.bluenimble.platform.server.plugins.media.utils.DefaultVariableResolver;

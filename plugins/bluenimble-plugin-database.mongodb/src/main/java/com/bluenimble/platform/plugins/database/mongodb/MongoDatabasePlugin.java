@@ -16,9 +16,7 @@
  */
 package com.bluenimble.platform.plugins.database.mongodb;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
@@ -41,9 +39,7 @@ import com.bluenimble.platform.server.ApiServer.Event;
 import com.bluenimble.platform.server.ServerFeature;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
-import com.mongodb.MongoCredential;
-import com.mongodb.ServerAddress;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.MongoClientURI;
 
 public class MongoDatabasePlugin extends AbstractPlugin {
 
@@ -51,9 +47,12 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 	
 	private CodecRegistry codecRegistry;
 	
+	private static final String DefaultDriver = "mongodb+srv";
+	
 	interface Spec {
-		String Cluster 	= "cluster";
+		String Host 	= "host";
 		String Database = "database";
+		String Driver 	= "driver";
 		
 		String SSL 		= "ssl";
 		String MaxConnections
@@ -67,21 +66,18 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 		String SocketTimeout
 						= "socketTimeout";
 		
+		String RetryWrites
+						= "retryWrites";
+		
 		String Auth 	= "auth";
-			String Type 	= "type";
 			String User 	= "user";
 			String Password = "password";
 			
 		String AllowProprietaryAccess
 						= "allowProprietaryAccess";
-	}
-	
-	enum AuthType {
-		SHA,
-		CR,
-		X509,
-		KERBEROS,
-		LDAP
+		
+		String CaseSensitive
+						= "caseSensitive";
 	}
 	
 	private String				feature;
@@ -112,7 +108,15 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 					Json.find (space.getFeatures (), feature, name, ApiSpace.Features.Spec, Spec.AllowProprietaryAccess);
 				boolean allowProprietaryAccess = 
 						oAllowProprietaryAccess == null || String.valueOf (oAllowProprietaryAccess).equalsIgnoreCase (Lang.TRUE);
-				return new MongoDatabaseImpl (MongoDatabasePlugin.this.acquire (space, name), tracer (), allowProprietaryAccess);
+				
+				Object oCaseSensitive = 
+					Json.find (space.getFeatures (), feature, name, ApiSpace.Features.Spec, Spec.CaseSensitive);
+				boolean caseSensitive = 
+						oCaseSensitive == null || String.valueOf (oCaseSensitive).equalsIgnoreCase (Lang.TRUE);
+
+				RecyclableClient rClient = (RecyclableClient)space.getRecyclable (createKey (name));
+				
+				return new MongoDatabaseImpl (rClient.client, rClient.database, tracer (), caseSensitive, allowProprietaryAccess);
 				
 			}
 			@Override
@@ -205,40 +209,38 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 			return null;
 		}
 		
-		MongoCredential creds = createCredentials (database, Json.getObject (spec, Spec.Auth));
-		
-		String cluster = Json.getString (spec, Spec.Cluster);
-		if (cluster == null) {
-			cluster = Lang.BLANK;
+		String host = Json.getString (spec, Spec.Host);
+		if (Lang.isNullOrEmpty (host)) {
+			return null;
 		}
 		
-		String [] sNodes = Lang.split (Json.getString (spec, Spec.Cluster), Lang.COMMA, true);
+		String driver = Json.getString (spec, Spec.Driver, DefaultDriver);
 		
-		List<ServerAddress> nodes = new ArrayList<ServerAddress> (sNodes.length);
-				
-		for (int i = 0; i < sNodes.length; i++) {
-			nodes.add (address (sNodes [i]));
-		}
-		
-		MongoClientOptions options = 
+		MongoClientOptions.Builder optionsBuilder = 
 				MongoClientOptions.builder ()
 					.cursorFinalizerEnabled (false)
+					.retryWrites (Json.getBoolean (spec, Spec.RetryWrites, true))
 					.codecRegistry (codecRegistry)
 					.sslEnabled (Json.getBoolean (spec, Spec.SSL, false))
 					.connectionsPerHost (Json.getInteger (spec, Spec.MaxConnections, 100))
 					.threadsAllowedToBlockForConnectionMultiplier (Json.getInteger (spec, Spec.ThreadsAllowedToBlock, 5))
 					.maxWaitTime (Json.getInteger (spec, Spec.MaxWaitTime, 1000))
 					.connectTimeout (Json.getInteger (spec, Spec.ConnectTimeout, 10000))
-					.socketTimeout (Json.getInteger (spec, Spec.SocketTimeout, 0))
-					.build ();
-		// apply other options such as pool
+					.socketTimeout (Json.getInteger (spec, Spec.SocketTimeout, 0));
 		
-		MongoClient client = null;
-		if (creds == null) {
-			client = new MongoClient (nodes, options);
-		} else {
-			client = new MongoClient (nodes, creds, options);
+		String credentials = null;
+		
+		JsonObject auth = Json.getObject (spec, Spec.Auth);
+		if (!Json.isNullOrEmpty (auth)) {
+			credentials = Json.getString (auth, Spec.User) + Lang.COLON + Json.getString (auth, Spec.Password);
 		}
+		
+		MongoClientURI uri = new MongoClientURI (
+			driver + "://" + (credentials == null ? Lang.BLANK : credentials + Lang.AT) + host,
+			optionsBuilder
+		);
+				
+		MongoClient client = new MongoClient (uri);
 		
 		if (overwrite) {
 			removeClient (space, name);
@@ -252,88 +254,8 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 		
 	}
 	
-	private ServerAddress address (String hostAndPort) {
-		String 	host = hostAndPort;
-		int 	port = 27017;
-		
-		int indexOfColon = hostAndPort.lastIndexOf (Lang.COLON);
-		if (indexOfColon > 0) {
-			host = hostAndPort.substring (0, indexOfColon).trim ();
-			try {
-				port = Integer.valueOf (hostAndPort.substring (indexOfColon + 1).trim ());
-			} catch (NumberFormatException ex) {
-				// ignore, default to 27017 and host to hostAndPort
-				host = hostAndPort;
-			}
-		}
-		if (host.equals (Lang.BLANK)) {
-			host = "localhost";
-		}
-		return new ServerAddress (host, port);
-	}
-	
-	private MongoCredential createCredentials (String database, JsonObject auth) {
-		
-		String sAuthType = Json.getString (auth, Spec.Type);
-		if (Lang.isNullOrEmpty (sAuthType)) {
-			return null;
-		}
-		
-		sAuthType = sAuthType.toUpperCase ();
-		
-		AuthType authType = null;
-		
-		try {
-			authType = AuthType.valueOf (sAuthType);
-		} catch (Exception ex) {
-			// ignore, default to sha
-		}
-		
-		if (authType == null) {
-			authType = AuthType.SHA;
-		}
- 		
-		String user 	= Json.getString (auth, Spec.User);
-		String password = Json.getString (auth, Spec.Password);
-
-		switch (authType) {
-			case SHA:
-				if (Lang.isNullOrEmpty (user) || Lang.isNullOrEmpty (password)) {
-					return null;
-				}
-				return MongoCredential.createScramSha1Credential (user, database, password.toCharArray ());
-			case CR:
-				if (Lang.isNullOrEmpty (user) || Lang.isNullOrEmpty (password)) {
-					return null;
-				}
-				return MongoCredential.createMongoCRCredential (user, database, password.toCharArray ());
-			case X509:
-				if (Lang.isNullOrEmpty (user)) {
-					return null;
-				}
-				return MongoCredential.createMongoX509Credential (user);
-			case KERBEROS:
-				if (Lang.isNullOrEmpty (user)) {
-					return null;
-				}
-				return MongoCredential.createGSSAPICredential (user);
-			case LDAP:
-				if (Lang.isNullOrEmpty (user) || Lang.isNullOrEmpty (password)) {
-					return null;
-				}
-				return MongoCredential.createPlainCredential (user, "$external", password.toCharArray ());
-			default:
-				return null;
-		}
-		
-	}
-	
 	private String createKey (String name) {
 		return feature + Lang.DOT + getNamespace () + Lang.DOT + name;
-	}
-	
-	public MongoDatabase acquire (ApiSpace space, String name) {
-		return ((RecyclableClient)space.getRecyclable (createKey (name))).database ();
 	}
 	
 	class RecyclableClient implements Recyclable {
@@ -343,8 +265,8 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 		private String 		database;
 		
 		public RecyclableClient (MongoClient client, String database) {
-			this.client 	= client;
-			this.database 	= database;
+			this.client 		= client;
+			this.database 		= database;
 		}
 		
 		@Override
@@ -358,10 +280,6 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 			} catch (Exception ex) {
 				// Ignore
 			}
-		}
-
-		public MongoDatabase database () {
-			return client.getDatabase (database);
 		}
 		
 	}

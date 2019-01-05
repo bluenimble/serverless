@@ -27,11 +27,11 @@ public class GetOne2One {
 		
 		Database db = new DatabaseServer ().get ();
 		
-		DatabaseObject driver = db.get ("Drivers", "5aa425145e67264b7858685a");
+		DatabaseObject driver = db.get ("Drivers", "5c26b2db29bbe7e001165dec");
 		
-		DatabaseObject car = (DatabaseObject)driver.get ("car");
+		// DatabaseObject car = (DatabaseObject)driver.get ("car");
 		
-		System.out.println (car.toJson (new DefaultBeanSerializer (2, 2)));
+		System.out.println (driver.toJson (new DefaultBeanSerializer (2, 2)));
 		
 	}
 	

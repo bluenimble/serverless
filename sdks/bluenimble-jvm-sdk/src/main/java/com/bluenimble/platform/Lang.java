@@ -84,6 +84,7 @@ public class Lang {
 	public static final String 		PERCENT					= "%";
 	public static final String 		DOLLAR					= "$";
 	public static final String 		SHARP					= "#";
+	public static final String 		AT						= "@";
 	public static final String 		LESS					= "<";
 	public static final String 		GREATER					= ">";
 	public static final String 		TILDE 					= "~";

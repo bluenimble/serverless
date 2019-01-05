@@ -7,7 +7,6 @@
 		"database": "<?>database name",
 		
 		"auth": {
-			"type": "sha",
 			"user": "<?>username",
 			"password": "<?>password"
 		},

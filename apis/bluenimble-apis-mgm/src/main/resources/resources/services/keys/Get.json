@@ -17,7 +17,7 @@
 	
 	"security": {
 		/* should set to true or remove this property as it's by default disabled */
-		"enabled": "false", 
+		"enabled": "[ this.secure | 'false' ]",
 		"roles": ["developer", "admin", "super"]
 	},
 	

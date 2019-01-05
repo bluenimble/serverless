@@ -280,6 +280,17 @@ if (targetRecipe) {
 	recipe.merge (targetRecipe);
 }
 
+// Set adt. build vars
+var backVars = {};
+
+if (recipe.vars) {
+	for (var k in vars) {
+		var old = Vars [k];
+		backVars [k] = (typeof old != 'undefined' ? old : '__REMOVE__');
+		Vars [k] = vars [k];
+	}
+}
+
 var transformData = new JsonObject ().set ("R", recipe);
 
 // Create the build folder if it doesn't exist
@@ -332,10 +343,14 @@ if (!Vars ['build.release.nocopy'] || Vars ['build.release.nocopy'] != 'true') {
 	
 	apiFolder = new File (buildFolder, apiSrc.getName ());
 	
-	// assemblies if any
-	var assemblies = new File (apiFolder, "assemblies"); 
-	if (assemblies.exists ()) {
-		FileUtils.delete (assemblies);
+	// delete unwanted folders
+	if (recipe.unwanted) {
+		for (var i = 0; i < recipe.unwanted.length; i++) {
+			var f = new File (apiFolder, recipe.unwanted [i]); 
+			if (f.exists ()) {
+				FileUtils.delete (f);
+			}
+		}
 	}
 	
 	// convert yaml to json
@@ -441,12 +456,47 @@ Tool.command ('set api.folder ' + buildFolder.getAbsolutePath ());
 
 Tool.command ('echo on');
 
-Tool.command ('npush api ' + apiNs);
+if (typeof recipe.install == 'undefined' || recipe.install == null || recipe.install == true) {
+	Tool.command ('npush api ' + apiNs);
+}
+
+if (recipe.copyTo) {
+	var fCopyTo = new File (recipe.copyTo);
+	
+	var existing = new File (fCopyTo, newApiFolder.getName ());
+	if (existing.exists ()) {
+		FileUtils.delete (existing);
+	}
+	
+	FileUtils.copy (newApiFolder, fCopyTo, true);
+}
+
+if (typeof recipe.run != 'undefined' && recipe.install != null && recipe.run.length > 0) {
+	for (var i = 0; i < recipe.run.length; i++) {
+		var oRun = recipe.run [i];
+		Tool.info ('Execute Command: [' + oRun.command + '] from [' + oRun.base + ']\n');
+		OsCommander.execute (
+			new File (oRun.base),
+			oRun.command,
+			null
+		);
+	}
+}
 
 Tool.command ('echo off');
 Tool.command ('unset api.folder');
 Tool.command ('echo on');
 
 FileUtils.delete (newApiFolder);
+
+// Back initial vars
+for (var k in backVars) {
+	var v = backVars [k];
+	if (v == '__REMOVE__') {
+		Vars.remove (k);
+	} else {
+		Vars [k] = v;
+	}
+}
 
 Tool.info ('Total Push Time: ' + Tool.styled ((System.currentTimeMillis () - startTime), 'yellow') + ' millis');

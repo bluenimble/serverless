@@ -16,41 +16,30 @@
  */
 package com.bluenimble.platform.plugins.database.mongodb.tests;
 
-import java.time.LocalDateTime;
-
-import com.bluenimble.platform.Json;
 import com.bluenimble.platform.db.Database;
-import com.bluenimble.platform.db.Database.Visitor;
+import com.bluenimble.platform.db.DatabaseException;
 import com.bluenimble.platform.db.DatabaseObject;
-import com.bluenimble.platform.db.query.impls.JsonQuery;
 import com.bluenimble.platform.json.JsonObject;
-import com.bluenimble.platform.reflect.beans.impls.DefaultBeanSerializer;
 
-public class Find {
+public class CreateWithLoad {
 	
-	public static void main (String [] args) throws Exception {
-		
-		JsonObject query = new JsonObject ("{ where: { 'receiver': 'alpha', expires: { op: 'gt' } }, orderBy: { timestamp: 'desc' } }");
-		
-		Json.set (query, "where.expires.value", LocalDateTime.now ());
+	public static void main (String [] args) throws DatabaseException {
 		
 		Database db = new DatabaseServer ().get ();
 		
-		db.find (
-			"Notification", 
-			new JsonQuery (query),
-			new Visitor () {
-				@Override
-				public boolean optimize () {
-					return true;
-				}
-				@Override
-				public boolean onRecord (DatabaseObject dbo) {
-					System.out.println (dbo.toJson (new DefaultBeanSerializer (1, 2)));
-					return false;
-				}
-			}
-		);
+		DatabaseObject employee = db.create ("Employee");
+		
+		employee.set ("name", "T1");
+		
+		employee.load (
+			(JsonObject)new JsonObject ()
+				.set ("id", "alpha")
+				.set ("org", new JsonObject ().set ("$entity", "Corporation").set ("name", "BlueNimble"))
+			);
+		
+		employee.save ();
+		
+		System.out.println (employee.toJson (null));
 		
 	}
 	

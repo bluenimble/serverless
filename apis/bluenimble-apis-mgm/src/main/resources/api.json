@@ -8,6 +8,10 @@
 		}
 	},
 	
+	"tracer": {
+		"class": "!tracing.log4j:default"
+	},
+	
 	"features": {
 		"media.default": {
 			"templating": {

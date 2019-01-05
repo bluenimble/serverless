@@ -40,8 +40,8 @@ public class DatabaseServer {
 		);
 
 		MongoClientURI uri = new MongoClientURI (
-			"mongodb://localhost:27017",
-			MongoClientOptions.builder ().cursorFinalizerEnabled (false).codecRegistry (codecRegistry)
+			"mongodb+srv://",
+			MongoClientOptions.builder ().cursorFinalizerEnabled (false).codecRegistry (codecRegistry).retryWrites (true)
 		);
 			
 		return new MongoClient (uri);
@@ -49,7 +49,7 @@ public class DatabaseServer {
 	}
 	public Database get () {
 		
-		return new MongoDatabaseImpl (client ().getDatabase ("tests"), new Tracer () {
+		return new MongoDatabaseImpl (client (), "dsdev", new Tracer () {
 			private static final long serialVersionUID = 4922972723643535449L;
 
 			@Override
@@ -73,7 +73,7 @@ public class DatabaseServer {
 				return true;
 			}
 			
-		}, true);
+		}, false, true);
 	}
 	
 }

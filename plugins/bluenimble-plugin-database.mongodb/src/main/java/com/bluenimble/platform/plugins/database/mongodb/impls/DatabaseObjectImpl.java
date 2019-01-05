@@ -130,6 +130,11 @@ public class DatabaseObjectImpl implements DatabaseObject {
 			return;
 		}
 		
+		if (Database.Fields.Id.equals (key) && value != null) {
+			setId (value);
+			return;
+		}
+		
 		if (value == null || value.equals (Lang.Null) || Undefined.class.equals (value.getClass ())) {
 			remove (key);
 			return;
@@ -148,20 +153,28 @@ public class DatabaseObjectImpl implements DatabaseObject {
 		} else if (value instanceof JsonObject) {
 			JsonObject child = (JsonObject)value;
 			if (child.containsKey (Database.Fields.Entity)) {
-				String cEntityName = Json.getString (child, Database.Fields.Entity);
+				String cEntityName = db.entity (Json.getString (child, Database.Fields.Entity));
+				
 				DatabaseObjectImpl childEntity = null;
 				if (child.containsKey (Database.Fields.Id)) {
 					childEntity = (DatabaseObjectImpl)db.get (cEntityName, child.get (Database.Fields.Id));
 				} 
+				
 				if (childEntity == null) {
 					childEntity = (DatabaseObjectImpl)db.create (cEntityName);
 				} else {
-					// remove entity and id
-					child.remove (Database.Fields.Entity);
+					// remove id
 					child.remove (Database.Fields.Id);
 				}
+				
+				child.remove (Database.Fields.Entity);
+				
 				childEntity.load (child);
-				value = childEntity.document;
+				
+				// call set and return
+				set (key, childEntity);
+				return;
+				
 			}
 		// NEED REVIEW: if it's a list	
 		} else if (List.class.isAssignableFrom (value.getClass ())) {
@@ -184,7 +197,9 @@ public class DatabaseObjectImpl implements DatabaseObject {
 		
 		document.append (key, value);
 		
-		markForUpdate (key, value);
+		if (!key.equals (Database.Fields.Timestamp)) {
+			markForUpdate (key, value);
+		}
 		
 	}
 
@@ -261,6 +276,7 @@ public class DatabaseObjectImpl implements DatabaseObject {
 			DatabaseObjectImpl refObject = new DatabaseObjectImpl (db, entity, id, true);
 			refObject.persistent = true;
 			try {
+				refObject.set (key, ref.get (Database.Fields.Timestamp));
 				set (key, refObject);
 			} catch (DatabaseException e) {
 				throw new RuntimeException (e.getMessage (), e);
@@ -390,7 +406,7 @@ public class DatabaseObjectImpl implements DatabaseObject {
 
 	@Override
 	public JsonObject toJson (BeanSerializer serializer) {
-		return toJson (this, serializer, 0, false);
+		return toJson (this, serializer, 0, true);
 	}
 	
 	@Override

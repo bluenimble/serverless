@@ -33,8 +33,8 @@ public class Create {
 		JsonArray names = new JsonArray ();
 		names.add (new JsonObject ().set ("number", "4098776623").set ("weight", 40));
 		
-		employee.set ("name", "New-1");
-		employee.set ("age", 27);
+		employee.set ("name", "New-2");
+		employee.set ("age", 34);
 		employee.set ("active", true);
 		employee.set ("salary", 48.50);
 		employee.set ("names", names);

@@ -640,7 +640,7 @@ public class Json {
 			return s;
 		}
 	}
-    
+
     public static void main (String [] args) throws JsonException {
 		JsonObject data = new JsonObject ();
 		

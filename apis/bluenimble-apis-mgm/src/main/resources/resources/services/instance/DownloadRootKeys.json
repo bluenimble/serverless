@@ -16,7 +16,7 @@
 	
 	"security": {
 		/* should set to true or remove this property */
-		"enabled": "false", 
+		"enabled": "[ this.secure | 'false' ]",
 		"roles": ["super"]
 	},
 	
