@@ -226,6 +226,13 @@ if (tokens [0] != 'api') {
 // api namespace
 var apiNs = tokens [1];
 
+var apiSrcPath = Config.apis [apiNs];
+if (!apiSrcPath) {
+	apiSrcPath = apiNs;
+}
+
+Vars ['ApiHome'] = Config.workspace + '/' + apiSrcPath;
+
 var recipe = new JsonObject ();
 
 // load recipes
@@ -280,6 +287,8 @@ if (targetRecipe) {
 	recipe.merge (targetRecipe);
 }
 
+recipe = BuildUtils.transform (recipe, Vars);
+
 // Set adt. build vars
 var backVars = {};
 
@@ -301,17 +310,11 @@ if (!buildFolder.exists ()) {
 
 var apiFolder = new File (buildFolder, apiNs);
 
-// ONLY If Requested
 if (!Vars ['build.release.nocopy'] || Vars ['build.release.nocopy'] != 'true') {
 	// delete api folder
 	FileUtils.delete (apiFolder);
 	
 	// copy
-	var apiSrcPath = Config.apis [apiNs];
-	if (!apiSrcPath) {
-		apiSrcPath = apiNs;
-	}
-	
 	var apiSrc = new File (Config.workspace + '/' + apiSrcPath);
 	// mavenized project
 	if (new File (apiSrc, "pom.xml").exists ()) {
