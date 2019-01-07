@@ -353,7 +353,7 @@ public class BuildUtils {
 			@Override
 			public Object resolve (String namespace, String... property) {
 				if (Lang.isNullOrEmpty (namespace)) {
-					return null;
+					return data.get (Lang.join (property, Lang.DOT));
 				}
 				
 				if (namespace.equalsIgnoreCase ("Fn")) {
@@ -390,7 +390,7 @@ public class BuildUtils {
 			@Override
 			public Object resolve (String namespace, String... property) {
 				if (Lang.isNullOrEmpty (namespace)) {
-					return null;
+					return data.get (Lang.join (property, Lang.DOT));
 				}
 				
 				Object target = data.get (namespace);
