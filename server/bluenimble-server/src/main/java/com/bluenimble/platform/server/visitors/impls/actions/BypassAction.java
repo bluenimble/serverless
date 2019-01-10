@@ -26,7 +26,7 @@ public class BypassAction implements RewriteAction {
 	
 	public String [] apply (ApiRequest request, Placeholder placeholder, String [] aTarget, Object value, String conditionValue) {
 		
-		request.set (ApiRequest.Bypass, Lang.TRUE);
+		request.set (ApiRequest.Interceptors.Bypass, Lang.TRUE);
 		
 		return aTarget;
 		

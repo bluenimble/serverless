@@ -17,8 +17,6 @@
 package com.bluenimble.platform.shell.impls;
 
 import com.bluenimble.platform.shell.OsCommandExecuterCallback;
-import com.bluenimble.platform.shell.OsCommandExecuterCallbackException;
-import com.bluenimble.platform.shell.OsProcessHandle;
 
 public abstract class OsCommandExecuterStreamCallback implements OsCommandExecuterCallback {
 	
@@ -26,10 +24,6 @@ public abstract class OsCommandExecuterStreamCallback implements OsCommandExecut
 	
 	public boolean	isStreaming () {
 		return true;
-	}
-	
-	public void finish (String response, OsProcessHandle handle) throws OsCommandExecuterCallbackException {
-		throw new OsCommandExecuterCallbackException ("finish not implemented by " + OsCommandExecuterStreamCallback.class.getName ());
 	}
 	
 }

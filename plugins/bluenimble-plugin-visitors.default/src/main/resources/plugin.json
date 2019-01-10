@@ -30,6 +30,8 @@
 				"static": { 
 					"/": "[ this.spec.static.root | '/sys/mgm/instance/all' ]" 
 				},
+				
+				"rewrite": "[ this.spec.rewrite | '{}' ] >> json",
 
 				"space": { 
 					"value": "[ this.spec.space.value | '' ]", 

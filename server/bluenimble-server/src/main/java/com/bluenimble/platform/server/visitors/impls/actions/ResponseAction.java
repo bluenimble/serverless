@@ -18,21 +18,24 @@ package com.bluenimble.platform.server.visitors.impls.actions;
 
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResponse;
-import com.bluenimble.platform.api.ApiResponse.Status;
 import com.bluenimble.platform.api.impls.SelectiveApiRequestVisitor.Placeholder;
+import com.bluenimble.platform.json.JsonObject;
 
-public class RejectAction implements RewriteAction {
+public class ResponseAction implements RewriteAction {
 
 	private static final long serialVersionUID = -2165577306745099563L;
 	
 	public String [] apply (ApiRequest request, Placeholder placeholder, String [] aTarget, Object value, String conditionValue) {
 		
 		if (value == null) {
-			request.set (ApiRequest.Reject, ApiResponse.BAD_REQUEST);
-			return aTarget;
+			value = new JsonObject ().set (ApiResponse.Output.Status, 200);
 		}
 		
-		request.set (ApiRequest.Reject, new Status (400, String.valueOf (value)));
+		if (!(value instanceof JsonObject)) {
+			value = new JsonObject ().set (ApiResponse.Output.Status, 200).set (ApiResponse.Output.Data, value);
+		}
+		
+		request.set (ApiRequest.Interceptors.Response, value);
 		
 		return aTarget;
 		

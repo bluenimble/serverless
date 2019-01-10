@@ -327,6 +327,7 @@ if (!Vars ['build.release.nocopy'] || Vars ['build.release.nocopy'] != 'true') {
 		Tool.note ('Building api - (mvn clean install) ' + apiNs);
 
 		OsCommander.execute (
+			Tool,
 			apiSrc, 
 			"mvn clean install",
 			null
@@ -474,15 +475,19 @@ if (recipe.copyTo) {
 	FileUtils.copy (newApiFolder, fCopyTo, true);
 }
 
-if (typeof recipe.run != 'undefined' && recipe.install != null && recipe.run.length > 0) {
+if (typeof recipe.run != 'undefined' && recipe.run.length > 0) {
 	for (var i = 0; i < recipe.run.length; i++) {
 		var oRun = recipe.run [i];
-		Tool.info ('Execute Command: [' + oRun.command + '] from [' + oRun.base + ']\n');
-		OsCommander.execute (
-			new File (oRun.base),
-			oRun.command,
-			null
-		);
+		Tool.note ('Execute Commands from directory [' + oRun.directory + ']\n');
+		for (var j = 0; j < oRun.commands.length; j++) {
+			Tool.note ('RUN | ' + oRun.commands [j]);
+			OsCommander.execute (
+				Tool,
+				new File (oRun.directory),
+				oRun.commands [j],
+				null
+			);
+		}
 	}
 }
 

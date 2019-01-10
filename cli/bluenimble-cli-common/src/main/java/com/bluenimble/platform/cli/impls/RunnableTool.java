@@ -19,6 +19,7 @@ package com.bluenimble.platform.cli.impls;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -110,6 +111,11 @@ public abstract class RunnableTool extends PojoTool implements Runnable {
 	@Override
 	public String readLine () throws IOException {
 		return reader.readLine ();
+	}
+	
+	@Override
+	public void drain (InputStream stream) throws IOException {
+		IOUtils.copy (stream, writer);
 	}
 
 	@Override

@@ -325,7 +325,7 @@ public class JettyPlugin extends AbstractPlugin {
 					
 					ApiRequest apiRequest = execute (req, resp);
 					
-					if (apiRequest.get (ApiRequest.Bypass) != null) {
+					if (apiRequest.get (ApiRequest.Interceptors.Bypass) != null) {
 						super.doOptions (req, resp);
 					}
 					

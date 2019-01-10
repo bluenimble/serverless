@@ -88,6 +88,12 @@ public class SelectiveApiRequestVisitor extends AbstractApiRequestVisitor {
 		aEndpoint 	= endpoint (request, aEndpoint);
 		aPath 		= path (request, aPath);
 		
+		// if response provided by any mean (in rewrite for example) or it's a bypass, return
+		if (request.get (ApiRequest.Interceptors.Response) != null || 
+			request.get (ApiRequest.Interceptors.Bypass) != null) {
+			return;
+		}
+		
 		set (Target.api, 		request, aEndpoint, aPath, 1);
 		set (Target.resource, 	request, aEndpoint, aPath, 2);
 		

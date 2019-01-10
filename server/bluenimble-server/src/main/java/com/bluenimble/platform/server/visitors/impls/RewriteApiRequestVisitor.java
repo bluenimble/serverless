@@ -32,8 +32,8 @@ import com.bluenimble.platform.server.ApiServer;
 import com.bluenimble.platform.server.visitors.impls.actions.AppendAction;
 import com.bluenimble.platform.server.visitors.impls.actions.BypassAction;
 import com.bluenimble.platform.server.visitors.impls.actions.PrependAction;
-import com.bluenimble.platform.server.visitors.impls.actions.RejectAction;
 import com.bluenimble.platform.server.visitors.impls.actions.ReplaceAction;
+import com.bluenimble.platform.server.visitors.impls.actions.ResponseAction;
 import com.bluenimble.platform.server.visitors.impls.actions.RewriteAction;
 import com.bluenimble.platform.server.visitors.impls.checkers.ContainsConditionChecker;
 import com.bluenimble.platform.server.visitors.impls.checkers.EndsConditionChecker;
@@ -80,11 +80,12 @@ public class RewriteApiRequestVisitor extends SelectiveApiRequestVisitor {
 			String RegEx 	= "regex";
 		}
 		interface Actions {
+			String Bypass	= "bypass";
+			String Response	= "response";
+			
 			String Append 	= "append";
 			String Prepend 	= "prepend";
 			String Replace 	= "replace";
-			String Reject 	= "reject";
-			String Bypass	= "bypass";
 		}
 	}
 	
@@ -100,11 +101,12 @@ public class RewriteApiRequestVisitor extends SelectiveApiRequestVisitor {
 	
 	private static final Map<String, RewriteAction> Actions = new HashMap<String, RewriteAction> ();
 	static {
+		Actions.put (Spec.Actions.Bypass, new BypassAction ());
+		Actions.put (Spec.Actions.Response, new ResponseAction ());
+
 		Actions.put (Spec.Actions.Append, new AppendAction ());
 		Actions.put (Spec.Actions.Prepend, new PrependAction ());
 		Actions.put (Spec.Actions.Replace, new ReplaceAction ());
-		Actions.put (Spec.Actions.Reject, new RejectAction ());
-		Actions.put (Spec.Actions.Bypass, new BypassAction ());
 	}
 	
 	protected ApiServer server;
@@ -117,7 +119,7 @@ public class RewriteApiRequestVisitor extends SelectiveApiRequestVisitor {
 		}
 		
 		// process rules
-		String [] rewriten = applyRewrite (request, Placeholder.path, oRewrite, request.getEndpoint (), endpoint);
+		String [] rewriten = applyRewrite (request, Placeholder.endpoint, oRewrite, request.getEndpoint (), endpoint);
 		if (rewriten != null) {
 			return rewriten;
 		}
@@ -149,8 +151,7 @@ public class RewriteApiRequestVisitor extends SelectiveApiRequestVisitor {
 	private JsonObject pickRewrite (ApiRequest request, String target) {
 		String spaceNs = request.getSpace ();
 		
-		//server.tracer ().log (Level.Info, "Space Ns {0}", spaceNs);
-		
+		// at the node level
 		if (Lang.isNullOrEmpty (spaceNs)) {
 			return (JsonObject)Json.find (spec, Spec.Rewrite, target);
 		}

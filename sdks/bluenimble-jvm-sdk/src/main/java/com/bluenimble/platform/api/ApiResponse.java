@@ -27,6 +27,7 @@ import com.bluenimble.platform.json.JsonObject;
 public interface ApiResponse extends Serializable {
 	
 	String 			RequestID 		= "request";
+	
 	interface 		Error {
 		String Code 	= "code";
 		String Message 	= "message";
@@ -35,6 +36,11 @@ public interface ApiResponse extends Serializable {
 			String Line 	= "line";
 			String File 	= "file";
 			String Function = "function";
+	}
+	
+	interface 	Output {
+		String Status 	= "status";
+		String Data 	= "data";
 	}
 	
 	/** 

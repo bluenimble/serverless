@@ -18,6 +18,7 @@ package com.bluenimble.platform.cli;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -66,6 +67,7 @@ public interface Tool extends Serializable {
 	String 				readLine () throws IOException;
 	Tool 				write (String str);
 	Tool 				writeln (String str);
+	void				drain (InputStream stream) throws IOException;
 	
 	Date 				getStartTime ();
 	

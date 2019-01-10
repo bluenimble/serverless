@@ -23,9 +23,10 @@ import com.bluenimble.platform.json.JsonObject;
 
 public interface ApiRequest extends ApiContext {
 	
-	String Reject 				= "Container.Request.Reject";
-	String RejectMessage 		= "Container.Request.RejectMessage";
-	String Bypass 				= "Container.Request.Bypass";
+	interface Interceptors {
+		String Bypass				= "Container.Request.Intercept.Bypass";
+		String Response 			= "Container.Request.Intercept.Response";
+	}
 
 	String Consumer				= "Container.Request.Consumer";
 	String Caller 				= "Container.Request.Caller";

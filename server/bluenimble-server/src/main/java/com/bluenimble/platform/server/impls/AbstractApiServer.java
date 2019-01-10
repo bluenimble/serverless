@@ -424,19 +424,19 @@ public abstract class AbstractApiServer implements ApiServer {
 				requestVisitor.visit ((AbstractApiRequest)request);
 			}
 			
-			if (request.get (ApiRequest.Reject) != null) {
-				Status status = (Status)request.get (ApiRequest.Reject);
-				String message = (String)request.get (ApiRequest.RejectMessage);
-				if (Lang.isNullOrEmpty (message)) {
-					message = status.getMessage ();
-				}
-				sendError (response, status, message);
-				request.destroy ();
+			if (request.get (ApiRequest.Interceptors.Bypass) != null) {
 				return;
 			}
 			
-			if (request.get (ApiRequest.Bypass) != null) {
-				// bypass request
+			if (request.get (ApiRequest.Interceptors.Response) != null) {
+				JsonObject oResponse = (JsonObject)request.get (ApiRequest.Interceptors.Response);
+				Status status = new ApiResponse.Status (Json.getInteger (oResponse, ApiResponse.Output.Status, 200));
+				Object message = oResponse.get (ApiResponse.Output.Data);
+				if (message == null) {
+					message = status.getMessage ();
+				}
+				send (response, status, message);
+				request.destroy ();
 				return;
 			}
 			
@@ -651,6 +651,26 @@ public abstract class AbstractApiServer implements ApiServer {
 			} finally {
 				try { response.close (); } catch (Exception ex) { }
 			}
+		}
+	}
+	
+	private void send (ApiResponse response, Status status, Object message) {
+		if (response instanceof ContainerApiResponse && status.getCode () > 399) {
+			((ContainerApiResponse)response).setException (
+				new ApiServiceExecutionException (String.valueOf (message)).status (status)
+			);
+			return;
+		} 
+		
+		response.setStatus (status);
+		response.set (ApiHeaders.ContentType, ApiContentTypes.Json);
+		
+		try {
+			response.write (message);
+		} catch (IOException e) {
+			tracer.log (Tracer.Level.Error, Lang.BLANK, e);
+		} finally {
+			try { response.close (); } catch (Exception ex) { }
 		}
 	}
 	

@@ -154,8 +154,16 @@ public class HttpApiRequest extends AbstractApiRequest {
 			}
 		} catch (Exception ex) {
 			tracer.log (Tracer.Level.Warning, ex.getMessage (), ex);
-			set (ApiRequest.Reject, ApiResponse.EXPECTATION_FAILED);
-			set (ApiRequest.RejectMessage, ex.getMessage ());
+			set (
+				ApiRequest.Interceptors.Response, 
+				new JsonObject ().set (
+					ApiResponse.Output.Status, 
+					ApiResponse.EXPECTATION_FAILED.getCode ()
+				).set (
+					ApiResponse.Output.Data, 
+					ex.getMessage ()
+				)
+			);
 		} 
 	}
 

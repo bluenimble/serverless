@@ -31,9 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecutor;
-
 import com.bluenimble.platform.ArchiveUtils;
 import com.bluenimble.platform.Encodings;
 import com.bluenimble.platform.FileUtils;
@@ -41,8 +38,6 @@ import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.PackageClassLoader;
-import com.bluenimble.platform.cli.Tool;
-import com.bluenimble.platform.cli.command.CommandExecutionException;
 import com.bluenimble.platform.icli.mgm.BlueNimble;
 import com.bluenimble.platform.icli.mgm.CliSpec.Templates;
 import com.bluenimble.platform.icli.mgm.utils.functions.BuildFunction;
@@ -327,23 +322,6 @@ public class BuildUtils {
 		// clean sources and binaries
 		// FileUtils.delete (javaBin);
 		// FileUtils.delete (javaSrc);
-	}
-
-	public static int mvn (Tool tool, File workingDir, String args) throws CommandExecutionException {
-		CommandLine cmdLine = CommandLine.parse ("mvn " + args);
-		DefaultExecutor executor = new DefaultExecutor ();
-		executor.setWorkingDirectory (workingDir);
-
-		int exitValue = 0;
-		try {
-			exitValue = executor.execute (cmdLine);
-		} catch (IOException ex) {
-			throw new CommandExecutionException (ex.getMessage (), ex);
-		}
-		if (exitValue != 0) {
-			throw new CommandExecutionException ("mvn " + args + " error : Exit value is " + exitValue);
-		}
-		return exitValue;
 	}
 	
 	public static JsonObject transform (JsonObject source, Map<String, Object> data) {

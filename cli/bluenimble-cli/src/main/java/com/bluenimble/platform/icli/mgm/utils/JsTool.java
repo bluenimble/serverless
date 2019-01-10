@@ -98,7 +98,7 @@ public class JsTool {
 	}
 	public void panel (Panel panel) {
 		tool.printer ().panel (panel);
-	}	
+	}
 	
 	public String styled (String text, String fc, String bc) {
 		return tool.printer ().getFontPrinter ().generate (

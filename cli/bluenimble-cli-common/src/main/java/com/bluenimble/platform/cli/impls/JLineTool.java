@@ -18,6 +18,7 @@ package com.bluenimble.platform.cli.impls;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 
@@ -146,6 +147,11 @@ public abstract class JLineTool extends PojoTool {
 	@Override
 	public String readLine () throws IOException {
 		return reader.readLine (prompt);
+	}
+	
+	@Override
+	public void drain (InputStream stream) throws IOException {
+		IOUtils.copy (stream, writer);
 	}
 
 	@Override
