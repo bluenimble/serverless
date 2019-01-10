@@ -22,6 +22,9 @@ out
 *.iml
 .idea/
 
+#VSCode
+.vscode/
+
 export/
 
 ### Gradle template

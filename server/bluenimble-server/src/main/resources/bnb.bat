@@ -12,7 +12,7 @@ echo     ^| ^|_/ / ^| ^|_^| ^|  __/ ^|\  ^| ^| ^| ^| ^| ^| ^| ^|_) ^| ^|  __/
 echo     \____/^|_^|\__,_^|\___\_^| \_/_^|_^| ^|_^| ^|_^|_.__/^|_^|\___^|
                                                    
 echo(       
-echo       BlueNimble Serverless Platform - Server Node
+echo       BlueNimble Serverless Platform - Server Node - Version [version]
 echo       Copyright (c) BlueNimble, Inc. (https://www.bluenimble.com)
 echo(       
 
