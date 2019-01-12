@@ -1,0 +1,17 @@
+{
+	"namespace": "sdks.aws",
+	"name": "Sdks - AWS",
+	
+	"spi": {
+		"class": "com.bluenimble.platform.plugins.sdks.AwsSdkPlugin",
+		"properties": {
+			"version": "[version]",
+			"vendor": {
+				"name": "BlueNimble, Inc",
+				"links": [{
+					"Read More": "https://www.bluenimble.com"
+				}]
+			}
+		}
+	}
+}	

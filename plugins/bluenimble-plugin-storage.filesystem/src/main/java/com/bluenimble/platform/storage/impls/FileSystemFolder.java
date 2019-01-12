@@ -112,7 +112,9 @@ public class FileSystemFolder extends FileSystemStorageObject implements Folder 
 
 	@Override
 	public boolean contains (String path) throws StorageException {
+		
 		validatePath (path); 
+		
 		return new File (source, path).exists ();
 	}
 

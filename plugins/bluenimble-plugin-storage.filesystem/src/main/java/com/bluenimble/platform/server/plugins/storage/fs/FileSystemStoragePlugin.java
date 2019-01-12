@@ -47,9 +47,6 @@ public class FileSystemStoragePlugin extends AbstractPlugin {
 		String Buffer	= "buffer";
 	}
 	
-	private String 	root;
-	private File 	fRoot;
-	
 	private String 	feature;
 	
 	@Override
@@ -61,21 +58,6 @@ public class FileSystemStoragePlugin extends AbstractPlugin {
 		}
 		feature = aFeature.name ();
 
-		if (Lang.isNullOrEmpty (root)) {
-			root = home.getAbsolutePath () + File.separator + "drive";
-		}
-		
-		fRoot = new File (root);
-		
-		if (!fRoot.exists ()) {
-			fRoot.mkdirs ();
-		}
-		
-		tracer.log (Level.Info, "Storage Root folder is " + fRoot.getAbsolutePath ());
-		if (!fRoot.exists ()) {
-			throw new Exception ("root folder not found");
-		}
-		
 		server.addFeature (new ServerFeature () {
 			private static final long serialVersionUID = -9012279234275100528L;
 			
@@ -93,7 +75,8 @@ public class FileSystemStoragePlugin extends AbstractPlugin {
 				if (rm == null) {
 					return null;
 				}
-				return new FileSystemStorage (rm.mount (), new File (fRoot, rm.mount ()), rm.buffer ());
+				tracer ().log (Level.Info, "New Storage Instance: " + rm.mount ().getAbsolutePath ());
+				return new FileSystemStorage (rm.mount (), rm.buffer ());
 			}
 			@Override
 			public String provider () {
@@ -104,13 +87,6 @@ public class FileSystemStoragePlugin extends AbstractPlugin {
 				return FileSystemStoragePlugin.this;
 			}
 		});
-	}
-
-	public void setRoot (String root) {
-		this.root = root;
-	}
-	public String getRoot () {
-		return root;
 	}
 	
 	@Override
@@ -167,16 +143,26 @@ public class FileSystemStoragePlugin extends AbstractPlugin {
 			return;
 		}
 		
-		File spaceStorage = new File (fRoot, mount);
-		if (!spaceStorage.exists ()) {
-			spaceStorage.mkdir ();
+		if (mount.startsWith (Lang.TILDE)) {
+			mount = System.getProperty ("user.home") + Lang.SLASH + mount.substring (1);
 		}
+		
+		File fMount = new File (mount);
+		if (!fMount.exists ()) {
+			fMount.mkdir ();
+		}
+		
+		if (!fMount.isDirectory ()) {
+			return;
+		}
+		
+		tracer ().log (Level.Info, "Mount: " + fMount.getAbsolutePath ());
 		
 		if (overwrite) {
 			removeClient (space, name);
 		}
 		
-		space.addRecyclable (createKey  (name), new RecyclableMount (mount, Json.getInteger (spec, Spec.Buffer, DefaultBuffer)));
+		space.addRecyclable (createKey  (name), new RecyclableMount (fMount, Json.getInteger (spec, Spec.Buffer, DefaultBuffer)));
 		
 		feature.set (ApiSpace.Spec.Installed, true);
 	}
@@ -200,15 +186,15 @@ public class FileSystemStoragePlugin extends AbstractPlugin {
 	class RecyclableMount implements Recyclable {
 		private static final long serialVersionUID = 50882416501226306L;
 		
-		private String 	mount;
+		private File 	mount;
 		private int 	buffer;
 		
-		public RecyclableMount (String mount, int buffer) {
+		public RecyclableMount (File mount, int buffer) {
 			this.mount 	= mount;
 			this.buffer = buffer;
 		}
 		
-		public String mount () {
+		public File mount () {
 			return mount;
 		}
 

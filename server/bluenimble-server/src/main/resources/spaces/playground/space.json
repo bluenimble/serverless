@@ -57,7 +57,7 @@
 			"default": {
 				"provider": "storage.filesystem",
 				"spec": {
-					"mount": "playground"
+					"mount": "~"
 				}
 			}
 		},

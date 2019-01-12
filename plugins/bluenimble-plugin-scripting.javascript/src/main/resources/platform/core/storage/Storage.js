@@ -14,13 +14,6 @@
 var Storage = function (proxy) {
 
 	/**	
-	  The mount id
-	  @type {string}
-	  @readonly
-	*/
-	this.mount = proxy.mount ();
-	
-	/**	
 	  Get the root folder
 	  
 	  @returns {Folder} the root folder

@@ -61,8 +61,8 @@ public class FileSystemStorageObject implements StorageObject {
 
 	protected 	int 	buffer = 8 * 1024;
 	
-	private String		reader = Lang.UUID (30);	
-	private String		writer = Lang.UUID (30);	
+	private String		reader = Lang.UUID (30);
+	private String		writer = Lang.UUID (30);
 	
 	protected FileSystemStorageObject () {
 	}
@@ -245,9 +245,11 @@ public class FileSystemStorageObject implements StorageObject {
 		if (isFolder ()) {
 			throw new StorageException ("this is a folder. Can't update content");
 		}
+		System.out.println ("###### File Update -> " + source.getAbsolutePath ());
 		OutputStream os = null;
 		try {
 			os = new FileOutputStream (source, append);
+			System.out.println ("###### File Update -> Acquired Stream");
 			return IOUtils.copy (input, os, buffer);
 		} catch (IOException ioex) {
 			throw new StorageException (ioex.getMessage (), ioex);

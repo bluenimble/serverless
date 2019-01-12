@@ -23,7 +23,6 @@ import com.bluenimble.platform.Feature;
 @Feature ( name = "storage" )
 public interface Storage extends Serializable {
 
-	String 		mount 	();
 	Folder 		root 	() 	throws StorageException;
 	long 		quota 	() 	throws StorageException;
 	

@@ -100,17 +100,12 @@ public class SmtpMessenger implements Messenger {
 				}
 			}
 
-			String senderEmail = sender.id ();
-			if (Lang.isNullOrEmpty (senderEmail)) {
-				senderEmail = user;
-			}
-			
 			String senderName = sender.name ();
 			
 			if (Lang.isNullOrEmpty (senderName)) {
-				message.setFrom (new InternetAddress (senderEmail));
+				message.setFrom (new InternetAddress (user));
 			} else {
-				message.setFrom (new InternetAddress (senderEmail, senderName));
+				message.setFrom (new InternetAddress (user, senderName));
 			}
 			
 			InternetAddress [] toAddresses = new InternetAddress [recipients.length];

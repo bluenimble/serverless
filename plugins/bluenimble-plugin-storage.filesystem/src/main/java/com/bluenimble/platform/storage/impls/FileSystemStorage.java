@@ -26,20 +26,13 @@ public class FileSystemStorage implements Storage {
 
 	private static final long serialVersionUID = 9208848890318179761L;
 
-	protected	String 	mount;
 	protected 	Folder 	root;
 	protected 	int 	buffer;
 	
-	public FileSystemStorage (String mount, File root, int buffer) {
-		this.mount = mount;
+	public FileSystemStorage (File mount, int buffer) {
 		this.buffer = buffer;
-		this.root = new FileSystemFolder (root, true, this.buffer);
+		this.root = new FileSystemFolder (mount, true, this.buffer);
 	}
-
-	@Override
-	public String mount () {
-		return mount;
-	}	
 
 	@Override
 	public long quota () throws StorageException {

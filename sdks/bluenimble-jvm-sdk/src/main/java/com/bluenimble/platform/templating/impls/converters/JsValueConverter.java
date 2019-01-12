@@ -16,6 +16,8 @@
  */
 package com.bluenimble.platform.templating.impls.converters;
 
+import java.util.Date;
+
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 
@@ -70,6 +72,10 @@ public class JsValueConverter {
 			json.set (k, convert (som.get (k)));
 		}
 		return json.resolve ();
+	}
+	
+	public static boolean isDate (Object value) {
+		return value instanceof Date;
 	}
 	
 }
