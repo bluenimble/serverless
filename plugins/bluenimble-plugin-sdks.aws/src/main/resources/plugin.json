@@ -3,7 +3,7 @@
 	"name": "Sdks - AWS",
 	
 	"spi": {
-		"class": "com.bluenimble.platform.plugins.sdks.AwsSdkPlugin",
+		"class": "com.bluenimble.platform.plugins.sdks.aws.AwsSdkPlugin",
 		"properties": {
 			"version": "[version]",
 			"vendor": {
@@ -14,4 +14,4 @@
 			}
 		}
 	}
-}	
+}

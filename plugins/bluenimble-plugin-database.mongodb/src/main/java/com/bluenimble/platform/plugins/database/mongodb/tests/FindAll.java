@@ -33,7 +33,7 @@ public class FindAll {
 		Database db = new DatabaseServer ().get ();
 		
 		List<DatabaseObject> employees = db.find (
-			"Employees", 
+			"Media", 
 			new JsonQuery (new JsonObject (query)),
 			null
 		);

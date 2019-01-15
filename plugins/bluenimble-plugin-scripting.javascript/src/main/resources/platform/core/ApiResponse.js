@@ -78,6 +78,26 @@ var ApiResponse = function (proxy) {
 		}
 		proxy.error (JC_HttpStatues.Map.get (status), message);
 	};
+
+	/**	
+	  commit response
+	*/
+	this.commit = function () {
+		proxy.commit ();
+	}
+	/**	
+	  is response committed 
+	  @return [boolean] committed
+	*/
+	this.isCommitted = function () {
+		return proxy.isCommitted ();
+	}
+	/**	
+	  flush headers
+	*/
+	this.flushHeaders = function () {
+		proxy.flushHeaders ();
+	}
 	
 };
 

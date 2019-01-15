@@ -614,7 +614,7 @@ public class MongoDatabaseImpl implements Database {
 					value = Date.from (ldt.atZone (ZoneId.systemDefault ()).toInstant ());
 				}
 				
-				if (field.endsWith (IdPostfix) && ObjectId.isValid (String.valueOf (value))) {
+				if ((field.equals (Database.Fields.Id) || field.endsWith (IdPostfix)) && ObjectId.isValid (String.valueOf (value))) {
 					value = new ObjectId (String.valueOf (value));
 				}
 				
@@ -630,6 +630,9 @@ public class MongoDatabaseImpl implements Database {
 						+ Lang.DOT + DatabaseObjectImpl.ObjectIdKey, 
 						criteria
 					);
+					mq.remove (field);
+				} else if (field.equals (Database.Fields.Id)) {
+					mq.put (DatabaseObjectImpl.ObjectIdKey, criteria);
 					mq.remove (field);
 				}
 			}

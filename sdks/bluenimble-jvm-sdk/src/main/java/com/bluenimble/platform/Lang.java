@@ -194,6 +194,10 @@ public class Lang {
     	return UUID (RandNumbers, length);
     }
     
+    public static String oid () {
+    	return OID.get ().toString ();
+    }
+    
     public static String UUID (int length) {
     	return UUID (RandDigits, length);
     }

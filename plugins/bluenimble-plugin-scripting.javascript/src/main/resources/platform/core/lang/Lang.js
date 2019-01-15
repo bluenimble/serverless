@@ -34,6 +34,13 @@ var Lang = {
 		return new JC_String (bytes, charset);
 	},
 	/**	
+	  Generates a random hex based object id 
+	  @returns {string} the oid
+	*/
+	oid: function () {
+		return JC_Lang.oid ();
+	},
+	/**	
 	  Generates a random hex based guid 
 	  @returns {string} the guid
 	*/

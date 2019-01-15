@@ -62,7 +62,7 @@ ApiOutput.prototype.fromJson = function (json) {
 ApiOutput.prototype.create = function () {
 	return new JC_JsonApiOutput (Json.object ());
 };
-ApiRequest.prototype.Defaults = {
+ApiOutput.prototype.Defaults = {
 	Id 			: JC_ApiOutput_Defaults.Id,
 	Timestamp 	: JC_ApiOutput_Defaults.Timestamp,
 	Cache 		: JC_ApiOutput_Defaults.Cache,
@@ -71,9 +71,10 @@ ApiRequest.prototype.Defaults = {
 	Items 		: JC_ApiOutput_Defaults.Items,
 	Count 		: JC_ApiOutput_Defaults.Count,
 	Expires		: JC_ApiOutput_Defaults.Expires,
-	Cast		: JC_ApiOutput_Defaults.Cast
+	Cast		: JC_ApiOutput_Defaults.Cast,
+	Exit		: JC_ApiOutput_Defaults.Exit
 };
-ApiRequest.prototype.Disposition = {
+ApiOutput.prototype.Disposition = {
 	Inline 		: JC_ApiOutput_Disposition.Inline,
 	Attachment 	: JC_ApiOutput_Disposition.Attachment
 };

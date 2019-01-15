@@ -38,6 +38,7 @@ public interface ApiOutput extends Serializable {
 		String Count 		= "count";
 		String Expires		= "expires";
 		String Cast			= "cast";
+		String Exit 		= "exit";
 	}
 
 	interface Disposition 		{

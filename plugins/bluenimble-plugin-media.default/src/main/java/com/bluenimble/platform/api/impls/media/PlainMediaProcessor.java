@@ -39,6 +39,7 @@ import com.bluenimble.platform.api.media.DataWriter;
 import com.bluenimble.platform.api.media.impls.JsonWriter;
 import com.bluenimble.platform.api.media.impls.TextWriter;
 import com.bluenimble.platform.api.security.ApiConsumer;
+import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.server.plugins.media.MediaPlugin;
 import com.bluenimble.platform.server.plugins.media.utils.DefaultVariableResolver;
@@ -135,6 +136,17 @@ public class PlainMediaProcessor implements ApiMediaProcessor {
 				vr, 
 				mediaDef, api.tracer ()
 			);
+			
+			if (output != null && output.get (ApiOutput.Defaults.Exit) != null && (Boolean)output.get (ApiOutput.Defaults.Exit)) {
+				api.tracer ().log (Tracer.Level.Info, "Output Exit. Response will be sent now.");
+				response.flushHeaders ();
+				try {
+					response.close ();
+				} catch (Exception e) {
+					throw new ApiMediaException (e.getMessage (), e);
+				}
+				return;
+			}
 			
 			if (media != null) {
 				// if there is a template

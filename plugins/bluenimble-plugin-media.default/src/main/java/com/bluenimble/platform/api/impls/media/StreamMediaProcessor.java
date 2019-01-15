@@ -40,6 +40,7 @@ import com.bluenimble.platform.api.ApiService;
 import com.bluenimble.platform.api.media.ApiMediaProcessor;
 import com.bluenimble.platform.api.media.DataWriter;
 import com.bluenimble.platform.api.security.ApiConsumer;
+import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.http.utils.HttpUtils;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.server.plugins.media.utils.DefaultVariableResolver;
@@ -121,6 +122,17 @@ public class StreamMediaProcessor implements ApiMediaProcessor {
 			mediaDef, api.tracer ()
 		);
 		
+		if (output.get (ApiOutput.Defaults.Exit) != null && (Boolean)output.get (ApiOutput.Defaults.Exit)) {
+			api.tracer ().log (Tracer.Level.Info, "Output Exit. Response will be sent now.");
+			response.flushHeaders ();
+			try {
+				response.close ();
+			} catch (Exception e) {
+				throw new ApiMediaException (e.getMessage (), e);
+			}
+			return;
+		}
+		
 		ApiResource resource = null;
 		
 		if (media != null) {
@@ -158,6 +170,7 @@ public class StreamMediaProcessor implements ApiMediaProcessor {
 			try {
 				response.close ();
 			} catch (IOException e) {
+				throw new ApiMediaException (e.getMessage (), e);
 			}
 		}
 		
