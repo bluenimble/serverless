@@ -353,6 +353,7 @@ public class JettyPlugin extends AbstractPlugin {
 	        			request.getNode ().set (ApiRequest.Fields.Node.Id, server.id ());
 	        			request.getNode ().set (ApiRequest.Fields.Node.Type, server.type ());
 	        			request.getNode ().set (ApiRequest.Fields.Node.Version, server.version ());
+	        			request.getNode ().set (ApiRequest.Fields.Node.StartTime, Lang.toUTC (server.startTime ()));
 	        			
 	        			boolean async = Json.getBoolean (executor, Executor.Async, false);
 	        			

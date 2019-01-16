@@ -296,7 +296,7 @@ public abstract class AbstractApiRequest extends AbstractApiContext implements A
 		json.set (Fields.Endpoint, getEndpoint ());
 		json.set (Fields.Path, getPath ());
 		json.set (Fields.Resource, sResource);
-		json.set (Fields.Timestamp, getTimestamp ());
+		json.set (Fields.Timestamp, Lang.toUTC (getTimestamp ()));
 		json.set (Fields.Device.class.getSimpleName ().toLowerCase (), device);
 		json.set (Fields.Data.class.getSimpleName ().toLowerCase (), data);
 		

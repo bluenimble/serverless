@@ -65,6 +65,7 @@ public interface ApiRequest extends ApiContext {
 			String Id 			= "id";
 			String Type 		= "type";
 			String Version 		= "version";
+			String StartTime 	= "sts";
 		}
 		
 		interface Device 		{

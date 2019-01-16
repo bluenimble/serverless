@@ -17,6 +17,7 @@
 package com.bluenimble.platform.server;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 
 import com.bluenimble.platform.Traceable;
@@ -92,6 +93,7 @@ public interface ApiServer extends Traceable, Manageable {
 	String 					id 						();
 	String 					type 					();
 	String 					version 				();
+	Date 					startTime 				();
 	
 	InstanceDescriber		getInstanceDescriber 	();
 	void 					setInstanceDescriber	(InstanceDescriber instanceDescriber);

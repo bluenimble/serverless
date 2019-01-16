@@ -4,7 +4,7 @@
 #
 
 echo       ""
-echo       "BlueNimble Message Broker (Native, Socket-IO / Websockets)"
+echo       "BlueNimble Message Broker (Native, Socket-IO / Websockets) Version [version]"
 echo       "Copyright (c) BlueNimble, Inc. (http://www.bluenimble.com)"
 echo       ""
 

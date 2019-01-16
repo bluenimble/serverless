@@ -6,6 +6,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +26,7 @@ import com.corundumstudio.socketio.Configuration;
 import com.corundumstudio.socketio.SocketConfig;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.listener.DataListener;
+import com.corundumstudio.socketio.store.RedissonStoreFactory;
 
 public class BrokerImpl implements Broker {
 
@@ -69,6 +73,18 @@ public class BrokerImpl implements Broker {
 		config.setPingInterval (Json.getInteger (spec, Spec.PingInterval, 25) * 1000); // in secs
 		config.setPingTimeout (Json.getInteger (spec, Spec.PingTimeout, 60) * 1000); // in secs
 		
+		// Cluster Store
+		JsonObject oStore = Json.getObject (spec, Spec.Store.class.getSimpleName ().toLowerCase ());
+		if (!Json.isNullOrEmpty (oStore)) {
+			Config rConfig = Config.fromJSON (new File (home, Json.getString (oStore, Spec.Store.Config)));
+			RedissonClient client = Redisson.create (rConfig);
+			
+			// Instantiate RedissonClientStoreFactory
+			RedissonStoreFactory redisStoreFactory = new RedissonStoreFactory (client);
+			config.setStoreFactory (redisStoreFactory);
+		}
+		
+		// SSL
 		JsonObject ssl = Json.getObject (spec, Spec.Ssl.class.getSimpleName ().toLowerCase ());
 		if (!Json.isNullOrEmpty (ssl)) {
 			config.setSSLProtocol (Json.getString (ssl, Spec.Ssl.Protocol, "TLSv12"));

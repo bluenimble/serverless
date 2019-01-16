@@ -50,6 +50,10 @@ public interface Broker extends Serializable {
 		String Listeners  				= "listeners";
 		String AccessibleBy  			= "accessibleBy";
 		
+		interface Store {
+			String Config				= "config";
+		}
+		
 	}
 	
 	TenantProvider 	getTenantProvider ();

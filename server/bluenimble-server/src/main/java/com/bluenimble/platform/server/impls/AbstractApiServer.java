@@ -95,6 +95,8 @@ public abstract class AbstractApiServer implements ApiServer {
 	}
 	
 	private static final 	String 			FeatureProtocol = "://";
+	
+	protected Date							startTime = new Date ();
 
 	protected JsonObject 					descriptor;
 	
@@ -142,7 +144,12 @@ public abstract class AbstractApiServer implements ApiServer {
 	protected InstanceDescriber				instanceDescriber;
 	
 	protected Tracer 						tracer 				= NoTracing.Instance;
-
+	
+	@Override
+	public Date	startTime () {
+		return startTime;
+	}
+	
 	@Override
 	public void	registerSerializer (ClusterSerializer serializer) {
 		serializers.put (serializer.name (), serializer);

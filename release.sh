@@ -32,9 +32,15 @@ git add .
 git commit -m "Update POMs for Release $Release.0"
 git push origin master
 
-# Build
+# Build Server and CLI
 mvn clean deploy
 mvn clean install
+
+# Build Broker
+cd tools/bluenimble-broker
+mvn clean install
+
+cd ../..
 
 # Create branches
 git checkout -b $Release
@@ -53,6 +59,8 @@ git push origin master
 cd build
 tar -czf bluenimble-$Release.0-bin.tar.gz bluenimble-$Release.0
 tar -czf bluenimble-cli-$Release.0-bin.tar.gz bluenimble-cli-$Release.0
+tar -czf bluenimble-broker-$Release.0-bin.tar.gz bluenimble-broker-$Release.0
 
 zip -r bluenimble-$Release.0-bin.zip bluenimble-$Release.0
 zip -r bluenimble-cli-$Release.0-bin.zip bluenimble-cli-$Release.0
+zip -r bluenimble-broker-$Release.0-bin.zip bluenimble-broker-$Release.0

@@ -475,7 +475,7 @@ if (recipe.copyTo) {
 	FileUtils.copy (newApiFolder, fCopyTo, true);
 }
 
-if (typeof recipe.run != 'undefined' && recipe.run.length > 0) {
+if (recipe.run && recipe.run.length > 0) {
 	for (var i = 0; i < recipe.run.length; i++) {
 		var oRun = recipe.run [i];
 		Tool.note ('Execute Commands from directory [' + oRun.directory + ']\n');
