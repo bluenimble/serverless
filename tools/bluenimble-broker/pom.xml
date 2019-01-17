@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.bluenimble.serverless</groupId>
 	<artifactId>bluenimble-broker</artifactId>
-  	<version>2.10.0-SNAPSHOT</version><!--bn.version-->
+  	<version>2.10.0</version><!--bn.version-->
 	<packaging>jar</packaging>
 	<name>BlueNimble Message Broker (Native, Socket-IO / Websockets)</name>
 
@@ -93,6 +93,7 @@
                       <overWriteSnapshots>false</overWriteSnapshots>
                       <overWriteIfNewer>true</overWriteIfNewer>
                       <excludeArtifactId>netty-transport-native-epoll</excludeArtifactId>
+                      <excludeArtifactId>netty-socketio</excludeArtifactId>
                     </configuration>
                   </execution>
                 </executions>
@@ -107,8 +108,18 @@
 							<target>
 							
 								<copy todir="../../build/${project.artifactId}-${project.version}">
-									<fileset dir="src/main/resources" />
+									<fileset dir="src/main/resources">
+										<exclude name="libs"/>
+									</fileset>
 								</copy>
+								
+								<copy todir="../../build/${project.artifactId}-${project.version}/lib">
+									<fileset dir="src/main/resources/libs" />
+								</copy>
+								
+								<delete file="../../build/${project.artifactId}-${project.version}/lib/netty-socketio-1.7.17.jar" />
+								
+								<delete dir="../../build/${project.artifactId}-${project.version}/libs" />
 								
 								<replace dir="../../build/${project.artifactId}-${project.version}" value="${project.version}">
 									<replacetoken>[version]</replacetoken>
@@ -131,7 +142,7 @@
 		<dependency>
 		    <groupId>com.bluenimble.serverless</groupId>
 		    <artifactId>bluenimble-jvm-sdk</artifactId>
-		    <version>2.10.0-SNAPSHOT</version><!--bn.version-->
+		    <version>2.10.0</version><!--bn.version-->
 		</dependency>
 		<dependency>
 		    <groupId>org.apache.logging.log4j</groupId>

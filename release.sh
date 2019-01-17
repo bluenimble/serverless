@@ -57,6 +57,9 @@ git commit -m "Update POMs for next snapshot $NextRelease.0-SNAPSHOT"
 git push origin master
 
 cd build
+# remove netty-socketio
+rm bluenimble-broker-$Release.0/lib/netty-socketio-1.7.17.jar
+
 tar -czf bluenimble-$Release.0-bin.tar.gz bluenimble-$Release.0
 tar -czf bluenimble-cli-$Release.0-bin.tar.gz bluenimble-cli-$Release.0
 tar -czf bluenimble-broker-$Release.0-bin.tar.gz bluenimble-broker-$Release.0
