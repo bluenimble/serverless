@@ -34,10 +34,8 @@ import com.bluenimble.platform.api.security.ApiConsumerResolver;
 import com.bluenimble.platform.api.security.ApiConsumerResolverAnnotation;
 import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.api.tracing.Tracer.Level;
-import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonException;
 import com.bluenimble.platform.json.JsonObject;
-import com.bluenimble.platform.json.JsonParser;
 import com.bluenimble.platform.server.security.impls.DefaultApiConsumer;
 
 @ApiConsumerResolverAnnotation (name = TokenConsumerResolver.Scheme)
@@ -186,42 +184,14 @@ public class TokenConsumerResolver implements ApiConsumerResolver {
 		
 		String sInfo 	= decrypted.substring (indexOfSpace + 1);
 		
-		JsonArray fields = Json.getArray (api.getSecurity (), Api.Spec.Security.Encrypt);
-		if (fields == null || fields.isEmpty ()) {
-			consumer.set (ApiConsumer.Fields.Id, sInfo);
-		} else {
-			JsonObject data = new JsonObject ();
-			String [] values = Lang.split (sInfo, Lang.SEMICOLON);
-			for (int i = 0; i < fields.count (); i++) {
-				if (i >= values.length) {
-					break;
-				}
-				String sValue = values [i];
-				if (Lang.BLANK.equals(sValue)) {
-					continue;
-				}
+		JsonObject data = null;
 				
-				String field = (String)fields.get (i);
-				
-				Object value = sValue;
-				
-				int indexOfGt = field.indexOf (Lang.GREATER);
-				if (indexOfGt > 0) {
-					field = field.substring (0, indexOfGt);
-					String converter = field.substring (indexOfGt + 1).trim ();
-					if (Lang.BLANK.equals (converter) || Casts.Json.equals (converter)) {
-						try {
-							value = JsonParser.parse (sValue);
-						} catch (JsonException ex) {
-							throw new ApiAuthenticationException ("Issue to read token value of " + field, ex);
-						}
-					}
-				}
-				Json.set (data, field, value);
-			}
-			
-			((DefaultApiConsumer)consumer).load (data.shrink ());
+		try {
+			data = new JsonObject (sInfo);
+		} catch (JsonException ex) {
+			throw new ApiAuthenticationException ("Can't decode token data", ex);
 		}
+		((DefaultApiConsumer)consumer).load (data.shrink ());
 		
 		consumer.set (ApiConsumer.Fields.Permissions, secrets.get (ApiConsumer.Fields.Permissions));
 

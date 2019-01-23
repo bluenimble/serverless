@@ -100,29 +100,17 @@ public class SecurityUtils {
 	}
 	
 	private static String salt (Api api, JsonObject entity) {
+		JsonObject subset = new JsonObject ();
+		
 		JsonArray fields = Json.getArray (api.getSecurity (), Api.Spec.Security.Encrypt);
 		if (fields == null || fields.isEmpty ()) {
-			return String.valueOf (entity.get (ApiConsumer.Fields.Id));
+			subset.set (ApiConsumer.Fields.Id, entity.get (ApiConsumer.Fields.Id));
 		}
-		StringBuilder sb = new StringBuilder ();
 		for (int i = 0; i < fields.count (); i++) {
-			String field = String.valueOf (fields.get (i));
-			int indexOfGt = field.indexOf (Lang.GREATER);
-			if (indexOfGt > 0) {
-				field = field.substring (0, indexOfGt);
-			}
-			Object v = Json.find (entity, Lang.split (field, Lang.DOT));
-			if (v != null) {
-				sb.append (String.valueOf (v));
-			}
-			if (i < (fields.count () - 1)) {
-				sb.append (Lang.SEMICOLON);
-			}
+			String property = String.valueOf (fields.get (i));
+			Json.set (subset, property, Json.find (entity, Lang.split (property, Lang.DOT)));
 		}
-		String salt = sb.toString ();
-		sb.setLength (0);
-		
-		return salt;
+		return subset.toString (0, true);
 	}
 
 	public static ApiOutput onFinish (Api api, ApiConsumer consumer, ApiRequest pRequest, final JsonObject onFinish, JsonObject account) 

@@ -61,7 +61,7 @@ public class HandlebarsTemplateEngine implements TemplateEngine {
 		
 		engine.registerHelper ("json", new Helper<JsonObject>() {
 			public CharSequence apply (JsonObject data, Options options) {
-				return new Handlebars.SafeString (data.toString ());
+				return new Handlebars.SafeString (data.toString (0, true));
 			}
 		});
 		engine.registerHelper ("truncate", new Helper<String>() {

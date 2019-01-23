@@ -67,6 +67,8 @@ public class RewriteApiRequestVisitor extends SelectiveApiRequestVisitor {
 		String Path		= "path";
 
 		String If 		= "if";
+		String Condition= "condition";
+		String Scope 	= "scope";
 		String Then 	= "then";
 		String Negate 	= "negate";
 		String Methods 	= "methods";
@@ -119,7 +121,7 @@ public class RewriteApiRequestVisitor extends SelectiveApiRequestVisitor {
 		}
 		
 		// process rules
-		String [] rewriten = applyRewrite (request, Placeholder.endpoint, oRewrite, request.getEndpoint (), endpoint);
+		String [] rewriten = applyRewrite (request, Placeholder.endpoint, oRewrite, endpoint);
 		if (rewriten != null) {
 			return rewriten;
 		}
@@ -140,7 +142,7 @@ public class RewriteApiRequestVisitor extends SelectiveApiRequestVisitor {
 		//server.tracer ().log (Level.Info, "Rewrite Spec {0}", oRewrite);
 
 		// process rules
-		String [] rewriten = applyRewrite (request, Placeholder.path, oRewrite, request.getPath (), path);
+		String [] rewriten = applyRewrite (request, Placeholder.path, oRewrite, path);
 		if (rewriten != null) {
 			return rewriten;
 		}
@@ -189,7 +191,7 @@ public class RewriteApiRequestVisitor extends SelectiveApiRequestVisitor {
 		return oTargetRewrite;
 	}
 	
-	private String [] applyRewrite (ApiRequest request, Placeholder placeholder, JsonObject oRewrite, String value, String [] aTarget) {
+	private String [] applyRewrite (ApiRequest request, Placeholder placeholder, JsonObject oRewrite, String [] aTarget) {
 		
 		//server.tracer ().log (Level.Info, "\tApply rewrite on ", placeholder);
 
@@ -202,25 +204,33 @@ public class RewriteApiRequestVisitor extends SelectiveApiRequestVisitor {
 
 		for (int i = 0; i < aRules.count (); i++) {
 			JsonObject oRule = (JsonObject)aRules.get (i);
-			aTarget = applyRule (request, placeholder, oRule, value, aTarget);
+			aTarget = applyRule (request, placeholder, oRule, aTarget);
 		}
 		
 		return aTarget;
 	}
 	
-	private String [] applyRule (ApiRequest request, Placeholder placeholder, JsonObject rule, String value, String [] aTarget) {
+	private String [] applyRule (ApiRequest request, Placeholder placeholder, JsonObject rule, String [] aTarget) {
 		
 		// check methods
 		JsonArray methods = Json.getArray (rule, Spec.Methods);
 		
-		if (!Json.isNullOrEmpty (methods)) {
-			if (!methods.contains (request.getVerb ().name ())) {
-				return aTarget;
-			}
+		if (!Json.isNullOrEmpty (methods) && !methods.contains (request.getVerb ().name ())) {
+			return aTarget;
 		}
 		
 		// check condition
-		String condition = Json.getString (rule, Spec.If);
+		Object oIf = rule.get (Spec.If);
+		
+		String condition = null;
+		Placeholder scope = placeholder;
+		
+		if (oIf instanceof JsonObject) {
+			condition = Json.getString ((JsonObject)oIf, Spec.Condition);
+			scope = Placeholder.valueOf (Json.getString ((JsonObject)oIf, Spec.Scope, placeholder.name ()));
+		} else {
+			condition = Json.getString (rule, Spec.If);
+		}		
 		
 		//server.tracer ().log (Level.Info, "\tApply rule with condition {0}", condition);
 
@@ -237,7 +247,8 @@ public class RewriteApiRequestVisitor extends SelectiveApiRequestVisitor {
 				RewriteConditionChecker checker = Checkers.get (checkerId);
 				server.tracer ().log (Level.Info, "\tRule checker {0}", checker);
 				
-				apply = (checker == null) || checker.check (value, conditionValue);
+				apply = (checker == null) || 
+						checker.check (scope.equals (Placeholder.endpoint) ? request.getEndpoint () : request.getPath (), conditionValue);
 				
 				if (Json.getBoolean (rule, Spec.Negate, false)) {
 					apply = !apply;

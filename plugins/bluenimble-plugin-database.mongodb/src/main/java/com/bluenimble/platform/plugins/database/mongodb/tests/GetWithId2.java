@@ -14,32 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.server.visitors.impls.actions;
+package com.bluenimble.platform.plugins.database.mongodb.tests;
 
-import com.bluenimble.platform.Lang;
-import com.bluenimble.platform.api.ApiRequest;
-import com.bluenimble.platform.api.impls.SelectiveApiRequestVisitor.Placeholder;
+import com.bluenimble.platform.db.Database;
+import com.bluenimble.platform.db.DatabaseException;
+import com.bluenimble.platform.db.DatabaseObject;
+import com.bluenimble.platform.reflect.beans.impls.DefaultBeanSerializer;
 
-public class AppendAction implements RewriteAction {
-
-	private static final long serialVersionUID = -2165577306745099563L;
-
-	public String [] apply (ApiRequest request, Placeholder placeholder, String [] aTarget, Object value, String conditionValue) {
+public class GetWithId2 {
+	
+	public static void main (String [] args) throws DatabaseException {
 		
-		if (value == null) {
-			return aTarget;
-		}
+		Database db = new DatabaseServer ().get ();
 		
-		String sValue = String.valueOf (value);
-		if (Lang.isNullOrEmpty (sValue)) {
-			return aTarget;
-		}
+		DatabaseObject dbo = db.get ("WithIds", "5c421a23ae3d51006759e821");
 		
-		if (aTarget == null) {
-			return Lang.split (sValue, Lang.SLASH);
-		}
+		System.out.println ("Object Id Class: " + dbo.getId ().getClass ());
 		
-		return Lang.add (aTarget, Lang.split (sValue, Lang.SLASH));
+		System.out.println (dbo.toJson (new DefaultBeanSerializer (2, 2)));
 		
 	}
 	

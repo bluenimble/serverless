@@ -642,57 +642,20 @@ public class Json {
 	}
 
     public static void main (String [] args) throws JsonException {
-		JsonObject data = new JsonObject ();
+		JsonObject user = new JsonObject ();
+		user.set ("id", "123");
+		user.set ("email", "yoo@gmail.com");
+		user.set ("org", new JsonObject ().set ("id", "org-1").set ("name", "org name"));
 		
-		JsonObject runtime = new JsonObject ();
-		runtime.set ("RootDirectory", "~/");
-		runtime.set ("space", "playground");
-		runtime.set ("owner", "22386dc6-ec1e-483b-a467-8719105978c7");
+		JsonObject subset = new JsonObject ();
 		
-		JsonObject object = new JsonObject ();
-		object.set ("id", "c77a327d-a3c0-44f7-9eae-fae1847a63f4");
-		object.set ("timestamp", "Tue Nov 13 19:42:58 PST 2018");
-		object.set ("length", "3891219");
+		String [] fields = { "id", "eail", "org.id", "org.name" };
 		
-		JsonObject metadata = new JsonObject ();
-		metadata.set ("name", "4k-wallpaper-beautiful-bloom-1263986.jpg");
-		metadata.set ("type", "image/jpeg");
-		metadata.set ("target", "UserAvatar");
-		metadata.set ("width", "5472");
-		metadata.set ("height", "3648");
-		metadata.set ("isSvg", "n");
+		for (int i = 0; i < fields.length; i++) {
+			Json.set (subset, fields [i], Json.find (user, Lang.split (fields [i], Lang.DOT)));
+		}
 		
-		data.set ("optimizer", 
-		new JsonObject ("{" +
-			
-			"\"sizes\": {" +
-				"\"sync\": \"200,400\"" +
-			"}," +
-			"\"prefix\": \"public\"" +
-		"}"));
-		
-
-		data.set ("runtime", runtime);
-		data.set ("object", object);
-		data.set ("metadata", metadata);
-
-		JsonObject spec = new JsonObject ("{ params: {" +
-			"payload: {" +
-				"\"age\": 5," +
-				"avatar: {" +
-					"id: \"[ object.id ]\"," +
-					"sizes: \"[= optimizer.sizes.sync.split(',') ]\"" +
-				"}" +
-			"}" +
-		"}}");
-		
-		System.out.println (
-			Json.template (
-				spec,
-				data, 
-				true
-			).toString (2, true)
-		);
+		System.out.println (subset);
 		
     }
     

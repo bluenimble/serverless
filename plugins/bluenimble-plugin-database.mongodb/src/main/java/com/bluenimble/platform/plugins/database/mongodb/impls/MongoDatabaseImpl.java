@@ -217,7 +217,7 @@ public class MongoDatabaseImpl implements Database {
 		}
 		
 		Object _id = id;
-		if (ObjectId.isValid (String.valueOf (id))) {
+		if (!(id instanceof ObjectId) && ObjectId.isValid (String.valueOf (id))) {
 			_id = new ObjectId (String.valueOf (id));
 		}
 		

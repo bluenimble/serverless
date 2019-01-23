@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
@@ -106,12 +107,26 @@ public class DatabaseObjectImpl implements DatabaseObject {
 
 	@Override
 	public void setId (Object id) {
+		if (id == null) {
+			return;
+		}
+		if (id instanceof String && ObjectId.isValid ((String)id)) {
+			document.append (ObjectIdKey, new ObjectId ((String)id));
+			return;
+		}
 		document.append (ObjectIdKey, id);
 	}
 
+	Object _getId () {
+		return document.get (ObjectIdKey);
+	}
 	@Override
 	public Object getId () {
-		return document.get (ObjectIdKey);
+		Object oid = _getId ();
+		if (oid instanceof ObjectId) {
+			return oid.toString ();
+		}
+		return oid;
 	}
 
 	@Override
@@ -287,7 +302,7 @@ public class DatabaseObjectImpl implements DatabaseObject {
 	}
 	
 	private void refresh () {
-		document = db._get (entity, getId ());
+		document = db._get (entity, _getId ());
 		partial = false;
 	}
 	
@@ -411,7 +426,7 @@ public class DatabaseObjectImpl implements DatabaseObject {
 	
 	@Override
 	public void delete () throws DatabaseException {
-		db.delete (entity, getId ());
+		db.delete (entity, _getId ());
 	}
 
 	@Override
@@ -430,12 +445,12 @@ public class DatabaseObjectImpl implements DatabaseObject {
 		// save refs first
 		if (refs != null) {
 			for (String ref : refs) {
-				DatabaseObject refObject = ((DatabaseObject)get (ref));
+				DatabaseObjectImpl refObject = ((DatabaseObjectImpl)get (ref));
 				refObject.save ();
 				
 				Document dRef = new Document ()
 					.append (ObjectEntityKey, refObject.entity ())
-					.append (ObjectIdKey, refObject.getId ());
+					.append (ObjectIdKey, refObject._getId ());
 				
 				if (persistent) {
 					markForUpdate (ref, dRef);
@@ -448,7 +463,7 @@ public class DatabaseObjectImpl implements DatabaseObject {
 		// save
 		if (persistent) {
 			if (update != null && !update.isEmpty ()) {
-				db.getInternal ().getCollection (entity).updateOne (eq (ObjectIdKey, getId ()), update);
+				db.getInternal ().getCollection (entity).updateOne (eq (ObjectIdKey, _getId ()), update);
 				update.clear ();
 			}
 		} else {

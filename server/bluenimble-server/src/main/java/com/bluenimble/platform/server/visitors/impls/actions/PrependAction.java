@@ -36,10 +36,10 @@ public class PrependAction implements RewriteAction {
 		}
 		
 		if (aTarget == null) {
-			return new String [] { sValue };
+			return Lang.split (sValue, Lang.SLASH);
 		}
 		
-		return Lang.add (new String [] { sValue }, aTarget);
+		return Lang.add (Lang.split (sValue, Lang.SLASH), aTarget);
 		
 	}
 	
