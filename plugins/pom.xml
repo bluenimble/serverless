@@ -66,6 +66,8 @@
 		
 		<module>bluenimble-plugin-indexer.elasticsearch</module>
 
+		<module>bluenimble-plugin-converter.pdf</module>
+
 		<module>bluenimble-plugin-sdks.aws</module>
 
 		<module>bluenimble-plugin-dev.playground</module>

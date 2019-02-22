@@ -463,11 +463,19 @@ public class DatabaseObjectImpl implements DatabaseObject {
 		// save
 		if (persistent) {
 			if (update != null && !update.isEmpty ()) {
-				db.getInternal ().getCollection (entity).updateOne (eq (ObjectIdKey, _getId ()), update);
+				if (db.session == null) {
+					db.getInternal ().getCollection (entity).updateOne (eq (ObjectIdKey, _getId ()), update);
+				} else {
+					db.getInternal ().getCollection (entity).updateOne (db.session, eq (ObjectIdKey, _getId ()), update);
+				}
 				update.clear ();
 			}
 		} else {
-			db.getInternal ().getCollection (entity).insertOne (document);
+			if (db.session == null) {
+				db.getInternal ().getCollection (entity).insertOne (document);
+			} else {
+				db.getInternal ().getCollection (entity).insertOne (db.session, document);
+			}
 			persistent = true;
 		}
 		

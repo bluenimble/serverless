@@ -83,7 +83,7 @@ public class MongoDatabaseImpl implements Database {
 
 	private static final long serialVersionUID = 3547537996525908902L;
 	
-	String IdPostfix = ".id";
+	private static final String IdPostfix = ".id";
 
 	interface Describe {
 		String Size 		= "size";
@@ -98,9 +98,11 @@ public class MongoDatabaseImpl implements Database {
 	}
 	
 	interface Tokens {
-		String Sort 	= "$sort";
-		String Skip 	= "$skip";
-		String Limit 	= "$limit";
+		String Sort 		= "$sort";
+		String Skip 		= "$skip";
+		String Limit 		= "$limit";
+		String WiredTiger 	= "wiredTiger";
+		String IndexDetails = "indexDetails";
 	}
 	
 	interface Proprietary {
@@ -128,12 +130,13 @@ public class MongoDatabaseImpl implements Database {
 	private MongoClient			client;
 	private MongoDatabase		db;
 	
-	private ClientSession 		session;
+	ClientSession 				session;
 	
 	private Tracer				tracer;
 	private boolean 			caseSensitive;
 	private boolean 			allowProprietaryAccess;
 	private boolean				isTransaction;
+	private boolean 			compileQuerySupported;
 	
 	public MongoDatabaseImpl (MongoClient client, String databaseName, Tracer tracer, boolean caseSensitive, boolean allowProprietaryAccess) {
 		this.client					= client;
@@ -156,8 +159,10 @@ public class MongoDatabaseImpl implements Database {
 	public MongoDatabaseImpl trx () {
 		if (!isTransaction) {
 			if (session == null) {
+				tracer.log (Tracer.Level.Info, "Start Session");
 				session = client.startSession ();
 			}
+			tracer.log (Tracer.Level.Info, "Start Transaction");
 			session.startTransaction (TransactionOptions.builder ().writeConcern (WriteConcern.MAJORITY).build ());
 		}
 		isTransaction = true;
@@ -183,6 +188,7 @@ public class MongoDatabaseImpl implements Database {
 		if (session == null) {
 			return this;
 		}
+		tracer.log (Tracer.Level.Info, "Rollback Transaction");
 		session.abortTransaction ();
 		return this;
 	}
@@ -221,7 +227,11 @@ public class MongoDatabaseImpl implements Database {
 			_id = new ObjectId (String.valueOf (id));
 		}
 		
-	    return collection.find (eq (DatabaseObjectImpl.ObjectIdKey, _id)).first ();
+		if (session == null) {
+		    return collection.find (eq (DatabaseObjectImpl.ObjectIdKey, _id)).first ();
+		} else {
+		    return collection.find (session, eq (DatabaseObjectImpl.ObjectIdKey, _id)).first ();
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -271,7 +281,13 @@ public class MongoDatabaseImpl implements Database {
 			return 0;
 		}
 		
-		DeleteResult result = collection.deleteOne (eq (DatabaseObjectImpl.ObjectIdKey, new ObjectId (String.valueOf (id))));
+		DeleteResult result = null;
+		
+		if (session == null) {
+			result = collection.deleteOne (eq (DatabaseObjectImpl.ObjectIdKey, new ObjectId (String.valueOf (id))));
+		} else {
+			result = collection.deleteOne (session, eq (DatabaseObjectImpl.ObjectIdKey, new ObjectId (String.valueOf (id))));
+		}
 		
 		return (int)result.getDeletedCount ();
 		
@@ -288,7 +304,11 @@ public class MongoDatabaseImpl implements Database {
 			return;
 		}
 		
-		collection.deleteMany (new Document ());
+		if (session == null) {
+			collection.deleteMany (new Document ());
+		} else {
+			collection.deleteMany (session, new Document ());
+		}
 	}
 
 	@Override
@@ -303,7 +323,11 @@ public class MongoDatabaseImpl implements Database {
 			return 0;
 		}
 		
-		return collection.countDocuments ();
+		if (session == null) {
+			return collection.countDocuments ();
+		} else {
+			return collection.countDocuments (session);
+		}
 	}
 
 	@Override
@@ -351,7 +375,13 @@ public class MongoDatabaseImpl implements Database {
 		
 		describe.set (Describe.Size, 0);
 		
-		MongoIterable<String> collections = db.listCollectionNames ();
+		MongoIterable<String> collections = null;
+				
+		if (session == null) {
+			collections = db.listCollectionNames ();
+		} else {
+			collections = db.listCollectionNames (session);
+		}
 		
 		if (collections == null) {
 			return describe;
@@ -365,11 +395,22 @@ public class MongoDatabaseImpl implements Database {
 		for (String collection : collections) {
 			JsonObject oEntity = new JsonObject ();
 			oEntity.set (Describe.Name, collection);
-			oEntity.putAll (db.runCommand (new Document (SpiDescribe.CollStats, collection)));
+			
+			Document callStats = null;
+			if (session == null) {
+				callStats = db.runCommand (new Document (SpiDescribe.CollStats, collection));
+			} else {
+				callStats = db.runCommand (session, new Document (SpiDescribe.CollStats, collection));
+			}
+			
+			// clean 
+			callStats.remove (Tokens.WiredTiger);
+			callStats.remove (Tokens.IndexDetails);
+			
+			oEntity.putAll (callStats);
 			aEntities.add (oEntity);
 			
 			size += Json.getLong (oEntity, SpiDescribe.CollStats, 0);
-			
 		}
 		
 		describe.set (Describe.Size, size);
@@ -474,7 +515,7 @@ public class MongoDatabaseImpl implements Database {
 		BasicDBObject 		mQuery 		= null;
 		Map<String, Object> bindings 	= query.bindings ();
 		
-		boolean cacheable = queryHasEntity && query.caching ().cache (Target.meta) && !Lang.isNullOrEmpty (query.name ());
+		boolean cacheable = compileQuerySupported && queryHasEntity && query.caching ().cache (Target.meta) && !Lang.isNullOrEmpty (query.name ());
 		
 		if (cacheable) {
 			mQuery 		= (BasicDBObject)QueriesCache.get (cacheKey);
@@ -482,7 +523,6 @@ public class MongoDatabaseImpl implements Database {
 		} 
 		
 		if (mQuery == null) {
-			
 			CompiledQuery cQuery = compile (entity, construct, query);
 			
 			mQuery 		= (BasicDBObject)cQuery.query ();
@@ -500,7 +540,12 @@ public class MongoDatabaseImpl implements Database {
 		tracer.log (Tracer.Level.Info, "    Bindings {0}", bindings);
 		
 		if (Query.Construct.select.equals (construct)) {
-			FindIterable<Document> cursor = db.getCollection (entity).find (mQuery);
+			FindIterable<Document> cursor = null;
+			if (session == null) {
+				cursor = db.getCollection (entity).find (mQuery);
+			} else {
+				cursor = db.getCollection (entity).find (session, mQuery);
+			}
 			
 			// start / skip
 			if (query.start () > 0) {
@@ -542,7 +587,11 @@ public class MongoDatabaseImpl implements Database {
 
 			return cursor;
 		} else if (Query.Construct.delete.equals (construct)) {
-			return db.getCollection (entity).deleteMany (mQuery);
+			if (session == null) {
+				return db.getCollection (entity).deleteMany (mQuery);
+			} else {
+				return db.getCollection (entity).deleteMany (session, mQuery);
+			}
 		}
 		
 		return null;
@@ -557,6 +606,7 @@ public class MongoDatabaseImpl implements Database {
 		mQuery = (BasicDBObject)mQuery.copy ();
 		
 		// TODO: apply bindings
+		// compileQuerySupported
 		
 		return mQuery;
 	}
@@ -590,51 +640,7 @@ public class MongoDatabaseImpl implements Database {
 			String f = fields.next ();
 			Object condOrFilter = where.get (f);
 			if (Condition.class.isAssignableFrom (condOrFilter.getClass ())) {
-				Condition condition = (Condition)condOrFilter;
-				String field = condition.field ();
-				
-				BasicDBObject criteria = (BasicDBObject)mq.get (field);
-				
-				boolean newlyCreated = false;
-				if (criteria == null) {
-					newlyCreated = true;
-					criteria = new BasicDBObject ();
-					mq.put (condition.field (), criteria);
-				}
-				
-				FilterAppender fa = FilterAppenders.get (condition.operator ());
-				if (fa == null) {
-					fa = DefaultFilterAppender;
-				}
-				
-				Object value = condition.value ();
-				
-				if (value instanceof LocalDateTime) {
-					LocalDateTime ldt = ((LocalDateTime)value);
-					value = Date.from (ldt.atZone (ZoneId.systemDefault ()).toInstant ());
-				}
-				
-				if ((field.equals (Database.Fields.Id) || field.endsWith (IdPostfix)) && ObjectId.isValid (String.valueOf (value))) {
-					value = new ObjectId (String.valueOf (value));
-				}
-				
-				BasicDBObject filter = fa.append (condition, criteria, value);
-				if (filter != null) {
-					mq.putAll ((Map<String, Object>)filter);
-					if (newlyCreated) {
-						mq.remove (field);
-					}
-				} else if (field.endsWith (IdPostfix)) {
-					mq.put (
-						field.substring (0, field.length () - IdPostfix.length ()) 
-						+ Lang.DOT + DatabaseObjectImpl.ObjectIdKey, 
-						criteria
-					);
-					mq.remove (field);
-				} else if (field.equals (Database.Fields.Id)) {
-					mq.put (DatabaseObjectImpl.ObjectIdKey, criteria);
-					mq.remove (field);
-				}
+				applyCondition (mq, (Condition)condOrFilter, query.bindings ());
 			}
 		}
 		
@@ -642,6 +648,63 @@ public class MongoDatabaseImpl implements Database {
 
 		return cQuery;
 		
+	}
+	
+	private void applyCondition (BasicDBObject mq, Condition condition, Map<String, Object> bindings) {
+		String field = condition.field ();
+		
+		BasicDBObject criteria = (BasicDBObject)mq.get (field);
+		
+		FilterAppender fa = FilterAppenders.get (condition.operator ());
+		if (fa == null) {
+			fa = DefaultFilterAppender;
+		}
+		
+		// check if it's in bindings
+		Object value = condition.value ();
+		if (value != null && value instanceof String) {
+			String sValue = (String)value;
+			if (sValue.startsWith (Lang.COLON)) {
+				Object candidateValue = bindings.get (sValue.substring (1));
+				if (candidateValue != null) {
+					value = candidateValue;
+				}
+			}
+		}
+		
+		boolean newlyCreated = false;
+		if (criteria == null) {
+			newlyCreated = true;
+			criteria = new BasicDBObject ();
+			mq.put (condition.field (), criteria);
+		}
+		
+		if (value instanceof LocalDateTime) {
+			LocalDateTime ldt = ((LocalDateTime)value);
+			value = Date.from (ldt.atZone (ZoneId.systemDefault ()).toInstant ());
+		}
+		
+		if ((field.equals (Database.Fields.Id) || field.endsWith (IdPostfix)) && ObjectId.isValid (String.valueOf (value))) {
+			value = new ObjectId (String.valueOf (value));
+		}
+		
+		BasicDBObject filter = fa.append (condition, criteria, value);
+		if (filter != null) {
+			mq.putAll ((Map<String, Object>)filter);
+			if (newlyCreated) {
+				mq.remove (field);
+			}
+		} else if (field.endsWith (IdPostfix)) {
+			mq.put (
+				field.substring (0, field.length () - IdPostfix.length ()) 
+				+ Lang.DOT + DatabaseObjectImpl.ObjectIdKey, 
+				criteria
+			);
+			mq.remove (field);
+		} else if (field.equals (Database.Fields.Id)) {
+			mq.put (DatabaseObjectImpl.ObjectIdKey, criteria);
+			mq.remove (field);
+		}
 	}
 	
 	private void checkNotNull (String entity) throws DatabaseException {

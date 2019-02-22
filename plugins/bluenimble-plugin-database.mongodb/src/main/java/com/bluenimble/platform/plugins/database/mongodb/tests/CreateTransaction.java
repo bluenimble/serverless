@@ -35,7 +35,7 @@ public class CreateTransaction {
 		JsonArray names = new JsonArray ();
 		names.add (new JsonObject ().set ("number", "4098776623").set ("weight", 40));
 		
-		employee.set ("name", "New-2");
+		employee.set ("name", "New-5");
 		employee.set ("age", 34);
 		employee.set ("active", true);
 		employee.set ("salary", 48.50);
@@ -43,7 +43,8 @@ public class CreateTransaction {
 		
 		employee.save ();
 		
-		db.commit ();
+		//db.commit ();
+		// db.rollback ();
 		
 		System.out.println (employee.toJson (null));
 		

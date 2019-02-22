@@ -1,0 +1,22 @@
+{
+	"namespace": "converter.pdf",
+	"name": "Pdf Converter - PdfBox",
+	
+	"spi": {
+		"class": "com.bluenimble.platform.plugins.converter.pdf.PdfConverterPlugin",
+		"properties": {
+			"version": "[version]",
+			"vendor": {
+				"name": "BlueNimble, Inc",
+				"links": [{
+					"Read More": "https://www.bluenimble.com"
+				}]
+			}
+		}
+	},
+	
+	"systemProperties": {
+		"org.apache.pdfbox.rendering.UsePureJavaCMYKConversion": "true",
+		"sun.java2d.cmm": "sun.java2d.cmm.kcms.KcmsServiceProvider"
+	}
+}

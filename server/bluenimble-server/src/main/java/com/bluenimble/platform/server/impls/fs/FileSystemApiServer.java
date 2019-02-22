@@ -521,14 +521,13 @@ public class FileSystemApiServer extends AbstractApiServer {
 		
 		descriptor = null;
 		
+		// resolve descriptor
 		File instanceFile = new File (installHome, ConfigKeys.InstanceConfig);
 		if (instanceFile.exists ()) {
 			descriptor = resolve ((JsonObject)Json.load (instanceFile), null);
 		} else {
 			descriptor = new JsonObject ();
 		}
-		
-		// resolve descriptor
 		
 		Lang.setDebugMode (Json.getBoolean (descriptor, ConfigKeys.Debug, false));
 		

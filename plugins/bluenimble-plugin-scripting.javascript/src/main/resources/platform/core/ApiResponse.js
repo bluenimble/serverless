@@ -47,12 +47,16 @@ var ApiResponse = function (proxy) {
 				status = 0;
 			}
 		}
-		if (status <= 0) {
-			return;
+		
+		var jstatus = status;
+		if (typeof status === 'number') {
+			if (status <= 0) {
+				status = 200;
+			}
+			jstatus = JC_HttpStatues.Map.get (status);
 		}
-		var jstatus = JC_HttpStatues.Map.get (status);
 		if (jstatus) {
-			this.status = status;
+			this.status = jstatus.getCode ();
 			proxy.setStatus (jstatus);
 		}
 	};
@@ -100,6 +104,22 @@ var ApiResponse = function (proxy) {
 	}
 	
 };
+
+ApiResponse.prototype.OK								= JC_ApiResponse.OK;
+ApiResponse.prototype.CREATED							= JC_ApiResponse.CREATED;
+ApiResponse.prototype.ACCEPTED							= JC_ApiResponse.ACCEPTED;
+ApiResponse.prototype.NON_AUTHORITATIVE_INFORMATION		= JC_ApiResponse.NON_AUTHORITATIVE_INFORMATION;
+ApiResponse.prototype.NO_CONTENT						= JC_ApiResponse.NO_CONTENT;
+ApiResponse.prototype.RESET_CONTENT						= JC_ApiResponse.RESET_CONTENT;
+ApiResponse.prototype.PARTIAL_CONTENT					= JC_ApiResponse.PARTIAL_CONTENT;
+ApiResponse.prototype.MULTI_STATUS						= JC_ApiResponse.MULTI_STATUS;
+ApiResponse.prototype.MULTIPLE_CHOICES					= JC_ApiResponse.MULTIPLE_CHOICES;
+ApiResponse.prototype.MOVED_PERMANENTLY					= JC_ApiResponse.MOVED_PERMANENTLY;
+ApiResponse.prototype.MOVED_TEMPORARILY					= JC_ApiResponse.MOVED_TEMPORARILY;
+ApiResponse.prototype.SEE_OTHER							= JC_ApiResponse.SEE_OTHER;
+ApiResponse.prototype.NOT_MODIFIED						= JC_ApiResponse.NOT_MODIFIED;
+ApiResponse.prototype.USE_PROXY							= JC_ApiResponse.USE_PROXY;
+ApiResponse.prototype.TEMPORARY_REDIRECT				= JC_ApiResponse.TEMPORARY_REDIRECT;
 
 ApiResponse.prototype.BAD_REQUEST						= JC_ApiResponse.BAD_REQUEST;
 ApiResponse.prototype.UNAUTHORIZED						= JC_ApiResponse.UNAUTHORIZED;
