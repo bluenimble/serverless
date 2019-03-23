@@ -59,7 +59,7 @@ public abstract class RunnableTool extends PojoTool implements Runnable {
 			for (String cmd : args) {
 				try {
 					writeln (Lang.BLANK);
-					processCommand (cmd);
+					processCommand (cmd, true);
 				} catch (IOException e) {
 					e.printStackTrace (System.out);
 				}
@@ -69,7 +69,7 @@ public abstract class RunnableTool extends PojoTool implements Runnable {
 
 		while (true) {
 			try {
-				int res = processCommand (null);
+				int res = processCommand (null, true);
 				if (res != UNTERMINATED) {
 					prompt ();
 				}

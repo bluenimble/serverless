@@ -9,7 +9,7 @@
 		
 			"request": {
 				"method": "delete",
-				"service": "[ keys.endpoints.management ]/db/[vars.database.provider]/entities/[arg.0]"
+				"service": "<% keys.endpoints.management %>/db/<% vars.database.provider %>/entities/<% arg.0 %>"
 			}
 		}
 	}

@@ -17,6 +17,12 @@
 
 // native imports 
 var Lang 			= native ('com.bluenimble.platform.Lang');
+var Json 			= native ('com.bluenimble.platform.Json');
+var File 			= native ('java.io.File');
+
+var FileUtils 		= native ('com.bluenimble.platform.FileUtils');
+var ArchiveUtils 	= native ('com.bluenimble.platform.ArchiveUtils');
+var OsCommander 	= native ('com.bluenimble.platform.icli.mgm.utils.OsCommander');
 
 /**
  *
@@ -26,27 +32,57 @@ var Lang 			= native ('com.bluenimble.platform.Lang');
 
 // check if valid command args
 if (typeof Command === 'undefined') {
-	throw 'missing command arguments. eg. install api [ApiNs required] [file or url of the api]';
+	throw 'missing command arguments. eg. install [binaries url]';
 }
 
-var tokens = Lang.split (Command, ' ', true);
+var uuid = Lang.UUID (30);
 
-if (tokens.length < 3) {
-	throw 'missing command arguments. eg. install api shopping file:///tmp/shopping.json or install api shopping https:///repo.bluenimble.com/shopping.json';
+var url = Command;
+
+var file = new File (Home, uuid + ".commands");
+var folder = new File (Home, uuid);
+folder.mkdir ();
+
+// load api spec
+OsCommander.execute (
+	Tool,
+	Home, 
+	"wget -O " + file.getAbsolutePath () + " " + url,
+	null
+);
+
+ArchiveUtils.decompress (file, folder, true);
+
+// copy scripts
+var newScripts = new File (folder, 'scripts');
+var allScripts = new File (Home, 'scripts');
+if (newScripts.exists ()) {
+	var contexts = newScripts.list ();
+	if (contexts && contexts.length > 0) {
+		FileUtils.copy (newScripts, allScripts, false);
+		Tool.proxy ().loadScripts (allScripts);
+	}
 }
 
-if (tokens [0] != 'api') {
-	throw 'wrong install target object. eg. install api ....';
+// copy commands
+var newCommands = new File (folder, 'commands');
+var allCommands = new File (Home, 'commands');
+if (newCommands.exists ()) {
+	var contexts = newCommands.list ();
+	if (contexts && contexts.length > 0) {
+		FileUtils.copy (newCommands, allCommands, false);
+		Tool.proxy ().loadCommands (allCommands);
+	}
 }
 
-var apiNs = tokens [1];
+var varsFile = new File (folder, "vars.json");
+if (varsFile.exists ()) {
+	var oVars = Json.load (varsFile);
+	Vars.putAll (oVars);
+	if (Vars ['cli.context']) {
+		Tool.command ('set cli.context ' + Vars ['cli.context']);
+		Tool.command ('ctx ' + Vars ['cli.context']);
+	}
+}
 
-var uri = tokens [2];
-
- // load api spec
-Tool.command ("json load " + apiNs + " " + uri);
-
-Tool.command ("create api " + apiNs);
-	
-Tool.command ("push api " + apiNs);
-
+FileUtils.delete (folder);

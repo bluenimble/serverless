@@ -17,8 +17,10 @@
 package com.bluenimble.platform.json;
 
 import java.io.InputStream;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -399,6 +401,11 @@ public class JsonObject extends JsonAbstractEntity implements Map {
 				} else if (child instanceof JsonArray) {
 					((JsonArray)child).write (emitter);
 				} else {
+					if (child instanceof Date) {
+						child = Lang.toUTC ((Date)child);
+					} else if (child instanceof Calendar) {
+						child = Lang.toUTC (((Calendar)child).getTime ());
+					}
 					emitter.onValue (this, key, child);
 				}
 				

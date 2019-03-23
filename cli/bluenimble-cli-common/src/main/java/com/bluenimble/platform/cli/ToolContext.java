@@ -25,6 +25,12 @@ public interface ToolContext extends Serializable {
 	String CommandName	= "CommandName";
 	String VARS 		= "vars";
 	
+	interface Spec {
+		String Alias 	= "alias";
+		String Name 	= "name";
+	}
+	
+	String 				getAlias ();
 	String 				getName ();
 	void 				put (String name, Object value);
 	Object 				get (String name);

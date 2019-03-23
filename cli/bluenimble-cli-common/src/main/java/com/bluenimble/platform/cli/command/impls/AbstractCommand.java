@@ -42,6 +42,9 @@ public abstract class AbstractCommand implements Command {
 	
 	protected String description;
 	protected String manual;
+	
+	protected boolean _private;
+	
 	protected Map<String, CommandOption> options;
 	
 	protected String context;
@@ -227,7 +230,7 @@ public abstract class AbstractCommand implements Command {
 
 	@Override
 	public boolean forContext (ToolContext ctx) {
-		return Tool.ROOT_CTX.equals (context) || ctx.getName ().equals (context);
+		return Tool.ROOT_CTX.equals (context) || ctx.getAlias ().equals (context);
 	}
 
 	@Override
@@ -244,12 +247,30 @@ public abstract class AbstractCommand implements Command {
 		return manual;
 	}
 	
+	@Override
+	public boolean isPrivate () {
+		return _private;
+	}
+	
 	public void setManual (String manual) {
 		this.manual = manual;
 	}
 	
 	public void setContext (String context) {
 		this.context = context;
+	}
+	
+	public void setDescription (String description) {
+		if (!Lang.isNullOrEmpty (description)) {
+			this.description = description;
+		}
+		if (Lang.isNullOrEmpty (this.description)) {
+			this.description = Lang.BLANK;
+		}
+	}
+	
+	public void setPrivate (boolean _private) {
+		this._private = _private;
 	}
 	
 }

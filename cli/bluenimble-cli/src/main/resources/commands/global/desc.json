@@ -11,7 +11,7 @@
 		
 			"request": {
 				"method": "get",
-				"service": "[ keys.endpoints.management ]/instance/[ arg.0 | 'info' ]"
+				"service": "<% keys.endpoints.management %>/instance/<% arg.0 | 'info' %>"
 			}
 		},
 		"space": {
@@ -24,7 +24,7 @@
 		
 			"request": {
 				"method": "get",
-				"service": "[ keys.endpoints.management ]/space/[ arg.0 | 'info' ]"
+				"service": "<% keys.endpoints.management %>/space/<% arg.0 | 'info' %>"
 			}
 		},
 		"api": {
@@ -39,7 +39,7 @@
 		
 			"request": {
 				"method": "get",
-				"service": "[ keys.endpoints.management ]/apis/[arg.0]/[ arg.1 | 'info' ]"
+				"service": "<% keys.endpoints.management %>/apis/<% arg.0 %>/<% arg.1 | 'info' %>"
 			}
 		},
 		"service": {
@@ -55,7 +55,7 @@
 		
 			"request": {
 				"method": "get",
-				"service": "[ keys.endpoints.management ]/apis/[arg.0]/services/[arg.1]/[arg.2]"
+				"service": "<% keys.endpoints.management %>/apis/<% arg.0 %>/services/<% arg.1 %>/<% arg.2 %>"
 			}
 		}
 	

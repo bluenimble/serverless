@@ -14,13 +14,13 @@
 		
 			"request": {
 				"method": "put",
-				"service": "[ keys.endpoints.management ]/storage/[vars.storage.provider]/objects/[arg.0]",
+				"service": "<% keys.endpoints.management %>/storage/<% vars.storage.provider %>/objects/<% arg.0 %>",
 				"contentType": "multipart/form-data",
 				"body": {
-					"payload": "[arg.1]"
+					"payload": "<% arg.1 %>"
 				},
 				"params": {
-					"append": "[args.2]"
+					"append": "<% arg.2 %>"
 				}
 			}
 		

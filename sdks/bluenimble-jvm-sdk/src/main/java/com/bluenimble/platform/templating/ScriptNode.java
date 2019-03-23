@@ -18,6 +18,7 @@ package com.bluenimble.platform.templating;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.function.Function;
 
 import javax.script.Bindings;
 import javax.script.Compilable;
@@ -32,11 +33,23 @@ public class ScriptNode implements Node {
 
 	private static final long serialVersionUID = 5233545719136265499L;
 	
+	private static final String JavaClass 	= "JavaClass";
+	private static final String Imports = 
+		"var native 	= function (className) { return JavaClass (className.split ('/').join ('.')).static; };" + 
+		"var Lang 		= native ('com.bluenimble.platform.Lang');" +
+		"var Base64 	= native ('com.bluenimble.platform.encoding.Base64');" +
+		"var System 	= native ('java.lang.System');" +
+		"var File 		= native ('java.io.File');" +
+		"var Pattern	= native ('java.util.regex.Pattern');" +
+		"var FileUtils 	= native ('com.bluenimble.platform.FileUtils');" +
+		"var Json 		= native ('com.bluenimble.platform.Json');";
+		
+	
 	private String text;
 	private CompiledScript script;
 	
 	public ScriptNode (ScriptEngine scriptEngine, String text) throws ScriptException {
-		script = ((Compilable)scriptEngine).compile (text);
+		script = ((Compilable)scriptEngine).compile (Imports + text);
 		this.text = text;
 	}
 	
@@ -46,18 +59,27 @@ public class ScriptNode implements Node {
 	}
 	
 	public Object eval (VariableResolver vr) throws ScriptException {
-		Map<String, Object> bindings = vr.bindings ();
-		if (bindings == null || bindings.isEmpty ()) {
-			return script.eval ();
-		} else {
-			Bindings sBindings = new SimpleBindings ();
-			Iterator<String> vars = bindings.keySet ().iterator ();
-			while (vars.hasNext ()) {
-				String var = vars.next ();
-				sBindings.put (var, bindings.get (var));
+		Bindings sBindings = new SimpleBindings ();
+		sBindings.put (JavaClass, new Function<String, Class<?>> () {
+			@Override
+			public Class<?> apply (String type) {
+				try {
+					return ScriptNode.class.getClassLoader ().loadClass (type);
+				} catch (ClassNotFoundException cnfe) {
+					throw new RuntimeException(cnfe);
+				}
 			}
-			return JsValueConverter.convert (script.eval (sBindings));
+		});
+
+		Map<String, Object> bindings = vr.bindings ();
+		
+		Iterator<String> vars = bindings.keySet ().iterator ();
+		while (vars.hasNext ()) {
+			String var = vars.next ();
+			sBindings.put (var, bindings.get (var));
 		}
+		
+		return JsValueConverter.convert (script.eval (sBindings));
 	}
 	
 }

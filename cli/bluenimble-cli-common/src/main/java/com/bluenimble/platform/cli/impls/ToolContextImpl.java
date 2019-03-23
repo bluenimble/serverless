@@ -21,31 +21,47 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.cli.ToolContext;
 
 public class ToolContextImpl implements ToolContext {
 	
 	private static final long serialVersionUID = 5298999852289339438L;
 	
+	private String alias;
 	private String name;
 	private Map<String, Object> cache = new HashMap<String, Object> ();
 	private String delimiter = "\n";
 
-	public ToolContextImpl (String name, String delimiter) {
+	public ToolContextImpl (String alias, String name, String delimiter) {
+		this.alias = alias;
 		this.name = name;
+		if (Lang.isNullOrEmpty (this.name)) {
+			this.name = this.alias;
+		}
 		this.delimiter = delimiter;
 		put (VARS, new TreeMap<String, Object> ());
 		
 	}
 
-	public ToolContextImpl (String name) {
-		this (name, "\n");
+	public ToolContextImpl (String alias, String name) {
+		this (alias, name, "\n");
+	}
+
+	public ToolContextImpl (String alias) {
+		this (alias, alias);
+	}
+
+	public String getAlias () {
+		return alias;
+	}
+	public void setAlias (String alias) {
+		this.alias = alias;
 	}
 
 	public String getName() {
 		return name;
 	}
-
 	public void setName (String name) {
 		this.name = name;
 	}

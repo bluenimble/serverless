@@ -12,10 +12,10 @@
 		
 			"request": {
 				"method": "put",
-				"service": "[ keys.endpoints.management ]/spaces/[arg.0]",
+				"service": "<% keys.endpoints.management %>/spaces/<% arg.0 %>",
 				"contentType": "application/json",
 				"body": {
-					"payload": "[arg.1]"
+					"payload": "<% arg.1 %>"
 				}
 			}
 		}

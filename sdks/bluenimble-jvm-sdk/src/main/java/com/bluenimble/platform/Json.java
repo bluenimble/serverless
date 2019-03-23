@@ -45,6 +45,14 @@ import com.bluenimble.platform.templating.impls.BasicVariableResolver;
 
 public class Json {
 
+	public static JsonObject object () {
+		return new JsonObject ();
+	}
+	
+	public static JsonArray array () {
+		return new JsonArray ();
+	}
+	
 	public static JsonObject load (String name) throws Exception {
 		return load (Thread.currentThread ().getContextClassLoader (), name);
 	}

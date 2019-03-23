@@ -12,13 +12,13 @@
 		
 			"request": {
 				"method": "put",
-				"service": "[ keys.endpoints.management ]/space/features",
+				"service": "<% keys.endpoints.management %>/space/features",
 				"contentType": "application/json",
 				"body": {
-					"payload": "[arg.0]"
+					"payload": "<% arg.0 %>"
 				},
 				"params": {
-					"overwrite": "[ arg.1 | 'false' ]"
+					"overwrite": "<% arg.1 | 'false' %>"
 				}
 			}
 		},
@@ -31,10 +31,10 @@
 		
 			"request": {
 				"method": "put",
-				"service": "[ keys.endpoints.management ]/space/secrets/[arg.0]",
+				"service": "<% keys.endpoints.management %>/space/secrets/<% arg.0 %>",
 				"contentType": "application/json",
 				"body": {
-					"payload": "[arg.1]"
+					"payload": "<% arg.1 %>"
 				}
 			}
 		}

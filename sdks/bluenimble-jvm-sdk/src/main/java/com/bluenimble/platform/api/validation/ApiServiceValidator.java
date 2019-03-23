@@ -27,6 +27,7 @@ public interface ApiServiceValidator extends Serializable {
 
 	interface Spec {
 		
+		String Name			= "name";
 		String Title 		= "title";
 		String Type 		= "type";
 		String Value		= "value";
@@ -60,19 +61,27 @@ public interface ApiServiceValidator extends Serializable {
 		String Shrink		= "shrink";
 		String Cast			= "cast";
 		
+		String Transforms	= "transforms";
+		
+		String Spec			= "spec";
+		
 		String Exclusive	= "!";
 
 	}
 
-	void 			validate (Api api, JsonObject spec, ApiConsumer consumer, ApiRequest request) 
+	void 				validate (Api api, JsonObject spec, ApiConsumer consumer, ApiRequest request) 
 		throws ApiServiceValidatorException;
 	
-	void 			addTypeValidator (String name, TypeValidator validator);
+	void 				addTypeValidator (String name, TypeValidator validator);
 	
-	TypeValidator 	getTypeValidator (String name);
+	TypeValidator 		getTypeValidator (String name);
 	
-	String 			getMessage (Api api, String lang, String key, Object... args);
+	void 				addValueTransformer (String name, ValueTransformer validator);
 	
-	boolean			isCustomType (String type);
+	ValueTransformer	getValueTransformer (String name);
+	
+	String 				getMessage (Api api, String lang, String key, Object... args);
+	
+	boolean				isCustomType (String type);
 
 }

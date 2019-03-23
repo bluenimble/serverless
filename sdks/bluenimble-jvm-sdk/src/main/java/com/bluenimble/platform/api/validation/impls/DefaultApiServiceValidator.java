@@ -31,6 +31,13 @@ import com.bluenimble.platform.api.validation.ApiServiceValidator;
 import com.bluenimble.platform.api.validation.ApiServiceValidatorException;
 import com.bluenimble.platform.api.validation.FieldType;
 import com.bluenimble.platform.api.validation.TypeValidator;
+import com.bluenimble.platform.api.validation.ValueTransformer;
+import com.bluenimble.platform.api.validation.impls.transformers.AppendValueTransformer;
+import com.bluenimble.platform.api.validation.impls.transformers.LowerCaseValueTransformer;
+import com.bluenimble.platform.api.validation.impls.transformers.PrependValueTransformer;
+import com.bluenimble.platform.api.validation.impls.transformers.ReplaceValueTransformer;
+import com.bluenimble.platform.api.validation.impls.transformers.TruncateValueTransformer;
+import com.bluenimble.platform.api.validation.impls.transformers.UpperCaseValueTransformer;
 import com.bluenimble.platform.api.validation.impls.types.AlphaNumericValidator;
 import com.bluenimble.platform.api.validation.impls.types.ArrayValidator;
 import com.bluenimble.platform.api.validation.impls.types.Base64Validator;
@@ -53,6 +60,7 @@ import com.bluenimble.platform.api.validation.impls.types.StreamValidator;
 import com.bluenimble.platform.api.validation.impls.types.StringValidator;
 import com.bluenimble.platform.api.validation.impls.types.UUIDValidator;
 import com.bluenimble.platform.api.validation.impls.types.UrlValidator;
+import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 
 public class DefaultApiServiceValidator implements ApiServiceValidator {
@@ -71,9 +79,19 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 	
 	private static final String DefaultScope = "p";
 	
-	private Map<String, TypeValidator> validators = new HashMap<String, TypeValidator> ();
+	private Map<String, TypeValidator> validators 		= new HashMap<String, TypeValidator> ();
+	
+	private Map<String, ValueTransformer> transformers 	= new HashMap<String, ValueTransformer> ();
 	
 	public DefaultApiServiceValidator () {
+		// transformers
+		addValueTransformer (ValueTransformer.Default.LowerCase, 	new LowerCaseValueTransformer ());
+		addValueTransformer (ValueTransformer.Default.UpperCase, 	new UpperCaseValueTransformer ());
+		addValueTransformer (ValueTransformer.Default.Append, 		new AppendValueTransformer ());
+		addValueTransformer (ValueTransformer.Default.Prepend, 		new PrependValueTransformer ());
+		addValueTransformer (ValueTransformer.Default.Truncate, 	new TruncateValueTransformer ());
+		addValueTransformer (ValueTransformer.Default.Replace, 		new ReplaceValueTransformer ());
+
 		// validators
 		addTypeValidator (FieldType.String.toLowerCase (), 			new StringValidator ());
 		addTypeValidator (FieldType.AlphaNumeric.toLowerCase (), 	new AlphaNumericValidator ());
@@ -163,6 +181,19 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 			String label = getLabel (name, fSpec.getString (Spec.Title));
 			
 			Object value = valueOf (name, fSpec, request, consumer, data);
+			
+			JsonArray transforms = Json.getArray (fSpec, Spec.Transforms);
+			if (!Json.isNullOrEmpty (transforms)) {
+				for (int i = 0; i < transforms.count (); i++) {
+					JsonObject oTransform = (JsonObject)transforms.get (i);
+					String transformName = Json.getString (oTransform, Spec.Name);
+					ValueTransformer t = getValueTransformer (transformName);
+					if (t == null) {
+						continue;
+					}
+					value = t.transform (this, Json.getObject (oTransform, Spec.Spec), value);
+				}
+			}
 			
 			Object message = validator.validate (
 				context,
@@ -303,6 +334,16 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 		}
 		
 		return Json.find ((JsonObject)value, Lang.moveLeft (accessors, 1));
+	}
+
+	@Override
+	public void addValueTransformer (String name, ValueTransformer validator) {
+		transformers.put (name.toLowerCase (), validator);
+	}
+
+	@Override
+	public ValueTransformer getValueTransformer (String name) {
+		return transformers.get (name.toLowerCase ());
 	}
 
 }

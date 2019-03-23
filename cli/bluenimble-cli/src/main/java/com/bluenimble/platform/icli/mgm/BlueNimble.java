@@ -37,7 +37,7 @@ import com.bluenimble.platform.cli.Tool;
 import com.bluenimble.platform.cli.ToolClient;
 import com.bluenimble.platform.cli.ToolContext;
 import com.bluenimble.platform.cli.ToolStartupException;
-import com.bluenimble.platform.cli.command.Command;
+import com.bluenimble.platform.cli.command.impls.AbstractCommand;
 import com.bluenimble.platform.cli.impls.JLineTool;
 import com.bluenimble.platform.cli.impls.ToolContextImpl;
 import com.bluenimble.platform.encoding.Base64;
@@ -74,6 +74,8 @@ public class BlueNimble extends JLineTool {
 	public static final String GlobalContext	= "global";
 	private static final String DefaultParaphrase = "serverless";
 	
+	private static final String ContextFile = ".context";
+	
 	public interface DefaultVars {
 		String Endpoint 		= "endpoint";
 		String StorageProvider 	= "storage.provider";
@@ -100,11 +102,19 @@ public class BlueNimble extends JLineTool {
 		
 		String MediaMapping		= "remote.media.mapping";
 		
+		String CliContext		= "cli.context";
+		
 	}
 	
 	public interface SpecLangs {
 		String Json = "json";
 		String Yaml = "yaml";
+	}
+	
+	public interface ContextSpec {
+		String Commands		= "commands";
+		String Private 		= "private";
+		String Description 	= "description";
 	}
 	
 	public static File 			Home;
@@ -206,23 +216,25 @@ public class BlueNimble extends JLineTool {
 		
 		try {
 			Json.store (Config, ConfigFile);
+		
+			// load commands
+			loadCommands (new File (Home, "commands"));
+			loadCommands (new File (Work, "commands"));
+			
+			// load scripts
+			loadScripts (new File (Home, "scripts"));
+			loadScripts (new File (Work, "scripts"));
+
 		} catch (Exception e) {
 			throw new ToolStartupException (e.getMessage (), e);
 		}
-		
-		// load commands
-		loadCommands (new File (Home, "commands"));
-		loadCommands (new File (Work, "commands"));
-		
-		// load scripts
-		loadScripts (new File (Home, "scripts"));
-		loadScripts (new File (Work, "scripts"));
 		
 		try {
 			new KeysMonitor (1000).start (BlueNimble.this);
 		} catch (Exception e) {
 			System.out.println ("ERROR: Can't start monitors. Cause: " + e.getMessage ());
 		}
+		
 	}
 	
 	private static void loadApis (File workspace) throws Exception {
@@ -331,6 +343,16 @@ public class BlueNimble extends JLineTool {
 			printer ().content ("__PS__ GREEN:Current workspace", sWorkspace);
 		}
 		printer ().content ("__PS__ GREEN:Keys folder", keysFolder ().getAbsolutePath ());
+		
+		@SuppressWarnings("unchecked")
+		Map<String, Object> vars = (Map<String, Object>)getContext (Tool.ROOT_CTX).get (ToolContext.VARS);
+		if (vars.containsKey (DefaultVars.CliContext)) {
+			try {
+				processCommand ("ctx " + String.valueOf (vars.get (DefaultVars.CliContext)), true);
+			} catch (IOException e) {
+				// IGNORE
+			}
+		}
 	}
 	
 	public static void saveConfig () throws IOException {
@@ -380,7 +402,7 @@ public class BlueNimble extends JLineTool {
 		return keysFolder;
 	}
 	
-	private void loadCommands (File commands) {
+	public void loadCommands (File commands) throws Exception {
 		if (!commands.exists () || !commands.isDirectory ()) {
 			commands.mkdir ();
 			return;
@@ -392,26 +414,36 @@ public class BlueNimble extends JLineTool {
 			}
 		});
 		for (File fld : folders) {
+			JsonObject oContext = null;
 			String ctx = fld.getName ();
 			if (GlobalContext.equals (ctx)) {
 				ctx = Tool.ROOT_CTX;
 			} else {
+				File contextFile = new File (fld, ContextFile);
+				if (contextFile.exists ()) {
+					oContext = Json.load (contextFile);
+				}
+				ctx = Json.getString (oContext, ToolContext.Spec.Alias, ctx);
 				ToolContext toolContext = getContext (ctx);
 				if (toolContext == null) {
-					addContext (new ToolContextImpl (ctx));
+					addContext (new ToolContextImpl (ctx, Json.getString (oContext, ToolContext.Spec.Name)));
 				}
 			}
 			File [] files = fld.listFiles (new FileFilter () {
 				@Override
 				public boolean accept (File f) {
-					return f.isFile () && f.getName ().endsWith (".json");
+					return f.isFile () && f.getName ().endsWith (".json") && !f.getName ().equals (ContextFile);
 				}
 			});
 			String name = null;
 			for (File f : files) {
 				name = f.getName ().substring (0, f.getName ().indexOf (JsonExt));
+				JsonObject oCommand = Json.getObject (Json.getObject (oContext, ContextSpec.Commands), name);
 				try {
-					addCommand (new RemoteCommand (ctx, name, Json.load (f)));
+					AbstractCommand c = new RemoteCommand (ctx, name, Json.load (f));
+					c.setDescription (Json.getString (oCommand, ContextSpec.Description));
+					c.setPrivate (Json.getBoolean (oCommand, ContextSpec.Private, false));
+					addCommand (c);
 				} catch (Exception e) {
 					System.out.println ("ERROR: Can't load command " + name + ". Cause: " + e.getMessage ());
 				}
@@ -419,11 +451,12 @@ public class BlueNimble extends JLineTool {
 		}
 	}
 	
-	private void loadScripts (File scripts) {
+	public void loadScripts (File scripts) throws Exception {
 		if (!scripts.exists () || !scripts.isDirectory ()) {
 			scripts.mkdir ();
 			return;
 		}
+		
 		File [] folders = scripts.listFiles (new FileFilter () {
 			@Override
 			public boolean accept (File f) {
@@ -431,13 +464,19 @@ public class BlueNimble extends JLineTool {
 			}
 		});
 		for (File fld : folders) {
+			JsonObject oContext = null;
 			String ctx = fld.getName ();
 			if (GlobalContext.equals (ctx)) {
 				ctx = Tool.ROOT_CTX;
 			} else {
+				File contextFile = new File (fld, ContextFile);
+				if (contextFile.exists ()) {
+					oContext = Json.load (contextFile);
+				}
+				ctx = Json.getString (oContext, ToolContext.Spec.Alias, ctx);
 				ToolContext toolContext = getContext (ctx);
 				if (toolContext == null) {
-					addContext (new ToolContextImpl (ctx));
+					addContext (new ToolContextImpl (ctx, Json.getString (oContext, ToolContext.Spec.Name)));
 				}
 			}
 			File [] files = fld.listFiles (new FileFilter () {
@@ -449,13 +488,16 @@ public class BlueNimble extends JLineTool {
 			String name = null;
 			for (File f : files) {
 				name = f.getName ().substring (0, f.getName ().lastIndexOf (Lang.DOT));
+				JsonObject oCommand = Json.getObject (Json.getObject (oContext, ContextSpec.Commands), name);
 				try {
-					Command c = null;
+					AbstractCommand c = null;
 					if (f.getName ().endsWith (MacroExt)) {
 						c = new MacroSourceCommand (ctx, name, f);
 					} else if (f.getName ().endsWith (ScriptExt)) {
 						c = new ScriptSourceCommand (ctx, name, f);
 					}
+					c.setDescription (Json.getString (oCommand, ContextSpec.Description, Lang.BLANK));
+					c.setPrivate (Json.getBoolean (oCommand, ContextSpec.Private, false));
 					if (c != null) {
 						addCommand (c);
 					}

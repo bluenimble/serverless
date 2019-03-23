@@ -73,7 +73,7 @@ public abstract class AbstractTool implements Tool {
 	public static final String CMD_OUT 					= "cmd.out";
 	public static final String CMD_OUT_FILE 			= "cmd.out.file";
 	
-	private static final ToolContext ROOT_CONTEXT = new ToolContextImpl (ROOT_CTX, "\n");
+	private static final ToolContext ROOT_CONTEXT = new ToolContextImpl (ROOT_CTX);
 	
 	private RuningCommand runingCommand;
 		
@@ -127,13 +127,13 @@ public abstract class AbstractTool implements Tool {
 		if (args != null && args.length > 0) {
 			for (int i = 0; i < args.length; i++) {
 				try {
-					processCommand (args [i]);
+					processCommand (args [i], true);
 				} catch (IOException e) {
 					throw new ToolStartupException (e);
 				}
 			}
 			try {
-				processCommand ("quit");
+				processCommand ("quit", true);
 			} catch (IOException e) {
 				throw new ToolStartupException (e);
 			}
@@ -181,7 +181,7 @@ public abstract class AbstractTool implements Tool {
 					writeln (command.describe ());
 				}
 			} else {
-				if (currentContext.getName ().equals (command.getContext ())) {
+				if (currentContext.getAlias ().equals (command.getContext ())) {
 					writeln (command.describe ());
 				}
 			}
@@ -190,7 +190,7 @@ public abstract class AbstractTool implements Tool {
 	
 	@SuppressWarnings({ "unchecked" })
 	@Override
-	public int processCommand (String cmdLine) throws IOException {
+	public int processCommand (String cmdLine, boolean notIfPrivate) throws IOException {
 		
 		if (!isAllowed ()) {
 			writeln ("not allowed to write commands.");
@@ -232,9 +232,9 @@ public abstract class AbstractTool implements Tool {
 		if (cmdLine.indexOf (COMMAND_CHAINING_TOKEN) > 0) {
 			String [] aCommands = Lang.split (cmdLine, COMMAND_CHAINING_TOKEN, true);
 			for (String cmd : aCommands) {
-				processCommand (cmd);
+				processCommand (cmd, notIfPrivate);
 			}
-			return MULTIPLE; 
+			return MULTIPLE;
 		}
 		
 		final Map<String, Object> vars = (Map<String, Object>)getContext (Tool.ROOT_CTX).get (ToolContext.VARS);
@@ -295,6 +295,11 @@ public abstract class AbstractTool implements Tool {
 		
 		if (cmd == null) {
 			printer.error ("command '" + commandName + "' not found. Type in 'help' to list all available commands");
+			return FAILURE;
+		}
+		
+		if (cmd.isPrivate () && notIfPrivate) {
+			printer.error ("Command [" + commandName + "] not found");
 			return FAILURE;
 		}
 		

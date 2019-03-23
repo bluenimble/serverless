@@ -51,7 +51,7 @@ public class MacroSourceCommand extends AbstractCommand {
 	
 	private static final String JavaClass 	= "JavaClass";
 
-	private static final String Native 		= "var native = function (className) { return JavaClass (className.split ('/').join ('.')).static; };";
+	public static final String Native 		= "var native = function (className) { return JavaClass (className.split ('/').join ('.')).static; };";
 
     private static final ScriptEngine Engine = new ScriptEngineManager ().getEngineByName ("JavaScript");
 

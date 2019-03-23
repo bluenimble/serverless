@@ -91,6 +91,8 @@ public class RemoteCommand extends PrefixedCommand {
 				String Token 	= "token";
 				String By 		= "by";
 			}
+			String Copy 		= "copy";
+			String Command 		= "command";
 		}
 	}
 	
@@ -106,6 +108,28 @@ public class RemoteCommand extends PrefixedCommand {
 		
 		this.source 		= source;
 
+		JsonArray aArgs = Json.getArray (source, RemoteCommand.Spec.Args);
+		if (!Json.isNullOrEmpty (aArgs)) {
+			args = new Arg [aArgs.count ()];
+			for (int i = 0; i < aArgs.count (); i++) {
+				final JsonObject oArg = (JsonObject)aArgs.get (i);
+				args [i] = new AbstractArg () {
+					@Override
+					public String name () {
+						return Json.getString (oArg, RemoteCommand.Spec.Arg.Name);
+					}
+					@Override
+					public String desc () {
+						return Json.getString (oArg, RemoteCommand.Spec.Arg.Desc);
+					}
+					@Override
+					public boolean required () {
+						return Json.getBoolean (oArg, RemoteCommand.Spec.Arg.Required, true);
+					}
+				};
+			}
+		}
+		
 		JsonObject handlers = Json.getObject (source, Spec.Handlers);
 		if (handlers == null || handlers.isEmpty ()) {
 			return;
@@ -116,31 +140,6 @@ public class RemoteCommand extends PrefixedCommand {
 			addHandler (key, new RemoteCommandHandler (key, Json.getObject (handlers, key)));
 		}
 		
-		JsonArray aArgs = Json.getArray (source, RemoteCommand.Spec.Args);
-		if (aArgs == null || aArgs.isEmpty ()) {
-			return;
-		}
-		
-		args = new Arg [aArgs.count ()];
-		
-		for (int i = 0; i < aArgs.count (); i++) {
-			final JsonObject oArg = (JsonObject)aArgs.get (i);
-			args [i] = new AbstractArg () {
-				@Override
-				public String name () {
-					return Json.getString (oArg, RemoteCommand.Spec.Arg.Name);
-				}
-				@Override
-				public String desc () {
-					return Json.getString (oArg, RemoteCommand.Spec.Arg.Desc);
-				}
-				@Override
-				public boolean required () {
-					return Json.getBoolean (oArg, RemoteCommand.Spec.Arg.Required, true);
-				}
-			};
-		}
-
 	}
 
 	@Override
@@ -161,6 +160,7 @@ public class RemoteCommand extends PrefixedCommand {
 			if (aArgs != null && aArgs.length > 0) {
 				for (int i = 0; i < aArgs.length; i++) {
 					data.put (String.valueOf (i), aArgs [i]);
+					data.put (args [i].name (), aArgs [i]);
 				}
 			}
 			return RemoteUtils.processRequest (tool, source, data);

@@ -43,15 +43,15 @@ public class ChangeContextCommand extends AbstractCommand {
 			return new DefaultCommandResult (CommandResult.KO, "Specify a valid context name");
 		}
 		
-		String contextName = (String)co.getArg (0);
+		String contextAlias = (String)co.getArg (0);
 		
-		contextName = contextName.toLowerCase ();
-		ToolContext ctx = tool.getContext (contextName);
+		contextAlias = contextAlias.toLowerCase ();
+		ToolContext ctx = tool.getContext (contextAlias);
 		if (ctx == null) {
-			return new DefaultCommandResult (CommandResult.KO, "Context [" + contextName + "] not registered with this tool");
+			return new DefaultCommandResult (CommandResult.KO, "Context [" + contextAlias + "] not registered with this tool");
 		}
 		tool.changeContext (ctx);
-		return new DefaultCommandResult (CommandResult.OK, "Context changed to [" + contextName + "]");
+		return new DefaultCommandResult (CommandResult.OK, "Context changed to [" + ctx.getName () + "]");
 	}
 
 }

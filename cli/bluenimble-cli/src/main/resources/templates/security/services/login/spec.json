@@ -9,7 +9,12 @@
 			"Content-Type": { "scope": "h", "enum": [ "application/json" ] },
 			"payload": { "type": "Credentials",
 				"fields": {
-					"user": 	{ "title": "Email" }, 
+					"user": 	{ 
+						"title": "Email", 
+						"transforms": [{
+							"name": "lowercase"
+						}] 
+					}, 
 					"password": { "secret": "true", "title": "Password" }
 				}
 			}

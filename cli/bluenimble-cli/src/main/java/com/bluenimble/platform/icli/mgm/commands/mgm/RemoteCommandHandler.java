@@ -78,6 +78,7 @@ public class RemoteCommandHandler implements CommandHandler {
 		if (args != null && args.length > 0) {
 			for (int i = 0; i < args.length; i++) {
 				options.put (String.valueOf (i), args [i]);
+				options.put (this.args [i].name (), args [i]);
 			}
 		}
 		

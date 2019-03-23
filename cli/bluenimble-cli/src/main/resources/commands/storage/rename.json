@@ -12,9 +12,9 @@
 		
 			"request": {
 				"method": "put",
-				"service": "[ keys.endpoints.management ]/storage/[vars.storage.provider]/objects/[arg.0]/rename",
+				"service": "<% keys.endpoints.management %>/storage/<% vars.storage.provider %>/objects/<% arg.0 %>/rename",
 				"params": {
-					"name": "[arg.1]"
+					"name": "<% arg.1 %>"
 				}
 			}
 		

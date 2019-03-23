@@ -10,7 +10,7 @@
 		
 			"request": {
 				"method": "post",
-				"service": "[ keys.endpoints.management ]/spaces/[arg.0]",
+				"service": "<% keys.endpoints.management %>/spaces/<% arg.0 %>"
 			}
 		}
 	}

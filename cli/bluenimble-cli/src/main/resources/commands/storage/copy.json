@@ -14,10 +14,10 @@
 		
 			"request": {
 				"method": "put",
-				"service": "[ keys.endpoints.management ]/storage/[vars.storage.provider]/objects/[arg.0]/copy",
+				"service": "<% keys.endpoints.management %>/storage/<% vars.storage.provider %>/objects/<% arg.0 %>/copy",
 				"params": {
-					"folder": "[arg.1]",
-					"move": "[arg.2]"
+					"folder": "<% arg.1 %>",
+					"move": "<% arg.2 %>"
 				}
 			}
 		}

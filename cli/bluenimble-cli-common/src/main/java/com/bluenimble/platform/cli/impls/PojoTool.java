@@ -48,7 +48,7 @@ public abstract class PojoTool extends AbstractTool {
 	private static final long serialVersionUID = -5818667146115900912L;
 
 	protected Map<String, String> synonyms = new HashMap<String, String> (); 
-	protected Map<String, Command> commands = new LinkedHashMap<String, Command> (); 
+	protected Map<String, Command> commands = new LinkedHashMap<String, Command> ();
 	protected Map<String, ToolContext> availableContexts;
 	
 	protected Map<String, String> manuals = new HashMap<String, String> (); 
@@ -84,7 +84,7 @@ public abstract class PojoTool extends AbstractTool {
 		if (commandName == null) {
 			return null;
 		}
-		String commandKey = currentContext ().getName () + Lang.SLASH + commandName.toLowerCase ();
+		String commandKey = currentContext ().getAlias () + Lang.SLASH + commandName.toLowerCase ();
 		Command command = commands.get (commandKey);
 		if (command == null) {
 			command = commands.get (ROOT_CTX + Lang.SLASH + commandName.toLowerCase ());
@@ -144,13 +144,13 @@ public abstract class PojoTool extends AbstractTool {
 
 	@Override
 	public void addContext (ToolContext ctx) {
-		if (ctx == null || ctx.getName () == null) {
+		if (ctx == null || ctx.getAlias () == null) {
 			return;
 		}
 		if (availableContexts == null) {
 			availableContexts = new HashMap<String, ToolContext> (); 
 		}
-		availableContexts.put (ctx.getName().toLowerCase (), ctx);
+		availableContexts.put (ctx.getAlias ().toLowerCase (), ctx);
 	}
 
 	public String getCommandForSynonym (String synonym) {

@@ -17,8 +17,10 @@
 package com.bluenimble.platform.json;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -280,6 +282,11 @@ public class JsonArray extends JsonAbstractEntity implements List<Object> {
 				} else if (child instanceof JsonArray) {
 					((JsonArray)child).write (emitter);
 				} else {
+					if (child instanceof Date) {
+						child = Lang.toUTC ((Date)child);
+					} else if (child instanceof Calendar) {
+						child = Lang.toUTC (((Calendar)child).getTime ());
+					}
 					emitter.onValue (a, null, child);
 				}
 				

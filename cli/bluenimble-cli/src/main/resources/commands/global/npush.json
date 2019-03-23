@@ -12,13 +12,13 @@
 			
 			"request": {
 				"method": "post",
-				"service": "[ keys.endpoints.management ]/apis",
+				"service": "<% keys.endpoints.management %>/apis",
 				"contentType": "multipart/form-data",
 				"body": {
-					"payload": "[ vars.api.folder | bn.workspace ]/[arg.0]"
+					"payload": "<% vars.api.folder | bn.workspace %>/<% arg.0 %>"
 				},
 				"params": {
-					"start": "[ arg.1 | 'true' ]"
+					"start": "<% arg.1 | 'true' %>"
 				}
 			}
 		}

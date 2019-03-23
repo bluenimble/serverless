@@ -79,8 +79,7 @@ public class DatabaseObjectImpl implements DatabaseObject {
 	public DatabaseObjectImpl (MongoDatabaseImpl db, String entity, Document document) {
 		this.db 		= db;
 		this.entity 	= entity;
-		this.document 	= document;
-		this.persistent = true;
+		this.document (document);
 	}
 
 	public DatabaseObjectImpl (MongoDatabaseImpl db, String entity, Object id, boolean partial) {
@@ -117,9 +116,6 @@ public class DatabaseObjectImpl implements DatabaseObject {
 		document.append (ObjectIdKey, id);
 	}
 
-	Object _getId () {
-		return document.get (ObjectIdKey);
-	}
 	@Override
 	public Object getId () {
 		Object oid = _getId ();
@@ -252,15 +248,16 @@ public class DatabaseObjectImpl implements DatabaseObject {
 		
 		return v;
 	}
-
-	/*
-	@Override
-	public List<DatabaseObject> find (String field, Query query, Visitor visitor) throws DatabaseException {
-		// TODO
-		return null;
-	}
-	*/
 	
+	public void document (Document document) {
+		this.document = document;
+		this.persistent = true;
+	}
+
+	Object _getId () {
+		return document.get (ObjectIdKey);
+	}
+
 	private Object getSetRelationship (String key, Object v) {
 		
 		if (!Document.class.isAssignableFrom (v.getClass ())) {
@@ -553,7 +550,7 @@ public class DatabaseObjectImpl implements DatabaseObject {
 			
 			if (v instanceof Date) {
 				v = Lang.toUTC ((Date)v);
-			} else if (v instanceof Map) {
+			} else if (v instanceof Map && !(v instanceof JsonObject)) {
 				v = new JsonObject ((Map<String, Object>)v, true);
 			} else if (v instanceof DatabaseObjectImpl) {
 				v = toJson (((DatabaseObjectImpl)v), serializer, level + 1, true);

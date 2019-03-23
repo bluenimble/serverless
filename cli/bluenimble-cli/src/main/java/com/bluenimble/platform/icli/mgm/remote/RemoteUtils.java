@@ -73,23 +73,17 @@ import com.bluenimble.platform.icli.mgm.remote.impls.XmlResponseReader;
 import com.bluenimble.platform.icli.mgm.remote.impls.YamlResponseReader;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.security.KeyPair;
-import com.bluenimble.platform.templating.SimpleVariableResolver;
+import com.bluenimble.platform.templating.VariableResolver;
 import com.bluenimble.platform.templating.impls.DefaultExpressionCompiler;
 
 public class RemoteUtils {
 	
-	private static final DefaultExpressionCompiler Compiler = new DefaultExpressionCompiler ();
+	private static final DefaultExpressionCompiler Compiler = new DefaultExpressionCompiler ("<%", "%>").withScripting (true);
 
 	private static final String EmptyPayload 	= "__EP__";
 	
 	public static final String RemoteResponseHeaders 	= "remote.response.headers";
-	public static final String RemoteResponseError 	= "remote.response.error";
-	
-	interface ResponseActions {
-		String Store 	= "store";
-		String Unzip 	= "unzip";
-		String Replace	= "replace";
-	}
+	public static final String RemoteResponseError 		= "remote.response.error";
 	
 	private static final Map<String, Class<? extends HttpRequest>> HttpRequests = new HashMap<String, Class<? extends HttpRequest>> ();
 	static {
@@ -195,7 +189,7 @@ public class RemoteUtils {
 				vars.put (RemoteResponseHeaders, oHeaders);
 			}
 			
-			return reader.read (tool, contentType, response);
+			return reader.read (tool, contentType, Json.getObject (source, Spec.response.class.getSimpleName ()), response);
 			
 		} catch (Exception e) {
 			throw new CommandExecutionException (e.getMessage (), e);
@@ -227,7 +221,7 @@ public class RemoteUtils {
 		
 		JsonObject oParameters = Json.getObject (spec, Spec.request.Parameters);
 
-		String service = (String)eval (Json.getString (spec, Spec.request.Service), vars, config, options, oKeys, oParameters);
+		String service = (String)eval (tool, Json.getString (spec, Spec.request.Service), vars, config, options, oKeys, oParameters);
 		
 		HttpRequest request = 
 				HttpRequests.get (Json.getString (spec, Spec.request.Method, HttpMethods.GET).toUpperCase ())
@@ -274,7 +268,7 @@ public class RemoteUtils {
 				headers.add (
 					new HttpHeaderImpl (
 						hName, 
-						String.valueOf (eval (Json.getString (oHeaders, hName), vars, config, options, oKeys, oParameters))
+						String.valueOf (eval (tool, Json.getString (oHeaders, hName), vars, config, options, oKeys, oParameters))
 					)
 				);
 			}
@@ -295,7 +289,7 @@ public class RemoteUtils {
 				parameters.add (
 					new HttpParameterImpl (
 						pName, 
-						String.valueOf (eval (String.valueOf (oParameters.get (pName)), vars, config, options, oKeys, oParameters))
+						String.valueOf (eval (tool, String.valueOf (oParameters.get (pName)), vars, config, options, oKeys, oParameters))
 					)
 				);
 			}
@@ -313,7 +307,7 @@ public class RemoteUtils {
 				
 				Object bValue = oBody.get (bName);
 				
-				Object value = bValue instanceof String ? eval (Json.getString (oBody, bName), vars, config, options, oKeys, oParameters) : bValue;
+				Object value = bValue instanceof String ? eval (tool, Json.getString (oBody, bName), vars, config, options, oKeys, oParameters) : bValue;
 				if (value == null) {
 					continue;
 				}
@@ -439,7 +433,7 @@ public class RemoteUtils {
 		
 	}
 	
-	private static Object eval (final String expression, 
+	private static Object eval (Tool tool, final String expression, 
 			final Map<String, Object> vars, final JsonObject config, 
 			final Map<String, String> options, final JsonObject keys,
 			final JsonObject parameters) {
@@ -448,7 +442,7 @@ public class RemoteUtils {
 			return expression;
 		}
 		
-		return Compiler.compile (expression, null).eval (new SimpleVariableResolver () {
+		return Compiler.compile (expression, null).eval (new VariableResolver () {
 			private static final long serialVersionUID = -5398683910131117933L;
 			@Override
 			public Object resolve (String ns, String... aProp) {
@@ -481,6 +475,17 @@ public class RemoteUtils {
 					return defaultValue;
 				}
 				return String.valueOf (value);
+			}
+			@Override
+			public Map<String, Object> bindings () {
+				Map<String, Object> data = new HashMap<String, Object> ();
+				data.put ("cfg", config);
+				data.put ("bn", BlueNimble.Config);
+				data.put ("vars", vars);
+				data.put ("arg", options);
+				data.put ("keys", keys);
+				data.put ("params", parameters);
+				return data;
 			}
 		});
 		

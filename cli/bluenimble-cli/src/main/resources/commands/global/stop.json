@@ -10,7 +10,7 @@
 			
 			"request": {
 				"method": "put",
-				"service": "[ keys.endpoints.management ]/apis/[arg.0]/stop"
+				"service": "<% keys.endpoints.management %>/apis/<% arg.0 %>/stop"
 			}
 		}, 
 		"worker": {
@@ -22,7 +22,7 @@
 			
 			"request": {
 				"method": "post",
-				"service": "[ keys.endpoints.management ]/space/workers/[arg.0]/stop"
+				"service": "<% keys.endpoints.management %>/space/workers/<% arg.0 %>/stop"
 			}
 		}
 	}

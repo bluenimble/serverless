@@ -476,7 +476,7 @@ public class MongoDatabaseImpl implements Database {
 		
 		for (Document document : documents) {
 			if (visitor.optimize ()) {
-				dbo.document = document;
+				dbo.document (document);
 			} else {
 				dbo = new DatabaseObjectImpl (this, entity, document);
 				dbo.partial = partial;

@@ -9,10 +9,10 @@
 		
 			"request": {
 				"method": "post",
-				"service": "[ keys.endpoints.management ]/db/[vars.database.provider]/records",
+				"service": "<% keys.endpoints.management %>/db/<% vars.database.provider %>/records",
 				"contentType": "application/json",
 				"body": {
-					"payload": "[arg.0]"
+					"payload": "<% arg.0 %>"
 				}
 			}
 		}

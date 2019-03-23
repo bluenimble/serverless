@@ -95,7 +95,7 @@ public class ScriptSourceCommand extends AbstractCommand {
 				if (s.trim ().startsWith ("#")) {
 					continue;
 				}
-				res = tool.processCommand (s);
+				res = tool.processCommand (s, false);
 				if (res == Tool.FAILURE) {
 					return new DefaultCommandResult (CommandResult.KO, "'" + name + "' Script is stopped due to errors");
 				}

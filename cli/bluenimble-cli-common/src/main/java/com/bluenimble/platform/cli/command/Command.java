@@ -30,6 +30,8 @@ public interface Command extends Serializable {
 	
 	String 						getSynonym ();
 	String 						getContext ();
+	
+	boolean 					isPrivate 	();
 
 	CommandResult 				execute (Tool tool, Map<String, CommandOption> options) throws CommandExecutionException;
 	

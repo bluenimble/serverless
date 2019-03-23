@@ -17,10 +17,12 @@
 package com.bluenimble.platform.api.impls.im;
 
 import java.util.Date;
+import java.util.Iterator;
 
 import com.bluenimble.platform.Crypto;
 import com.bluenimble.platform.Encodings;
 import com.bluenimble.platform.Json;
+import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.api.ApiRequest;
@@ -51,11 +53,13 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 	}
 	
 	interface Defaults {
-		String 	Organization	= "organization";	
+		String 	Organization	= "Organization";	
 		String 	User 			= "User";
+		String 	OrganizationUser= "OrganizationUser";	
 		String 	ActivationCode	= "activationCode";
-		String 	Yes				= "y";
-		String 	No				= "n";
+		String 	This			= "this";
+		String	Yes				= "y";
+		String	No				= "n";
 	}
 
 	public interface Config {
@@ -64,7 +68,7 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 		String Database 				= "database";
 		String Entity					= "entity";
 		String Query					= "query";
-		String SetField					= "setField";
+		String Copy						= "copy";
 		String Organization				= "organization";
 		String IfPresent				= "ifPresent";
 		String RequiresActivation		= "requiresActivation";
@@ -97,6 +101,7 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 		String 	User 			= "user";
 		String 	Password 		= "password";
 		String 	Email 			= "email";
+		String 	TokenAge 		= "tokenAge";
 		
 		String  ActivationCode	= "activationCode";
 	}
@@ -129,10 +134,12 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 				query.set (Query.Construct.where.name (), where);
 				
 				where.set (Json.getString (config, Config.UserProperty, Fields.Email), payload.get (Spec.User));
-				where.set (
-					Json.getString (config, Config.PasswordProperty, Fields.Password), 
-					encryptPassword ? Crypto.md5 (Json.getString (payload, Spec.Password), Encodings.UTF8) : Json.getString (payload, Spec.Password)
-				);
+				if (!request.getChannel ().equals (ApiRequest.Channels.container.name ())) {
+					where.set (
+						Json.getString (config, Config.PasswordProperty, Fields.Password), 
+						encryptPassword ? Crypto.md5 (Json.getString (payload, Spec.Password), Encodings.UTF8) : Json.getString (payload, Spec.Password)
+					);
+				}
 			} else {
 				query = (JsonObject)Json.template (query, payload, false);
 			}
@@ -158,11 +165,22 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 		JsonObject oAccount = account.toJson (BeanSerializer);
 		
 		oAccount.remove (Json.getString (config, Config.PasswordProperty, Spec.Password));
+		
+		// generic copy
+		JsonObject oCopy = Json.getObject (config, Config.Copy);
+		if (oCopy != null) {
+			Iterator<String> keys = oCopy.keys ();
+			while (keys.hasNext ()) {
+				String key = keys.next ();
+				Json.set (oAccount, Json.getString (oCopy, key), Json.find (oAccount, Lang.split (key, Lang.DOT)));
+			}
+		}
 
 		JsonObject 	org 				= Json.getObject (config, Config.Organization);
 		String 		ifPresentField 		= (String)Json.find (config, Config.Organization, Config.IfPresent);
 		
 		if (org != null && payload.get (ifPresentField) != null) {
+			payload.set (Spec.User, account.getId ());
 			JsonObject lookup 		= Json.getObject (org, Config.Lookup);
 			JsonObject lookupQuery 	= Json.getObject (lookup, Config.Query);
 			JsonObject check 		= Json.getObject (org, Config.Check);
@@ -193,8 +211,41 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 					throw new ApiServiceExecutionException ("organization link not found").status (ApiResponse.UNAUTHORIZED);
 				}
 				
-				oAccount.set (Json.getString (org, Config.SetField, Defaults.Organization), oOrg.toJson (DefaultBeanSerializer.Default));
+				// lookup copy
+				oCopy = Json.getObject (lookup, Config.Copy);
+				if (oCopy != null) {
+					JsonObject jOrg = oOrg.toJson (BeanSerializer);
+					Iterator<String> keys = oCopy.keys ();
+					while (keys.hasNext ()) {
+						String key = keys.next ();
+						Object value = null;
+						if (key.equals (Defaults.This)) {
+							value = jOrg;
+						} else {
+							value = Json.find (jOrg, Lang.split (key, Lang.DOT));
+						}
+						Json.set (oAccount, Json.getString (oCopy, key), value);
+					}
+				}
+				
+				// check copy
+				oCopy = Json.getObject (check, Config.Copy);
+				if (oCopy != null) {
+					JsonObject jCheck = checkRecord.toJson (BeanSerializer);
+					Iterator<String> keys = oCopy.keys ();
+					while (keys.hasNext ()) {
+						String key = keys.next ();
+						Object value = null;
+						if (key.equals (Defaults.This)) {
+							value = jCheck;
+						} else {
+							value = Json.find (jCheck, Lang.split (key, Lang.DOT));
+						}
+						Json.set (oAccount, Json.getString (oCopy, key), value);
+					}
+				}
 			}
+			oAccount.set (Config.Owner, Defaults.No);
 		} else {
 			oAccount.set (Config.Owner, Defaults.Yes);
 		}
@@ -211,7 +262,11 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 			}
 			
 			// create token
-			String [] tokenAndExpiration = SecurityUtils.tokenAndExpiration (api, oAccount, now, 0);
+			long age = 0;
+			if (request.getChannel ().equals (ApiRequest.Channels.container.name ())) {
+				age = Json.getLong (payload, Spec.TokenAge, 0);
+			}
+			String [] tokenAndExpiration = SecurityUtils.tokenAndExpiration (api, oAccount, now, age);
 			oAccount.set (ApiConsumer.Fields.Token, tokenAndExpiration [0]);
 			oAccount.set (ApiConsumer.Fields.ExpiryDate, tokenAndExpiration [1]);
 		} 

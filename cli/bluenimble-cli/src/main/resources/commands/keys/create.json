@@ -11,10 +11,10 @@
 			
 			"request": {
 				"method": "post",
-				"service": "[ keys.endpoints.management ]/keys",
+				"service": "<% keys.endpoints.management %>/keys",
 				"contentType": "application/json",
 				"body": {
-					"payload": "[ arg.0 | '__EP__' ]"
+					"payload": "<% arg.0 | '__EP__' %>"
 				}
 			}
 		}

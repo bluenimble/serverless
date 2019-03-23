@@ -17,12 +17,12 @@
 		
 			"request": {
 				"method": "get",
-				"service": "[ keys.endpoints.management ]/storage/[vars.storage.provider]/objects/[arg.0 | '.']",
+				"service": "<% keys.endpoints.management %>/storage/<% vars.storage.provider %>/objects/<% arg.0 | '.' %>",
 				"headers": {
-					"Accept": "[ arg.2 | 'application/json' ]"
+					"Accept": "<% arg.2 | 'application/json' %>"
 				},
 				"params": {
-					"filter": "[ arg.1 | '*' ]"
+					"filter": "<% arg.1 | '*' %>"
 				}
 			}
 		}

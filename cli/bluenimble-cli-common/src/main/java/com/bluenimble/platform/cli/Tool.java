@@ -56,7 +56,7 @@ public interface Tool extends Serializable {
 	ToolContext 		getContext (String ctxName);
 	void        		addContext (ToolContext ctx);
 	
-	int					processCommand (String cmdLine) throws IOException;
+	int					processCommand (String cmdLine, boolean notIfPrivate) throws IOException;
 	
 	void 				usage (boolean all);
 	List<String>		getHistory ();

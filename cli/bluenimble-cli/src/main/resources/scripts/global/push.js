@@ -19,6 +19,8 @@
 var System 			= native ('java.lang.System');
 var File 			= native ('java.io.File');
 var Pattern 		= native ('java.util.regex.Pattern');
+var FileUtils 		= native ('com.bluenimble.platform.FileUtils');
+var Json 			= native ('com.bluenimble.platform.Json');
 
 var Lang 			= native ('com.bluenimble.platform.Lang');
 var Api 			= native ('com.bluenimble.platform.api.Api');
@@ -26,8 +28,6 @@ var Api 			= native ('com.bluenimble.platform.api.Api');
 var JsonObject 		= native ('com.bluenimble.platform.json.JsonObject');
 var JsonArray 		= native ('com.bluenimble.platform.json.JsonArray');
 
-var FileUtils 		= native ('com.bluenimble.platform.FileUtils');
-var Json 			= native ('com.bluenimble.platform.Json');
 var Yamler 			= native ('com.bluenimble.platform.icli.mgm.utils.Yamler');
 
 var BuildUtils 		= native ('com.bluenimble.platform.icli.mgm.utils.BuildUtils');
@@ -233,6 +233,15 @@ if (!apiSrcPath) {
 
 Vars ['ApiHome'] = Config.workspace + '/' + apiSrcPath;
 
+//Create the build folder if it doesn't exist
+var buildFolder = new File (Home, 'build');
+if (!buildFolder.exists ()) {
+	buildFolder.mkdir ();
+}
+
+var apiFolder = new File (buildFolder, apiNs);
+Vars ['ApiBuild'] = apiFolder.getAbsolutePath ();
+
 var recipe = new JsonObject ();
 
 // load recipes
@@ -301,14 +310,6 @@ if (recipe.vars) {
 }
 
 var transformData = new JsonObject ().set ("R", recipe);
-
-// Create the build folder if it doesn't exist
-var buildFolder = new File (Home, 'build');
-if (!buildFolder.exists ()) {
-	buildFolder.mkdir ();
-}
-
-var apiFolder = new File (buildFolder, apiNs);
 
 if (!Vars ['build.release.nocopy'] || Vars ['build.release.nocopy'] != 'true') {
 	// delete api folder
@@ -460,6 +461,22 @@ Tool.command ('set api.folder ' + buildFolder.getAbsolutePath ());
 
 Tool.command ('echo on');
 
+if (recipe.run && recipe.run.length > 0) {
+	for (var i = 0; i < recipe.run.length; i++) {
+		var oRun = recipe.run [i];
+		Tool.note ('Execute Commands from directory [' + oRun.directory + ']');
+		for (var j = 0; j < oRun.commands.length; j++) {
+			Tool.note ('RUN | ' + oRun.commands [j]);
+			OsCommander.execute (
+				Tool,
+				new File (oRun.directory),
+				oRun.commands [j],
+				null
+			);
+		}
+	}
+}
+
 if (typeof recipe.install == 'undefined' || recipe.install == null || recipe.install == true) {
 	Tool.command ('npush api ' + apiNs);
 }
@@ -473,22 +490,6 @@ if (recipe.copyTo) {
 	}
 	
 	FileUtils.copy (newApiFolder, fCopyTo, true);
-}
-
-if (recipe.run && recipe.run.length > 0) {
-	for (var i = 0; i < recipe.run.length; i++) {
-		var oRun = recipe.run [i];
-		Tool.note ('Execute Commands from directory [' + oRun.directory + ']\n');
-		for (var j = 0; j < oRun.commands.length; j++) {
-			Tool.note ('RUN | ' + oRun.commands [j]);
-			OsCommander.execute (
-				Tool,
-				new File (oRun.directory),
-				oRun.commands [j],
-				null
-			);
-		}
-	}
 }
 
 Tool.command ('echo off');

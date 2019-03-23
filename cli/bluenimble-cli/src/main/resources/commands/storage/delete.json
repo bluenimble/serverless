@@ -12,9 +12,9 @@
 		
 			"request": {
 				"method": "delete",
-				"service": "[ keys.endpoints.management ]/storage/[vars.storage.provider]/objects/[arg.0]",
+				"service": "<% keys.endpoints.management %>/storage/<% vars.storage.provider %>/objects/<% arg.0 %>",
 				"params": {
-					"force": "[arg.1]"
+					"force": "<% arg.1 %>"
 				}
 			}
 		}

@@ -61,7 +61,7 @@ public class JsTool {
 	}
 	
 	public void command (String cmd) throws Exception {
-		tool.processCommand (cmd);
+		tool.processCommand (cmd, false);
 	}
 	
 	public void text (int margin, String text, String fc, String bc) {

@@ -11,7 +11,7 @@
 		
 			"request": {
 				"method": "get",
-				"service": "[ keys.endpoints.management ]/db/[vars.database.provider]/entities/[arg.0]/records/[arg.1]"
+				"service": "<% keys.endpoints.management %>/db/<% vars.database.provider %>/entities/<% arg.0 %>/records/<% arg.1 %>"
 			}
 		}
 	}

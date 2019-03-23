@@ -15,10 +15,10 @@
 		
 			"request": {
 				"method": "post",
-				"service": "[ keys.endpoints.management ]/db/[vars.database.provider]/entities/[arg.0]/query/[arg.2 | '1'],[arg.3 | '2']",
+				"service": "<% keys.endpoints.management %>/db/<% vars.database.provider %>/entities/<% arg.0 %>/query/<% arg.2 | '1' %>,<% arg.3 | '2' %>",
 				"contentType": "application/json",
 				"body": {
-					"payload": "[arg.1]"
+					"payload": "<% arg.1 %>"
 				}
 			}
 		}

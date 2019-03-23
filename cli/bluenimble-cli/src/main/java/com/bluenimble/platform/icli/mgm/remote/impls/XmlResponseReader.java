@@ -8,6 +8,7 @@ import com.bluenimble.platform.http.HttpMessageBody;
 import com.bluenimble.platform.http.HttpMessageBodyPart;
 import com.bluenimble.platform.http.response.HttpResponse;
 import com.bluenimble.platform.icli.mgm.remote.ResponseReader;
+import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.xml.XmlReader;
 
 public class XmlResponseReader implements ResponseReader {
@@ -15,7 +16,7 @@ public class XmlResponseReader implements ResponseReader {
 	private static final long serialVersionUID = -8389432849467983282L;
 
 	@Override
-	public CommandResult read (Tool tool, String contentType, HttpResponse response) throws Exception {
+	public CommandResult read (Tool tool, String contentType, JsonObject responseSpec, HttpResponse response) throws Exception {
 		
 		CommandResult dcr = new DefaultCommandResult (response.getStatus () < 400 ? CommandResult.OK : CommandResult.KO, Lang.BLANK);
 		

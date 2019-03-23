@@ -60,7 +60,7 @@ public class ClearEntitySpi extends AbstractApiServiceSpi {
 			throw new ApiServiceExecutionException (e.getMessage (), e).status (ApiResponse.NOT_FOUND);
 		}
 		
-		return new JsonApiOutput ((JsonObject)new JsonObject ().set (CommonOutput.Dropped, true));
+		return new JsonApiOutput ((JsonObject)new JsonObject ().set (CommonOutput.Cleared, true));
 	}
 
 }
