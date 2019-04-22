@@ -440,9 +440,17 @@ validate (apiFolder, new File (apiFolder, 'resources/services'), transformData);
 
 Tool.success (apiNs + ' api validated with success');
 
+/*
 var newApiFolder = new File (buildFolder, apiNs);
 
 apiFolder.renameTo (newApiFolder);
+*/
+
+//> BY THIS
+var newApiFolder = apiFolder;
+//<
+
+Tool.info ('ApiBuild Folder: ' + Vars ['ApiBuild']);
 
 Tool.content ('__PS__ MAGENTA:Security Keys', Keys.accessKey + ' @ ' + Tool.styled (Keys.endpoints.management, 'yellow') );
 var rText = 'None';

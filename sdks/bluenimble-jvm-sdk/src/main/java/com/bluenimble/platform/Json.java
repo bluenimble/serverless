@@ -180,7 +180,7 @@ public class Json {
     }
 
     public static JsonObject getObject (JsonObject source, String name) {
-    	if (source == null) {
+    	if (source == null || Lang.isNullOrEmpty (name)) {
     		return null;
     	}
     	return (JsonObject)source.get (name);

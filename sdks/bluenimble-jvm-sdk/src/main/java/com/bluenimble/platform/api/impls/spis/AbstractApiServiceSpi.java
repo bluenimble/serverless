@@ -19,8 +19,12 @@ package com.bluenimble.platform.api.impls.spis;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiContext;
 import com.bluenimble.platform.api.ApiManagementException;
+import com.bluenimble.platform.api.ApiRequest;
+import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.ApiService;
+import com.bluenimble.platform.api.ApiServiceExecutionException;
 import com.bluenimble.platform.api.ApiServiceSpi;
+import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.utils.Features;
 
 public abstract class AbstractApiServiceSpi implements ApiServiceSpi {
@@ -35,6 +39,11 @@ public abstract class AbstractApiServiceSpi implements ApiServiceSpi {
 	public void onStop (Api api, ApiService service, ApiContext context) throws ApiManagementException {
 	}
 	
+	@Override
+	public void onResolve (Api api, ApiConsumer consumer, ApiRequest request, ApiResponse response) 
+		throws ApiServiceExecutionException {
+		
+	}
 	protected <T> T feature (Api api, Class<T> type, String feature, ApiContext context) {
 		return Features.get (api, type, feature, context);
 	}

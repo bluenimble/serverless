@@ -22,10 +22,10 @@
 		"en": "{0} is not a valid value, it should be like {1}" 
 	},
 	"StringMin": {
-		"en": "{0} ({2}) length should be greater or equals to {1}" 
+		"en": "{0} should be at least {1} characters" 
 	},
 	"StringMax": {
-		"en": "{0} ({2}) length should be less or equals to {1}" 
+		"en": "{0} should be {1} characters or less" 
 	},
 	"StringEnum": {
 		"en": "{0} ({2}) value should be one of the following [{1}]" 

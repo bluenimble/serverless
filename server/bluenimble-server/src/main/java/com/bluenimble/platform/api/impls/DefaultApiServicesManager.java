@@ -49,7 +49,8 @@ public class DefaultApiServicesManager implements ApiServicesManager {
 
 	private static final long serialVersionUID = 119185947209776190L;
 	
-	protected Map<ApiVerb, ApiServiceSet> 	services 	= new LinkedHashMap<ApiVerb, ApiServiceSet> ();
+	protected Map<ApiVerb, ApiServiceSet> 	services 		= new LinkedHashMap<ApiVerb, ApiServiceSet> ();
+	protected Map<String, ApiService> 		servicesById 	= new LinkedHashMap<String, ApiService> ();
 	
 	private ApiImpl 						api;
 	private ClassLoaderRegistry 			clRegistry;
@@ -121,6 +122,11 @@ public class DefaultApiServicesManager implements ApiServicesManager {
 	}
 
 	@Override
+	public ApiService getById (String id) {
+		return servicesById.get (id);
+	}
+
+	@Override
 	public ApiService put (ApiResource resource) throws ApiServicesManagerException {
 		
 		Exception failure = null;
@@ -159,6 +165,10 @@ public class DefaultApiServicesManager implements ApiServicesManager {
 		}
 		
 		set.add (service);
+		
+		if (service.getId () != null) {
+			servicesById.put (service.getId (), service);
+		}
 		
 		return service;
 		

@@ -151,6 +151,12 @@ public class RemoteApiServiceSpi implements ApiServiceSpi {
 	}
 
 	@Override
+	public void onResolve (Api api, ApiConsumer consumer, ApiRequest request, ApiResponse response) 
+		throws ApiServiceExecutionException {
+		
+	}
+
+	@Override
 	public void onStart (Api api, ApiService service, ApiContext context) throws ApiManagementException {
 		
 	}

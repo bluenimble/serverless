@@ -151,6 +151,9 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 			// api life cycle - onService
 			api.getSpi ().onService (api, service, request, response);
 			
+			// service lifecycle
+			service.getSpi ().onResolve (api, consumer, request, response);
+			
 			logInfo (api, "<" + request.getId () + "> Interceptor will use media.processor [" + mediaProcessor.getClass ().getSimpleName () + "]");
 			
 			JsonObject apiSecMethods = Json.getObject (api.getSecurity (), Api.Spec.Security.Schemes);
@@ -217,7 +220,7 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 			track.update (consumer);
 
 			try {
-				server.getServiceValidator ().validate (api, Json.getObject (service.toJson (), ApiService.Spec.Spec), consumer, request);
+				server.getServiceValidator ().validate (api, service.getSpecification (), consumer, request);
 			} catch (ApiServiceValidatorException e) {
 				if (response instanceof ContainerApiResponse) {
 					((ContainerApiResponse)response).setException (

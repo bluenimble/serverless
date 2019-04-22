@@ -131,6 +131,11 @@ public class ApiServiceImpl implements ApiService {
 	}
 
 	@Override
+	public JsonObject getSpecification () {
+		return Json.getObject (source, Spec.Spec);
+	}
+
+	@Override
 	public JsonObject getRuntime () {
 		return Json.getObject (source, Spec.Runtime.class.getSimpleName ().toLowerCase ());
 	}

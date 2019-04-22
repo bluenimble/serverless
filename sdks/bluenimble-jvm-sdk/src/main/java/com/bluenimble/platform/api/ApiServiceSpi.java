@@ -24,8 +24,12 @@ public interface ApiServiceSpi extends Serializable {
 	
 	void 						onStart 			(Api api, ApiService service, ApiContext context)
 														throws ApiManagementException;
+	
 	void 						onStop 				(Api api, ApiService service, ApiContext context)
 														throws ApiManagementException;
+
+	void 						onResolve 			(Api api, ApiConsumer consumer, ApiRequest request, ApiResponse response)
+														throws ApiServiceExecutionException;
 
 	ApiOutput 					execute 			(Api api, ApiConsumer consumer, ApiRequest request, ApiResponse response) 
 														throws ApiServiceExecutionException;

@@ -52,6 +52,7 @@ public interface ApiServicesManager extends Serializable {
 	
 	ApiService			put				(ApiResource resource) 				throws ApiServicesManagerException;
 	ApiService			get				(ApiVerb verb, String endpoint);
+	ApiService			getById			(String id);
 	void				delete			(ApiVerb verb, String endpoint) 	throws ApiServicesManagerException;
 	
 	void				list			(Selector selector);

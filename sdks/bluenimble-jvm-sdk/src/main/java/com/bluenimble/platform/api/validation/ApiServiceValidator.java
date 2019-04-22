@@ -33,7 +33,10 @@ public interface ApiServiceValidator extends Serializable {
 		String Value		= "value";
 		String Required 	= "required";
 		
+		String RefSpec		= "#spec";
+		
 		String Fields		= "fields";
+		String Selectors	= "selectors";
 		
 		String Secret 		= "secret";
 		

@@ -64,6 +64,7 @@ public class ScriptableApiServiceSpi implements ApiServiceSpi {
 	interface Functions {
 		String OnStart 		= "onStart";
 		String OnStop 		= "onStop";
+		String OnResolve	= "onResolve";
 		String Execute 		= "execute";
 	}
 	
@@ -170,7 +171,44 @@ public class ScriptableApiServiceSpi implements ApiServiceSpi {
 			engine.invoke (spi, Functions.OnStop, jsApi, serviceHelper.spec (), context);
 		} catch (ScriptingEngineException ex) {
 			api.tracer ().log (Level.Error, Lang.BLANK, ex);
+		}
+	}
+
+	@Override
+	public void onResolve (Api api, ApiConsumer consumer, ApiRequest request, ApiResponse response) 
+		throws ApiServiceExecutionException {
+		SpecAndSpiPair apiHelper = (SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name);
+		if (apiHelper == null) {
+			return;
+		}
+		
+		Object jsApi = apiHelper.spec ();
+		if (jsApi == null) {
+			return;
 		}		
+
+		
+		SpecAndSpiPair serviceHelper = (SpecAndSpiPair)request.getService ().getHelper (SpecAndSpiPair.Name);
+		if (serviceHelper == null) {
+			return;
+		}
+		
+		Object spi = serviceHelper.spi ();
+		if (spi == null) {
+			return;
+		}
+		
+		ScriptingEngine engine = api.space ().feature (ScriptingEngine.class, ApiSpace.Features.Default, request);
+		if (!engine.has (spi, Functions.OnResolve)) {
+			return;
+		}
+		
+		// invoke onResolve
+		try {
+			engine.invoke (spi, Functions.OnResolve, jsApi, consumer, request, response);
+		} catch (ScriptingEngineException ex) {
+			throw new ApiServiceExecutionException (ex.getMessage (), ex);
+		}
 	}
 
 	@Override

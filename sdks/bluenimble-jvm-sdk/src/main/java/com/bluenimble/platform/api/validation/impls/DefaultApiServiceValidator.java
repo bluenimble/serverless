@@ -26,6 +26,7 @@ import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiRequest.Scope;
 import com.bluenimble.platform.api.ApiResponse;
+import com.bluenimble.platform.api.ApiService;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.validation.ApiServiceValidator;
 import com.bluenimble.platform.api.validation.ApiServiceValidatorException;
@@ -134,16 +135,54 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 		validate (context, spec, consumer, request, null);
 	}
 	
-	public void validate (Api context, JsonObject spec, ApiConsumer consumer, ApiRequest request, Map<String, Object> data) 
+	public void validate (Api api, JsonObject spec, ApiConsumer consumer, ApiRequest request, Map<String, Object> data) 
 		throws ApiServiceValidatorException {
 		
-		if (spec == null || spec.isEmpty ()) {
+		String refServiceId = null;
+		String refField = null;
+		
+		String refSpec = Json.getString (spec, Spec.RefSpec);
+		if (!Lang.isNullOrEmpty (refSpec)) {
+			refSpec = refSpec.trim ();
+			int indexOfSharp = refSpec.indexOf (Lang.SHARP);
+			if (indexOfSharp > 0) {
+				refServiceId 	= refSpec.substring (0, indexOfSharp).trim ();
+				refField 		= refSpec.substring (indexOfSharp + 1).trim ();
+			}
+		}
+		
+		if (!Lang.isNullOrEmpty (refServiceId)) {
+			ApiService refService = api.getServicesManager ().getById (refServiceId);
+			if (refService != null && !Json.isNullOrEmpty (refService.getSpecification ())) {
+				JsonObject oRefSpec = refService.getSpecification ();
+				if (!Lang.isNullOrEmpty (refField)) {
+					refField = Spec.Fields + Lang.DOT + refField;
+					Object fieldSpec = Json.find (oRefSpec, Lang.split (refField, Lang.DOT));
+					if (fieldSpec != null && (fieldSpec instanceof JsonObject)) {
+						oRefSpec = (JsonObject)fieldSpec;
+					}
+				}
+				oRefSpec.duplicate ().merge (spec);
+				spec = oRefSpec;
+			}
+		}
+
+		if (Json.isNullOrEmpty (spec)) {
 			return;
 		}
 		
 		JsonObject oFields = Json.getObject (spec, Spec.Fields);
+		JsonObject altSpec = 
+			Json.getObject (
+				Json.getObject (spec, Spec.Selectors),
+				(String)request.get (ApiRequest.SelectSpec)
+			);
 		
-		if (oFields == null || oFields.isEmpty ()) {
+		if (Json.isNullOrEmpty (oFields)) {
+			// any alternative spec
+			if (!Json.isNullOrEmpty (altSpec)) {
+				validate (api, altSpec, consumer, request, data);
+			}
 			return;
 		}
 		
@@ -196,7 +235,7 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 			}
 			
 			Object message = validator.validate (
-				context,
+				api,
 				consumer, 
 				request, 	
 				this,
@@ -231,6 +270,11 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 				vex.status (status);
 			}
 			throw vex;
+		}
+		
+		// any alternative spec
+		if (!Json.isNullOrEmpty (altSpec)) {
+			validate (api, altSpec, consumer, request, data);
 		}
 		
 	}

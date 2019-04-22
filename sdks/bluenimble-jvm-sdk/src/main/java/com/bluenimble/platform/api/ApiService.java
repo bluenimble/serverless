@@ -80,6 +80,8 @@ public interface ApiService extends Manageable {
 	String 						getName 			();
 	String 						getDescription 		();
 	
+	JsonObject 					getSpecification 	();
+	
 	void 						setHelper			(String key, Object helper);
 	Object 						getHelper			(String key);
 	
