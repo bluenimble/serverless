@@ -48,14 +48,14 @@ sudo rpm -qa | grep -qw nfs-utils || sudo yum install -y nfs-utils
 sudo rpm -qa | grep -qw java-1.8.0-openjdk || sudo yum -y install java-1.8.0-openjdk
 
 echo "Download and install BlueNimble"
-wget --no-cache https://github.com/bluenimble/serverless/releases/download/v2.13.0-SNAPSHOT/bluenimble-2.13.0-SNAPSHOT-bin.tar.gz && \
-  sudo tar -xvzf bluenimble-2.13.0-SNAPSHOT-bin.tar.gz -C /opt/bluenimble && \
-  rm -f bluenimble-2.13.0-SNAPSHOT-bin.tar.gz
+wget --no-cache https://github.com/bluenimble/serverless/releases/download/v2.13.0/bluenimble-2.13.0-bin.tar.gz && \
+  sudo tar -xvzf bluenimble-2.13.0-bin.tar.gz -C /opt/bluenimble && \
+  rm -f bluenimble-2.13.0-bin.tar.gz
 
-sudo mv /opt/bluenimble/bluenimble-2.13.0-SNAPSHOT /opt/bluenimble/platform
+sudo mv /opt/bluenimble/bluenimble-2.13.0 /opt/bluenimble/platform
 
 if [ $CLEAN = 'clean' ] ; then
-	sudo rm -fr /opt/bluenimble/plugins/bluenimble-plugin-dev.playground-2.13.0-SNAPSHOT
+	sudo rm -fr /opt/bluenimble/plugins/bluenimble-plugin-dev.playground-2.13.0
 	sudo rm -fr /opt/bluenimble/spaces/playground
 fi
 
