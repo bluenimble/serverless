@@ -61,6 +61,7 @@ if (!outFolder.endsWith ('/')) {
 }
 
 OsCommander.execute (
+	Tool,
 	new File (Install, 'tools/oasgen'), 
 	'java -jar openapi-generator-cli-3.0.3.jar generate -i ' + outFolder + apiNs + '.' + lang + 
 	' -g ' + template + ' -o ' + outFolder + apiNs + '-docs',

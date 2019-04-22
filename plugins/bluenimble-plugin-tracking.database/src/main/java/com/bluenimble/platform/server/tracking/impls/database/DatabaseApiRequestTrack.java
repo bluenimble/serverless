@@ -50,7 +50,10 @@ public class DatabaseApiRequestTrack implements ServerRequestTrack {
 	}
 	
 	interface Fields {
-		String Service = "service";
+		interface Service {
+			String Name = "name";
+			String Id 	= "id";
+		}
 		interface Time {
 			String Received = "received";
 			String Started 	= "started";
@@ -76,6 +79,9 @@ public class DatabaseApiRequestTrack implements ServerRequestTrack {
 	
 	private JsonObject 					track;
 	
+	private boolean 					discarded;
+	private String						feature;
+	
 	public DatabaseApiRequestTrack (DatabaseApiRequestTracker tracker, Api api, ApiRequest request) {
 		
 		this.tracker = tracker;
@@ -98,7 +104,7 @@ public class DatabaseApiRequestTrack implements ServerRequestTrack {
 		JsonObject service = new JsonObject ();
 		service.set (ApiRequest.Fields.Verb, 	request.getVerb ().name ());
 		service.set (ApiRequest.Fields.Path, 	request.getPath ());
-		track.set (Fields.Service, service);
+		track.set (Fields.Service.class.getSimpleName ().toLowerCase (), service);
 		
 		// request data
 		String dataKey = ApiRequest.Fields.Data.class.getSimpleName ();
@@ -117,26 +123,39 @@ public class DatabaseApiRequestTrack implements ServerRequestTrack {
 
 	@Override
 	public void update (ApiService service) {
-		Json.getObject (track, Fields.Service).set (ApiRequest.Fields.Endpoint, service.getEndpoint ());
+		if (discarded) {
+			return;
+		}
+		if (service == null) {
+			return;
+		}
+		JsonObject sTracking = service.getTracking ();
+		if (!Json.isNullOrEmpty (sTracking)) {
+			feature = Json.getString (sTracking, ApiService.Spec.Tracking.Feature);
+		}
+		Json.getObject (track, Fields.Service.class.getSimpleName ().toLowerCase ())
+			.set (Fields.Service.Id, 			service.getId ())
+			.set (Fields.Service.Name, 			service.getName ())
+			.set (ApiRequest.Fields.Endpoint, 	service.getEndpoint ());
 	}
 
 	@Override
 	public void update (ApiConsumer consumer) {
+		if (discarded) {
+			return;
+		}
 		if (consumer == null) {
 			return;
 		}
-		JsonObject oConsumer = new JsonObject ();
-		oConsumer.set (ApiConsumer.Fields.Type, consumer.get (ApiConsumer.Fields.Type));
-		oConsumer.set (ApiConsumer.Fields.Id, consumer.get (ApiConsumer.Fields.Id));
-		oConsumer.set (ApiConsumer.Fields.Token, consumer.get (ApiConsumer.Fields.Token));
-		oConsumer.set (ApiConsumer.Fields.AccessKey, consumer.get (ApiConsumer.Fields.AccessKey));
-		
-		track.set (Fields.Consumer, oConsumer);
-
+		track.set (Fields.Consumer, consumer.toJson ());
 	}
 
 	@Override
 	public void finish (JsonObject feedback) {
+		if (discarded) {
+			track.clear ();
+			return;
+		}
 		final Date now = new Date ();
 		
 		Json.getObject (track, Fields.Time.class.getSimpleName ().toLowerCase ()).set (Fields.Time.Finished, now);
@@ -172,9 +191,13 @@ public class DatabaseApiRequestTrack implements ServerRequestTrack {
 						Database db = null;
 						try {
 							
+							String feature = DatabaseApiRequestTrack.this.feature != null ? 
+									DatabaseApiRequestTrack.this.feature : 
+									Json.getString (oTracking, Spec.Feature, ApiSpace.Features.Default);
+							
 							db = api.space ().feature (
 								Database.class, 
-								Json.getString (oTracking, Spec.Feature, ApiSpace.Features.Default), 
+								feature, 
 								tracker.context ()
 							);
 							
@@ -217,6 +240,11 @@ public class DatabaseApiRequestTrack implements ServerRequestTrack {
 		custom.set (name, value);
 	}
 	
+	@Override
+	public void discard (boolean discard) {
+		discarded = true;
+	}
+
 	@Override
 	public void tag (String name, String reason) {
 		if (Lang.isNullOrEmpty (name)) {

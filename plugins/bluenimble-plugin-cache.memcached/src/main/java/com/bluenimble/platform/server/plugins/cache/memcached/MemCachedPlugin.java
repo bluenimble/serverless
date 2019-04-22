@@ -17,8 +17,9 @@
 package com.bluenimble.platform.server.plugins.cache.memcached;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import com.bluenimble.platform.Feature;
@@ -29,6 +30,7 @@ import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.Manageable;
 import com.bluenimble.platform.cache.Cache;
 import com.bluenimble.platform.cache.impls.memcached.MemCachedCache;
+import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.Plugin;
 import com.bluenimble.platform.plugins.PluginRegistryException;
@@ -147,30 +149,28 @@ public class MemCachedPlugin extends AbstractPlugin {
 		
 		JsonObject spec = Json.getObject (feature, ApiSpace.Features.Spec);
 	
-		String [] nodes = Lang.split (Json.getString (spec, Spec.Cluster), Lang.COMMA);
+		JsonArray nodes = Json.getArray (spec, Spec.Cluster);
 		if (nodes == null) {
 			return;
 		}
 		
-		final JsonObject oAuth = Json.getObject (spec, Spec.Auth);
-		if (oAuth == null || oAuth.isEmpty ()) {
-			return;
+		List<String> lNodes = new ArrayList<String> ();
+		for (int i = 0; i < nodes.count (); i++) {
+			lNodes.add (String.valueOf (nodes.get (i)));
 		}
 		
-		final String user 		= Json.getString (oAuth, Spec.User);
-		final String password 	= Json.getString (oAuth, Spec.Password);
+		ConnectionFactoryBuilder cfb = new ConnectionFactoryBuilder ().setProtocol (ConnectionFactoryBuilder.Protocol.BINARY);
 		
-		AuthDescriptor ad = new AuthDescriptor (new String [] { "PLAIN" }, new PlainCallbackHandler (user, password));
-
+		final JsonObject oAuth = Json.getObject (spec, Spec.Auth);
+		if (!Json.isNullOrEmpty (oAuth)) {
+			final String user 		= Json.getString (oAuth, Spec.User);
+			final String password 	= Json.getString (oAuth, Spec.Password);
+			cfb.setAuthDescriptor (new AuthDescriptor (new String [] { "PLAIN" }, new PlainCallbackHandler (user, password)));
+		}
+		
 		MemcachedClient client = null;
 		try {
-			client = new MemcachedClient (
-				new ConnectionFactoryBuilder ()
-					.setProtocol (ConnectionFactoryBuilder.Protocol.BINARY)
-					.setAuthDescriptor (ad).build (),
-				AddrUtil.getAddresses (Arrays.asList (nodes))
-			);
-			
+			client = new MemcachedClient (cfb.build (), AddrUtil.getAddresses (lNodes));
 		} catch (IOException e) {
 			throw new PluginRegistryException (e.getMessage (), e);
 		}

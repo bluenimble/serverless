@@ -26,7 +26,7 @@ import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.scripting.Scriptable;
 
 @Scriptable (name = "ApiResponse")
-public class ContainerApiResponse implements ApiResponse {
+public class ContainerApiResponse extends BaseApiResponse {
 
 	private static final long serialVersionUID = -5269972265851329885L;
 	
@@ -34,10 +34,8 @@ public class ContainerApiResponse implements ApiResponse {
 	protected JsonObject 					error;
 	protected ApiServiceExecutionException 	exception;
 	
-	protected String 						id;
-	
 	public ContainerApiResponse (String id) {
-		this.id = id;
+		super (id, null);
 	}
 	
 	@Override
@@ -74,11 +72,6 @@ public class ContainerApiResponse implements ApiResponse {
 	@Override
 	public JsonObject getError () {
 		return error;
-	}
-
-	@Override
-	public String getId () {
-		return id;
 	}
 
 	@Override
@@ -135,5 +128,5 @@ public class ContainerApiResponse implements ApiResponse {
 	public ApiServiceExecutionException getException () {
 		return exception;
 	}
-	
+
 }

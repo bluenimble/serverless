@@ -23,20 +23,14 @@ import com.bluenimble.platform.reflect.beans.impls.DefaultBeanSerializer;
 
 public interface BeanSerializer extends Serializable {
 	
-	enum Fields {
-		All,
-		Min,
-		None
-	}
-	
-	BeanSerializer Default = new DefaultBeanSerializer (0, 1);
+	BeanSerializer 	Default 		= new DefaultBeanSerializer (0, 1);
 
-	Fields		fields	(int level);
+	BeanSchema		schema	();
 	
-	JsonObject 	create 	(String type, int level);
+	JsonObject 		create 	(String type, int level);
 	
-	void		set		(String type, JsonObject json, String key, Object value);
+	void			set		(String type, JsonObject json, String key, Object value);
 	
-	void		end 	(String type, JsonObject json);
+	void			end 	(String type, JsonObject json);
 	
 }

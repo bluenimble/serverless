@@ -38,8 +38,10 @@ import com.bluenimble.platform.db.DatabaseException;
 import com.bluenimble.platform.db.DatabaseObject;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.reflect.beans.BeanSchema;
+import com.bluenimble.platform.reflect.beans.BeanSchema.FetchStrategy;
 import com.bluenimble.platform.reflect.beans.BeanSerializer;
-import com.bluenimble.platform.reflect.beans.BeanSerializer.Fields;
+import com.bluenimble.platform.reflect.beans.impls.DefaultBeanSerializer;
 
 import jdk.nashorn.internal.runtime.Undefined;
 
@@ -418,7 +420,10 @@ public class DatabaseObjectImpl implements DatabaseObject {
 
 	@Override
 	public JsonObject toJson (BeanSerializer serializer) {
-		return toJson (this, serializer, 0, true);
+		if (serializer == null) {
+			serializer = DefaultBeanSerializer.Default;
+		}
+		return toJson (this, serializer, serializer.schema (), 0, true);
 	}
 	
 	@Override
@@ -499,36 +504,31 @@ public class DatabaseObjectImpl implements DatabaseObject {
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private JsonObject toJson (DatabaseObjectImpl dbo, BeanSerializer serializer, int level, boolean refresh) {
+	private JsonObject toJson (DatabaseObjectImpl dbo, BeanSerializer serializer, BeanSchema schema, int level, boolean refresh) {
+		if (schema == null) {
+			return null;
+		}
+
 		if (serializer == null) {
 			serializer = BeanSerializer.Default;
 		}
 
 		String entity = dbo.entity ();
 		
-		Fields fields = serializer.fields (level);
-
-		if (fields == null || Fields.None.equals (fields)) {
-			return null;
-		}
-		
 		Set<String> keys = dbo.document.keySet ();
 		if (keys == null || keys.isEmpty ()) {
 			return null;
 		}
-
-		String [] fieldNames = null;
-		if (Fields.All.equals (fields)) {
-			fieldNames = keys.toArray (new String [keys.size ()]); 
-		} else {
-			fieldNames = MinimalFields;
-		}
-
+		
 		// If object is partial and more than minimal fields are requested
-		if (dbo.partial && Fields.All.equals (fields) && refresh) {
+		if (dbo.partial && !schema.fetchStrategy ().equals (FetchStrategy.minimal) && refresh) {
 			dbo.refresh ();
 			keys = dbo.document.keySet ();
-			fieldNames = keys.toArray (new String [keys.size ()]); 
+		}
+
+		Set<String> fields = schema.fields (keys);
+		if (fields == null || fields.isEmpty ()) {
+			return null;
 		}
 		
 		JsonObject json = serializer.create (entity, level);
@@ -537,7 +537,7 @@ public class DatabaseObjectImpl implements DatabaseObject {
 			return null;
 		}
 		
-		for (String f : fieldNames) {
+		for (String f : fields) {
 			
 			Object v = dbo.get (f);
 			if (v == null) {
@@ -553,8 +553,14 @@ public class DatabaseObjectImpl implements DatabaseObject {
 			} else if (v instanceof Map && !(v instanceof JsonObject)) {
 				v = new JsonObject ((Map<String, Object>)v, true);
 			} else if (v instanceof DatabaseObjectImpl) {
-				v = toJson (((DatabaseObjectImpl)v), serializer, level + 1, true);
+				if (BeanSchema.FetchStrategy.simple.equals (schema.fetchStrategy ())) {
+					continue;
+				}
+				v = toJson (((DatabaseObjectImpl)v), serializer, schema.schema (level, f), level + 1, true);
 			} else if (v instanceof DatabaseObjectList) {
+				if (BeanSchema.FetchStrategy.simple.equals (schema.fetchStrategy ())) {
+					continue;
+				}
 				List<Object> list = (List<Object>)v;
 				if (list.isEmpty ()) {
 					continue;
@@ -565,7 +571,7 @@ public class DatabaseObjectImpl implements DatabaseObject {
 						continue;
 					}
 					if (o instanceof DatabaseObjectImpl) {
-						arr.add (toJson (((DatabaseObjectImpl)o), serializer, level + 1, true));
+						arr.add (toJson (((DatabaseObjectImpl)o), serializer, schema.schema (level, f), level + 1, true));
 					} else {
 						if (o instanceof Date) {
 							arr.add (Lang.toUTC ((Date)o));

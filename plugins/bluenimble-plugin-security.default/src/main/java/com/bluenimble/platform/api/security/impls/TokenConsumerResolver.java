@@ -112,8 +112,16 @@ public class TokenConsumerResolver implements ApiConsumerResolver {
 	public ApiConsumer authorize (Api api, ApiService service, ApiRequest request, ApiConsumer consumer)
 			throws ApiAuthenticationException {
 		
-		JsonObject auth = Json.getObject (Json.getObject (Json.getObject (api.getSecurity (), Api.Spec.Security.Schemes), Scheme), Api.Spec.Security.Auth);
-		if (auth == null || auth.isEmpty ()) {
+		JsonObject scheme = Json.getObject (
+			Json.getObject (api.getSecurity (), Api.Spec.Security.Schemes), 
+			(String)consumer.get (ApiConsumer.Fields.Resolver)
+		);
+		if (Json.isNullOrEmpty (scheme)) {
+			return consumer;
+		}
+		
+		JsonObject auth = Json.getObject (scheme, Api.Spec.Security.Auth);
+		if (Json.isNullOrEmpty (auth)) {
 			return consumer;
 		}
 		

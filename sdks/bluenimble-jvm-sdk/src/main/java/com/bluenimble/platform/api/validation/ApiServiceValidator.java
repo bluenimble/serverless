@@ -39,7 +39,10 @@ public interface ApiServiceValidator extends Serializable {
 		
 		String Min 			= "min";
 		String Max 			= "max";
-
+		
+		String MinSize 		= "minSize";
+		String MaxSize 		= "maxSize";
+		
 		String VType 		= "vType";
 		String SType 		= "sType";
 		

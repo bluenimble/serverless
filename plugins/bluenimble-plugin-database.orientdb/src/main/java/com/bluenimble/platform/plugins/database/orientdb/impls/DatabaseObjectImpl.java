@@ -19,10 +19,13 @@ package com.bluenimble.platform.plugins.database.orientdb.impls;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
@@ -31,8 +34,9 @@ import com.bluenimble.platform.db.DatabaseException;
 import com.bluenimble.platform.db.DatabaseObject;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.reflect.beans.BeanSchema;
 import com.bluenimble.platform.reflect.beans.BeanSerializer;
-import com.bluenimble.platform.reflect.beans.BeanSerializer.Fields;
+import com.bluenimble.platform.reflect.beans.impls.DefaultBeanSerializer;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import jdk.nashorn.internal.runtime.Undefined;
@@ -236,7 +240,10 @@ public class DatabaseObjectImpl implements DatabaseObject {
 
 	@Override
 	public JsonObject toJson (BeanSerializer serializer) {
-		return toJson (this, serializer, 0);
+		if (serializer == null) {
+			serializer = DefaultBeanSerializer.Default;
+		}
+		return toJson (this, serializer, serializer.schema (), 0);
 	}
 	
 	@Override
@@ -277,24 +284,20 @@ public class DatabaseObjectImpl implements DatabaseObject {
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private JsonObject toJson (DatabaseObjectImpl dbo, BeanSerializer serializer, int level) {
+	private JsonObject toJson (DatabaseObjectImpl dbo, BeanSerializer serializer, BeanSchema schema, int level) {
 		if (serializer == null) {
 			serializer = BeanSerializer.Default;
 		}
 
-		String entity = dbo.entity ();
-		
-		Fields fields = serializer.fields (level);
-
-		if (fields == null || Fields.None.equals (fields)) {
+		if (schema == null) {
 			return null;
 		}
 		
-		String [] fieldNames = null;
-		if (Fields.All.equals (fields)) {
-			fieldNames = dbo.document.fieldNames ();
-		} else {
-			fieldNames = MinimalFields;
+		String entity = dbo.entity ();
+		
+		Set<String> fields = schema.fields (new HashSet<String>(Arrays.asList (dbo.document.fieldNames ())));
+		if (fields == null || fields.isEmpty ()) {
+			return null;
 		}
 		
 		JsonObject json = serializer.create (entity, level);
@@ -303,7 +306,7 @@ public class DatabaseObjectImpl implements DatabaseObject {
 			return null;
 		}
 		
-		for (String f : fieldNames) {
+		for (String f : fields) {
 			Object v = dbo.get (f);
 			if (v == null) {
 				continue;
@@ -324,7 +327,7 @@ public class DatabaseObjectImpl implements DatabaseObject {
 						continue;
 					}
 					if (o instanceof DatabaseObjectImpl) {
-						arr.add (toJson ((DatabaseObjectImpl)o, serializer, level + 1));
+						arr.add (toJson ((DatabaseObjectImpl)o, serializer, schema.schema (level, f), level + 1));
 					} else {
 						if (o instanceof Date) {
 							arr.add (Lang.toUTC ((Date)o));
@@ -337,7 +340,7 @@ public class DatabaseObjectImpl implements DatabaseObject {
 				}
 				v = arr;
 			} else if (v instanceof DatabaseObjectImpl) {
-				v = toJson ((DatabaseObjectImpl)v, serializer, level + 1);
+				v = toJson ((DatabaseObjectImpl)v, serializer, schema.schema (level, f), level + 1);
 			}
 			
 			serializer.set (entity, json, f, v);

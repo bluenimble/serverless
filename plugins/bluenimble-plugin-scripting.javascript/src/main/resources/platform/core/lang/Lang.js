@@ -78,7 +78,7 @@ var Lang = {
 	  @returns {boolean} true if it's an array
 	*/
 	isArray: function (o) {
-		return Object.prototype.toString.call (o) === '[object Array]';
+		return (o instanceof JC_JsonArray) || Object.prototype.toString.call (o) === '[object Array]';
 	},
 	/**	
 	  Check if the value in argument is an object
@@ -90,7 +90,7 @@ var Lang = {
 		if (!o) {
 			return false;
 		}
-		return Object.prototype.toString.call (o) === '[object Object]';
+		return (o instanceof JC_JsonObject) || Object.prototype.toString.call (o) === '[object Object]';
 	},
 	
 	/**	

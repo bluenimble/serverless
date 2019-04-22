@@ -20,8 +20,10 @@ import java.io.Serializable;
 
 public interface ApiRequestTrack extends Serializable {
 	
-	void tag	(String name, String reason);
+	void discard 	(boolean discard);
 	
-	void put	(String name, Object value);
+	void tag		(String name, String reason);
+	
+	void put		(String name, Object value);
 	
 }

@@ -11,7 +11,8 @@
 				"links": [{
 					"Read More": "https://www.bluenimble.com"
 				}]
-			}
+			},
+			"strictMode": "[ this.strictMode | 'false' ]"
 		}
 	}
 }	

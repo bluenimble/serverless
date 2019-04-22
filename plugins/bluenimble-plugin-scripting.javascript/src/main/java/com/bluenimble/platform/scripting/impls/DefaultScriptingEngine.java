@@ -47,7 +47,6 @@ import com.bluenimble.platform.scripting.ScriptContext;
 import com.bluenimble.platform.scripting.Scriptable;
 import com.bluenimble.platform.scripting.ScriptingEngine;
 import com.bluenimble.platform.scripting.ScriptingEngineException;
-import com.bluenimble.platform.server.maps.MapProvider;
 import com.bluenimble.platform.server.plugins.scripting.ScriptingPlugin;
 
 //import jdk.nashorn.api.scripting.NashornException;
@@ -98,9 +97,11 @@ public class DefaultScriptingEngine implements ScriptingEngine {
 	private Map<String, CachedScript> 	 scripts = new ConcurrentHashMap<String, CachedScript> ();
 	
 	private ScriptObjectMirror platform;
+	private ScriptingPlugin plugin;
 	
-	public DefaultScriptingEngine (ScriptingPlugin plugin, ScriptObjectMirror platform, MapProvider mapProvider) throws Exception {
-		this.platform = platform;
+	public DefaultScriptingEngine (ScriptingPlugin plugin, ScriptObjectMirror platform) throws Exception {
+		this.plugin 	= plugin;
+		this.platform 	= platform;
 		engines.put (Supported.Javascript, plugin.create ());
 	}
 	
@@ -128,15 +129,20 @@ public class DefaultScriptingEngine implements ScriptingEngine {
 			InputStream rio = null;
 			try {
 				StringBuilder startScript = new StringBuilder (ScriptStart);
+				
+				// add native function
+				startScript.append (Native);
+
 				// add platform libraries
 				for (String lib : libsKeys) {
 					startScript.append (Var).append (Lang.SPACE).append (lib).append (Lang.EQUALS)
 								.append (Libs).append (Lang.DOT).append (lib).append (Lang.SEMICOLON);
 				}
-				startScript.append (Native);
 				
-				for (String d : Denied) {
-					startScript.append (d);
+				if (plugin.isStrictMode ()) {
+					for (String d : Denied) {
+						startScript.append (d);
+					}
 				}
 				
 				String sStartScript = startScript.toString ();

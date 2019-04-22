@@ -35,6 +35,9 @@ public class ArrayValidator extends AbstractTypeValidator {
 
 	private static final long serialVersionUID = 2430274897113013353L;
 	
+	public static final String MinMessage			= "ArrayMin";
+	public static final String MaxMessage			= "ArrayMax";
+	
 	@Override
 	public String getName () {
 		return FieldType.Array;
@@ -81,6 +84,26 @@ public class ArrayValidator extends AbstractTypeValidator {
 			);
 		}
 		
+		JsonObject feedback = null;
+		String min = ValidationUtils.isValidRestriction (spec, array.count(), Spec.MinSize);
+		if (min != null) {
+			feedback = ValidationUtils.feedback (
+				feedback, spec, Spec.MinSize, 
+				validator.getMessage (api, request.getLang (), MinMessage, label, min, String.valueOf (value))
+			);
+		}
+		String max = ValidationUtils.isValidRestriction (spec, array.count(), Spec.MaxSize);
+		if (max != null) {
+			feedback = ValidationUtils.feedback (
+				feedback, spec, Spec.MaxSize, 
+				validator.getMessage (api, request.getLang (), MaxMessage, label, max, String.valueOf (value))
+			);
+		}
+
+		if (feedback != null) {
+			return feedback;
+		}
+		
 		String sType = Json.getString (spec, Spec.SType, FieldType.Object);
 		
 		TypeValidator tValidator = validator.getTypeValidator (sType);
@@ -88,12 +111,12 @@ public class ArrayValidator extends AbstractTypeValidator {
 			tValidator = validator.getTypeValidator (FieldType.Object);
 		}
 		for (int i = 0; i < array.count (); i++) {
-			Object feedback = tValidator.validate (api, consumer, request, validator, name, label + "->index " + i, spec, array.get (i));
-			if (feedback != null) {
-				if (feedback instanceof JsonObject) {
-					return feedback;
+			Object innerFeedback = tValidator.validate (api, consumer, request, validator, name, label + "->index " + i, spec, array.get (i));
+			if (innerFeedback != null) {
+				if (innerFeedback instanceof JsonObject) {
+					return innerFeedback;
 				} else {
-					array.set (i, feedback);
+					array.set (i, innerFeedback);
 				}
 			}
 		}

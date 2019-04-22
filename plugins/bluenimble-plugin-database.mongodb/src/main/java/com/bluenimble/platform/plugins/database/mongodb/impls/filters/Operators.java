@@ -3,7 +3,7 @@ package com.bluenimble.platform.plugins.database.mongodb.impls.filters;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.bluenimble.platform.db.query.Query.Operator;
+import com.bluenimble.platform.query.Query.Operator;
 
 public class Operators {
 	

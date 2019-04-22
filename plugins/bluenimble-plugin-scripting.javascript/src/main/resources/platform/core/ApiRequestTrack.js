@@ -42,4 +42,11 @@ var ApiRequestTrack = function (proxy) {
 		return this;
 	};
 	
+	/**	
+	  Discard this track
+	*/
+	this.discard = function () {
+		proxy.discard ();
+	};
+	
 };

@@ -23,10 +23,10 @@ import com.bluenimble.platform.Feature;
 @Feature ( name = "cache" )
 public interface Cache extends Serializable {
 
-	void 		put 		(String key, Object value, int ttl);
-	Object 		get 		(String key, boolean remove);
-	void 		delete 		(String key);
+	void 		put 		(byte [] key, byte [] value, int ttl);
+	byte [] 	get 		(byte [] key, boolean remove);
+	void 		delete 		(byte [] key);
 	
-	void 		increment 	(String key, int increment, long dValue, int ttl, boolean async);
+	long 		increment 	(byte [] key, long increment);
 
 }

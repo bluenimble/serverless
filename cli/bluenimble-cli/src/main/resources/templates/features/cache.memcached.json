@@ -3,7 +3,7 @@
 	"feature": "cache",
 
 	"spec": {
-		"cluster": "<?>hosts where memcached/redis is running. Ex. host1:port1,host2:port2,...",
+		"cluster": ["<?>host where memcached/redis is running. Ex. host1:port1,host2:port2,..."],
 		
 		"auth": {
 			"user": "<?>username",

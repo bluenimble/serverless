@@ -22,11 +22,12 @@ import java.io.Writer;
 
 import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.ApiServiceExecutionException;
+import com.bluenimble.platform.api.impls.BaseApiResponse;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.scripting.Scriptable;
 
 @Scriptable (name = "ApiResponse")
-public class SchedulerApiResponse implements ApiResponse {
+public class SchedulerApiResponse extends BaseApiResponse {
 
 	private static final long serialVersionUID = -5269972265851329885L;
 	
@@ -34,10 +35,8 @@ public class SchedulerApiResponse implements ApiResponse {
 	protected JsonObject 					error;
 	protected ApiServiceExecutionException 	exception;
 	
-	protected String 						id;
-	
 	public SchedulerApiResponse (String id) {
-		this.id = id;
+		super (id, null);
 	}
 	
 	@Override
@@ -74,11 +73,6 @@ public class SchedulerApiResponse implements ApiResponse {
 	@Override
 	public JsonObject getError () {
 		return error;
-	}
-
-	@Override
-	public String getId () {
-		return id;
 	}
 
 	@Override
@@ -135,5 +129,5 @@ public class SchedulerApiResponse implements ApiResponse {
 	public ApiServiceExecutionException getException () {
 		return exception;
 	}
-	
+
 }

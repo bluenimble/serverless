@@ -27,9 +27,9 @@ public class Get {
 		
 		Database db = new DatabaseServer ().get ();
 		
-		DatabaseObject employee = db.get ("Employees", "5c26b1ae29bbe7dfd9db2ece");
+		DatabaseObject employee = db.get ("User", "5ca5494ed3345df613e8970a");
 		
-		System.out.println (employee.toJson (new DefaultBeanSerializer (2, 2)));
+		System.out.println (employee.toJson (new DefaultBeanSerializer (0, 0)));
 		
 	}
 	

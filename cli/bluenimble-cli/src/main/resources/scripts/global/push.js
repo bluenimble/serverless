@@ -508,4 +508,4 @@ for (var k in backVars) {
 	}
 }
 
-Tool.info ('Total Push Time: ' + Tool.styled ((System.currentTimeMillis () - startTime), 'yellow') + ' millis');
+Tool.info ('Total Push Time: ' + Tool.styled ((System.currentTimeMillis () - startTime), 'yellow') + ' millis  @ ' + new Date ());

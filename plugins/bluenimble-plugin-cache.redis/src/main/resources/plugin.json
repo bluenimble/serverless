@@ -1,0 +1,17 @@
+{
+	"namespace": "cache.redis",
+	"name": "Cache Implementation - Redis",
+	
+	"spi": {
+		"class": "com.bluenimble.platform.server.plugins.cache.redis.RedisPlugin",
+		"properties": {
+			"version": "[version]",
+			"vendor": {
+				"name": "BlueNimble, Inc",
+				"links": [{
+					"Read More": "https://www.bluenimble.com"
+				}]
+			}
+		}
+	}
+}	

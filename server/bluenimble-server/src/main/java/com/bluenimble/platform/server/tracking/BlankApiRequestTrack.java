@@ -36,7 +36,9 @@ public class BlankApiRequestTrack implements ServerRequestTrack {
 	@Override
 	public void put(String name, Object value) {
 	}
-	
+	@Override
+	public void discard (boolean discard) {
+	}
 	@Override
 	public void tag (String name, String reason) {
 	}

@@ -38,16 +38,6 @@ import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseException;
 import com.bluenimble.platform.db.DatabaseObject;
-import com.bluenimble.platform.db.query.Caching.Target;
-import com.bluenimble.platform.db.query.CompiledQuery;
-import com.bluenimble.platform.db.query.Condition;
-import com.bluenimble.platform.db.query.OrderBy;
-import com.bluenimble.platform.db.query.OrderBy.Direction;
-import com.bluenimble.platform.db.query.OrderByField;
-import com.bluenimble.platform.db.query.Query;
-import com.bluenimble.platform.db.query.Query.Operator;
-import com.bluenimble.platform.db.query.Select;
-import com.bluenimble.platform.db.query.Where;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.database.mongodb.impls.filters.BetweenFilterAppender;
@@ -57,6 +47,16 @@ import com.bluenimble.platform.plugins.database.mongodb.impls.filters.LikeFilter
 import com.bluenimble.platform.plugins.database.mongodb.impls.filters.NilFilterAppender;
 import com.bluenimble.platform.plugins.database.mongodb.impls.filters.RegexFilterAppender;
 import com.bluenimble.platform.plugins.database.mongodb.impls.filters.TextFilterAppender;
+import com.bluenimble.platform.query.CompiledQuery;
+import com.bluenimble.platform.query.Condition;
+import com.bluenimble.platform.query.OrderBy;
+import com.bluenimble.platform.query.OrderByField;
+import com.bluenimble.platform.query.Query;
+import com.bluenimble.platform.query.Select;
+import com.bluenimble.platform.query.Where;
+import com.bluenimble.platform.query.Caching.Target;
+import com.bluenimble.platform.query.OrderBy.Direction;
+import com.bluenimble.platform.query.Query.Operator;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.TransactionOptions;
@@ -145,6 +145,16 @@ public class MongoDatabaseImpl implements Database {
 		this.allowProprietaryAccess = allowProprietaryAccess;
 	}
 
+	@Override
+	public void createEntity (String entity, Field... fields) throws DatabaseException {
+		checkNotNull (entity);
+		if (session == null) {
+			db.createCollection (entity (entity));
+		} else {
+			db.createCollection (session, entity (entity));
+		}
+	}
+	
 	@Override
 	public DatabaseObject create (String entity) throws DatabaseException {
 		return new DatabaseObjectImpl (this, entity (entity));

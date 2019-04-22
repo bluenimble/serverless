@@ -19,6 +19,7 @@ package com.bluenimble.platform.indexer.impls;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
@@ -31,6 +32,14 @@ import com.bluenimble.platform.indexer.Indexer;
 import com.bluenimble.platform.indexer.IndexerException;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.query.Caching.Target;
+import com.bluenimble.platform.query.CompiledQuery;
+import com.bluenimble.platform.query.Query;
+import com.bluenimble.platform.query.Query.Operator;
+import com.bluenimble.platform.query.QueryCompiler;
+import com.bluenimble.platform.query.QueryException;
+import com.bluenimble.platform.query.Select;
+import com.bluenimble.platform.query.impls.SqlQueryCompiler;
 import com.bluenimble.platform.remote.Remote;
 import com.bluenimble.platform.remote.Serializer;
 
@@ -67,6 +76,16 @@ public class ElasticSearchIndexer implements Indexer {
 			interface Operations {
 				String Index = "index";
 			}
+			interface Sql {
+				String Query	= "query";
+				String Path		= "/_sql";
+				String Offset 	= "OFFSET";
+				String Limit 	= "LIMIT";
+			}
+			interface Result {
+				String Columns 	= "columns";
+				String Rows 	= "rows";
+			} 
 		}
 	}
 	
@@ -74,6 +93,8 @@ public class ElasticSearchIndexer implements Indexer {
 	private 			String index;
 	
 	private 			Tracer tracer;
+	
+	private Map<String, String> QueriesCache = new ConcurrentHashMap<String, String> ();
 
 	public ElasticSearchIndexer (Remote remote, String index, Tracer tracer) {
 		this.remote 	= remote;
@@ -444,70 +465,6 @@ public class ElasticSearchIndexer implements Indexer {
 		return result;
 	}
 	
-	/*
-	@Override
-	public JsonObject update (String [] entities, JsonObject query, JsonObject doc) throws IndexerException {
-		if (remote == null) {
-			throw new IndexerException ("No Remoting feature attached to this indexer");
-		}
-		
-		if (Json.isNullOrEmpty (doc)) {
-			throw new IndexerException ("Document cannot be null nor empty.");
-		}
-		
-		String types = Lang.BLANK;
-		if (entities != null && entities.length > 0) {
-			types = Lang.join (entities, Lang.COMMA);
-		}
-		
-		tracer.log (
-			Tracer.Level.Info, 
-			"search documents in index {0} / [{1}] with query {2}", 
-			index, 
-			types.equals (Lang.BLANK) ? "All Entities" : Lang.join (entities), 
-			query
-		);
-			
-		JsonObject result = new JsonObject ();
-		ElkError error = new ElkError ();
-		
-		remote.post (
-			(JsonObject)new JsonObject ()
-				.set (Remote.Spec.Path, index + Lang.SLASH + types + 
-						(types.equals (Lang.BLANK) ? Lang.BLANK : Lang.SLASH) + Internal.Elk.UpdateByQuery)
-				.set (Remote.Spec.Headers, 
-					new JsonObject ()
-						.set (HttpHeaders.CONTENT_TYPE, ContentTypes.Json)
-				).set (Remote.Spec.Data, new JsonObject ().set (name, value))
-				.set (Remote.Spec.Serializer, Serializer.Name.json), 
-			new Remote.Callback () {
-				@Override
-				public void onStatus (int status, boolean chunked, Map<String, Object> headers) {
-				}
-				@Override
-				public void onData (int code, byte [] data) {
-				}
-				@Override
-				public void onError (int code, Object message) {
-					error.set (code, message);
-				}
-				@Override
-				public void onDone (int code, Object data) {
-					if (data != null) {
-						result.putAll ((JsonObject)data);
-					}
-				}
-			}
-		);
-		
-		if (error.happened ()) {
-			throw new IndexerException ("Error occured while calling Indexer: Code=" + error.code + ", Message: " + error.message);
-		}
-		
-		return result;
-	}
-	*/
-	
 	@Override
 	public JsonObject delete (String entity, String id) throws IndexerException {
 		if (remote == null) {
@@ -552,6 +509,169 @@ public class ElasticSearchIndexer implements Indexer {
 		}
 		
 		return result;
+	}
+	
+	private void sqlQuery (Query.Construct construct, Query query, Visitor visitor) throws IndexerException {
+		if (query == null) {
+			return;
+		}
+		
+		tracer.log (Tracer.Level.Debug, "SQL Query {0}", query);
+		
+		String cacheKey = query.construct ().name () + query.name ();
+		
+		String 				sQuery 		= null;
+		Map<String, Object> bindings 	= query.bindings ();
+		
+		if (query.caching ().cache (Target.meta) && !Lang.isNullOrEmpty (query.name ())) {
+			sQuery 		= (String)QueriesCache.get (cacheKey);
+			tracer.log (Tracer.Level.Debug, "Query meta loaded from cache {0}", sQuery);
+		} 
+		
+		if (sQuery == null) {
+			
+			CompiledQuery cQuery = compile (construct, query);
+			
+			sQuery 		= (String)cQuery.query ();
+			bindings	= cQuery.bindings ();
+			
+			if (query.caching ().cache (Target.meta) && !Lang.isNullOrEmpty (query.name ())) {
+				QueriesCache.put (cacheKey, sQuery);
+				tracer.log (Tracer.Level.Debug, "Query meta stored in cache {0}", sQuery);
+			} 
+		}
+		
+		tracer.log (Tracer.Level.Debug, "\tQuery {0}", sQuery);
+		tracer.log (Tracer.Level.Debug, "\tBindings: {0}", bindings);
+		
+		if (Query.Construct.select.equals (construct)) {
+			JsonObject oQuery = new JsonObject ();
+			oQuery.set (Internal.Elk.Sql.Query, sQuery);
+			
+			ElkError error = new ElkError ();
+			
+			remote.post (
+				(JsonObject)new JsonObject ()
+					.set (Remote.Spec.Path, Internal.Elk.Sql.Path)
+					.set (Remote.Spec.Headers, 
+						new JsonObject ()
+							.set (HttpHeaders.CONTENT_TYPE, ContentTypes.Json)
+							.set (HttpHeaders.ACCEPT, ContentTypes.Json)
+					).set (Remote.Spec.Data, oQuery)
+					.set (Remote.Spec.Serializer, Serializer.Name.json),
+				new Remote.Callback () {
+					@Override
+					public void onStatus (int status, boolean chunked, Map<String, Object> headers) {
+					}
+					@Override
+					public void onData (int code, byte [] data) {
+					}
+					@Override
+					public void onError (int code, Object message) {
+						error.set (code, message);
+					}
+					@Override
+					public void onDone (int code, Object data) {
+						if (data == null) {
+							return;
+						}
+						JsonObject oData = (JsonObject)data;
+						if (Json.isNullOrEmpty (oData)) {
+							return;
+						}
+						
+						JsonArray columns = Json.getArray (oData, Internal.Elk.Result.Columns);
+						
+						JsonArray rows = Json.getArray (oData, Internal.Elk.Result.Rows);
+						if (Json.isNullOrEmpty (rows)) {
+							return;
+						}
+						
+						for (int i = 0; i < rows.count (); i++) {
+							boolean cancel = visitor.onRecord (columns, (JsonObject)rows.get (i));
+							if (cancel) {
+								return;
+							}
+						}
+					}
+				}
+			);
+			
+			if (error.happened ()) {
+				throw new IndexerException ("Error occured while calling Indexer: Code=" + error.code + ", Message: " + error.message);
+			}
+			
+		} else {
+			// delete
+		}		
+	}
+	
+	@Override
+	public void find (Query query, Visitor visitor) throws IndexerException {
+		sqlQuery (Query.Construct.select, query, visitor);
+	}
+	
+	@Override
+	public JsonObject findOne (Query query) throws IndexerException {
+		// force count to 1
+		query.count (1);
+		
+		ValueHolder<JsonObject> result = new ValueHolder<JsonObject> ();
+		
+		sqlQuery (Query.Construct.select, query, new Visitor () {
+			@Override
+			public boolean onRecord (JsonArray columns, JsonObject record) {
+				result.set (record);
+				return false;
+			}
+			
+		});
+		return result.get ();
+	}
+	
+	
+	private CompiledQuery compile (Query.Construct construct, final Query query) throws IndexerException {
+		QueryCompiler compiler = new SqlQueryCompiler (construct) {
+			private static final long serialVersionUID = -1248971549807669897L;
+			
+			@Override
+			protected void onQuery (Timing timing, Query query)
+					throws QueryException {
+				super.onQuery (timing, query);
+				
+				if (Timing.start.equals (timing)) {
+					return;
+				}
+				
+				if (query.start () > 0) {
+					buff.append (Lang.SPACE).append (Internal.Elk.Sql.Offset).append (Lang.SPACE).append (query.start ());
+				}
+				if (query.count () > 0) {
+					buff.append (Lang.SPACE).append (Internal.Elk.Sql.Limit).append (Lang.SPACE).append (query.count ());
+				}
+			}
+			
+			@Override
+			protected void onSelect (Timing timing, Select select) throws QueryException {
+				super.onSelect (timing, select);
+			}
+			
+			@Override
+			protected String operatorFor (Operator operator) {
+				return super.operatorFor (operator);
+			}
+			
+			@Override
+			protected void entity () {
+				buff.append (index);
+			}
+		}; 
+		try {
+			return compiler.compile (query);
+		} catch (QueryException e) {
+			throw new IndexerException (e.getMessage (), e);
+		}
+		
 	}
 
 	@Override

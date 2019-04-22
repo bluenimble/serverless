@@ -33,10 +33,10 @@ import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseObject;
-import com.bluenimble.platform.db.query.Query;
-import com.bluenimble.platform.db.query.impls.JsonQuery;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.im.SecurityUtils;
+import com.bluenimble.platform.query.Query;
+import com.bluenimble.platform.query.impls.JsonQuery;
 import com.bluenimble.platform.reflect.beans.BeanSerializer;
 import com.bluenimble.platform.reflect.beans.impls.DefaultBeanSerializer;
 
@@ -46,6 +46,10 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 	
 	public static final BeanSerializer BeanSerializer = new DefaultBeanSerializer (1, 1);
 	
+	private static final String AccountNotFound				= "AccountNotFound";
+	private static final String OrganizationNotFound		= "OrganizationNotFound";
+	private static final String OrganizationLinkNotFound	= "OrganizationLinkNotFound";
+
 	interface ActivationCodeTypes {
 		String UUID = "uuid";
 		String CPIN = "cpin"; // 8
@@ -76,6 +80,8 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 		
 		String ActivationCodeType 		= "activationCodeType";
 		String PinLength 				= "pinLength";
+		
+		String EnableScripting			= "enableScripting";
 		
 		String EncryptPassword			= "encryptPassword";
 
@@ -151,7 +157,11 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 		}
 		
 		if (account == null) {
-			throw new ApiServiceExecutionException ("account not found").status (ApiResponse.UNAUTHORIZED);
+			String message = api.message (request.getLang (), AccountNotFound);
+			if (message == null || message.equals (AccountNotFound)) {
+				message = "Account not found";
+			}
+			throw new ApiServiceExecutionException (message).status (ApiResponse.UNAUTHORIZED);
 		}
 		
 		boolean active = true;
@@ -197,7 +207,11 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 					throw new ApiServiceExecutionException (ex.getMessage (), ex);
 				}
 				if (oOrg == null) {
-					throw new ApiServiceExecutionException ("organization not found").status (ApiResponse.UNAUTHORIZED);
+					String message = api.message (request.getLang (), OrganizationNotFound);
+					if (message == null || message.equals (OrganizationNotFound)) {
+						message = "Organization not found";
+					}
+					throw new ApiServiceExecutionException (message).status (ApiResponse.UNAUTHORIZED);
 				}
 				
 				// check if part of this org
@@ -208,7 +222,11 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 					throw new ApiServiceExecutionException (ex.getMessage (), ex);
 				}
 				if (checkRecord == null) {
-					throw new ApiServiceExecutionException ("organization link not found").status (ApiResponse.UNAUTHORIZED);
+					String message = api.message (request.getLang (), OrganizationLinkNotFound);
+					if (message == null || message.equals (OrganizationLinkNotFound)) {
+						message = "Organization link not found";
+					}
+					throw new ApiServiceExecutionException (message).status (ApiResponse.UNAUTHORIZED);
 				}
 				
 				// lookup copy

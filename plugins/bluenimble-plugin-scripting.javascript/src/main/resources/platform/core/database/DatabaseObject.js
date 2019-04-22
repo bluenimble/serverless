@@ -81,13 +81,20 @@ var DatabaseObject = function (database, proxy) {
 	  @returns {JsonObject} the database object as a json object
 	*/
 	this.toJson		= function (allStopLevel, minStopLevel) {
-		var serializer;
 		if (typeof allStopLevel == 'undefined' && typeof minStopLevel == 'undefined') {
-			serializer = JC_BeanSerializer.Default;
-		} else if (typeof minStopLevel == 'undefined') {
-			serializer = new JC_DefaultBeanSerializer (allStopLevel, allStopLevel);
+			return proxy.toJson (JC_BeanSerializer.Default);
+		}
+
+		var serializer;
+		
+		if (Lang.isObject (allStopLevel)) {
+			serializer = new JC_JsonBeanSerializer (JC_ValueConverter.convert (allStopLevel));
 		} else {
-			serializer = new JC_DefaultBeanSerializer (allStopLevel, minStopLevel);
+			if (typeof minStopLevel == 'undefined') {
+				serializer = new JC_DefaultBeanSerializer (allStopLevel, allStopLevel);
+			} else {
+				serializer = new JC_DefaultBeanSerializer (allStopLevel, minStopLevel);
+			}
 		}
 		return proxy.toJson (serializer);
 	};

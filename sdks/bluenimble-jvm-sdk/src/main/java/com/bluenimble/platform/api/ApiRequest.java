@@ -56,6 +56,7 @@ public interface ApiRequest extends ApiContext {
 		String Endpoint 		= "endpoint";
 		String Resource			= "resource";
 		String Path				= "path";
+		String Service			= "service";
 		
 		String RequestReference	= "reference";
 		

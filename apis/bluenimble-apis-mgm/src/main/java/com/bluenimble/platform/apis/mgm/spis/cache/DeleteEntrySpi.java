@@ -56,7 +56,7 @@ public class DeleteEntrySpi extends AbstractApiServiceSpi {
 		
 		Cache cache = space.feature (Cache.class, provider, request);
 		
-		cache.delete (key);
+		cache.delete (key.getBytes ());
 		
 		return new JsonApiOutput ((JsonObject)new JsonObject ().set (CommonOutput.Deleted, true));
 	}

@@ -44,6 +44,7 @@ public interface Api extends Traceable, Manageable {
 
 		interface Security		{
 			String Schemes		= "schemes";
+			String Extends		= "extends";
 			String Auth			= "auth";
 			String Encrypt		= "encrypt";
 		}

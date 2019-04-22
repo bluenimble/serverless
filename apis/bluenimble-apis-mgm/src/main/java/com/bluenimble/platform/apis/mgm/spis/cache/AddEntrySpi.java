@@ -60,7 +60,7 @@ public class AddEntrySpi extends AbstractApiServiceSpi {
 		
 		Cache cache = space.feature (Cache.class, provider, request);
 		
-		cache.put (Json.getString (payload, Spec.Key), payload.get (Spec.Value), Json.getInteger (payload, Spec.Ttl, 0));
+		cache.put (Json.getString (payload, Spec.Key).getBytes (), Json.getString (payload, Spec.Value).getBytes (), Json.getInteger (payload, Spec.Ttl, 0));
 		
 		return new JsonApiOutput ((JsonObject)new JsonObject ().set (CommonOutput.Added, true));
 	}

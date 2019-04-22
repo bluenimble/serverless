@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.reflect.beans.BeanSchema;
 import com.bluenimble.platform.reflect.beans.BeanSerializer;
 
 public class DefaultBeanSerializer implements BeanSerializer {
@@ -31,34 +32,17 @@ public class DefaultBeanSerializer implements BeanSerializer {
 		Protected.add ("password");
 	}
 	
-	public static final BeanSerializer Instance = new DefaultBeanSerializer (0, 1);
+	public static final BeanSerializer 	Instance 			= new DefaultBeanSerializer (0, 1);
 	
-	protected int 		allStopLevel = 0;
-	protected int 		minStopLevel = 1;
+	private BeanSchema schema;
 	
 	public DefaultBeanSerializer (int allStopLevel, int minStopLevel) {
-		if (allStopLevel < 0) {
-			allStopLevel = 0;
-		}
-		if (minStopLevel < 0) {
-			minStopLevel = 0;
-		}
-		if (minStopLevel < allStopLevel) {
-			minStopLevel = allStopLevel;
-		}
-		this.allStopLevel 	= allStopLevel;
-		this.minStopLevel 	= minStopLevel;
+		schema = new DefaultBeanSchema (allStopLevel, minStopLevel);
 	}
 	
 	@Override
-	public Fields fields (int level) {
-		if (level <= allStopLevel) {
-			return Fields.All;
-		} else if (level <= minStopLevel) {
-			return Fields.Min;
-		} else {
-			return Fields.None;
-		}
+	public BeanSchema schema () {
+		return schema;
 	}
 
 	@Override

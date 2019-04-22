@@ -1,7 +1,7 @@
 package com.bluenimble.platform.plugins.database.mongodb.impls.filters;
 
-import com.bluenimble.platform.db.query.Condition;
 import com.bluenimble.platform.plugins.database.mongodb.impls.filters.Operators.OperatorSpec;
+import com.bluenimble.platform.query.Condition;
 import com.mongodb.BasicDBObject;
 
 public class TextFilterAppender implements FilterAppender {

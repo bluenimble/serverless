@@ -18,6 +18,8 @@
 // REF: https://github.com/fusesource/stompjms 
 package com.bluenimble.platform.cache.impls.memcached;
 
+import java.nio.ByteBuffer;
+
 import com.bluenimble.platform.cache.Cache;
 
 import net.spy.memcached.MemcachedClient;
@@ -33,58 +35,41 @@ public class MemCachedCache implements Cache {
 	}
 
 	@Override
-	public void put (String key, Object value, int ttl) {
-		client.set (key, ttl, value);
+	public void put (byte [] key, byte [] value, int ttl) {
+		client.set (new String (key), ttl, value);
 	}
 
 	@Override
-	public Object get (String key, boolean remove) {
+	public byte [] get (byte [] key, boolean remove) {
 		if (remove) {
-			return client.getAndTouch (key, 200).getValue ();
+			return (byte [])client.getAndTouch (new String (key), 200).getValue ();
 		} else {
-			return client.get (key);
+			return (byte [])client.get (new String (key));
 		}
 	}
 
 	@Override
-	public void delete (String key) {
-		client.delete (key);
+	public void delete (byte [] key) {
+		client.delete (new String (key));
 	}
 
 	@Override
-	public void increment (String key, int increment, long dValue, int ttl, boolean async) {
+	public long increment (byte [] key, long increment) {
 		if (increment == 0) {
-			return;
+			return toLong (get (key, false));
 		}
-		if (increment < 0) {
-			if (async) {
-				if (ttl > 0) { 
-					client.asyncDecr (key, increment, dValue, ttl);
-				} else {
-					client.asyncDecr (key, increment, dValue);
-				}
-			} else {
-				if (ttl > 0) { 
-					client.decr (key, increment, dValue, ttl);
-				} else {
-					client.decr (key, increment, dValue);
-				}
-			}
+		if (increment > 0) {
+			return client.incr (new String (key), increment);
 		} else {
-			if (async) {
-				if (ttl > 0) { 
-					client.asyncIncr (key, increment, dValue, ttl);
-				} else {
-					client.asyncIncr (key, increment, dValue);
-				}
-			} else {
-				if (ttl > 0) { 
-					client.incr (key, increment, dValue, ttl);
-				} else {
-					client.incr (key, increment, dValue);
-				}
-			}
+			return client.decr (new String (key), increment * -1);
 		}
+	}
+	
+	private long toLong (byte[] bytes) {
+	    ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+	    buffer.put(bytes);
+	    buffer.flip();//need flip 
+	    return buffer.getLong();
 	}
 
 }

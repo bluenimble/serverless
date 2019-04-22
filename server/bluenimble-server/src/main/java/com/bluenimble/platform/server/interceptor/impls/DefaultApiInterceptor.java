@@ -27,10 +27,12 @@ import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.ApiService;
+import com.bluenimble.platform.api.ApiService.Spec;
 import com.bluenimble.platform.api.ApiServiceExecutionException;
 import com.bluenimble.platform.api.ApiStatus;
 import com.bluenimble.platform.api.impls.AbstractApiRequest;
 import com.bluenimble.platform.api.impls.ApiImpl;
+import com.bluenimble.platform.api.impls.BaseApiResponse;
 import com.bluenimble.platform.api.impls.ContainerApiRequest;
 import com.bluenimble.platform.api.impls.ContainerApiResponse;
 import com.bluenimble.platform.api.impls.JsonApiOutput;
@@ -53,6 +55,12 @@ import com.bluenimble.platform.server.utils.Messages;
 public class DefaultApiInterceptor implements ApiInterceptor {
 	
 	private static final long serialVersionUID = 904004854168178129L;
+	
+	interface TrackingLevel {
+		int None 	= -1;
+		int Normal 	= 0;
+		int All 	= 1;
+	}
 	
 	private ApiServer server;
 	
@@ -122,6 +130,16 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 			}
 			
 			((AbstractApiRequest)request).setService (service);
+			((BaseApiResponse)response).setService (service);
+			
+			int sTrackingLevel = TrackingLevel.Normal;
+			JsonObject sTracking = service.getTracking ();
+			if (!Json.isNullOrEmpty (sTracking)) {
+				sTrackingLevel = Json.getInteger (sTracking, Spec.Tracking.Level, TrackingLevel.Normal);
+				if (sTrackingLevel < TrackingLevel.Normal) {
+					track.discard (true);
+				}
+			}
 			
 			// Lookup media processor
 			mediaProcessor = api.lockupMediaProcessor (request, service);
@@ -151,12 +169,17 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 						if (serviceSecMethods != null && !serviceSecMethods.contains (resolverName)) {
 							continue;
 						}
-						ApiConsumerResolver r = server.getConsumerResolver (resolverName);
+						String baseResolver = Json.getString (Json.getObject (apiSecMethods, resolverName), Api.Spec.Security.Extends);
+						if (Lang.isNullOrEmpty (baseResolver)) {
+							baseResolver = resolverName;
+						}
+						ApiConsumerResolver r = server.getConsumerResolver (baseResolver);
 						if (r == null) {
 							continue;
 						}
 						consumer = r.resolve (api, service, request);
 						if (consumer != null) {
+							consumer.set (ApiConsumer.Fields.Resolver, resolverName);
 							resolver = r;
 							break;
 						}
@@ -171,7 +194,6 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 				if (resolver != null) {
 					resolver.authorize (api, service, request, consumer);
 				}
-				
 			} catch (ApiAuthenticationException e) {
 				if (response instanceof ContainerApiResponse) {
 					((ContainerApiResponse)response).setException (
@@ -191,6 +213,8 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 				);
 				return;
 			}
+			
+			track.update (consumer);
 
 			try {
 				server.getServiceValidator ().validate (api, Json.getObject (service.toJson (), ApiService.Spec.Spec), consumer, request);
@@ -256,14 +280,19 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 				if (response.isCommitted ()) {
 					logInfo (api, "<" + request.getId () + "> Response already committed. No media processing required");
 					long time = System.currentTimeMillis () - request.getTimestamp ().getTime ();
-					track.finish (
-						(JsonObject)	
-						new JsonObject ().set (
-							ApiResponse.Error.Code, ApiResponse.OK.getCode ()
-						).set (
-							ApiResponse.Error.Message, time
-						)
-					);
+					if (sTrackingLevel > TrackingLevel.Normal) {
+						track.finish (
+							(JsonObject)	
+							new JsonObject ().set (
+								ApiResponse.Error.Code, ApiResponse.OK.getCode ()
+							).set (
+								ApiResponse.Error.Message, time
+							)
+						);
+					} else {
+						track.discard (true);
+					}
+					
 					logInfo (api, " <" + request.getId () + "> ExecTime-Cancel: Service " + service.getVerb () + ":" + Json.getString (service.toJson (), ApiService.Spec.Endpoint) + " - Time " + time + " millis");
 					return;
 				}
@@ -279,14 +308,18 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 			
 			long time = System.currentTimeMillis () - request.getTimestamp ().getTime ();
 			
-			track.finish (
-				(JsonObject)	
-				new JsonObject ().set (
-					ApiResponse.Error.Code, iStatus
-				).set (
-					ApiResponse.Error.Message, time
-				)
-			);
+			if (sTrackingLevel > TrackingLevel.Normal) {
+				track.finish (
+					(JsonObject)	
+					new JsonObject ().set (
+						ApiResponse.Error.Code, iStatus
+					).set (
+						ApiResponse.Error.Message, time
+					)
+				);
+			} else {
+				track.discard (true);
+			}
 			
 			logInfo (api, "<" + request.getId () + "> ExecTime-Success: Service " + service.getVerb () + ":" + Json.getString (service.toJson (), ApiService.Spec.Endpoint) + " - Time " + time + " millis");
 			
@@ -365,7 +398,7 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 			err = e.getMessage ();
 		}
 		response.error (e.status (), err);
-		writeError (mediaProcessor, api, consumer, service, request, response); 
+		writeError (mediaProcessor, api, consumer, service, request, response);
 	}
 
 	private void logDebug (Api api, Object o) {

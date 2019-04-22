@@ -35,9 +35,9 @@ import com.bluenimble.platform.api.security.ApiConsumerResolverAnnotation;
 import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseObject;
-import com.bluenimble.platform.db.query.impls.JsonQuery;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.query.impls.JsonQuery;
 import com.bluenimble.platform.server.security.impls.DefaultApiConsumer;
 
 @ApiConsumerResolverAnnotation (name = KeyConsumerResolver.Scheme)

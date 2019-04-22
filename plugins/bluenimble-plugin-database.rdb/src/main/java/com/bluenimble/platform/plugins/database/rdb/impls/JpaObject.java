@@ -2,7 +2,6 @@ package com.bluenimble.platform.plugins.database.rdb.impls;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -22,8 +21,9 @@ import com.bluenimble.platform.db.DatabaseObject;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.reflect.beans.BeanMetadata;
+import com.bluenimble.platform.reflect.beans.BeanSchema;
 import com.bluenimble.platform.reflect.beans.BeanSerializer;
-import com.bluenimble.platform.reflect.beans.BeanSerializer.Fields;
+import com.bluenimble.platform.reflect.beans.impls.DefaultBeanSerializer;
 
 public class JpaObject implements DatabaseObject {
 
@@ -278,15 +278,18 @@ public class JpaObject implements DatabaseObject {
 
 	@Override
 	public Iterator<String> keys () {
-		return Arrays.asList (metadata.allFields ()).iterator ();
+		return metadata.allFields ().iterator ();
 	}
 
 	public JsonObject toJson (BeanSerializer serializer) {
-		return toJson (bean, metadata, serializer, 0);
+		if (serializer == null) {
+			serializer = DefaultBeanSerializer.Default;
+		}
+		return toJson (bean, metadata, serializer, serializer.schema (), 0);
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private JsonObject toJson (Object bean, BeanMetadata metadata, BeanSerializer serializer, int level) {
+	private JsonObject toJson (Object bean, BeanMetadata metadata, BeanSerializer serializer, BeanSchema schema, int level) {
 		
 		if (bean == null || metadata == null || metadata.isEmpty ()) {
 			return null;
@@ -296,33 +299,20 @@ public class JpaObject implements DatabaseObject {
 			serializer = BeanSerializer.Default;
 		}
 
+		if (schema == null) {
+			return null;
+		}
+		
 		String entity = bean.getClass ().getSimpleName ();
 		
-		Fields fields = serializer.fields (level);
-
-		if (fields == null || Fields.None.equals (fields)) {
+		Set<String> fields = schema.fields (metadata.allFields ());
+		if (fields == null || fields.isEmpty ()) {
 			return null;
 		}
 		
 		JsonObject json = serializer.create (entity, level);
 		
-		if (json == null) {
-			return null;
-		}
-		
-		String [] fieldNames = null;
-		
-		if (Fields.All.equals (fields)) {
-			fieldNames = metadata.allFields ();
-		} else {
-			fieldNames = metadata.minimalFields ();
-		}
-		
-		if (fieldNames == null || fieldNames.length == 0) {
-			return null;
-		}
-		
-		for (String f : fieldNames) {
+		for (String f : fields) {
 			Object v;
 			try {
 				v = metadata.get (bean, f);
@@ -348,7 +338,7 @@ public class JpaObject implements DatabaseObject {
 						continue;
 					}
 					if (database.isEntity (o)) {
-						arr.add (toJson (o, database.metadata (o.getClass ()), serializer, level + 1));
+						arr.add (toJson (o, database.metadata (o.getClass ()), serializer, schema.schema (level, f), level + 1));
 					} else {
 						if (o instanceof Date) {
 							arr.add (Lang.toUTC ((Date)o));
@@ -361,7 +351,7 @@ public class JpaObject implements DatabaseObject {
 				}
 				v = arr;
 			} else if (database.isEntity (v)) {
-				v = toJson (v, database.metadata (v.getClass ()), serializer, level + 1);
+				v = toJson (v, database.metadata (v.getClass ()), serializer, schema.schema (level, f), level + 1);
 			}
 			
 			serializer.set (entity, json, f, v);

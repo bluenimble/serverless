@@ -40,14 +40,14 @@ import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseObject;
-import com.bluenimble.platform.db.query.Query;
-import com.bluenimble.platform.db.query.impls.JsonQuery;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.messaging.Messenger;
 import com.bluenimble.platform.messaging.impls.JsonActor;
 import com.bluenimble.platform.messaging.impls.JsonRecipient;
 import com.bluenimble.platform.messaging.impls.JsonSender;
 import com.bluenimble.platform.plugins.im.SecurityUtils;
+import com.bluenimble.platform.query.Query;
+import com.bluenimble.platform.query.impls.JsonQuery;
 
 public class SignupServiceSpi extends AbstractApiServiceSpi {
 
@@ -60,6 +60,8 @@ public class SignupServiceSpi extends AbstractApiServiceSpi {
 		String Subject 		= "subject";
 		String Template 	= "template";
 	}
+
+	private static final String AccountExists = "AccountExists";
 
 	@Override
 	public ApiOutput execute (Api api, ApiConsumer consumer, ApiRequest request, ApiResponse response)
@@ -95,7 +97,11 @@ public class SignupServiceSpi extends AbstractApiServiceSpi {
 		}
 		
 		if (account != null) {
-			throw new ApiServiceExecutionException ("account already exists").status (ApiResponse.CONFLICT);
+			String message = api.message (request.getLang (), AccountExists);
+			if (message == null || message.equals (AccountExists)) {
+				message = "Account already exists";
+			}
+			throw new ApiServiceExecutionException (message).status (ApiResponse.CONFLICT);
 		}
 		
 		boolean requiresActivation = Json.getBoolean (config, Config.RequiresActivation, false);
@@ -115,7 +121,7 @@ public class SignupServiceSpi extends AbstractApiServiceSpi {
 			
 			JsonObject extraData = Json.getObject (config, Config.Data);
 			if (extraData != null && !extraData.isEmpty ()) {
-				extraData = (JsonObject)Json.template (extraData, payload, false);
+				extraData = (JsonObject)Json.template (extraData, payload, Json.getBoolean (config, Config.EnableScripting, false));
 				Iterator<String> keys = extraData.keys ();
 				while (keys.hasNext ()) {
 					String key = keys.next ();

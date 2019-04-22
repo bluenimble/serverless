@@ -53,7 +53,7 @@ var JC_DefaultEntitySerializer	= Java.type ('com.bluenimble.platform.db.impls.De
 
 var JC_SchemalessEntity 	= Java.type ('com.bluenimble.platform.db.SchemalessEntity');
 var JC_Query_Visitor		= Java.type ('com.bluenimble.platform.db.Database.Visitor');
-var JC_JsonQuery			= Java.type ('com.bluenimble.platform.db.query.impls.JsonQuery');
+var JC_JsonQuery			= Java.type ('com.bluenimble.platform.query.impls.JsonQuery');
 
 var JC_Storage 				= Java.type ('com.bluenimble.platform.storage.Storage');
 var JC_Folder_Visitor 		= Java.type ('com.bluenimble.platform.storage.Folder.Visitor');

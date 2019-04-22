@@ -8,7 +8,7 @@ import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseObject;
-import com.bluenimble.platform.db.query.impls.JsonQuery;
+import com.bluenimble.platform.query.impls.JsonQuery;
 import com.bluenimble.platform.api.ApiServiceExecutionException;
 
 import com.bluenimble.platform.api.impls.JsonApiOutput;

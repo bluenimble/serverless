@@ -1,0 +1,12 @@
+{
+
+	"feature": "cache",
+
+	"spec": {
+		"cluster": [{
+			"host": "<?>host where redis is running",
+			"port": "<?>port where redis is running"
+		}]
+	}
+	
+}

@@ -17,14 +17,15 @@ import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseException;
 import com.bluenimble.platform.db.DatabaseObject;
-import com.bluenimble.platform.db.query.Caching.Target;
-import com.bluenimble.platform.db.query.CompiledQuery;
-import com.bluenimble.platform.db.query.Query;
-import com.bluenimble.platform.db.query.Query.Operator;
-import com.bluenimble.platform.db.query.QueryCompiler;
-import com.bluenimble.platform.db.query.Select;
-import com.bluenimble.platform.db.query.impls.SqlQueryCompiler;
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.query.Caching.Target;
+import com.bluenimble.platform.query.CompiledQuery;
+import com.bluenimble.platform.query.Query;
+import com.bluenimble.platform.query.Query.Operator;
+import com.bluenimble.platform.query.QueryCompiler;
+import com.bluenimble.platform.query.QueryException;
+import com.bluenimble.platform.query.Select;
+import com.bluenimble.platform.query.impls.SqlQueryCompiler;
 import com.bluenimble.platform.reflect.beans.BeanMetadata;
 
 public class JpaDatabase implements Database {
@@ -59,6 +60,11 @@ public class JpaDatabase implements Database {
 		this.metadata 				= metadata;
 		this.allowProprietaryAccess = allowProprietaryAccess;
 	}
+	
+	@Override
+	public void createEntity (String entityName, Field... fields) throws DatabaseException {
+		throw new DatabaseException ("Unsupported Operation");
+	}	
 
 	@Override
 	public JpaDatabase trx () {
@@ -371,7 +377,7 @@ public class JpaDatabase implements Database {
 			
 			@Override
 			protected void onSelect (Timing timing, Select select)
-					throws DatabaseException {
+					throws QueryException {
 				if (Timing.start.equals (timing)) {
 					buff.append (dml.name ());
 				} else {
@@ -404,8 +410,11 @@ public class JpaDatabase implements Database {
 			}
 			
 		}; 
-		
-		return compiler.compile (query);
+		try {
+			return compiler.compile (query);
+		} catch (QueryException e) {
+			throw new DatabaseException (e.getMessage (), e);
+		}
 		
 	}
 

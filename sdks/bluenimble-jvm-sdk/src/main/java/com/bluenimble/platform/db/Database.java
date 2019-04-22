@@ -20,8 +20,8 @@ import java.util.List;
 
 import com.bluenimble.platform.Feature;
 import com.bluenimble.platform.Recyclable;
-import com.bluenimble.platform.db.query.Query;
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.query.Query;
 
 @Feature ( name = "database" )
 public interface Database extends Recyclable {
@@ -82,6 +82,8 @@ public interface Database extends Recyclable {
 	Database 				trx 		();
 	Database 				commit 		() 														throws DatabaseException;
 	Database 				rollback 	()														throws DatabaseException;
+	
+	void 					createEntity(String entity, Field... fields)						throws DatabaseException;
 
 	DatabaseObject 			create 		(String entity) 										throws DatabaseException;
 	List<DatabaseObject>	createList 	() 														throws DatabaseException;

@@ -33,10 +33,10 @@ import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseObject;
-import com.bluenimble.platform.db.query.Query;
-import com.bluenimble.platform.db.query.impls.JsonQuery;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.im.SecurityUtils;
+import com.bluenimble.platform.query.Query;
+import com.bluenimble.platform.query.impls.JsonQuery;
 import com.bluenimble.platform.reflect.beans.impls.DefaultBeanSerializer;
 
 public class ActivateServiceSpi extends AbstractApiServiceSpi {

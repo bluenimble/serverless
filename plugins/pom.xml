@@ -50,6 +50,7 @@
 		<module>bluenimble-plugin-proxy.default</module>
 
 		<module>bluenimble-plugin-cache.memcached</module>
+		<module>bluenimble-plugin-cache.redis</module>
 		
 		<module>bluenimble-plugin-messenger.smtp</module>
 		<module>bluenimble-plugin-messenger.socketio</module>			

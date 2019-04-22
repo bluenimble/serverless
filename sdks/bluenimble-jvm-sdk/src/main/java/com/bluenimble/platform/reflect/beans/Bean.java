@@ -22,12 +22,13 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
-import com.bluenimble.platform.reflect.beans.BeanSerializer.Fields;
+import com.bluenimble.platform.reflect.beans.impls.DefaultBeanSerializer;
 
 public class Bean implements Serializable {
 
@@ -71,11 +72,14 @@ public class Bean implements Serializable {
 	}
 
 	public JsonObject toJson (BeanSerializer serializer) throws Exception {
-		return toJson (this, metadata, serializer, 0);
+		if (serializer == null) {
+			serializer = DefaultBeanSerializer.Default;
+		}
+		return toJson (this, metadata, serializer, serializer.schema (), 0);
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private JsonObject toJson (Bean bean, BeanMetadata metadata, BeanSerializer serializer, int level) throws Exception {
+	private JsonObject toJson (Bean bean, BeanMetadata metadata, BeanSerializer serializer, BeanSchema schema, int level) throws Exception {
 		
 		if (bean == null || metadata == null || metadata.isEmpty ()) {
 			return null;
@@ -85,15 +89,18 @@ public class Bean implements Serializable {
 			serializer = BeanSerializer.Default;
 		}
 
-		String entity = bean.getClass ().getSimpleName ();
-		
-		Fields fields = serializer.fields (level);
-
-		if (fields == null || Fields.None.equals (fields)) {
+		if (metadata.isEmpty ()) {
 			return null;
 		}
 		
-		if (metadata.isEmpty ()) {
+		if (schema == null) {
+			return null;
+		}
+		
+		String entity = bean.getClass ().getSimpleName ();
+		
+		Set<String> fields = schema.fields (metadata.allFields ());
+		if (fields == null || fields.isEmpty ()) {
 			return null;
 		}
 		
@@ -103,19 +110,7 @@ public class Bean implements Serializable {
 			return null;
 		}
 		
-		String [] fieldNames = null;
-		
-		if (Fields.All.equals (fields)) {
-			fieldNames = metadata.allFields ();
-		} else {
-			fieldNames = metadata.minimalFields ();
-		}
-		
-		if (fieldNames == null || fieldNames.length == 0) {
-			return null;
-		}
-		
-		for (String f : fieldNames) {
+		for (String f : fields) {
 			Object v = metadata.get (bean, f);
 			if (v == null) {
 				continue;
@@ -136,7 +131,7 @@ public class Bean implements Serializable {
 						continue;
 					}
 					if (Bean.class.isAssignableFrom (o.getClass ())) {
-						arr.add (toJson ((Bean)o, ((Bean)o).metadata, serializer, level + 1));
+						arr.add (toJson ((Bean)o, ((Bean)o).metadata, serializer, schema.schema (level, f), level + 1));
 					} else {
 						if (o instanceof Date) {
 							arr.add (Lang.toUTC ((Date)o));
@@ -149,7 +144,7 @@ public class Bean implements Serializable {
 				}
 				v = arr;
 			} else if (Bean.class.isAssignableFrom (v.getClass ())) {
-				v = toJson ((Bean)v, ((Bean)v).metadata, serializer, level + 1);
+				v = toJson ((Bean)v, ((Bean)v).metadata, serializer, schema.schema (level, f), level + 1);
 			}
 			
 			serializer.set (entity, json, f, v);

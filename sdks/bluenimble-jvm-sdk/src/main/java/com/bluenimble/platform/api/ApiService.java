@@ -58,6 +58,11 @@ public interface ApiService extends Manageable {
 
 		interface Runtime		{
 		}
+		
+		interface Tracking	{
+			String Level		= "level";
+			String Feature		= "feature";
+		}
 
 		String Status		= "status";
 		String Spec 		= "spec";
@@ -82,6 +87,7 @@ public interface ApiService extends Manageable {
 	JsonObject 					getRuntime 			();
 	JsonObject 					getFeatures 		();
 	JsonObject 					getMedia 			();
+	JsonObject 					getTracking 		();
 	JsonObject 					getSpiDef 			();
 	
 	ApiStatus					status				();

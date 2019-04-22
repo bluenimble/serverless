@@ -17,7 +17,9 @@
 package com.bluenimble.platform.indexer;
 
 import com.bluenimble.platform.Feature;
+import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.query.Query;
 
 @Feature ( name = "indexer" )
 public interface Indexer {
@@ -26,6 +28,10 @@ public interface Indexer {
 		String Create = "create";
 		String Update = "update";
 		String Delete = "delete";
+	}
+	
+	interface Visitor {
+		boolean onRecord (JsonArray columns, JsonObject record);
 	}
 	
 	boolean 		exists 		(String entity) 												throws IndexerException;
@@ -43,4 +49,7 @@ public interface Indexer {
 	
 	JsonObject 		search 		(JsonObject query, String [] entities) 							throws IndexerException;
 	long 			count 		(JsonObject query, String [] entities) 							throws IndexerException;
+	
+	void			find 		(Query query, Visitor visitor) 									throws IndexerException;
+	JsonObject		findOne 	(Query query) 													throws IndexerException;
 }

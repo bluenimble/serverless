@@ -54,6 +54,8 @@ public interface ApiHeaders {
 	String 	SetCookie			= "Set-Cookie";
 
 	String 	Location			= "Location";
+	
+	String 	Referer 			= "Referer";
 
 	String 	NodeID 				= "BNB-Node-ID";
 	String 	NodeType 			= "BNB-Node-Type";

@@ -202,7 +202,7 @@ public class HttpRemote extends BaseRemote {
 				body = RequestBody.create (
 					mediaType, rdata == null ? Lang.EMTPY_OBJECT : rdata.toString (Json.getBoolean (spec, Spec.Cast, false))
 				);
-			} else if (rdata.containsKey (Spec.Body)) {
+			} else if (rdata != null && rdata.containsKey (Spec.Body)) {
 				body = RequestBody.create (
 					mediaType.type ().equals (ContentTypes.XndJson) ? null : mediaType, Json.getString (rdata, Spec.Body).getBytes ()
 				);

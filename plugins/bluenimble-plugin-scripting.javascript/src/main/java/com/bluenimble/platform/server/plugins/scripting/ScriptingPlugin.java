@@ -63,7 +63,8 @@ public class ScriptingPlugin extends AbstractPlugin {
 	
 	private ScriptingEngine shared;
 	
-	private String vmArgs;
+	private String 	vmArgs;
+	private boolean strictMode;
 	
 	@Override
 	public void init (final ApiServer server) throws Exception {
@@ -96,7 +97,7 @@ public class ScriptingPlugin extends AbstractPlugin {
 			bindings.put (Vars.Core, new File (platform, Vars.Core).getAbsolutePath ());
 			bindings.put (Vars.Tools, new File (platform, Vars.Tools).getAbsolutePath ());
 			
-			shared = new DefaultScriptingEngine (this, (ScriptObjectMirror)masterEngine.eval (pReader, bindings), server.getMapProvider ());
+			shared = new DefaultScriptingEngine (this, (ScriptObjectMirror)masterEngine.eval (pReader, bindings));
 			
 		} finally {
 			IOUtils.closeQuietly (pReader);
@@ -147,6 +148,14 @@ public class ScriptingPlugin extends AbstractPlugin {
 
 	public void setVmArgs (String vmArgs) {
 		this.vmArgs = vmArgs;
+	}
+	
+	public boolean isStrictMode () {
+		return strictMode;
+	}
+
+	public void setStrictMode (boolean strictMode) {
+		this.strictMode = strictMode;
 	}
 
 }

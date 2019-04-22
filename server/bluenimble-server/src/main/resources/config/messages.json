@@ -33,6 +33,18 @@
 	"IntegerType": {
 		"en": "{0} must be a valid number" 
 	},
+	"ArrayMin": {
+		"en": "{0} ({2}) number of items should be greater or equals to {1}"
+	},
+	"ArrayMax": {
+		"en": "{0} ({2}) number of items should be less than {1}"
+	},
+	"ObjectMin": {
+		"en": "{0} ({2}) number of items should be greater or equals to {1}"
+	},
+	"ObjectMax": {
+		"en": "{0} ({2}) number of items should be less than {1}"
+	},
 	"IntegerMin": {
 		"en": "{0} ({2}) should be greater or equals to {1}"
 	},

@@ -189,4 +189,73 @@ var Indexer = function (proxy) {
 		return proxy.bulk (JC_ValueConverter.convert (doc));
 	};
 	
+	/**	
+	  Find records based on a query
+	  @param {string} - the entity/table name
+	  @param {JsonObject} - the query spec<br/>
+	  @example
+	  
+	  indexer.find ({
+	  	where: {
+	  		prop1: '123',
+	  		prop2: { op: 'gt', value: 35 }
+	  	}
+	  }, function (record) {
+	  	// do something useful with the JsonObject record
+	  });
+	  
+	  @param {JsonObject} - the callback function to execute for each record found. 
+	  @param {JsonObject} [bindings] - the query parameters
+	  
+	*/
+	this.find = function (query, visitor, bindings) {
+		if (!query) {
+			throw "missing query argument";
+		}
+		
+		var onRecord = visitor.onRecord;
+		
+		if (!onRecord) {
+			onRecord = visitor;
+		}
+		
+		var JVisitor = Java.extend (JC_Indexer_Visitor, {
+			onRecord: function (record) {
+				return onRecord (record);
+			}
+		});
+		
+		proxy.find (
+			new JC_JsonQuery (JC_ValueConverter.convert (query), bindings ? JC_ValueConverter.convert (bindings) : null), 
+			new JVisitor ()
+		);
+	};
+	
+	/**	
+	  Find only 1 object matching your query
+	  @param {string} - the entity/table name
+	  @param {JsonObject} - the query spec<br/>
+	  @example
+	  
+	  var record = indexer.findOne ('YourEntityName', {
+	  	where: {
+	  		prop1: '123',
+	  		prop2: { op: 'gt', value: 35 }
+	  	}
+	  });
+	  
+	  @param {JsonObject} [bindings] - the query parameters
+	  
+	  @return {IndexRecord} - the index object
+	*/
+	this.findOne = function (query, bindings) {
+		
+		if (!query) {
+			throw "missing query argument";
+		}
+		
+		return proxy.findOne (
+			new JC_JsonQuery (JC_ValueConverter.convert (query), bindings ? JC_ValueConverter.convert (bindings) : null)
+		);
+	};
 };

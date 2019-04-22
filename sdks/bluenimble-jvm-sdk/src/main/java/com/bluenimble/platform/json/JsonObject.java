@@ -16,6 +16,7 @@
  */
 package com.bluenimble.platform.json;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Collection;
@@ -46,6 +47,10 @@ public class JsonObject extends JsonAbstractEntity implements Map {
 	
 	public JsonObject (String json) throws JsonException {
 		this (new JsonParser (json));
+	}
+
+	public JsonObject (byte [] json) throws JsonException {
+		this (new JsonParser (new ByteArrayInputStream (json)));
 	}
 
 	public JsonObject (Map<String, Object> data, boolean resolve) {

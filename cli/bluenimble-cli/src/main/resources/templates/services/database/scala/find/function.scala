@@ -15,7 +15,7 @@ import com.bluenimble.platform.db.Database
 import com.bluenimble.platform.db.Database.Visitor
 import com.bluenimble.platform.db.DatabaseObject
 import com.bluenimble.platform.db.DatabaseException
-import com.bluenimble.platform.db.query.impls.JsonQuery
+import com.bluenimble.platform.query.impls.JsonQuery
 
 import com.bluenimble.platform.json.JsonArray
 import com.bluenimble.platform.json.JsonObject

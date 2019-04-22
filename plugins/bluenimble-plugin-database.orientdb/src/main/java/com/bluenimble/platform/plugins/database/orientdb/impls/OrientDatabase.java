@@ -31,19 +31,21 @@ import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseException;
 import com.bluenimble.platform.db.DatabaseObject;
-import com.bluenimble.platform.db.query.Caching.Target;
-import com.bluenimble.platform.db.query.CompiledQuery;
-import com.bluenimble.platform.db.query.Query;
-import com.bluenimble.platform.db.query.Query.Operator;
-import com.bluenimble.platform.db.query.QueryCompiler;
-import com.bluenimble.platform.db.query.Select;
-import com.bluenimble.platform.db.query.impls.SqlQueryCompiler;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.query.Caching.Target;
+import com.bluenimble.platform.query.CompiledQuery;
+import com.bluenimble.platform.query.Query;
+import com.bluenimble.platform.query.Query.Operator;
+import com.bluenimble.platform.query.QueryCompiler;
+import com.bluenimble.platform.query.QueryException;
+import com.bluenimble.platform.query.Select;
+import com.bluenimble.platform.query.impls.SqlQueryCompiler;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.intent.OIntentMassiveInsert;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
@@ -563,7 +565,12 @@ public class OrientDatabase implements Database {
 		
 		if (sQuery == null) {
 			
-			CompiledQuery cQuery = compile (entity, construct, query, returnBefore);
+			CompiledQuery cQuery;
+			try {
+				cQuery = compile (entity, construct, query, returnBefore);
+			} catch (QueryException e) {
+				throw new DatabaseException (e.getMessage (), e);
+			}
 			
 			sQuery 		= (String)cQuery.query 		();
 			bindings	= cQuery.bindings 	();
@@ -589,14 +596,14 @@ public class OrientDatabase implements Database {
 		}
 	}
 	
-	private CompiledQuery compile (String entity, Query.Construct construct, final Query query, final boolean returnBefore) throws DatabaseException {
+	private CompiledQuery compile (String entity, Query.Construct construct, final Query query, final boolean returnBefore) throws QueryException {
 		final String fEntity = entity;
 		QueryCompiler compiler = new SqlQueryCompiler (construct) {
 			private static final long serialVersionUID = -1248971549807669897L;
 			
 			@Override
 			protected void onQuery (Timing timing, Query query)
-					throws DatabaseException {
+					throws QueryException {
 				super.onQuery (timing, query);
 				
 				if (Timing.start.equals (timing)) {
@@ -612,7 +619,7 @@ public class OrientDatabase implements Database {
 			}
 			
 			@Override
-			protected void onSelect (Timing timing, Select select) throws DatabaseException {
+			protected void onSelect (Timing timing, Select select) throws QueryException {
 				super.onSelect (timing, select);
 				if (Timing.end.equals (timing) && returnBefore) {
 					buff.append (Lang.SPACE).append (ODBSql.ReturnBefore);
@@ -652,16 +659,10 @@ public class OrientDatabase implements Database {
 	private String format (String query, String type, String field) {
 		return Lang.replace (format (query, type), Tokens.Field, field);
 	}
-	
 
-	/*
 	@Override
 	public void createEntity (String eType, Field... fields) throws DatabaseException {
-		eType = checkNotNull (eType);
-		
-		if (fields == null || fields.length == 0) {
-			throw new DatabaseException ("entity " + eType + ". fields missing");
-		}
+		checkNotNull (eType);
 		
 		OClass oClass = db.getMetadata ().getSchema ().getClass (eType);
 		if (oClass != null) {
@@ -670,16 +671,18 @@ public class OrientDatabase implements Database {
 		
 		oClass = db.getMetadata ().getSchema ().createClass (eType);
 		
-		String [] props = new String [fields.length];
-		
-		for (int i = 0; i < fields.length; i++) {
-			Field f = fields [i];
-			props [i] = f.name ();
-			if (f.type () != null) {
-				OProperty property = oClass.createProperty (f.name (), FieldTypes.get (f.type ()));
-				property.setNotNull (f.required ());
-				if (f.unique ()) {
-					property.createIndex (INDEX_TYPE.UNIQUE);
+		if (fields != null && fields.length > 0) {
+			String [] props = new String [fields.length];
+			
+			for (int i = 0; i < fields.length; i++) {
+				Field f = fields [i];
+				props [i] = f.name ();
+				if (f.type () != null) {
+					OProperty property = oClass.createProperty (f.name (), FieldTypes.get (f.type ()));
+					property.setNotNull (f.required ());
+					if (f.unique ()) {
+						property.createIndex (INDEX_TYPE.UNIQUE);
+					}
 				}
 			}
 		}
@@ -687,6 +690,7 @@ public class OrientDatabase implements Database {
 		db.getMetadata ().getSchema ().save ();
 	}
 
+	/*
 	@Override
 	public void createIndex (String eType, IndexType type, String name,
 			Field... fields) throws DatabaseException {

@@ -26,24 +26,19 @@ import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.json.JsonObject;
 
-public abstract class AbstractApiResponse implements ApiResponse {
+public abstract class AbstractApiResponse extends BaseApiResponse {
 	
 	private static final long serialVersionUID = 2484293173544350202L;
 	
 	protected Status						status = OK;
 	protected JsonObject 					error;
 	
-	protected String 						id;
-	
 	protected boolean						committed;
 	
 	protected Map<String, Object>			headers;
 	
-	protected JsonObject					node;
-	
 	protected AbstractApiResponse (String id, JsonObject node) {
-		this.id 	= id;
-		this.node 	= node;
+		super (id, node);
 	}
 	
 	@Override
@@ -56,6 +51,9 @@ public abstract class AbstractApiResponse implements ApiResponse {
 		error = new JsonObject ();
 		error.set (ApiRequest.Fields.Node.class.getSimpleName ().toLowerCase (), node);
 		error.set (ApiRequest.Fields.Id, id);
+		if (service != null) {
+			error.set (ApiRequest.Fields.Service, service.getId ());
+		}
 		error.set (Error.Code, this.status.getCode ());
 		
 		if (message != null && (message instanceof Object [])) {
@@ -72,11 +70,6 @@ public abstract class AbstractApiResponse implements ApiResponse {
 	@Override
 	public JsonObject getError () {
 		return error;
-	}
-
-	@Override
-	public String getId () {
-		return id;
 	}
 
 	@Override

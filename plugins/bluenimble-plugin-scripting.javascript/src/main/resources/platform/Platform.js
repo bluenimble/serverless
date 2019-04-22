@@ -40,6 +40,7 @@ var JC_CodeExec_Mode 		= Java.type ('com.bluenimble.platform.api.CodeExecutor.Mo
 
 var JC_BeanSerializer		= Java.type ('com.bluenimble.platform.reflect.beans.BeanSerializer');
 var JC_DefaultBeanSerializer= Java.type ('com.bluenimble.platform.reflect.beans.impls.DefaultBeanSerializer');
+var JC_JsonBeanSerializer   = Java.type ('com.bluenimble.platform.reflect.beans.impls.JsonBeanSerializer');
 
 var JC_Tracer_Level 		= Java.type ('com.bluenimble.platform.api.tracing.Tracer.Level');
 
@@ -63,7 +64,9 @@ var JC_Database_IndexType 	= Java.type ('com.bluenimble.platform.db.Database.Ind
 var JC_DatabaseObject 		= Java.type ('com.bluenimble.platform.db.DatabaseObject');
 
 var JC_Query_Visitor		= Java.type ('com.bluenimble.platform.db.Database.Visitor');
-var JC_JsonQuery			= Java.type ('com.bluenimble.platform.db.query.impls.JsonQuery');
+var JC_JsonQuery			= Java.type ('com.bluenimble.platform.query.impls.JsonQuery');
+
+var JC_Indexer_Visitor		= Java.type ('com.bluenimble.platform.indexer.Indexer.Visitor');
 
 var JC_Storage 				= Java.type ('com.bluenimble.platform.storage.Storage');
 var JC_Folder_Visitor 		= Java.type ('com.bluenimble.platform.storage.Folder.Visitor');

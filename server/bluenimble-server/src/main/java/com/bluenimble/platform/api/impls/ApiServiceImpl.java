@@ -59,7 +59,7 @@ public class ApiServiceImpl implements ApiService {
 	
 	private   	JsonObject				accessors;
 	
-	private Map<String, Object>		helpers;
+	private 	Map<String, Object>		helpers;
 	
 	private 	ApiImpl					api;
 	
@@ -149,6 +149,11 @@ public class ApiServiceImpl implements ApiService {
 			return null;
 		}
 		return media;
+	}
+
+	@Override
+	public JsonObject getTracking () {
+		return Json.getObject (source, Spec.Tracking.class.getSimpleName ().toLowerCase ());
 	}
 
 	@Override

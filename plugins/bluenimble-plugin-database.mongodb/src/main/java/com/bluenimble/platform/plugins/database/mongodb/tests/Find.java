@@ -22,8 +22,8 @@ import com.bluenimble.platform.Json;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.Database.Visitor;
 import com.bluenimble.platform.db.DatabaseObject;
-import com.bluenimble.platform.db.query.impls.JsonQuery;
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.query.impls.JsonQuery;
 import com.bluenimble.platform.reflect.beans.impls.DefaultBeanSerializer;
 
 public class Find {

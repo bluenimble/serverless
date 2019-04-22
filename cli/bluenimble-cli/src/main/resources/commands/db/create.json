@@ -5,17 +5,11 @@
 			
 			"args": [{
 				"name": "entity", "desc": "database entity name"
-			}, {
-				"name": "fields", "desc": "a variable name holding a json object containing entity fields definition"
 			}],
 		
 			"request": {
 				"method": "post",
-				"service": "<% keys.endpoints.management %>/db/<% vars.database.provider %>/entities/<% arg.0 %>",
-				"contentType": "application/json",
-				"body": {
-					"payload": "<% arg.1 %>"
-				}
+				"service": "<% keys.endpoints.management %>/db/<% vars.database.provider %>/entities/<% arg.0 %>"
 			}
 		}
 	}

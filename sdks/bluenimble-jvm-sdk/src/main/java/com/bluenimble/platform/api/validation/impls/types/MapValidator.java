@@ -46,6 +46,10 @@ public class MapValidator extends AbstractTypeValidator {
 	public static final String GuessKey				= "key";
 	public static final String GuessValue			= "value";
 	
+	public static final String MinMessage			= "ObjectMin";
+	public static final String MaxMessage			= "ObjectMax";
+	
+	
 	@Override
 	public String getName () {
 		return FieldType.Object;
@@ -108,6 +112,26 @@ public class MapValidator extends AbstractTypeValidator {
 			);
 		}
 		
+		JsonObject feedback = null;
+		String min = ValidationUtils.isValidRestriction (spec, object.count(), Spec.MinSize);
+		if (min != null) {
+			feedback = ValidationUtils.feedback (
+				feedback, spec, Spec.MinSize, 
+				validator.getMessage (api, request.getLang (), MinMessage, label, min, String.valueOf (value))
+			);
+		}
+		String max = ValidationUtils.isValidRestriction (spec, object.count(), Spec.MaxSize);
+		if (max != null) {
+			feedback = ValidationUtils.feedback (
+				feedback, spec, Spec.MaxSize, 
+				validator.getMessage (api, request.getLang (), MaxMessage, label, max, String.valueOf (value))
+			);
+		}
+
+		if (feedback != null) {
+			return feedback;
+		}
+		
 		// check strict
 		boolean strict = Json.getBoolean (spec, Spec.Strict, Json.getBoolean (api.getRuntime (), Spec.Strict, false));
 		if (strict && !object.isEmpty ()) {
@@ -125,7 +149,6 @@ public class MapValidator extends AbstractTypeValidator {
 				);
 			}
 		}
-		
 		
 		try {
 			((DefaultApiServiceValidator)validator).validate (api, spec, consumer, request, object);

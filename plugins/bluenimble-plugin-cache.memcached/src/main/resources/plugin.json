@@ -1,6 +1,6 @@
 {
 	"namespace": "cache.memcached",
-	"name": "Cache Implementation - MemCached / Redis",
+	"name": "Cache Implementation - MemCached",
 	
 	"spi": {
 		"class": "com.bluenimble.platform.server.plugins.cache.memcached.MemCachedPlugin",

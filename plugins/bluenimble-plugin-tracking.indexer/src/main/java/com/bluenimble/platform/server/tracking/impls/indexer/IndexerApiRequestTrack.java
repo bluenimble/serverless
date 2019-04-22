@@ -16,14 +16,18 @@
  */
 package com.bluenimble.platform.server.tracking.impls.indexer;
 
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
+import com.bluenimble.platform.api.ApiHeaders;
 import com.bluenimble.platform.api.ApiRequest;
-import com.bluenimble.platform.api.ApiRequest.Fields.Node;
 import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.ApiService;
 import com.bluenimble.platform.api.ApiSpace;
@@ -31,7 +35,10 @@ import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.indexer.Indexer;
 import com.bluenimble.platform.indexer.IndexerException;
+import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.remote.Remote;
+import com.bluenimble.platform.remote.Remote.Callback;
 import com.bluenimble.platform.server.tracking.ServerRequestTrack;
 import com.sun.management.ThreadMXBean;
 
@@ -45,15 +52,26 @@ public class IndexerApiRequestTrack implements ServerRequestTrack {
 	private static final ThreadMXBean 	MX = (ThreadMXBean)ManagementFactory.getThreadMXBean ();
 
 	interface Spec {
-		String Entity 	= "entity";
-		String Feature 	= "feature";
+		String Feature 			= "feature";
+		String Entity 			= "entity";
+		String Fields 			= "fields";
+		String LocationService 	= "locationService";
 	}
 	
-	private static final String 		DefaultEntity 	= "requests";
+	interface SpecialTags {
+		String Feature 	= "__feature";
+	}
+	private static final Set<String> SpecialTagsSet = new HashSet<String> ();
+	static {
+		SpecialTagsSet.add (SpecialTags.Feature);
+	}
+	
+	private static final String 		DefaultEntity 	= "all";
 
 	interface Fields {
 		interface Service {
 			String Name = "name";
+			String Id 	= "id";
 		}
 		interface Time {
 			String Received = "received";
@@ -76,24 +94,21 @@ public class IndexerApiRequestTrack implements ServerRequestTrack {
 			String Message 	= "message";
 		}
 		String Consumer = "consumer";
+		String Location = "location";
 		String Status 	= "status";
 		String Feedback = "feedback";
+		String Referer	= "referer";
 		
 		String Custom = "custom";
 	}
 	
-	interface Elk {
-		String Mapping 		= "mapping";
-		String Properties 	= "properties";
-		String Fields 		= "fields";
-		String Keyword 		= "keyword";
-		
-		interface Type {
-			String Text 	= "text";
-			String Integer 	= "integer";
-			String Double 	= "double";
-			String Keyword 	= "keyword";
-		}
+	private static final Set<String> DefaultFields = new HashSet<String> ();
+	static {
+		DefaultFields.add (Fields.Consumer);
+		DefaultFields.add (Fields.Service.class.getSimpleName ().toLowerCase ());
+		DefaultFields.add (Fields.Custom);
+		DefaultFields.add (Fields.Tag.class.getSimpleName ().toLowerCase ());
+		DefaultFields.add (Fields.Metrics.class.getSimpleName ().toLowerCase ());
 	}
 	
 	private IndexerApiRequestTracker 	tracker;
@@ -101,10 +116,25 @@ public class IndexerApiRequestTrack implements ServerRequestTrack {
 	
 	private JsonObject 					track;
 	
+	private boolean 					discarded;
+	private String						feature;
+	private JsonObject					locationService;
+	private Set<String>					fields 	= DefaultFields;
+	
 	public IndexerApiRequestTrack (IndexerApiRequestTracker tracker, Api api, ApiRequest request) {
 		
 		this.tracker = tracker;
 		this.api = api;
+		
+		JsonArray apiTrackFields = Json.getArray (api.getTracking (), Spec.Fields);
+		if (!Json.isNullOrEmpty (apiTrackFields)) {
+			fields = new HashSet<String> ();
+			for (int i = 0; i < apiTrackFields.count (); i++) {
+				fields.add (String.valueOf (apiTrackFields.get (i)));
+			}
+		}
+		
+		locationService = Json.getObject (api.getTracking (), Spec.LocationService);
 		
 		Date now = new Date ();
 		
@@ -114,8 +144,8 @@ public class IndexerApiRequestTrack implements ServerRequestTrack {
 		track.set (ApiRequest.Fields.Id, 		request.getId ());
 		track.set (ApiRequest.Fields.Channel, 	request.getChannel ());
 		track.set (ApiRequest.Fields.Api, 		new JsonObject ()
-				.set (Fields.Api.Namespace, api.getNamespace ())
-				.set (Fields.Api.Name, api.getName ()));
+			 .set (Fields.Api.Namespace, api.getNamespace ())
+			 .set (Fields.Api.Name, api.getName ()));
 
 		// device
 		String deviceKey = ApiRequest.Fields.Device.class.getSimpleName ();
@@ -129,7 +159,10 @@ public class IndexerApiRequestTrack implements ServerRequestTrack {
 		
 		// request data
 		String dataKey = ApiRequest.Fields.Data.class.getSimpleName ().toLowerCase ();
-		track.set (dataKey,	Json.getObject (oRequest, dataKey));
+		JsonObject data = Json.getObject (oRequest, dataKey);
+		track.set (dataKey,	data);
+		
+		track.set (Fields.Referer, Json.find (data, ApiRequest.Fields.Data.Headers, ApiHeaders.Referer));
 		
 		// request time
 		JsonObject time = new JsonObject ();
@@ -144,28 +177,111 @@ public class IndexerApiRequestTrack implements ServerRequestTrack {
 
 	@Override
 	public void update (ApiService service) {
+		if (discarded) {
+			return;
+		}
+		if (service == null) {
+			return;
+		}
+		
+		JsonObject sTracking = service.getTracking ();
+
+		JsonArray sTrackFields = Json.getArray (sTracking, Spec.Fields);
+		if (!Json.isNullOrEmpty (sTrackFields)) {
+			fields = new HashSet<String> ();
+			for (int i = 0; i < sTrackFields.count (); i++) {
+				fields.add (String.valueOf (sTrackFields.get (i)));
+			}
+		}
+
+		if (!Json.isNullOrEmpty (sTracking)) {
+			feature = Json.getString (sTracking, ApiService.Spec.Tracking.Feature);
+		}
+		
 		Json.getObject (track, Fields.Service.class.getSimpleName ().toLowerCase ())
+			.set (Fields.Service.Id, 			service.getId ())
 			.set (Fields.Service.Name, 			service.getName ())
 			.set (ApiRequest.Fields.Endpoint, 	service.getEndpoint ());
 	}
 
 	@Override
 	public void update (ApiConsumer consumer) {
+		if (discarded) {
+			return;
+		}
 		if (consumer == null) {
 			return;
 		}
-		JsonObject oConsumer = new JsonObject ();
-		oConsumer.set (ApiConsumer.Fields.Type, consumer.get (ApiConsumer.Fields.Type));
-		oConsumer.set (ApiConsumer.Fields.Id, consumer.get (ApiConsumer.Fields.Id));
-		oConsumer.set (ApiConsumer.Fields.Token, consumer.get (ApiConsumer.Fields.Token));
-		oConsumer.set (ApiConsumer.Fields.AccessKey, consumer.get (ApiConsumer.Fields.AccessKey));
-		
-		track.set (Fields.Consumer, oConsumer);
-
+		track.set (Fields.Consumer, consumer.toJson ());
 	}
 
 	@Override
 	public void finish (JsonObject feedback) {
+		
+		if (discarded || fields.isEmpty ()) {
+			track.clear ();
+			return;
+		}
+		
+		if (!fields.contains (Fields.Consumer)) {
+			track.remove (Fields.Consumer);
+		}
+		if (!fields.contains (Fields.Service.class.getSimpleName ().toLowerCase ())) {
+			track.remove (Fields.Service.class.getSimpleName ().toLowerCase ());
+		}
+		if (!fields.contains (ApiRequest.Fields.Data.class.getSimpleName ().toLowerCase ())) {
+			track.remove (ApiRequest.Fields.Data.class.getSimpleName ().toLowerCase ());
+		}
+		if (!fields.contains (Fields.Custom)) {
+			track.remove (Fields.Custom);
+		}
+		if (!fields.contains (Fields.Tag.class.getSimpleName ().toLowerCase ())) {
+			track.remove (Fields.Tag.class.getSimpleName ().toLowerCase ());
+		}
+		JsonObject location = 
+			(JsonObject)Json.find (
+				track, 
+				ApiRequest.Fields.Device.class.getSimpleName ().toLowerCase (), 
+				ApiRequest.Fields.Device.Origin
+			);
+		if (Json.isNullOrEmpty (location) && fields.contains (Fields.Location) && !Json.isNullOrEmpty (locationService)) {
+			Remote remote = api.space ().feature (
+				Remote.class, 
+				Json.getString (locationService, Spec.Feature), 
+				tracker.context ()
+			);
+			JsonObject spec = Json.getObject (locationService, Spec.class.getSimpleName ().toLowerCase ());
+			if (spec == null) {
+				spec = new JsonObject ();
+			} else {
+				spec = spec.duplicate ();
+			}
+			JsonObject data = Json.getObject (spec, Remote.Spec.Data);
+			if (data == null) {
+				data = new JsonObject ();
+				spec.set (Remote.Spec.Data, data);
+			}
+			data.set (
+				ApiRequest.Fields.Device.Origin, 
+				Json.find (track, ApiRequest.Fields.Device.class.getSimpleName ().toLowerCase (), ApiRequest.Fields.Device.Origin)
+			);
+			remote.get (Json.getObject (locationService, Spec.class.getSimpleName ().toLowerCase ()), new Callback () {
+				@Override
+				public void onStatus (int status, boolean chunked, Map<String, Object> headers) {
+				}
+				@Override
+				public void onData (int status, byte[] chunk) throws IOException {
+				}
+				@Override
+				public void onDone (int status, Object data) throws IOException {
+					track.set (Fields.Location, data);
+				}
+				@Override
+				public void onError (int status, Object message) throws IOException {
+					api.tracer ().log (Tracer.Level.Error, "LocationProvider Error [{0}] -> {1}", status, message);
+				}
+			});
+		}
 
 		final Date now = new Date ();
 		
@@ -180,14 +296,17 @@ public class IndexerApiRequestTrack implements ServerRequestTrack {
 		}
 		track.set (Fields.Feedback, feedback);
 		
-	    JsonObject metrics = Json.getObject (track, Fields.Metrics.class.getSimpleName ().toLowerCase ());
-	    
-	    if (MX.isCurrentThreadCpuTimeSupported ()) {
-		    metrics.set (Fields.Metrics.Cpu, MX.getCurrentThreadUserTime ());
-	    }
-	    if (MX.isCurrentThreadCpuTimeSupported ()) {
-		    metrics.set (Fields.Metrics.Memory, MX.getThreadAllocatedBytes (Thread.currentThread ().getId ()));
-	    }
+		if (!fields.contains (Fields.Metrics.class.getSimpleName ().toLowerCase ())) {
+			track.remove (Fields.Metrics.class.getSimpleName ().toLowerCase ());
+		} else {
+		    JsonObject metrics = Json.getObject (track, Fields.Metrics.class.getSimpleName ().toLowerCase ());
+		    if (MX.isCurrentThreadCpuTimeSupported ()) {
+			    metrics.set (Fields.Metrics.Cpu, MX.getCurrentThreadUserTime ());
+		    }
+		    if (MX.isCurrentThreadCpuTimeSupported ()) {
+			    metrics.set (Fields.Metrics.Memory, MX.getThreadAllocatedBytes (Thread.currentThread ().getId ()));
+		    }
+		}
 
 	    try {
 			tracker.executor ().execute (
@@ -204,9 +323,13 @@ public class IndexerApiRequestTrack implements ServerRequestTrack {
 						Indexer indexer = null;
 						try {
 							
+							String feature = IndexerApiRequestTrack.this.feature != null ? 
+									IndexerApiRequestTrack.this.feature : 
+									Json.getString (oTracking, Spec.Feature, ApiSpace.Features.Default);
+							
 							indexer = api.space ().feature (
 								Indexer.class, 
-								Json.getString (oTracking, Spec.Feature, ApiSpace.Features.Default), 
+								feature, 
 								tracker.context ()
 							);
 							
@@ -216,11 +339,6 @@ public class IndexerApiRequestTrack implements ServerRequestTrack {
 							}
 							
 							String entity = Json.getString (oTracking, Spec.Entity, DefaultEntity);
-							
-							if (!indexer.exists (entity)) {
-							    api.tracer ().log (Tracer.Level.Info, "Entity not found in Index, Create Mapping...");
-								indexer.create (entity, requestMapping ());
-							}
 							
 							indexer.put (entity, track);
 							
@@ -238,6 +356,9 @@ public class IndexerApiRequestTrack implements ServerRequestTrack {
 
 	@Override
 	public void put (String name, Object value) {
+		if (discarded) {
+			return;
+		}
 		if (Lang.isNullOrEmpty (name) || value == null) {
 			return;
 		}
@@ -248,10 +369,24 @@ public class IndexerApiRequestTrack implements ServerRequestTrack {
 		} 
 		custom.set (name, value);
 	}
-	
+
+	@Override
+	public void discard (boolean discard) {
+		discarded = discard;
+	}
+
 	@Override
 	public void tag (String name, String reason) {
+		if (discarded) {
+			return;
+		}
 		if (Lang.isNullOrEmpty (name)) {
+			return;
+		}
+		if (SpecialTagsSet.contains (name.toLowerCase ())) {
+			if (name.toLowerCase ().equals (SpecialTags.Feature)) {
+				feature = reason;
+			}
 			return;
 		}
 		JsonObject tag = Json.getObject (track, Fields.Tag.class.getSimpleName ().toLowerCase ());
@@ -262,7 +397,7 @@ public class IndexerApiRequestTrack implements ServerRequestTrack {
 		tag.set (Fields.Tag.Name, name);
 		tag.set (Fields.Tag.Reason, reason);
 	}
-	
+	/*
 	private static JsonObject requestMapping () {
 		JsonObject oProperties 	= new JsonObject ();
 		
@@ -326,4 +461,5 @@ public class IndexerApiRequestTrack implements ServerRequestTrack {
 			//)
 		);
 	}
+	*/
 }

@@ -153,6 +153,8 @@ public interface ApiResponse extends Serializable {
 	
 	String 			getId 		();
 	
+	ApiService 		getService 	();
+	
 	ApiResponse 	set 		(String name, Object value);
 	
 	void			setStatus  	(Status status);
