@@ -148,7 +148,7 @@ public class IndexerApiRequestTrack implements ServerRequestTrack {
 			 .set (Fields.Api.Name, api.getName ()));
 
 		// device
-		String deviceKey = ApiRequest.Fields.Device.class.getSimpleName ();
+		String deviceKey = ApiRequest.Fields.Device.class.getSimpleName ().toLowerCase ();
 		track.set (deviceKey, Json.getObject (oRequest, deviceKey));
 		
 		// service

@@ -47,6 +47,13 @@ public class DelegateListener implements DataListener<Object> {
 	public void onData (SocketIOClient client, Object data, AckRequest ackRequest) throws Exception {
 		Peer peer = PeerUtils.peer (client);
 		
+		if (peer == null) {
+			client.sendEvent (EventListener.Default.error.name (), new JsonObject ().set (Message.Status, Response.Error).set (Message.Reason, "Peer not found. This should not happen!"));
+			return;
+		}
+		
+		peer.init (broker.server (), client);
+		
 		Tenant tenant = broker.getTenantProvider ().get (peer.tenant ());
 		
 		if (!tenant.supports (event)) {

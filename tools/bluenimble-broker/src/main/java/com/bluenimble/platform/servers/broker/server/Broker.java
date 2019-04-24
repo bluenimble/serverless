@@ -3,6 +3,7 @@ package com.bluenimble.platform.servers.broker.server;
 import java.io.Serializable;
 
 import com.bluenimble.platform.servers.broker.TenantProvider;
+import com.corundumstudio.socketio.SocketIOServer;
 
 public interface Broker extends Serializable {
 
@@ -57,6 +58,8 @@ public interface Broker extends Serializable {
 	}
 	
 	TenantProvider 	getTenantProvider ();
+	
+	SocketIOServer	server 	();
 
 	void 			start 	() throws BrokerException;
 	void 			stop 	();

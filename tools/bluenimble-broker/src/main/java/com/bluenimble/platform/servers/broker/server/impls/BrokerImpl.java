@@ -214,5 +214,10 @@ public class BrokerImpl implements Broker {
 		}
 		
 	}
+
+	@Override
+	public SocketIOServer server () {
+		return server;
+	}
 	
 }

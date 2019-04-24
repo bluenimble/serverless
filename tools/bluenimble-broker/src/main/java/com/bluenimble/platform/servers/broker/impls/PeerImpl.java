@@ -41,8 +41,8 @@ public class PeerImpl implements Peer {
 	protected Set<String> 		channels;
 	protected boolean 			monoChannel;
 	
-	private SocketIOServer 		server;
-	private SocketIOClient 		client;
+	private transient SocketIOServer 		server;
+	private transient SocketIOClient 		client;
 	
 	@Override
 	public void init (SocketIOServer server, SocketIOClient client) {
