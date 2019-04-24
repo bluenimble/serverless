@@ -242,7 +242,7 @@ public class IndexerApiRequestTrack implements ServerRequestTrack {
 			(JsonObject)Json.find (
 				track, 
 				ApiRequest.Fields.Device.class.getSimpleName ().toLowerCase (), 
-				ApiRequest.Fields.Device.Origin
+				ApiRequest.Fields.Device.Location
 			);
 		if (Json.isNullOrEmpty (location) && fields.contains (Fields.Location) && !Json.isNullOrEmpty (locationService)) {
 			Remote remote = api.space ().feature (

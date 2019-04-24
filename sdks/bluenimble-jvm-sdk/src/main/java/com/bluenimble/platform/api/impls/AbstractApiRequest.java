@@ -300,11 +300,6 @@ public abstract class AbstractApiRequest extends AbstractApiContext implements A
 		json.set (Fields.Device.class.getSimpleName ().toLowerCase (), device);
 		json.set (Fields.Data.class.getSimpleName ().toLowerCase (), data);
 		
-		Map<String, Object> geo = geo ();
-		if (geo != null) {
-			device.set (Fields.Device.GeoLocation, geo);
-		}
-		
 		Map<String, Object> parameters = jParameters ();
 		if (parameters != null && !parameters.isEmpty ()) {
 			data.set (Fields.Data.Parameters, parameters);
@@ -368,32 +363,6 @@ public abstract class AbstractApiRequest extends AbstractApiContext implements A
 		}
 		
 		return streams;
-	}
-
-	private Map<String, Object> geo () {
-		String geo = (String)get (ApiHeaders.GeoLocation, ApiRequest.Scope.Header);
-		if (Lang.isNullOrEmpty (geo)) {
-			return null;
-		}
-		String [] aGeo = Lang.split (geo, Lang.SEMICOLON);
-		if (aGeo == null || aGeo.length < 2) {
-			return null;
-		}
-		Map<String, Object> mGeo = new HashMap<String, Object> ();
-		for (String attr : aGeo) {
-			String [] keyValue = Lang.split (attr, Lang.EQUALS);
-			if (keyValue == null || keyValue.length < 2) {
-				continue;
-			}
-			Double dv = null;
-			try {
-				dv = Double.valueOf (keyValue [1]);
-			} catch (NumberFormatException nex) {
-				break;
-			}
-			mGeo.put (keyValue [0].toLowerCase (), dv);
-		}
-		return mGeo;
 	}
 
 }
