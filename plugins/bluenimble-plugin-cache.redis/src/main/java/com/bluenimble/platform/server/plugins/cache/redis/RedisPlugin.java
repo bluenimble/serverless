@@ -41,6 +41,8 @@ import com.bluenimble.platform.server.ServerFeature;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisCluster;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 public class RedisPlugin extends AbstractPlugin {
 
@@ -50,6 +52,18 @@ public class RedisPlugin extends AbstractPlugin {
 		String Cluster 	= "cluster";
 			String Host 	= "host";
 			String Port 	= "port";
+			
+		String Pool		= "pool";
+			String MaxIdle
+						= "maxIdle";
+			String MaxTotal
+						= "maxTotal";
+			String TestOnBorrow
+						= "testOnBorrow";
+			String TestOnReturn
+						= "testOnReturn";
+			String ConnectTimeout
+						= "connectTimeout";
 		
 		String Auth 		= "auth";
 			String User 	= "user";
@@ -152,10 +166,13 @@ public class RedisPlugin extends AbstractPlugin {
 		}
 		
 		JsonObject spec = Json.getObject (feature, ApiSpace.Features.Spec);
+
 		JsonArray nodes = Json.getArray (spec, Spec.Cluster);
 		if (nodes == null) {
 			return;
 		}
+		
+		String password = (String)Json.find (spec, Spec.Auth, Spec.Password);
 		
 		boolean cluster = false;
 		
@@ -163,9 +180,22 @@ public class RedisPlugin extends AbstractPlugin {
 		
 		if (nodes.count () == 1) {
 			JsonObject oNode = (JsonObject)nodes.get (0);
-			client = new Jedis (
-				new HostAndPort (Json.getString (oNode, Spec.Host), Json.getInteger (oNode, Spec.Port, 6379))
-			);
+			
+			JsonObject oPool = Json.getObject (spec, Spec.Pool);
+			
+			JedisPoolConfig config = new JedisPoolConfig ();
+			//Maximum idle connections, which are evaluated by the application. Do not set it to a value greater than the maximum connections of an ApsaraDB for Redis instance.
+			config.setMaxIdle (Json.getInteger (oPool, Spec.MaxIdle, 30));
+			//Maximum connections, which are evaluated by the application. Do not set it to a value greater than the maximum connections of an ApsaraDB for Redis instance.
+			config.setMaxTotal (Json.getInteger (oPool, Spec.MaxTotal, 50));
+			config.setTestOnBorrow (Json.getBoolean (oPool, Spec.TestOnBorrow, false));
+			config.setTestOnReturn (Json.getBoolean (oPool, Spec.TestOnReturn, false));
+			
+			client = new JedisPool (
+				config, 
+				Json.getString (oNode, Spec.Host), 
+				Json.getInteger (oNode, Spec.Port, 6379), Json.getInteger (oPool, Spec.ConnectTimeout, 3000) , password);
+			
 		} else {
 			Set<HostAndPort> lNodes = new HashSet<HostAndPort>();
 			
@@ -175,7 +205,7 @@ public class RedisPlugin extends AbstractPlugin {
 			}
 			
 			client = new JedisCluster (lNodes);
-			
+
 			cluster = true;
 		}
 		
@@ -225,7 +255,7 @@ public class RedisPlugin extends AbstractPlugin {
 			if (cluster) {
 				((JedisCluster)client).close ();
 			} else {
-				((Jedis)client).close ();
+				((JedisPool)client).close ();
 			}
 		}
 
@@ -234,7 +264,7 @@ public class RedisPlugin extends AbstractPlugin {
 		}
 		
 		public Jedis node () {
-			return (Jedis)client;
+			return ((JedisPool)client).getResource ();
 		}
 		
 		public boolean isCluster () {

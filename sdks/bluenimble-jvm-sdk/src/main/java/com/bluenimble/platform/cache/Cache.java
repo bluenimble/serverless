@@ -16,12 +16,11 @@
  */
 package com.bluenimble.platform.cache;
 
-import java.io.Serializable;
-
 import com.bluenimble.platform.Feature;
+import com.bluenimble.platform.Recyclable;
 
 @Feature ( name = "cache" )
-public interface Cache extends Serializable {
+public interface Cache  extends Recyclable {
 
 	void 		put 		(byte [] key, byte [] value, int ttl);
 	byte [] 	get 		(byte [] key, boolean remove);

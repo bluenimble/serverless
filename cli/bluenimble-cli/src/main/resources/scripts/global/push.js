@@ -239,8 +239,9 @@ if (!buildFolder.exists ()) {
 	buildFolder.mkdir ();
 }
 
+Vars ['BuildFolder'] = buildFolder.getAbsolutePath ();
+
 var apiFolder = new File (buildFolder, apiNs);
-Vars ['ApiBuild'] = apiFolder.getAbsolutePath ();
 
 var recipe = new JsonObject ();
 
@@ -438,17 +439,11 @@ BuildUtils.generate (apiFolder, Json.find (apiSpec, 'runtime', 'dataModels'), tr
 // read, validate, transform and extract markers
 validate (apiFolder, new File (apiFolder, 'resources/services'), transformData);
 
-Tool.success (apiNs + ' api validated with success');
+Tool.success (apiNs + ' validated with success');
 
-/*
 var newApiFolder = new File (buildFolder, apiNs);
 
 apiFolder.renameTo (newApiFolder);
-*/
-
-//> BY THIS
-var newApiFolder = apiFolder;
-//<
 
 Tool.info ('ApiBuild Folder: ' + Vars ['ApiBuild']);
 
@@ -469,6 +464,17 @@ Tool.command ('set api.folder ' + buildFolder.getAbsolutePath ());
 
 Tool.command ('echo on');
 
+if (recipe.copyTo) {
+	var fCopyTo = new File (recipe.copyTo);
+	
+	var existing = new File (fCopyTo, newApiFolder.getName ());
+	if (existing.exists ()) {
+		FileUtils.delete (existing);
+	}
+	
+	FileUtils.copy (newApiFolder, fCopyTo, true);
+}
+
 if (recipe.run && recipe.run.length > 0) {
 	for (var i = 0; i < recipe.run.length; i++) {
 		var oRun = recipe.run [i];
@@ -487,17 +493,6 @@ if (recipe.run && recipe.run.length > 0) {
 
 if (typeof recipe.install == 'undefined' || recipe.install == null || recipe.install == true) {
 	Tool.command ('npush api ' + apiNs);
-}
-
-if (recipe.copyTo) {
-	var fCopyTo = new File (recipe.copyTo);
-	
-	var existing = new File (fCopyTo, newApiFolder.getName ());
-	if (existing.exists ()) {
-		FileUtils.delete (existing);
-	}
-	
-	FileUtils.copy (newApiFolder, fCopyTo, true);
 }
 
 Tool.command ('echo off');

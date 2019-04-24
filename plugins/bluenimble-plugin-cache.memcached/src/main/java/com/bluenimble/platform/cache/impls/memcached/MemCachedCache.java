@@ -72,4 +72,13 @@ public class MemCachedCache implements Cache {
 	    return buffer.getLong();
 	}
 
+	@Override
+	public void finish (boolean withError) {
+		
+	}
+
+	@Override
+	public void recycle () {
+	}
+
 }
