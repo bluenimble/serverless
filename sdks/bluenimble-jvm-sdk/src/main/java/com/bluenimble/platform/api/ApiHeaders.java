@@ -56,6 +56,8 @@ public interface ApiHeaders {
 	String 	Location			= "Location";
 	
 	String 	Referer 			= "Referer";
+	
+	String	XForwardedFor		= "X-Forwarded-For";
 
 	String 	NodeID 				= "BNB-Node-ID";
 	String 	NodeType 			= "BNB-Node-Type";
@@ -63,6 +65,7 @@ public interface ApiHeaders {
 	String 	ExecutionTime 		= "BNB-Execution-Time";
 	String 	Timestamp 			= "BNB-Timestamp";
 	String 	GeoLocation 		= "BNB-GeoLocation";
+	String 	ClientIp 			= "BNB-Client-Ip";
 	String 	Application 		= "BNB-App";
 	
 	interface Tus {

@@ -96,7 +96,14 @@ public class HttpApiRequest extends AbstractApiRequest {
 		this.verb = ApiVerb.valueOf (proxy.getMethod ().toUpperCase ());
 		
 		device = new JsonObject ();
-		device.set (Fields.Device.Origin, proxy.getRemoteAddr ());
+		String origin = proxy.getHeader (ApiHeaders.ClientIp);
+		if (Lang.isNullOrEmpty (origin)) {
+			origin = proxy.getHeader (ApiHeaders.XForwardedFor);
+		}
+		if (Lang.isNullOrEmpty (origin)) {
+			origin = proxy.getRemoteAddr ();
+		}
+        device.set (Fields.Device.Origin, origin);
 		Locale locale = proxy.getLocale ();
 		if (locale == null) {
 			locale = Locale.ENGLISH;
