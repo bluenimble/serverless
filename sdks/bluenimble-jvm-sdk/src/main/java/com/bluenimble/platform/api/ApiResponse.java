@@ -41,6 +41,7 @@ public interface ApiResponse extends Serializable {
 	interface 	Output {
 		String Status 	= "status";
 		String Data 	= "data";
+		String Time 	= "time";
 	}
 	
 	/** 

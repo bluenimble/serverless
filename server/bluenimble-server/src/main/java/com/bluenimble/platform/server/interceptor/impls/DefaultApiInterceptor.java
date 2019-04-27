@@ -317,7 +317,7 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 					new JsonObject ().set (
 						ApiResponse.Error.Code, iStatus
 					).set (
-						ApiResponse.Error.Message, time
+						ApiResponse.Output.Time, time
 					)
 				);
 			} else {
