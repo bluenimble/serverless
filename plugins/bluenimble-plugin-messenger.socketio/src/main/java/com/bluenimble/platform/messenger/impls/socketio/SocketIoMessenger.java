@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,6 +43,7 @@ import com.bluenimble.platform.messaging.MessengerException;
 import com.bluenimble.platform.messaging.Recipient;
 import com.bluenimble.platform.messaging.Sender;
 import com.bluenimble.platform.messenger.impls.socketio.utils.MessageUtils;
+import com.bluenimble.platform.server.plugins.messenger.socketio.SocketIoMessengerPlugin.Spec;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.TemplateSource;
@@ -52,7 +52,8 @@ import io.socket.client.Ack;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
-import com.bluenimble.platform.server.plugins.messenger.socketio.SocketIoMessengerPlugin.Spec;
+import io.socket.engineio.client.transports.WebSocket;
+import okhttp3.OkHttpClient;
 
 public class SocketIoMessenger implements Messenger, Recyclable {
 
@@ -61,8 +62,8 @@ public class SocketIoMessenger implements Messenger, Recyclable {
 	private static final String PublishEvent 	= "publish";
 	
 	interface SenderFields {
-		String Event 	= "event";
-		String Params 	= "params";
+		String Event 		= "event";
+		String Params 		= "params";
 	}
 
 	private static final String Channel 		= "channel";
@@ -82,14 +83,15 @@ public class SocketIoMessenger implements Messenger, Recyclable {
 	private static final String StartDelimitter 	= "[[";
 	private static final String EndDelimitter 		= "]]";
 	
-	private Tracer 	tracer;
+	private Tracer 			tracer;
+	private OkHttpClient 	http;
+	private JsonObject 		spec;
 	
-	private Map<String, Socket> sockets = new HashMap<String, Socket> ();
+	private Socket socket;
 	
-	private JsonObject spec;
-	
-	public SocketIoMessenger (Tracer tracer, JsonObject spec) {
+	public SocketIoMessenger (Tracer tracer, OkHttpClient http, JsonObject spec) {
 		this.tracer = tracer;
+		this.http = http;
 		this.spec = spec;
 		
 		engine.startDelimiter (StartDelimitter);
@@ -134,9 +136,6 @@ public class SocketIoMessenger implements Messenger, Recyclable {
 		
 		String query = aQuery.join (Lang.AMP, false);
 		
-		Socket socket = sockets.get (query);
-		
-		tracer.log (Level.Info, "SocketsMap: " + sockets);
 		tracer.log (Level.Info, "SocketQuery: " + query);
 		
 		JsonArray channels = new JsonArray ();
@@ -156,66 +155,62 @@ public class SocketIoMessenger implements Messenger, Recyclable {
 			message.set (Data, data);
 		}
 		
-		if (socket == null || !socket.connected ()) {
-			tracer.log (Level.Info, "Create socket");
-			
-			IO.Options opts = new IO.Options ();
-			opts.forceNew  = Json.getBoolean (spec, Spec.ForceNew, true);
-			opts.multiplex = Json.getBoolean (spec, Spec.Multiplex, true);
-			opts.timeout = Json.getInteger (spec, Spec.Timeout, 60000);
-			
-			JsonObject oReconnect = Json.getObject (spec, Spec.Reconnect.class.getSimpleName ().toLowerCase ());
-			opts.reconnection 			= Json.getBoolean (oReconnect, Spec.Reconnect.Enabled, true);
-			opts.reconnectionAttempts 	= Json.getInteger (oReconnect, Spec.Reconnect.Attempts, 1000);
-			opts.reconnectionDelay 		= Json.getInteger (oReconnect, Spec.Reconnect.Delay, Integer.MAX_VALUE);
-			opts.reconnectionDelayMax 	= Json.getInteger (oReconnect, Spec.Reconnect.MaxDelay, 5000);
-			
-			tracer.log (Level.Info, "Socket URI: " + Json.getString (spec, Spec.Uri));
-			
-			opts.query = query;
-			
-			try {
-				socket = IO.socket (Json.getString (spec, Spec.Uri), opts);
-			} catch (URISyntaxException ex) {
-				throw new MessengerException (ex.getMessage (), ex);
-			}
-			
-			Socket _socket 	= socket;
-			String event 	= String.valueOf (oEvent);
-			
-			socket.on (Socket.EVENT_CONNECT, new Emitter.Listener () {
-				@Override
-				public void call (Object... args) {
-					tracer.log (Level.Info, "Socket Connected");
-					fireCallback (sender, Sender.Callbacks.Connect, GenericMessage, args);
-					emit (_socket, sender, event, message);
-				}
-			});
-			
-			socket.on (Socket.EVENT_CONNECT_ERROR, new Emitter.Listener () {
-				@Override
-				public void call (Object... args) {
-					tracer.log (Level.Error, "Socket Connect Error {0}", args [0]);
-				}
-			});
-			
-			socket.on (Socket.EVENT_ERROR, new Emitter.Listener () {
-				@Override
-				public void call (Object... args) {
-					tracer.log (Level.Error, "Socket Error {0}", args [0]);
-					fireCallback (sender, Sender.Callbacks.Error, GenericError, args);
-				}
-			});
-			
-			tracer.log (Level.Info, "New Socket Created " + socket);
-			
-			socket.connect ();
-			
-			sockets.put (query, socket);
-			
-		} else {
-			emit (socket, sender, String.valueOf (oEvent), message);
+		tracer.log (Level.Info, "Create socket");
+		
+		IO.Options opts = new IO.Options ();
+		opts.callFactory = http;
+		opts.webSocketFactory = http;
+		opts.forceNew  = Json.getBoolean (spec, Spec.ForceNew, true);
+		opts.multiplex = Json.getBoolean (spec, Spec.Multiplex, true);
+		opts.timeout = Json.getInteger (spec, Spec.Timeout, 60000);
+		opts.transports = new String[] { WebSocket.NAME };
+		
+		JsonObject oReconnect = Json.getObject (spec, Spec.Reconnect.class.getSimpleName ().toLowerCase ());
+		opts.reconnection 			= Json.getBoolean (oReconnect, Spec.Reconnect.Enabled, true);
+		opts.reconnectionAttempts 	= Json.getInteger (oReconnect, Spec.Reconnect.Attempts, 3);
+		opts.reconnectionDelay 		= Json.getInteger (oReconnect, Spec.Reconnect.Delay, Integer.MAX_VALUE);
+		opts.reconnectionDelayMax 	= Json.getInteger (oReconnect, Spec.Reconnect.MaxDelay, 5000);
+		
+		tracer.log (Level.Info, "Socket URI: " + Json.getString (spec, Spec.Uri));
+		
+		opts.query = query;
+		
+		try {
+			socket = IO.socket (Json.getString (spec, Spec.Uri), opts);
+		} catch (URISyntaxException ex) {
+			throw new MessengerException (ex.getMessage (), ex);
 		}
+		
+		Socket _socket 	= socket;
+		String event 	= String.valueOf (oEvent);
+		
+		socket.on (Socket.EVENT_CONNECT, new Emitter.Listener () {
+			@Override
+			public void call (Object... args) {
+				tracer.log (Level.Info, "Socket Connected");
+				fireCallback (sender, Sender.Callbacks.Connect, GenericMessage, args);
+				emit (_socket, sender, event, message);
+			}
+		});
+		
+		socket.on (Socket.EVENT_CONNECT_ERROR, new Emitter.Listener () {
+			@Override
+			public void call (Object... args) {
+				tracer.log (Level.Error, "Socket Connect Error {0}", args [0]);
+			}
+		});
+		
+		socket.on (Socket.EVENT_ERROR, new Emitter.Listener () {
+			@Override
+			public void call (Object... args) {
+				tracer.log (Level.Error, "Socket Error {0}", args [0]);
+				fireCallback (sender, Sender.Callbacks.Error, GenericError, args);
+			}
+		});
+		
+		tracer.log (Level.Info, "New Socket Created " + socket);
+		
+		socket.connect ();
 		
 	}
 
@@ -292,22 +287,13 @@ public class SocketIoMessenger implements Messenger, Recyclable {
 	public void recycle () {
 	}
 	
-	public void clear () {
-		try {
-			for (Socket socket : sockets.values ()) {
-				socket.disconnect ();
-			}
-		} catch (Exception ex) {
-			// ignore
-		}
-		sockets.clear ();
-	}
-	
 	private void emit (Socket socket, Sender sender, String event, Object message) {
 		tracer.log (Level.Info, "Send/Emit Message " + message);
 		socket.emit (event, new Object [] { message }, new Ack () {
 			@Override
 			public void call (Object... args) {
+				// disconnect
+				socket.disconnect ();
 				fireCallback (sender, Sender.Callbacks.Ack, GenericMessage, args);
 			}
 		});

@@ -95,8 +95,14 @@ public interface Remote extends Recyclable {
 		
 		String SuccessCode	= "successCode";
 		
+		String AllowProprietaryAccess = "allowProprietaryAccess";
+		
 	}
 	
+	interface Proprietary {
+		String Client = "client";
+	}
+
 	interface Callback {
 		void onStatus 	(int status, boolean chunked, Map<String, Object> headers);
 		void onData 	(int status, byte [] chunk) 	throws IOException;
@@ -104,6 +110,8 @@ public interface Remote extends Recyclable {
 		void onError 	(int status, Object message) 	throws IOException;
 	}
 
+	Object 	proprietary (String name);
+	
 	void post 	(JsonObject spec, Callback callback, ApiStreamSource... attachments);
 	void put 	(JsonObject spec, Callback callback, ApiStreamSource... attachments);
 	void get 	(JsonObject spec, Callback callback);

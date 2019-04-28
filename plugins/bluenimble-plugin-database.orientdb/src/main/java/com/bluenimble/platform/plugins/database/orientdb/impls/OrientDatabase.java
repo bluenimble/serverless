@@ -78,10 +78,6 @@ public class OrientDatabase implements Database {
 		String ReturnBefore	= "return before";
 	}
 	
-	interface Proprietary {
-		String Database = "database";
-	}
-	
 	private static final Map<IndexType, INDEX_TYPE> IndexTypes = new HashMap<IndexType, INDEX_TYPE> ();
 	static {
 		IndexTypes.put (IndexType.Unique, INDEX_TYPE.UNIQUE);

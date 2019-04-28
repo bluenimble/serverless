@@ -29,7 +29,7 @@ public class BinaryRemoteTest {
 	
 		ValueHolder<ByteArrayOutputStream> stream = new ValueHolder<ByteArrayOutputStream> (new ByteArrayOutputStream ());
 		
-		new BinaryRemote (factory.create ())
+		new BinaryRemote (factory.create (), true)
 			.get (
 				(JsonObject)new JsonObject ()
 					.set (Remote.Spec.Path, "/sys/mgm/instance/keys"),

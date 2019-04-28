@@ -77,6 +77,10 @@ public interface Database extends Recyclable {
 		String Total 		= "totalCount";
 	}
 	
+	interface Proprietary {
+		String Database = "database";
+	}
+	
 	Object 					proprietary (String name);
 
 	Database 				trx 		();

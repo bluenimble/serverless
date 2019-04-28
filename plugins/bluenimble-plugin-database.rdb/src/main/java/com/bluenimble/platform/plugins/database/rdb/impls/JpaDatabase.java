@@ -39,7 +39,7 @@ public class JpaDatabase implements Database {
 		String Truncate = "TRUNCATE TABLE ";
 	}
 	
-	interface Proprietary {
+	interface JpaProprietary {
 		String EntityManager 	= "entityManager";
 		String Connection 		= "connection";
 	}
@@ -281,9 +281,9 @@ public class JpaDatabase implements Database {
 		if (!allowProprietaryAccess) {
 			return null;
 		} 
-		if (Proprietary.EntityManager.equalsIgnoreCase (name)) {
+		if (JpaProprietary.EntityManager.equalsIgnoreCase (name)) {
 			return entityManager;
-		} else if (Proprietary.Connection.equalsIgnoreCase (name)) {
+		} else if (JpaProprietary.Connection.equalsIgnoreCase (name)) {
 			return entityManager.unwrap (Connection.class);
 		}
 		return null;

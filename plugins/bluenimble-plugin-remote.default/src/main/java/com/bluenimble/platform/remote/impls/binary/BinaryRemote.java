@@ -48,11 +48,21 @@ public class BinaryRemote extends BaseRemote {
 	private static final String DefaultEndpoint = "bnb.binary.server";
 
 	private BinaryClient client;
+	private boolean		allowProprietaryAccess;
 	
-	public BinaryRemote (BinaryClient client) {
+	public BinaryRemote (BinaryClient client, boolean allowProprietaryAccess) {
 		this.client = client;
+		this.allowProprietaryAccess = allowProprietaryAccess;
 	}
 
+	@Override
+	public Object proprietary (String name) {
+		if (!allowProprietaryAccess || !Proprietary.Client.equalsIgnoreCase (name)) {
+			return null;
+		}
+		return client;
+	}
+	
 	@Override
 	public void request (ApiVerb verb, JsonObject spec, Callback callback, ApiStreamSource... attachments) {
 		JsonObject rdata = Json.getObject (spec, Spec.Data);

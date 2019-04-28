@@ -123,16 +123,26 @@ public class RemotePlugin extends AbstractPlugin {
 			}
 			@Override
 			public Object get (ApiSpace space, String name) {
+				Object oAllowProprietaryAccess = 
+						Json.find (space.getFeatures (), feature, name, ApiSpace.Features.Spec, Spec.AllowProprietaryAccess);
+				
+					boolean allowProprietaryAccess = 
+							oAllowProprietaryAccess == null || String.valueOf (oAllowProprietaryAccess).equalsIgnoreCase (Lang.TRUE);
+					
 				Protocol protocol = protocol (name, space);
 				
 				Recyclable recyclable = space.getRecyclable (createKey (name));
 				if (Protocol.binary.equals (protocol)) {
 					return new BinaryRemote (
-						((RecyclableBinaryClientFactory)recyclable).create ()
+						((RecyclableBinaryClientFactory)recyclable).create (),
+						allowProprietaryAccess
 					);
 				} else {
 					JsonObject featureSpec = (JsonObject)Json.find (space.getFeatures (), feature, name, ApiSpace.Features.Spec);
-					return new HttpRemote (space, name, featureSpec, (OkHttpClient)((RecyclableHttpClient)recyclable).client ());
+					return new HttpRemote (
+						space, name, featureSpec, (OkHttpClient)((RecyclableHttpClient)recyclable).client (),
+						allowProprietaryAccess
+					);
 				}
 				
 			}

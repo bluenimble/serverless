@@ -80,12 +80,22 @@ public class HttpRemote extends BaseRemote {
 	private OkHttpClient http;
 	
 	private JsonObject 	featureSpec;
+	private boolean		allowProprietaryAccess;
 	
-	public HttpRemote (ApiSpace space, String feature, JsonObject featureSpec, OkHttpClient http) {
+	public HttpRemote (ApiSpace space, String feature, JsonObject featureSpec, OkHttpClient http, boolean allowProprietaryAccess) {
 		this.featureSpec 	= featureSpec;
 		this.http 			= http;
+		this.allowProprietaryAccess = allowProprietaryAccess;
 	}
  
+	@Override
+	public Object proprietary (String name) {
+		if (!allowProprietaryAccess || !Proprietary.Client.equalsIgnoreCase (name)) {
+			return null;
+		}
+		return http;
+	}
+	
 	@Override
 	public void request (ApiVerb verb, JsonObject spec, Callback callback, ApiStreamSource... attachments) {
 	
