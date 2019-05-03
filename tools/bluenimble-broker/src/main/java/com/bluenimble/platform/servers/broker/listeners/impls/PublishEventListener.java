@@ -48,19 +48,19 @@ public class PublishEventListener implements EventListener<JsonObject> {
 				return;
 			}
 			
-			List<String> cantJoin = null;
+			List<String> cantPublish = null;
 			for (Object oc : channels) {
-				if (!peer.canJoin ((String)oc)) {
-					if (cantJoin == null) {
-						cantJoin = new ArrayList<String> ();
+				if (!peer.canPublish ((String)oc)) {
+					if (cantPublish == null) {
+						cantPublish = new ArrayList<String> ();
 					}
-					cantJoin.add (String.valueOf (oc));
+					cantPublish.add (String.valueOf (oc));
 				} else {
 					peer.broadcast (String.valueOf (oc), message.get (Message.Data));
 				}
 			}
-			if (cantJoin != null) {
-				peer.trigger (Default.error.name (), new JsonObject ().set (Message.Status, Response.Error).set (Message.Reason, "Cant pubish to " + Lang.join (cantJoin)));
+			if (cantPublish != null) {
+				peer.trigger (Default.error.name (), new JsonObject ().set (Message.Status, Response.Error).set (Message.Reason, "Cant pubish to " + Lang.join (cantPublish)));
 			}
 		}
 		

@@ -113,14 +113,6 @@
 									</fileset>
 								</copy>
 								
-								<copy todir="../../build/${project.artifactId}-${project.version}/lib">
-									<fileset dir="src/main/resources/libs" />
-								</copy>
-								
-								<delete file="../../build/${project.artifactId}-${project.version}/lib/netty-socketio-1.7.17.jar" />
-								
-								<delete dir="../../build/${project.artifactId}-${project.version}/libs" />
-								
 								<replace dir="../../build/${project.artifactId}-${project.version}" value="${project.version}">
 									<replacetoken>[version]</replacetoken>
 								</replace>
@@ -157,7 +149,7 @@
 	    <dependency>
 			<groupId>com.corundumstudio.socketio</groupId>
 			<artifactId>netty-socketio</artifactId>
-			<version>1.7.17</version>
+			<version>1.7.18-BNPATCH</version>
 		</dependency>
 		
 		<dependency>

@@ -91,7 +91,7 @@ public class HttpApiRequest extends AbstractApiRequest {
 		
 		node = new JsonObject ();
 		
-		tracer.log (Tracer.Level.Info, "Process HttpRequest -> [{0}]", proxy.getRequestURI ());
+		// tracer.log (Tracer.Level.Info, "Process HttpRequest -> [{0}]", proxy.getRequestURI ());
 		
 		this.verb = ApiVerb.valueOf (proxy.getMethod ().toUpperCase ());
 		

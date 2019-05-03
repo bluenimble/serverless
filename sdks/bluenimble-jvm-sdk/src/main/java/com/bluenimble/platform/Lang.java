@@ -955,4 +955,8 @@ public class Lang {
     	return compiler.compile (template, null).eval (new BasicVariableResolver (data));
     }
     
+    public static void main (String [] args) {
+    	System.out.println (Lang.UUID (20));
+    }
+    
 }

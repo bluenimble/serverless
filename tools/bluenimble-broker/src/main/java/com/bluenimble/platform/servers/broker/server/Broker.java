@@ -1,7 +1,9 @@
 package com.bluenimble.platform.servers.broker.server;
 
 import java.io.Serializable;
+import java.util.Date;
 
+import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.servers.broker.TenantProvider;
 import com.corundumstudio.socketio.SocketIOServer;
 
@@ -50,18 +52,31 @@ public interface Broker extends Serializable {
 		String Auths  					= "auths";
 		String Listeners  				= "listeners";
 		String AccessibleBy  			= "accessibleBy";
+		String ApiPath					= "apiPath";	
+		String PingPath					= "pingPath";	
 		
 		interface Store {
 			String Config				= "config";
+		}
+		
+		interface Api {
+			String Path					= "path";
+			String Ping					= "ping";
+			String Auth					= "auth";
+				String Tokens			= "tokens";
 		}
 		
 	}
 	
 	TenantProvider 	getTenantProvider ();
 	
-	SocketIOServer	server 	();
+	SocketIOServer	server 		();
 
-	void 			start 	() throws BrokerException;
-	void 			stop 	();
+	void 			start 		() throws BrokerException;
+	void 			stop 		();
+	
+	String			id 			();
+	Date			startTime 	();
+	JsonObject		describe 	();
 	
 }
