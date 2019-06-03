@@ -17,6 +17,7 @@
 package com.bluenimble.platform.query.impls;
 
 import java.util.Iterator;
+import java.util.List;
 
 import com.bluenimble.platform.query.CompiledQuery;
 import com.bluenimble.platform.query.Condition;
@@ -28,6 +29,7 @@ import com.bluenimble.platform.query.Query;
 import com.bluenimble.platform.query.QueryCompiler;
 import com.bluenimble.platform.query.QueryException;
 import com.bluenimble.platform.query.Select;
+import com.bluenimble.platform.query.Query.Conjunction;
 
 public abstract class EventedQueryCompiler implements QueryCompiler {
 
@@ -46,7 +48,7 @@ public abstract class EventedQueryCompiler implements QueryCompiler {
 		processSelect (query.select ());
 		
 		// where
-		processFilter (query.where (), true);
+		processFilter (query.where (), Conjunction.and, true);
 		
 		// group by 
 		processGroupBy (query.groupBy ());
@@ -71,8 +73,8 @@ public abstract class EventedQueryCompiler implements QueryCompiler {
 		onSelect (Timing.end, select);
 	}
 	
-	private void processFilter (Filter filter, boolean isWhere) throws QueryException {
-		onFilter (Timing.start, filter, isWhere);
+	private void processFilter (Filter filter, Conjunction conjunction, boolean isWhere) throws QueryException {
+		onFilter (Timing.start, filter, conjunction, isWhere);
 		if (filter == null || filter.isEmpty ()) {
 			return;
 		}
@@ -83,14 +85,31 @@ public abstract class EventedQueryCompiler implements QueryCompiler {
 		
 		int counter = 0;
 		while (fields.hasNext ()) {
-			Object condition = filter.get (fields.next ());
-			if (Condition.class.isAssignableFrom (condition.getClass ())) {
-				onCondition ((Condition)condition, filter, counter++);
-			} else if (Filter.class.isAssignableFrom (condition.getClass ())) {
-				processFilter ((Filter)condition, false);
+			String field = fields.next ();
+			Object condition = filter.get (field);
+			if (List.class.isAssignableFrom (condition.getClass ())) {
+				// check if it's 'and' or 'or'
+				Conjunction subConjunction = null;
+				try {
+					subConjunction = Conjunction.valueOf (field);
+				} catch (Exception ex) {
+					// ignore
+					continue;
+				}
+				@SuppressWarnings("unchecked")
+				List<Object> list = (List<Object>)condition;
+				for (int i = 0; i < list.size (); i++) {
+					Object subFilter = list.get (i);
+					if (!Filter.class.isAssignableFrom (subFilter.getClass ())) {
+						continue;
+					}
+					processFilter ((Filter)subFilter, i == 0 ? null : subConjunction, false);
+				}
+			} else if (Condition.class.isAssignableFrom (condition.getClass ())) {
+				onCondition ((Condition)condition, conjunction, counter++);
 			}
 		}
-		onFilter (Timing.end, filter, isWhere);
+		onFilter (Timing.end, filter, conjunction, isWhere);
 	}
 	
 	private void processOrderBy (OrderBy orderBy) throws QueryException {
@@ -106,7 +125,6 @@ public abstract class EventedQueryCompiler implements QueryCompiler {
 		int counter = 0;
 		while (fields.hasNext ()) {
 			onOrderByField (orderBy.get (fields.next ()), orderBy.count (), counter++);
-			
 		}
 		onOrderBy (Timing.end, orderBy);
 	}
@@ -127,8 +145,10 @@ public abstract class EventedQueryCompiler implements QueryCompiler {
 	protected abstract void onSelect 		(Timing timing, Select select) 					throws QueryException;
 	protected abstract void onSelectField 	(String field, int count, int index) 			throws QueryException;
 	
-	protected abstract void onFilter 		(Timing timing, Filter filter, boolean isWhere) throws QueryException;
-	protected abstract void onCondition 	(Condition condition, Filter filter, int index) throws QueryException;
+	protected abstract void onFilter 		(Timing timing, Filter filter, Conjunction conjunction, boolean isWhere) 
+																							throws QueryException;
+	protected abstract void onCondition 	(Condition condition, Conjunction conjunction, int index) 
+																							throws QueryException;
 
 	protected abstract void onOrderBy 		(Timing timing, OrderBy orderBy) 				throws QueryException;
 	protected abstract void onOrderByField 	(OrderByField orderBy, int count, int index) 	throws QueryException;

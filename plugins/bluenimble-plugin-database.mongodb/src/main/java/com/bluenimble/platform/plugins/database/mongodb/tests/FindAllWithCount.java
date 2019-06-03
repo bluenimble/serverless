@@ -22,7 +22,6 @@ import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseObject;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.query.impls.JsonQuery;
-import com.bluenimble.platform.reflect.beans.impls.DefaultBeanSerializer;
 
 public class FindAllWithCount {
 	
@@ -33,13 +32,13 @@ public class FindAllWithCount {
 		Database db = new DatabaseServer ().get ();
 		
 		List<DatabaseObject> employees = db.find (
-			"Employees", 
+			"Media", 
 			new JsonQuery (new JsonObject (query)),
 			null
 		);
 		
 		for (DatabaseObject employee : employees) {
-			System.out.println (employee.toJson (new DefaultBeanSerializer (2, 2)));
+			System.out.println (employee.getId ());
 		}
 		
 	}

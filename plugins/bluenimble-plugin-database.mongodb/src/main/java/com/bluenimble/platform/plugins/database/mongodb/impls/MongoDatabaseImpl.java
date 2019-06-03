@@ -47,16 +47,19 @@ import com.bluenimble.platform.plugins.database.mongodb.impls.filters.LikeFilter
 import com.bluenimble.platform.plugins.database.mongodb.impls.filters.NilFilterAppender;
 import com.bluenimble.platform.plugins.database.mongodb.impls.filters.RegexFilterAppender;
 import com.bluenimble.platform.plugins.database.mongodb.impls.filters.TextFilterAppender;
+import com.bluenimble.platform.query.Caching.Target;
 import com.bluenimble.platform.query.CompiledQuery;
 import com.bluenimble.platform.query.Condition;
+import com.bluenimble.platform.query.Filter;
 import com.bluenimble.platform.query.OrderBy;
+import com.bluenimble.platform.query.OrderBy.Direction;
 import com.bluenimble.platform.query.OrderByField;
 import com.bluenimble.platform.query.Query;
+import com.bluenimble.platform.query.Query.Conjunction;
+import com.bluenimble.platform.query.Query.Operator;
 import com.bluenimble.platform.query.Select;
 import com.bluenimble.platform.query.Where;
-import com.bluenimble.platform.query.Caching.Target;
-import com.bluenimble.platform.query.OrderBy.Direction;
-import com.bluenimble.platform.query.Query.Operator;
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.TransactionOptions;
@@ -83,7 +86,7 @@ public class MongoDatabaseImpl implements Database {
 
 	private static final long serialVersionUID = 3547537996525908902L;
 	
-	private static final String IdPostfix = ".id";
+	private static final String IdPostfix = Lang.DOT + Database.Fields.Id;
 
 	interface Describe {
 		String Size 		= "size";
@@ -98,11 +101,19 @@ public class MongoDatabaseImpl implements Database {
 	}
 	
 	interface Tokens {
+		String Or 			= "$or";
+		String And 			= "$and";
 		String Sort 		= "$sort";
 		String Skip 		= "$skip";
 		String Limit 		= "$limit";
 		String WiredTiger 	= "wiredTiger";
 		String IndexDetails = "indexDetails";
+	}
+	
+	private static final Map<Conjunction, String> MDBConjunctions = new HashMap<Conjunction, String> ();
+	static {
+		MDBConjunctions.put (Conjunction.or, Lang.DOLLAR + Conjunction.or.name ());
+		MDBConjunctions.put (Conjunction.and, Lang.DOLLAR + Conjunction.and.name ());
 	}
 	
 	private static final FilterAppender DefaultFilterAppender = new DefaultFilterAppender ();
@@ -620,12 +631,19 @@ public class MongoDatabaseImpl implements Database {
 	// REF: https://docs.mongodb.com/manual/reference/method/db.collection.find/
 	private CompiledQuery compile (String entity, Query.Construct construct, final Query query) {
 		
-		BasicDBObject mq = new BasicDBObject ();
+		BasicDBObject mq = null;
+		if (query.isNative ()) {
+			mq  = new BasicDBObject (query.toJson ());
+		} else {
+			mq = new BasicDBObject ();
+		}
+		
+		BasicDBObject fmq = mq;
 		
 		CompiledQuery cQuery = new CompiledQuery () {
 			@Override
 			public Object query () {
-				return mq;
+				return fmq;
 			}
 			
 			@Override
@@ -634,20 +652,16 @@ public class MongoDatabaseImpl implements Database {
 			}
 		};
 		
-		// where
-		Where where = query.where ();
-		if (where == null || where.count () == 0) {
+		if (query.isNative ()) {
 			return cQuery;
 		}
 		
-		// Selectors
-		Iterator<String> fields = where.conditions ();
-		while (fields.hasNext ()) {
-			String f = fields.next ();
-			Object condOrFilter = where.get (f);
-			if (Condition.class.isAssignableFrom (condOrFilter.getClass ())) {
-				applyCondition (mq, (Condition)condOrFilter, query.bindings ());
-			}
+		// where
+		Where where = query.where ();
+		
+		// Filters
+		if (where != null) {
+			applyFilter (where, fmq, query.bindings ());
 		}
 		
 		// Aggregates / ?
@@ -656,8 +670,54 @@ public class MongoDatabaseImpl implements Database {
 		
 	}
 	
+	private void applyFilter (Filter filter, BasicDBObject mq, Map<String, Object> bindings) {
+		if (filter == null || filter.count () == 0) {
+			return;
+		}
+		
+		Iterator<String> fields = filter.conditions ();
+		while (fields.hasNext ()) {
+			String field = fields.next ();
+			Object condOrFilter = filter.get (field);
+			if (Condition.class.isAssignableFrom (condOrFilter.getClass ())) {
+				applyCondition (mq, (Condition)condOrFilter, bindings);
+			} else if (List.class.isAssignableFrom (condOrFilter.getClass ())) {
+				// check if it's 'and' or 'or'
+				Conjunction subConjunction = null;
+				try {
+					subConjunction = Conjunction.valueOf (field);
+				} catch (Exception ex) {
+					// ignore
+					continue;
+				}
+				
+				BasicDBList mdbList = new BasicDBList ();
+				mq.put (MDBConjunctions.get (subConjunction), mdbList);
+				
+				@SuppressWarnings("unchecked")
+				List<Object> list = (List<Object>)condOrFilter;
+				for (int i = 0; i < list.size (); i++) {
+					Object subCondOrFilter = list.get (i);
+					if (!Filter.class.isAssignableFrom (subCondOrFilter.getClass ())) {
+						continue;
+					}
+					BasicDBObject cObject = new BasicDBObject ();
+					mdbList.add (cObject);
+					applyFilter ((Filter)subCondOrFilter, cObject, bindings);
+				}
+			}
+		}
+	}
+	
 	private void applyCondition (BasicDBObject mq, Condition condition, Map<String, Object> bindings) {
 		String field = condition.field ();
+		
+		boolean idIsUserField = false;
+		// ignore id replacement
+		if (field.startsWith (Lang.XMARK)) {
+			field = field.substring (1);
+			idIsUserField = true;
+		}
 		
 		BasicDBObject criteria = (BasicDBObject)mq.get (field);
 		
@@ -682,7 +742,7 @@ public class MongoDatabaseImpl implements Database {
 		if (criteria == null) {
 			newlyCreated = true;
 			criteria = new BasicDBObject ();
-			mq.put (condition.field (), criteria);
+			mq.put (field, criteria);
 		}
 		
 		if (value instanceof LocalDateTime) {
@@ -690,7 +750,9 @@ public class MongoDatabaseImpl implements Database {
 			value = Date.from (ldt.atZone (ZoneId.systemDefault ()).toInstant ());
 		}
 		
-		if ((field.equals (Database.Fields.Id) || field.endsWith (IdPostfix)) && ObjectId.isValid (String.valueOf (value))) {
+		if ((field.equals (Database.Fields.Id) || field.endsWith (IdPostfix)) && 
+				!idIsUserField &&
+				ObjectId.isValid (String.valueOf (value))) {
 			value = new ObjectId (String.valueOf (value));
 		}
 		
@@ -700,14 +762,14 @@ public class MongoDatabaseImpl implements Database {
 			if (newlyCreated) {
 				mq.remove (field);
 			}
-		} else if (field.endsWith (IdPostfix)) {
+		} else if (field.endsWith (IdPostfix) && !idIsUserField) {
 			mq.put (
 				field.substring (0, field.length () - IdPostfix.length ()) 
 				+ Lang.DOT + DatabaseObjectImpl.ObjectIdKey, 
 				criteria
 			);
 			mq.remove (field);
-		} else if (field.equals (Database.Fields.Id)) {
+		} else if (field.equals (Database.Fields.Id) && !idIsUserField) {
 			mq.put (DatabaseObjectImpl.ObjectIdKey, criteria);
 			mq.remove (field);
 		}

@@ -45,7 +45,6 @@ public class DatabaseServer {
 		);
 			
 		return new MongoClient (uri);
-			
 	}
 	public Database get () {
 		

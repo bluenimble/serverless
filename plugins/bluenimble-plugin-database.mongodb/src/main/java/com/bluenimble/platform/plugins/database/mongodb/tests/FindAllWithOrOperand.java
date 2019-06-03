@@ -22,23 +22,37 @@ import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseObject;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.query.impls.JsonQuery;
+import com.bluenimble.platform.reflect.beans.BeanSerializer;
+import com.bluenimble.platform.reflect.beans.impls.JsonBeanSerializer;
 
-public class FindAllWithSelect {
+public class FindAllWithOrOperand {
 	
 	public static void main (String [] args) throws Exception {
 		
-		String query = "{ select: [name], orderBy: { name: asc } }";
+		String query = "{ where = {\n" + 
+				"				or: [{\n" + 
+				"					'createdBy.id': '5ca3cdb9894e04330ad8bbf9',\n" + 
+				"					'recipient.id': '5ca3cf2b894e04330ad8bbfb'\n" + 
+				"				}, {\n" + 
+				"					'createdBy.id': '5ca3cf2b894e04330ad8bbfb',\n" + 
+				"					'recipient.id': '5ca3cdb9894e04330ad8bbf9'\n" + 
+				"				}] \n" + 
+				"			} }";
 		
 		Database db = new DatabaseServer ().get ();
 		
-		List<DatabaseObject> stories = db.find (
-			"Story",
+		List<DatabaseObject> messages = db.find (
+			"Message",
 			new JsonQuery (new JsonObject (query)),
 			null
 		);
 		
-		for (DatabaseObject story : stories) {
-			System.out.println (story.get ("name") + " - " + story.get ("description"));
+		// {_fields:simple, recipient: { id: true, firstName: true, lastName: true }}
+		
+		BeanSerializer serializer = new JsonBeanSerializer (new JsonObject (" {_fields:simple}" ));
+		
+		for (DatabaseObject message : messages) {
+			System.out.println (message.toJson (serializer));
 		}
 		
 	}

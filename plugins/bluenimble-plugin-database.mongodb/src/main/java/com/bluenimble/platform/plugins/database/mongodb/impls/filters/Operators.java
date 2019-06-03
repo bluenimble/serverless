@@ -43,6 +43,7 @@ public class Operators {
 		OperatorsMap.put (Operator.nlike, new OperatorSpec ("$regex", true));
 		OperatorsMap.put (Operator.in, new OperatorSpec ("$in"));
 		OperatorsMap.put (Operator.nin, new OperatorSpec ("$nin"));
+		OperatorsMap.put (Operator.all, new OperatorSpec ("$all"));
 		OperatorsMap.put (Operator.btw, new OperatorSpec (Unknown));
 		OperatorsMap.put (Operator.nbtw, new OperatorSpec (Unknown, true));
 		OperatorsMap.put (Operator.nil, new OperatorSpec ("$exists", true));

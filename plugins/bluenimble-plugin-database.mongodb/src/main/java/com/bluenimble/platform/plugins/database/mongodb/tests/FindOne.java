@@ -16,30 +16,25 @@
  */
 package com.bluenimble.platform.plugins.database.mongodb.tests;
 
-import java.util.List;
-
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseObject;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.query.impls.JsonQuery;
 
-public class FindAllWithSelect {
+public class FindOne {
 	
 	public static void main (String [] args) throws Exception {
 		
-		String query = "{ select: [name], orderBy: { name: asc } }";
+		String query = "{ where: { id: '5ced0144d3345d2d349e724d', '!target.id': '5ccdd357d3345d6c53db844b' } }";
 		
 		Database db = new DatabaseServer ().get ();
 		
-		List<DatabaseObject> stories = db.find (
-			"Story",
-			new JsonQuery (new JsonObject (query)),
-			null
+		DatabaseObject brodcast = db.findOne (
+			"Broadcast", 
+			new JsonQuery (new JsonObject (query))
 		);
 		
-		for (DatabaseObject story : stories) {
-			System.out.println (story.get ("name") + " - " + story.get ("description"));
-		}
+		System.out.println (brodcast);
 		
 	}
 	

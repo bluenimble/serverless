@@ -19,18 +19,13 @@ package com.bluenimble.platform.query;
 import java.io.Serializable;
 import java.util.Iterator;
 
-import com.bluenimble.platform.query.Query.Conjunction;
 import com.bluenimble.platform.query.Query.Operator;
 
 public interface Filter extends Serializable {
 
-	Conjunction			conjunction ();
-	
-	Conjunction			parentConjunction ();
-	
 	Iterator<String> 	conditions 	();
 	Object 				get 		(String field);
-	void 				set (String field, Operator operator, Object value);
+	void 				set 		(String field, Operator operator, Object value);
 
 	
 	int					count 		();

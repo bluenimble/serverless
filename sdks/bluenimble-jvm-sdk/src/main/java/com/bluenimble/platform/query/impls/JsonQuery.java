@@ -45,10 +45,11 @@ public class JsonQuery implements Query {
 		String Start 		= "start";
 		String Count 		= "count";
 		
-		String Conjunction	= "op";
 		String Operator 	= "op";
 
 		String Value 		= "value";
+		
+		String Native		= "native";
 	}
 	
 	protected JsonObject 			source;
@@ -157,6 +158,16 @@ public class JsonQuery implements Query {
 			return null;
 		}
 		return new JsonHaving (oHaving);
+	}
+
+	@Override
+	public boolean isNative () {
+		return Json.getBoolean (source, Spec.Native, false);
+	}
+
+	@Override
+	public JsonObject toJson () {
+		return source;
 	}
 	
 	@Override

@@ -32,7 +32,10 @@ var Json = {
 	  
 	  @returns {JsonArray} the json array
 	*/
-	array: function () {
+	array: function (data) {
+		if (data) {
+			return JC_ValueConverter.convert (data);
+		}
 		return new JC_JsonArray ();
 	},
 	

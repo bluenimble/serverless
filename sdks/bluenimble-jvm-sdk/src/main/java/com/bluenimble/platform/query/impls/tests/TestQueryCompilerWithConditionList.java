@@ -14,32 +14,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.plugins.database.mongodb.tests;
+package com.bluenimble.platform.query.impls.tests;
 
-import java.util.List;
-
-import com.bluenimble.platform.db.Database;
-import com.bluenimble.platform.db.DatabaseObject;
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.query.CompiledQuery;
+import com.bluenimble.platform.query.Query;
+import com.bluenimble.platform.query.QueryCompiler;
 import com.bluenimble.platform.query.impls.JsonQuery;
+import com.bluenimble.platform.query.impls.SqlQueryCompiler;
 
-public class FindAllWithSelect {
-	
+public class TestQueryCompilerWithConditionList {
+
 	public static void main (String [] args) throws Exception {
 		
-		String query = "{ select: [name], orderBy: { name: asc } }";
+		Query query = new JsonQuery (new JsonObject ("{ where = {\n" + 
+				"				or: [{\n" + 
+				"					'createdBy.id': '5ca3cdb9894e04330ad8bbf9',\n" + 
+				"					'recipient.id': '5ca3cf2b894e04330ad8bbfb'\n" + 
+				"				}, {\n" + 
+				"					'createdBy.id': '5ca3cf2b894e04330ad8bbfb',\n" + 
+				"					'recipient.id': '5ca3cdb9894e04330ad8bbf9'\n" + 
+				"				}] \n" + 
+				"			} }") );
+		System.out.println ("Select==>");
+
+		QueryCompiler sc = new SqlQueryCompiler (Query.Construct.select);
 		
-		Database db = new DatabaseServer ().get ();
+		CompiledQuery cq = sc.compile (query);
 		
-		List<DatabaseObject> stories = db.find (
-			"Story",
-			new JsonQuery (new JsonObject (query)),
-			null
-		);
-		
-		for (DatabaseObject story : stories) {
-			System.out.println (story.get ("name") + " - " + story.get ("description"));
-		}
+		System.out.println ("   query: " + cq.query ());
+		System.out.println ();
+		System.out.println ("bindings: " + cq.bindings ());
 		
 	}
 	

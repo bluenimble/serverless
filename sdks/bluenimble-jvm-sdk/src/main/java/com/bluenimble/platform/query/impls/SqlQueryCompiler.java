@@ -31,6 +31,7 @@ import com.bluenimble.platform.query.GroupBy;
 import com.bluenimble.platform.query.OrderBy;
 import com.bluenimble.platform.query.OrderByField;
 import com.bluenimble.platform.query.Query;
+import com.bluenimble.platform.query.Query.Conjunction;
 import com.bluenimble.platform.query.Query.Operator;
 import com.bluenimble.platform.query.QueryException;
 import com.bluenimble.platform.query.Select;
@@ -59,6 +60,7 @@ public class SqlQueryCompiler extends EventedQueryCompiler {
 		OperatorsMap.put (Operator.nlike, 	"not like");
 		OperatorsMap.put (Operator.btw, 	"between");
 		OperatorsMap.put (Operator.nbtw, 	"not between");
+		OperatorsMap.put (Operator.all, 	"in");
 		OperatorsMap.put (Operator.in, 		"in");
 		OperatorsMap.put (Operator.nin, 	"not in");
 		OperatorsMap.put (Operator.nil, 	"is null");
@@ -112,7 +114,7 @@ public class SqlQueryCompiler extends EventedQueryCompiler {
 	}
 
 	@Override
-	protected void onFilter (Timing timing, Filter filter, boolean isWhere)
+	protected void onFilter (Timing timing, Filter filter, Conjunction conjunction, boolean isWhere)
 			throws QueryException {
 		
 		if (filter == null || filter.isEmpty ()) {
@@ -124,7 +126,11 @@ public class SqlQueryCompiler extends EventedQueryCompiler {
 				if (isWhere) {
 					buff.append (Lang.SPACE).append (Query.Construct.where.name ()).append (Lang.SPACE); 
 				} else {
-					buff.append (Lang.SPACE).append (filter.parentConjunction ().name ()).append (Lang.SPACE).append (Lang.PARENTH_OPEN); 
+					buff.append (Lang.SPACE);
+					if (conjunction != null) {
+						buff.append (conjunction.name ()).append (Lang.SPACE);
+					}
+					buff.append (Lang.PARENTH_OPEN); 
 				}
 				break;
 	
@@ -140,11 +146,14 @@ public class SqlQueryCompiler extends EventedQueryCompiler {
 	}
 
 	@Override
-	protected void onCondition (Condition condition, Filter filter, int index)
+	protected void onCondition (Condition condition, Conjunction conjunction, int index)
 			throws QueryException {
 		
 		if (index > 0) {
-			buff.append (Lang.SPACE).append (filter.conjunction ().name ()).append (Lang.SPACE);
+			if (conjunction == null) {
+				conjunction = Conjunction.and;
+			}
+			buff.append (Lang.SPACE).append (conjunction.name ()).append (Lang.SPACE);
 		}
 
 		field (condition.field ());
@@ -159,7 +168,7 @@ public class SqlQueryCompiler extends EventedQueryCompiler {
 		
 		Object value = condition.value ();
 		
-		if (Operator.in.equals (condition.operator ()) || Operator.nin.equals (condition.operator ())) {
+		if (Operator.all.equals (condition.operator ()) || Operator.in.equals (condition.operator ()) || Operator.nin.equals (condition.operator ())) {
 			if (List.class.isAssignableFrom (value.getClass ())) {
 				@SuppressWarnings("unchecked")
 				List<Object> values = (List<Object>)value;

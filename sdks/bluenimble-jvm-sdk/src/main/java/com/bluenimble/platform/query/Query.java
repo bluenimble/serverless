@@ -19,6 +19,8 @@ package com.bluenimble.platform.query;
 import java.io.Serializable;
 import java.util.Map;
 
+import com.bluenimble.platform.json.JsonObject;
+
 public interface Query extends Serializable {
 
 	enum Construct {
@@ -50,6 +52,7 @@ public interface Query extends Serializable {
 		nbtw,
 		in,
 		nin,
+		all,
 		nil,
 		nnil,
 		regex,
@@ -77,5 +80,9 @@ public interface Query extends Serializable {
 	void 				count 		(int page);
 	
 	Map<String, Object>	bindings 	();
+	
+	boolean				isNative	();
+	
+	JsonObject 			toJson 		();
 	
 }

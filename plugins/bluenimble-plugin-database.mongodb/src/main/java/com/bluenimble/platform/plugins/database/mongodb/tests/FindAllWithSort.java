@@ -28,7 +28,7 @@ public class FindAllWithSort {
 	
 	public static void main (String [] args) throws Exception {
 		
-		String query = "{ orderBy: { name: asc } }";
+		String query = "{ where: { name: Beta, org: Zeta }, orderBy: { name: asc } }";
 		
 		Database db = new DatabaseServer ().get ();
 		

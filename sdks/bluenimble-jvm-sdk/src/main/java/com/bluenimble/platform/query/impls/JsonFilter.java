@@ -16,49 +16,24 @@
  */
 package com.bluenimble.platform.query.impls;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.List;
 
 import com.bluenimble.platform.Json;
+import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.query.Filter;
-import com.bluenimble.platform.query.Query;
-import com.bluenimble.platform.query.Query.Conjunction;
 import com.bluenimble.platform.query.Query.Operator;
 
 public class JsonFilter implements Filter {
 
 	private static final long serialVersionUID = -4482690420390364506L;
 	
-	private static final Set<String> Conjunctions = new HashSet<String> ();
-	static {
-		Conjunctions.add (Query.Conjunction.and.name ());
-		Conjunctions.add (Query.Conjunction.or.name ());
-	}
-	
 	protected JsonObject 	source;
-	protected Conjunction 	conjuction;
-	
-	protected Conjunction 	parentConjuction;
 	
 	public JsonFilter (JsonObject source) {
-		this (null, source);
-	}
-
-	public JsonFilter (Conjunction parentConjuction, JsonObject source) {
-		this.parentConjuction 	= parentConjuction;
-		conjuction 				= Conjunction.valueOf (Json.getString (source, JsonQuery.Spec.Conjunction, Query.Conjunction.and.name ()));
-		
-		if (source != null) {
-			source.remove (JsonQuery.Spec.Conjunction);
-		}
 		this.source = source;
-	}
-
-	@Override
-	public Conjunction conjunction () {
-		return conjuction;
 	}
 
 	@Override
@@ -72,13 +47,26 @@ public class JsonFilter implements Filter {
 	@Override
 	public Object get (String field) {
 		Object o = source.get (field);
+		if (o instanceof JsonArray) {
+			JsonArray aConditions = (JsonArray)o;
+			List<Object> conditions = new ArrayList<Object> ();
+			for (int i = 0; i < aConditions.count (); i++) {
+				Object subCondition = aConditions.get (i);
+				if (!(subCondition instanceof JsonObject)) {
+					continue;
+				}
+				conditions.add (new JsonFilter ((JsonObject)subCondition));
+			}
+			return conditions;
+		}
+		return conditionFor (field, o);
+	}
+	
+	private Object conditionFor (String field, Object o) {
 		if (!(o instanceof JsonObject)) {
 			return new ConditionImpl (field, Operator.eq, o);
 		}
 		JsonObject spec = (JsonObject)o;
-		if (Conjunctions.contains (field)) {
-			return new JsonFilter (Conjunction.valueOf (field), spec);
-		} 
 		return new ConditionImpl (
 			field, 
 			Operator.valueOf (Json.getString (spec, JsonQuery.Spec.Operator, Operator.eq.name ())), 
@@ -105,11 +93,6 @@ public class JsonFilter implements Filter {
 			return true;
 		}
 		return source.isEmpty ();
-	}
-
-	@Override
-	public Conjunction parentConjunction () {
-		return parentConjuction;
 	}
 	
 }
