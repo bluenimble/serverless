@@ -62,7 +62,7 @@ public class ValidationUtils {
 	
 	@SuppressWarnings("unchecked")
 	public static JsonObject checkEnum (Api api, ApiRequest request, 
-			ApiServiceValidator validator, JsonObject spec, String label, String value, JsonObject feedback) {
+			ApiServiceValidator validator, JsonObject spec, String label, Object value, JsonObject feedback) {
 		
 		Object _enum = spec.get (Spec.Enum);
 		if (_enum == null) {
@@ -77,7 +77,7 @@ public class ValidationUtils {
 			enumFailed = !((JsonArray)_enum).contains (value);
 			sEnum = ((JsonArray)_enum).join (Lang.COMMA, false);
 		} else if (_enum instanceof JsonObject) {
-			enumFailed = !((JsonObject)_enum).containsKey (value);
+			enumFailed = !((JsonObject)_enum).containsKey (String.valueOf (value));
 			sEnum = Lang.join (new ArrayList<String> (((JsonObject)_enum).keySet ()), Lang.COMMA);
 		}
 		

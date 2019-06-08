@@ -104,9 +104,7 @@ public class DecimalValidator extends AbstractTypeValidator {
 			return feedback;
 		}
 		
-		String sValue = String.valueOf (value);
-		
-		JsonObject enumFeedback = ValidationUtils.checkEnum (api, request, validator, spec, label, sValue, feedback);
+		JsonObject enumFeedback = ValidationUtils.checkEnum (api, request, validator, spec, label, value, feedback);
 		if (feedback == null) {
 			feedback = enumFeedback;
 		}
