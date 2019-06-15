@@ -17,7 +17,6 @@
 package com.bluenimble.platform.cli.command.impls.handlers;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 
 import com.bluenimble.platform.Json;
@@ -68,10 +67,15 @@ public class JsonSaveHandler implements CommandHandler {
 		
 		File file = new File (sFile);
 		
-		boolean overwrite = true;
+		boolean hash 		= false;
+		boolean overwrite 	= true;
 		
 		if (args.length > 2) {
-			overwrite = !("-check".equals (args [2]));
+			hash = !("-hash".equals (args [2]));
+		}
+		
+		if (args.length > 3) {
+			overwrite = !("-check".equals (args [3]));
 		}
 		
 		if (file.exists ()) {
@@ -84,8 +88,12 @@ public class JsonSaveHandler implements CommandHandler {
 		}
 		
 		try {
-			Json.store (json, file);
-		} catch (IOException e) {
+			if (hash) {
+				Json.store (json, file, tool.getParaphrase (true));
+			} else {
+				Json.store (json, file);
+			}
+		} catch (Exception e) {
 			throw new CommandExecutionException (e.getMessage (), e);
 		}
 		
@@ -100,7 +108,7 @@ public class JsonSaveHandler implements CommandHandler {
 
 	@Override
 	public String getDescription () {
-		return "save a json variable to a file. save json_var /home/me/var.json -check";
+		return "save a json variable to a file. save json_var /home/me/var.json -hash";
 	}
 
 	@Override
@@ -124,6 +132,20 @@ public class JsonSaveHandler implements CommandHandler {
 					@Override
 					public String desc () {
 						return "a valid file path";
+					}
+				},
+				new AbstractArg () {
+					@Override
+					public String name () {
+						return "-hash";
+					}
+					@Override
+					public String desc () {
+						return "encrypt and hash content using user paraphrase";
+					}
+					@Override
+					public boolean required () {
+						return false;
 					}
 				},
 				new AbstractArg () {

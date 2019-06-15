@@ -72,6 +72,7 @@ import com.mongodb.client.MongoIterable;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
 import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
 
 /**
  * 
@@ -330,7 +331,6 @@ public class MongoDatabaseImpl implements Database {
 
 	@Override
 	public long count (String entity) throws DatabaseException {
-		
 		checkNotNull (entity);
 		
 		entity = entity (entity);
@@ -480,6 +480,40 @@ public class MongoDatabaseImpl implements Database {
 		return list;
 	}
 	
+	@Override
+	public long update (String entity, Query query, JsonObject data) throws DatabaseException {
+		if (Json.isNullOrEmpty (data)) {
+			return 0;
+		}
+		
+		entity = entity (entity);
+		
+		MongoCollection<Document> collection = db.getCollection (entity);
+		if (collection == null) {
+			return 0;
+		}
+		
+		BasicDBObject object = new BasicDBObject ();
+		object.putAll (data);
+		
+		UpdateResult result;
+		
+		if (session == null) {
+			result = collection.updateMany (
+				createQuery (entity, Query.Construct.update, query), 
+				object
+			);
+		} else {
+			result = collection.updateMany (
+				session,
+				createQuery (entity, Query.Construct.update, query), 
+				object
+			);
+		}
+		
+		return result.getModifiedCount ();
+	}
+
 	private List<DatabaseObject> toList (String entity, FindIterable<Document> documents, Visitor visitor, boolean partial) {
 		
 		if (visitor == null) {
@@ -508,54 +542,11 @@ public class MongoDatabaseImpl implements Database {
 
 	private Object _query (String entity, Query.Construct construct, final Query query) throws DatabaseException {
 		
-		if (query == null) {
+		BasicDBObject mQuery = createQuery (entity, construct, query);
+		if (mQuery == null) {
 			return null;
 		}
-		
-		boolean queryHasEntity = true;
-		
-		if (Lang.isNullOrEmpty (query.entity ())) {
-			queryHasEntity = false;
-		} else {
-			
-			entity = query.entity ();
-		}
-		
-		checkNotNull (entity);
-		
-		entity = entity (entity);
-		
-		tracer.log (Tracer.Level.Info, "Query Entity {0}", entity);
-		
-		String cacheKey = construct.name () + query.name ();
-		
-		BasicDBObject 		mQuery 		= null;
-		Map<String, Object> bindings 	= query.bindings ();
-		
-		boolean cacheable = compileQuerySupported && queryHasEntity && query.caching ().cache (Target.meta) && !Lang.isNullOrEmpty (query.name ());
-		
-		if (cacheable) {
-			mQuery 		= (BasicDBObject)QueriesCache.get (cacheKey);
-			tracer.log (Tracer.Level.Info, "Query meta loaded from cache {0}", mQuery);
-		} 
-		
-		if (mQuery == null) {
-			CompiledQuery cQuery = compile (entity, construct, query);
-			
-			mQuery 		= (BasicDBObject)cQuery.query ();
-			bindings	= cQuery.bindings 	();
-			
-			if (cacheable && mQuery != null) {
-				QueriesCache.put (cacheKey, mQuery);
-				tracer.log (Tracer.Level.Debug, "Query meta stored in cache {0}", mQuery);
-			} 
-		}
-		
-		mQuery = cacheable ? applyBindings (mQuery, bindings) : mQuery;
 
-		tracer.log (Tracer.Level.Info, "       Query {0}", mQuery);
-		tracer.log (Tracer.Level.Info, "    Bindings {0}", bindings);
-		
 		if (Query.Construct.select.equals (construct)) {
 			FindIterable<Document> cursor = null;
 			if (session == null) {
@@ -612,6 +603,58 @@ public class MongoDatabaseImpl implements Database {
 		}
 		
 		return null;
+		
+	}
+	
+	private BasicDBObject createQuery (String entity, Query.Construct construct, Query query) throws DatabaseException {
+		if (query == null) {
+			return null;
+		}
+		
+		boolean queryHasEntity = true;
+		
+		if (Lang.isNullOrEmpty (query.entity ())) {
+			queryHasEntity = false;
+		} else {
+			entity = query.entity ();
+		}
+		
+		checkNotNull (entity);
+		
+		entity = entity (entity);
+		
+		tracer.log (Tracer.Level.Info, "Query Entity {0}", entity);
+		
+		String cacheKey = construct.name () + query.name ();
+		
+		BasicDBObject 		mQuery 		= null;
+		Map<String, Object> bindings 	= query.bindings ();
+		
+		boolean cacheable = compileQuerySupported && queryHasEntity && query.caching ().cache (Target.meta) && !Lang.isNullOrEmpty (query.name ());
+		
+		if (cacheable) {
+			mQuery 		= (BasicDBObject)QueriesCache.get (cacheKey);
+			tracer.log (Tracer.Level.Info, "Query meta loaded from cache {0}", mQuery);
+		} 
+		
+		if (mQuery == null) {
+			CompiledQuery cQuery = compile (entity, construct, query);
+			
+			mQuery 		= (BasicDBObject)cQuery.query ();
+			bindings	= cQuery.bindings 	();
+			
+			if (cacheable && mQuery != null) {
+				QueriesCache.put (cacheKey, mQuery);
+				tracer.log (Tracer.Level.Debug, "Query meta stored in cache {0}", mQuery);
+			} 
+		}
+		
+		mQuery = cacheable ? applyBindings (mQuery, bindings) : mQuery;
+		
+		tracer.log (Tracer.Level.Info, "       Query {0}", mQuery);
+		tracer.log (Tracer.Level.Info, "    Bindings {0}", bindings);
+		
+		return mQuery;
 		
 	}
 	

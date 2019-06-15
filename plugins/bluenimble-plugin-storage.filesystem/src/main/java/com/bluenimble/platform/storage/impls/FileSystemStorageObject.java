@@ -245,11 +245,9 @@ public class FileSystemStorageObject implements StorageObject {
 		if (isFolder ()) {
 			throw new StorageException ("this is a folder. Can't update content");
 		}
-		System.out.println ("###### File Update -> " + source.getAbsolutePath ());
 		OutputStream os = null;
 		try {
 			os = new FileOutputStream (source, append);
-			System.out.println ("###### File Update -> Acquired Stream");
 			return IOUtils.copy (input, os, buffer);
 		} catch (IOException ioex) {
 			throw new StorageException (ioex.getMessage (), ioex);

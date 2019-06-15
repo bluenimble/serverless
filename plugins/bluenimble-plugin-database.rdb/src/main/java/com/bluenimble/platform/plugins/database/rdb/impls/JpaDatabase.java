@@ -450,4 +450,9 @@ public class JpaDatabase implements Database {
 		return metadata.byType (entity);
 	}
 
+	@Override
+	public long update (String entity, Query query, JsonObject data) throws DatabaseException {
+		throw new UnsupportedOperationException ("update (String entity, Query query, JsonObject data)");
+	}
+
 }

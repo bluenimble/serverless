@@ -99,6 +99,8 @@ public interface Database extends Recyclable {
 	int 					delete 		(String entity, Object id) 								throws DatabaseException;
 	int 					delete 		(String entity, Query query) 							throws DatabaseException;
 
+	long 					update 		(String entity, Query query, JsonObject data) 			throws DatabaseException;
+
 	JsonObject 				bulk 		(JsonObject data) 										throws DatabaseException;
 
 	boolean 				isEntity 	(Object value) 											throws DatabaseException;

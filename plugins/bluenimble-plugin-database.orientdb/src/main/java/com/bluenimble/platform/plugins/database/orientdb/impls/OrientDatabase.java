@@ -686,6 +686,11 @@ public class OrientDatabase implements Database {
 		db.getMetadata ().getSchema ().save ();
 	}
 
+	@Override
+	public long update (String entity, Query query, JsonObject data) throws DatabaseException {
+		throw new UnsupportedOperationException ("update (String entity, Query query, JsonObject data)");
+	}
+
 	/*
 	@Override
 	public void createIndex (String eType, IndexType type, String name,

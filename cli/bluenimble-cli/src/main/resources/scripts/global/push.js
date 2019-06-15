@@ -294,6 +294,18 @@ if (allRecipes && allRecipes.common && (allRecipes.common instanceof JsonObject)
 	recipe = allRecipes.common.duplicate ();
 }
 if (targetRecipe) {
+	if (targetRecipe.containsKey('runnable') && targetRecipe.runnable == false) {
+		throw rId + ' is not a runnable Recipe';
+	}
+	
+	targetRecipe.remove ('runnable');
+	
+	if (targetRecipe.extends) {
+		var extendsRecipe = allRecipes [targetRecipe.extends];
+		if (extendsRecipe) {
+			recipe.merge (extendsRecipe);
+		}
+	}
 	recipe.merge (targetRecipe);
 }
 

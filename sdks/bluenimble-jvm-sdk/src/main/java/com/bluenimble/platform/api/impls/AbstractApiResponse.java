@@ -19,9 +19,12 @@ package com.bluenimble.platform.api.impls;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import com.bluenimble.platform.api.ApiHeaders;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.json.JsonObject;
@@ -29,6 +32,11 @@ import com.bluenimble.platform.json.JsonObject;
 public abstract class AbstractApiResponse extends BaseApiResponse {
 	
 	private static final long serialVersionUID = 2484293173544350202L;
+	
+	private static final Set<String> Unchangeable = new HashSet<String> ();
+	static {
+		Unchangeable.add (ApiHeaders.ContentType);
+	}
 	
 	protected Status						status = OK;
 	protected JsonObject 					error;
@@ -100,6 +108,11 @@ public abstract class AbstractApiResponse extends BaseApiResponse {
 		}
 		
 		Object alreadyThere = headers.get (name);
+		
+		if (alreadyThere != null && Unchangeable.contains (name)) {
+			return this;
+		}
+		
 		if (alreadyThere != null) {
 			List<Object> values = null;
 			if (List.class.isAssignableFrom (alreadyThere.getClass ())) {

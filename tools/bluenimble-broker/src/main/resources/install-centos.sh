@@ -7,14 +7,14 @@ echo       ""
 echo       "BlueNimble Platform"
 echo       "Copyright (c) BlueNimble, Inc. (https://www.bluenimble.com)"
 echo       ""
-echo       "Install BlueNimble"
+echo       "Install BlueNimble Broker"
 
 if [ -d "/opt/bluenimble/platform" ]; then
 	echo "[ERROR] BlueNimble is already installed in this host"
 	exit 1
 fi
 
-echo       "Install BlueNimble in a Centos host"
+echo       "Install BlueNimble Broker in a Centos host"
 
 CLEAN=$1
 
@@ -47,26 +47,35 @@ sudo rpm -qa | grep -qw libaio || sudo yum install -y libaio
 sudo rpm -qa | grep -qw nfs-utils || sudo yum install -y nfs-utils
 sudo rpm -qa | grep -qw java-1.8.0-openjdk || sudo yum -y install java-1.8.0-openjdk
 
-echo "Download and install BlueNimble"
-wget --no-cache https://github.com/bluenimble/serverless/releases/download/v[version]/bluenimble-[version]-bin.tar.gz && \
-  sudo tar -xvzf bluenimble-[version]-bin.tar.gz -C /opt/bluenimble && \
-  rm -f bluenimble-[version]-bin.tar.gz
+BNB_RELEASE=$1
 
-sudo mv /opt/bluenimble/bluenimble-[version] /opt/bluenimble/platform
+BNB_CONFIG_FOLDER=$2
 
-if [ $CLEAN = 'clean' ] ; then
-	sudo rm -fr /opt/bluenimble/plugins/bluenimble-plugin-dev.playground-[version]
-	sudo rm -fr /opt/bluenimble/spaces/playground
+TAR_FILE=bluenimble-broker-${BNB_RELEASE}-bin.tar.gz
+
+BLUENIMBLE_DOWNLOAD_URL=https://github.com/bluenimble/serverless/releases/download/v${BNB_RELEASE}/$TAR_FILE
+
+echo "Download and install BlueNimble Broker"
+sudo mkdir -p /opt/displaystream && \
+    sudo wget --no-cache $BLUENIMBLE_DOWNLOAD_URL && \
+    sudo tar -xvzf $TAR_FILE -C /opt/bluenimble && \
+    sudo rm $TAR_FILE && \
+    sudo mv /opt/bluenimble/bluenimble-broker-$BNB_RELEASE /opt/bluenimble/broker
+
+if [ -n "$BNB_CONFIG_FOLDER" ];
+then 
+  sudo cp $BNB_CONFIG_FOLDER/* /opt/bluenimble/broker
 fi
 
-echo "Create BlueNimble auto-start Service"
-sudo chmod u+x /opt/bluenimble/platform/bnb.sh
-sudo chmod u+x /opt/bluenimble/platform/bnb.stop.sh
+echo "Grant Exec Permissions"
+sudo chmod u+x /opt/bluenimble/broker/bnb.sh
+sudo chmod u+x /opt/bluenimble/broker/bnb.stop.sh
 
-sudo cp /opt/bluenimble/platform/bnb.service /etc/systemd/system/bnb.service
+echo "Create BlueNimble auto-start Service"
+sudo cp /opt/bluenimble/broker/bnb.service /etc/systemd/system/bnb.service
 sudo chmod 664 /etc/systemd/system/bnb.service
 sudo systemctl enable /etc/systemd/system/bnb.service
 sudo systemctl daemon-reload
 
-echo "Start BlueNimble Service"
+echo "Start BlueNimble Broker Service"
 sudo systemctl start bnb.service

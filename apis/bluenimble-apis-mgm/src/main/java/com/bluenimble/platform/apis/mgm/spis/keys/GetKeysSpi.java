@@ -80,7 +80,7 @@ public class GetKeysSpi extends AbstractApiServiceSpi {
 				// If super is calling this service, accessKey should be prefixed by space namespace
 				int indexOfDot = accessKey.indexOf (Lang.DOT);
 				if (indexOfDot <= 0) {
-					throw new ApiServiceExecutionException ("invalid accessKey. Using super privileges, you should prefix the accessKey by the space.").status (ApiResponse.BAD_REQUEST);
+					throw new ApiServiceExecutionException ("invalid accessKey. Using SUPER privileges, you should prefix the accessKey by the space.").status (ApiResponse.BAD_REQUEST);
 				}
 				String space 	= accessKey.substring (0, indexOfDot);
 				accessKey 		= accessKey.substring (indexOfDot + 1);
@@ -116,7 +116,7 @@ public class GetKeysSpi extends AbstractApiServiceSpi {
 		}
 		
 		if (Role.ADMIN.equals (cRole) && Role.ADMIN.equals (keysRole)) {
-			throw new ApiServiceExecutionException ("access denied. only super keys can read ADMIN keys").status (ApiResponse.FORBIDDEN);
+			throw new ApiServiceExecutionException ("access denied. only SUPER users can read ADMIN keys").status (ApiResponse.FORBIDDEN);
 		}
 		
 		try {

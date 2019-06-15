@@ -245,7 +245,7 @@ public class RewriteApiRequestVisitor extends SelectiveApiRequestVisitor {
 				conditionValue 		= condition.substring (indexOfColon + 1).trim ();
 				
 				RewriteConditionChecker checker = Checkers.get (checkerId);
-				server.tracer ().log (Level.Info, "\tRule checker {0}", checker);
+				server.tracer ().log (Level.Debug, "\tRule checker {0}", checker);
 				
 				apply = (checker == null) || 
 						checker.check (scope.equals (Placeholder.endpoint) ? request.getEndpoint () : request.getPath (), conditionValue);

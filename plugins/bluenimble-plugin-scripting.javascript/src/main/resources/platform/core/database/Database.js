@@ -160,6 +160,45 @@ var Database = function (api, proxy) {
 	};
 
 	/**	
+	  Update records based on a query
+	  @param {string} - the entity/table name
+	  @param {JsonObject} - the query spec<br/>
+	  @param {JsonObject} - the data update object<br/>
+	  @example
+	  
+	  db.update ({
+	  	entity: 'YourEntityName',
+	  	{
+		  	where: {
+		  		prop1: '123',
+		  		prop2: { op: 'gt', value: 35 }
+		  	}
+	  	},
+	  	{
+	  		name: 'Alpha',
+	  		'address.home': 'Somewhere'
+	  	}
+	  });
+	  
+	  @return {integer} - number of records updated
+	*/
+	this.update = function (entity, query, data) {
+		
+		if (!entity) {
+			throw "missing entity argument";
+		}
+
+		if (!query) {
+			throw "missing query argument";
+		}
+		
+		return proxy.update (
+			entity,
+			new JC_JsonQuery (JC_ValueConverter.convert (query), data ? JC_ValueConverter.convert (data) : null)
+		);
+	};
+
+	/**	
 	  Count the number of records in this entity
 	  @param {string} - the entity/table name
 
