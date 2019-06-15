@@ -256,6 +256,8 @@ public class MongoDatabaseImpl implements Database {
 	@Override
 	public List<DatabaseObject> find (String entity, Query query, Visitor visitor) throws DatabaseException {
 		
+		entity = entity (Lang.isNullOrEmpty (entity) ? query.entity () : entity);
+		
 		FindIterable<Document> result;
 		try {
 			result = (FindIterable<Document>)_query (entity, Query.Construct.select, query);
@@ -266,7 +268,7 @@ public class MongoDatabaseImpl implements Database {
 			return null;
 		}
 		
-		return toList (entity (Lang.isNullOrEmpty (entity) ? query.entity () : entity), result, visitor, query.select () != null);
+		return toList (entity, result, visitor, query.select () != null);
 	}
 
 	@Override
@@ -486,7 +488,7 @@ public class MongoDatabaseImpl implements Database {
 			return 0;
 		}
 		
-		entity = entity (entity);
+		entity = entity (Lang.isNullOrEmpty (entity) ? query.entity () : entity);
 		
 		MongoCollection<Document> collection = db.getCollection (entity);
 		if (collection == null) {
@@ -607,6 +609,9 @@ public class MongoDatabaseImpl implements Database {
 	}
 	
 	private BasicDBObject createQuery (String entity, Query.Construct construct, Query query) throws DatabaseException {
+		
+		checkNotNull (entity);
+		
 		if (query == null) {
 			return null;
 		}
@@ -615,13 +620,7 @@ public class MongoDatabaseImpl implements Database {
 		
 		if (Lang.isNullOrEmpty (query.entity ())) {
 			queryHasEntity = false;
-		} else {
-			entity = query.entity ();
 		}
-		
-		checkNotNull (entity);
-		
-		entity = entity (entity);
 		
 		tracer.log (Tracer.Level.Info, "Query Entity {0}", entity);
 		

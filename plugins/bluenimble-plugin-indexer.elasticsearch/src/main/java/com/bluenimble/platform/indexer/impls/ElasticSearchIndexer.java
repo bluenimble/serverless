@@ -663,7 +663,11 @@ public class ElasticSearchIndexer implements Indexer {
 			
 			@Override
 			protected void entity () {
-				buff.append (index);
+				if (!Lang.isNullOrEmpty (query.entity ())) {
+					buff.append (query.entity ());
+				} else if (!Lang.isNullOrEmpty (index)) {
+					buff.append (index);
+				}
 			}
 		}; 
 		try {
@@ -707,12 +711,17 @@ public class ElasticSearchIndexer implements Indexer {
 			query
 		);
 		
+		String indexPath = Lang.BLANK;
+		if (!Lang.isNullOrEmpty (index)) {
+			indexPath = index + Lang.SLASH;
+		}
+		
 		ValueHolder<JsonObject> result = new ValueHolder<JsonObject> ();
 		ElkError error = new ElkError ();
 		
 		remote.post (
 			(JsonObject)new JsonObject ()
-				.set (Remote.Spec.Path, index + Lang.SLASH + types + 
+				.set (Remote.Spec.Path, indexPath + types + 
 						(types.equals (Lang.BLANK) ? Lang.BLANK : Lang.SLASH) + 
 						(isCount ? Internal.Elk.Count : Internal.Elk.Search))
 				.set (Remote.Spec.Headers, 
@@ -779,6 +788,9 @@ public class ElasticSearchIndexer implements Indexer {
 	}
 	
 	private String entity (String entity) {
+		if (Lang.isNullOrEmpty (index) && Lang.isNullOrEmpty (entity)) {
+			return Lang.BLANK;
+		}
 		if (Lang.isNullOrEmpty (entity)) {
 			return index + Lang.SLASH;
 		}
