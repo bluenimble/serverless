@@ -89,9 +89,13 @@ public class ApiServiceImpl implements ApiService {
 		
 		setStatus (Json.getString (this.source, Spec.Status));
 		
-		verb = ApiVerb.valueOf (
-			Json.getString (source, Spec.Verb, ApiVerb.GET.name ()).toUpperCase ()
-		);
+		try {
+			verb = ApiVerb.valueOf (
+				Json.getString (source, Spec.Verb, ApiVerb.GET.name ()).toUpperCase ()
+			);
+		} catch (Exception ex) {
+			verb = ApiVerb.GET;
+		}
 		
 		resolveEndpoint  ();	
 		

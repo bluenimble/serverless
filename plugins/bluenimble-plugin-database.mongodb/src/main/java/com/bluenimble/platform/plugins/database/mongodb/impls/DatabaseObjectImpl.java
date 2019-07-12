@@ -290,7 +290,7 @@ public class DatabaseObjectImpl implements DatabaseObject {
 			DatabaseObjectImpl refObject = new DatabaseObjectImpl (db, entity, id, true);
 			refObject.persistent = true;
 			try {
-				refObject.set (key, ref.get (Database.Fields.Timestamp));
+				// refObject.set (key, ref.get (Database.Fields.Timestamp));
 				set (key, refObject);
 			} catch (DatabaseException e) {
 				throw new RuntimeException (e.getMessage (), e);

@@ -63,12 +63,14 @@ public class BasicConsumerResolver implements ApiConsumerResolver {
 			String Feature 		= "feature";
 			String Query 		= "query";
 			String Prefix 		= "prefix";
+			String Users 		= "users";
 		}
 	}
 	
 	interface Providers {
 		String Database = "database";
 		String Cache 	= "cache";
+		String Local 	= "local";
 	}
 	
 	@Override
@@ -120,13 +122,7 @@ public class BasicConsumerResolver implements ApiConsumerResolver {
 			return consumer;
 		}
 		
-		String 		provider 	= Json.getString (auth, Spec.Auth.Provider, Providers.Database);
-		String 		feature 	= Json.getString (auth, Spec.Auth.Feature);
-		JsonObject 	query 		= Json.getObject (auth, Spec.Auth.Query);
-		
-		if (query == null || query.isEmpty ()) {
-			return consumer;
-		}
+		String provider 	= Json.getString (auth, Spec.Auth.Provider, Providers.Database);
 		
 		String password = (String)consumer.get (ApiConsumer.Fields.Password);
 		
@@ -144,9 +140,11 @@ public class BasicConsumerResolver implements ApiConsumerResolver {
 		JsonObject oConsumer = null;
 		
 		if (provider.equals (Providers.Database)) {
-			oConsumer = fromDatabase (api, consumer, request, feature, query, password);
+			oConsumer = fromDatabase (api, consumer, request, auth, password);
 		} else if (provider.equals (Providers.Cache)) {
-			oConsumer = fromCache (api, consumer, request, feature, query, password);
+			oConsumer = fromCache (api, consumer, request, auth, password);
+		} else if (provider.equals (Providers.Local)) {
+			oConsumer = fromLocal (api, consumer, request, auth, password);
 		}
 		
 		if (oConsumer == null) {
@@ -166,7 +164,14 @@ public class BasicConsumerResolver implements ApiConsumerResolver {
 		return consumer;
 	}
 	
-	private JsonObject fromDatabase (Api api, ApiConsumer consumer, ApiRequest request, String feature, JsonObject query, String password) throws ApiAuthenticationException {
+	private JsonObject fromDatabase (Api api, ApiConsumer consumer, ApiRequest request, JsonObject auth, String password) throws ApiAuthenticationException {
+		String 		feature 	= Json.getString (auth, Spec.Auth.Feature);
+		JsonObject 	query 		= Json.getObject (auth, Spec.Auth.Query);
+		
+		if (query == null || query.isEmpty ()) {
+			return null;
+		}
+
 		Map<String, Object> bindings = new HashMap<String, Object> ();
 		bindings.put (ApiConsumer.Fields.Id, consumer.get (ApiConsumer.Fields.Id));
 		bindings.put (ApiConsumer.Fields.Password, password);
@@ -185,7 +190,14 @@ public class BasicConsumerResolver implements ApiConsumerResolver {
 		return odb.toJson (null);
 	}
 	
-	private JsonObject fromCache (Api api, ApiConsumer consumer, ApiRequest request, String feature, JsonObject query, String password) throws ApiAuthenticationException {
+	private JsonObject fromCache (Api api, ApiConsumer consumer, ApiRequest request, JsonObject auth, String password) throws ApiAuthenticationException {
+		String 		feature 	= Json.getString (auth, Spec.Auth.Feature);
+		JsonObject 	query 		= Json.getObject (auth, Spec.Auth.Query);
+		
+		if (query == null || query.isEmpty ()) {
+			return null;
+		}
+
 		String key = Json.getString (query, Spec.Auth.Prefix, Lang.BLANK) + consumer.get (ApiConsumer.Fields.Id) + Lang.COLON + password;
 		
 		Cache cache = null;
@@ -206,6 +218,20 @@ public class BasicConsumerResolver implements ApiConsumerResolver {
 		} catch (JsonException ex) {
 			throw new ApiAuthenticationException (ex.getMessage (), ex);
 		}
+	}
+	
+	private JsonObject fromLocal (Api api, ApiConsumer consumer, ApiRequest request, JsonObject auth, String password) throws ApiAuthenticationException {
+		JsonObject users = Json.getObject (auth, Spec.Auth.Users);
+		if (Json.isNullOrEmpty (users)) {
+			return null;
+		}
+		
+		JsonObject user = Json.getObject (users, consumer.get (ApiConsumer.Fields.Id) + Lang.COLON + password);
+		if (user == null) {
+			return null;
+		}
+		
+		return user.duplicate ();
 	}
 	
 }

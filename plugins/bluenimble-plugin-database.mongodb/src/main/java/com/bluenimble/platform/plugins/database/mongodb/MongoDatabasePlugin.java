@@ -215,7 +215,7 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 		}
 		
 		String driver = Json.getString (spec, Spec.Driver, DefaultDriver);
-		
+
 		MongoClientOptions.Builder optionsBuilder = 
 				MongoClientOptions.builder ()
 					.cursorFinalizerEnabled (false)

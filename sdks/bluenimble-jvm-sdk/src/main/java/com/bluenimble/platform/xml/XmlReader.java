@@ -42,7 +42,7 @@ import com.bluenimble.platform.xml.support.ComponentAttribute;
 
 public class XmlReader extends DefaultHandler implements ErrorHandler {
 	
-	public static final String SAX_PARSER_FACTORY = "com.qlogic.commons.saxParserFactory";
+	public static final String SAX_PARSER_FACTORY = "com.bluenimble.platform.xml.saxParserFactory";
 
 	private Component currentElement;
 
@@ -82,19 +82,19 @@ public class XmlReader extends DefaultHandler implements ErrorHandler {
 		this(new FileInputStream (file), possiblePublicDtds, dtd);
 	}
 	
-	public XmlReader(InputStream is) throws Exception {
+	public XmlReader (InputStream is) throws Exception {
 		this (null, is, null, null, true);
 	}
 
-	public XmlReader(InputStream is, String [] possiblePublicDtds, String dtd) throws Exception {
+	public XmlReader (InputStream is, String [] possiblePublicDtds, String dtd) throws Exception {
 		this (null, is, possiblePublicDtds, dtd, true);
 	}
 	
-	public XmlReader(InputStream is, String [] possiblePublicDtds, String dtd, boolean validating) throws Exception {
+	public XmlReader (InputStream is, String [] possiblePublicDtds, String dtd, boolean validating) throws Exception {
 		this (null, is, possiblePublicDtds, dtd, validating);
 	}
 
-	public XmlReader(String saxParserFactoryClass, InputStream is, String [] possiblePublicDtds, String dtd, boolean validating) throws Exception {
+	public XmlReader (String saxParserFactoryClass, InputStream is, String [] possiblePublicDtds, String dtd, boolean validating) throws Exception {
 		try {
 	        messages = new StringBuilder();
 			this.possiblePublicDtds = possiblePublicDtds;
@@ -137,11 +137,11 @@ public class XmlReader extends DefaultHandler implements ErrorHandler {
 		}
 	}
 	
-	public XmlReader(StringBuilder doc) throws Exception {
+	public XmlReader (StringBuilder doc) throws Exception {
 		this (doc, null, null, true);
 	}
 	
-	public XmlReader(StringBuilder doc, String [] possiblePublicDtds, String dtd, boolean validating) throws Exception {
+	public XmlReader (StringBuilder doc, String [] possiblePublicDtds, String dtd, boolean validating) throws Exception {
 		try {
 			messages = new StringBuilder();
 			this.possiblePublicDtds = possiblePublicDtds;

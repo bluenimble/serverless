@@ -487,12 +487,12 @@ public class Json {
 		
     }
     
-    public static JsonObject template (JsonObject model, JsonObject data, boolean withScripting) {
-    	if (Json.isNullOrEmpty (model) || Json.isNullOrEmpty (data)) {
-    		return model;
+    public static JsonObject template (JsonObject template, JsonObject data, boolean withScripting) {
+    	if (Json.isNullOrEmpty (template) || Json.isNullOrEmpty (data)) {
+    		return template;
     	}
     	return (JsonObject)resolve (
-    		model.duplicate (), 
+    		template.duplicate (), 
     		withScripting ? Lang.ScriptedExpressionCompiler : Lang.ExpressionCompiler, 
     		new BasicVariableResolver (data)
     	);
@@ -650,20 +650,9 @@ public class Json {
 	}
 
     public static void main (String [] args) throws JsonException {
-		JsonObject user = new JsonObject ();
-		user.set ("id", "123");
-		user.set ("email", "yoo@gmail.com");
-		user.set ("org", new JsonObject ().set ("id", "org-1").set ("name", "org name"));
-		
-		JsonObject subset = new JsonObject ();
-		
-		String [] fields = { "id", "eail", "org.id", "org.name" };
-		
-		for (int i = 0; i < fields.length; i++) {
-			Json.set (subset, fields [i], Json.find (user, Lang.split (fields [i], Lang.DOT)));
-		}
-		
-		System.out.println (subset);
+    	JsonObject template = new JsonObject ("{scheduler:'[node]', job: '[id]', expression: '[expression]', service: '[service]'}");
+    	JsonObject data = new JsonObject ("{node: alpha, id: jobId, expression: '0 0 0 0', service:{a: 'value'}}");
+		System.out.println (Json.template (template, data, false));
 		
     }
     

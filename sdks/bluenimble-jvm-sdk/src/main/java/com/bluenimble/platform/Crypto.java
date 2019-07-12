@@ -155,7 +155,7 @@ public class Crypto {
 		System.out.print ("Decrypted-Decoded " + new String (decrypted));
 		*/
 		
-		System.out.println (Crypto.md5 ("Im@ne1977", Encodings.UTF8));
+		System.out.println (Crypto.md5 ("Amazon@2019", Encodings.UTF8));
 		
 	}
 	

@@ -184,6 +184,11 @@ var JC_Libs_BN_Signer 		= Java.type ('com.bluenimble.platform.api.impls.scriptin
 	if (typeof Shell === 'undefined') {
 		load (core + '/shell/Shell.js');
 	}
+	
+	// scheduler	
+	if (typeof Scheduler === 'undefined') {
+		load (core + '/scheduler/Scheduler.js');
+	}
 
 	// api	
 	if (typeof ApiContext === 'undefined') {

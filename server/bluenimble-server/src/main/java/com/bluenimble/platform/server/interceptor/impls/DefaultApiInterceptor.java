@@ -146,7 +146,7 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 			
 			track.update (service);
 	
-			logInfo (api, "<" + request.getId () + "> Using service " + service.getVerb () + Lang.SPACE + Json.getString (service.toJson (), ApiService.Spec.Endpoint) + Lang.SPACE + Lang.PARENTH_OPEN + service.getName () + Lang.PARENTH_CLOSE);
+			logDebug (api, "<" + request.getId () + "> Using service " + service.getVerb () + Lang.SPACE + Json.getString (service.toJson (), ApiService.Spec.Endpoint) + Lang.SPACE + Lang.PARENTH_OPEN + service.getName () + Lang.PARENTH_CLOSE);
 			
 			// api life cycle - onService
 			api.getSpi ().onService (api, service, request, response);
@@ -154,7 +154,7 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 			// service lifecycle
 			service.getSpi ().onResolve (api, consumer, request, response);
 			
-			logInfo (api, "<" + request.getId () + "> Interceptor will use media.processor [" + mediaProcessor.getClass ().getSimpleName () + "]");
+			logDebug (api, "<" + request.getId () + "> Interceptor will use media.processor [" + mediaProcessor.getClass ().getSimpleName () + "]");
 			
 			JsonObject apiSecMethods = Json.getObject (api.getSecurity (), Api.Spec.Security.Schemes);
 			if (apiSecMethods == null) {

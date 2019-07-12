@@ -11,11 +11,6 @@
 				"links": [{
 					"Read More": "https://www.bluenimble.com"
 				}]
-			},
-			"scheduler": {
-				"org.quartz.scheduler.instanceName": "[ this.scheduler.name | 'DefaultScheduler' ]",
-				"org.quartz.scheduler.instanceId": "[ this.scheduler.id | 'AUTO' ]",
-				"org.quartz.threadPool.threadCount": "[ this.scheduler.pool | '10' ]"
 			}
 		}
 	},

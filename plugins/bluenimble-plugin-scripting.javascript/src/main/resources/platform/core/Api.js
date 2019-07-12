@@ -218,6 +218,22 @@ function Api (proxy) {
 	};
 	
 	/**	
+	  Create a new Scheduler feature object.
+	  If called from the service execute function, the context parameter should be the ApiRequest argument of the execute method
+	  If called from the api findCosumer, the context parameter should be the ApiContext
+	  @param {ApiContext|ApiRequest} [context] the context or the request in which the cache handle will be associated with
+	  @param {string} [feature=default] the name of the remote feature
+	  @returns {Messenger} an instance of a indexer object
+	*/
+	this.scheduler = function (context, feature) {
+		if (!context) {
+			throw "missing argument context";
+		}
+		feature = this._feature ('scheduler', feature);
+		return new Scheduler (JC_FeaturesUtils.feature (proxy.space (), JC_FeaturesUtils.Features.Scheduler, context.proxy, feature));
+	};
+	
+	/**	
 	  Mobile Push notification to a number of recipients (devices)
 	  If called from the service execute function, the context parameter should be the ApiRequest argument of the execute method
 	  If called from the api findCosumer, the context parameter should be the ApiContext

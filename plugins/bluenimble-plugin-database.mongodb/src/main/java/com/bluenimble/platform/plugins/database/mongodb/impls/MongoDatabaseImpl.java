@@ -181,7 +181,7 @@ public class MongoDatabaseImpl implements Database {
 				session = client.startSession ();
 			}
 			tracer.log (Tracer.Level.Info, "Start Transaction");
-			session.startTransaction (TransactionOptions.builder ().writeConcern (WriteConcern.MAJORITY).build ());
+			session.startTransaction (TransactionOptions.builder ().writeConcern (WriteConcern.ACKNOWLEDGED).build ());
 		}
 		isTransaction = true;
 		return this;
@@ -519,7 +519,11 @@ public class MongoDatabaseImpl implements Database {
 	private List<DatabaseObject> toList (String entity, FindIterable<Document> documents, Visitor visitor, boolean partial) {
 		
 		if (visitor == null) {
-			return new DatabaseObjectList<DatabaseObject> (this, documents.into (new ArrayList<Document> ()), entity, partial);
+			List<Document> items = documents.into (new ArrayList<Document> ());
+			if (items == null || items.isEmpty ()) {
+				return null;
+			}
+			return new DatabaseObjectList<DatabaseObject> (this, items, entity, partial);
 		}
 		
 		DatabaseObjectImpl dbo = null;
