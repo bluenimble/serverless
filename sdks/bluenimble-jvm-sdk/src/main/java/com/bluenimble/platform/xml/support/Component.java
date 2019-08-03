@@ -26,6 +26,8 @@ import java.io.Writer;
 import java.util.ArrayList;
 
 import com.bluenimble.platform.Lang;
+import com.bluenimble.platform.json.JsonArray;
+import com.bluenimble.platform.json.JsonObject;
 
 @SuppressWarnings("rawtypes")
 public class Component implements Serializable {
@@ -1080,7 +1082,12 @@ public class Component implements Serializable {
 	}
 
 	public void trim() {
-		value(value.toString().trim());
+		String sValue = value.toString().trim();
+		if (Lang.isNullOrEmpty (sValue)) {
+			value = null;
+		} else {
+			value = sValue;
+		}
 		for (int i = 0; i < length(); i++)
 			childs(i).trim();
 	}
@@ -1265,6 +1272,43 @@ public class Component implements Serializable {
 		}
 		close(out);
 		out.flush();
+	}
+	
+	public Object toJson () {
+		if (value != null) {
+			return value;
+		}
+		JsonObject json = new JsonObject ();
+		if (this.attrLength () > 0) {
+			JsonObject attrs = new JsonObject ();
+			for (int i = 0; i < this.attrLength (); i++) {
+				ComponentAttribute attr = this.attributes (i);
+				attrs.set (attr.name (), attr.value ());
+			}
+			json.set ("__attrs__", attrs);
+		}
+		if (this.length () == 0) {
+			return json;
+		}
+		for (int i = 0; i < this.length (); i++) {
+			Component child = childs (i);
+			Object jChild = json.get (child.name ());
+			if (jChild != null) {
+				JsonArray array = null;
+				if (jChild instanceof JsonObject) {
+					array = new JsonArray ();
+					array.add (jChild);
+					json.set (child.name (), array);
+				} else if (jChild instanceof JsonArray) {
+					array = (JsonArray)jChild;
+				}
+				array.add (child.toJson ());
+			} else {
+				json.set (child.name (), child.toJson ());
+			}
+		}
+		
+		return json;
 	}
 	
 }

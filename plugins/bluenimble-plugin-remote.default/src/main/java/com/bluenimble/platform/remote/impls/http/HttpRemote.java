@@ -42,6 +42,7 @@ import com.bluenimble.platform.remote.impls.http.bnb.AccessSecretKeysBasedHttpRe
 import com.bluenimble.platform.remote.impls.http.oauth.OkHttpOAuthConsumer;
 import com.bluenimble.platform.templating.SimpleVariableResolver;
 
+import oauth.signpost.http.HttpParameters;
 import okhttp3.FormBody;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
@@ -380,8 +381,20 @@ public class HttpRemote extends BaseRemote {
 				if (Lang.isNullOrEmpty (tokenSecret)) {
 					throw new Exception ("oauth token secret not found in spec");
 				}
-				consumer.setTokenWithSecret (token, secret);
+				consumer.setTokenWithSecret (token, tokenSecret);
 			}
+			
+			JsonObject additionalSignParameters = Json.getObject (oSign, Spec.Parameters);
+			if (!Json.isNullOrEmpty (additionalSignParameters)) {
+				HttpParameters cParams = new HttpParameters ();
+				Iterator<String> keys = additionalSignParameters.keys ();
+				while (keys.hasNext ()) {
+					String pKey = keys.next ();
+					cParams.put (pKey, Json.getString (additionalSignParameters, pKey));
+				}
+				consumer.setAdditionalParameters (cParams);
+			}
+			
 			return (Request)consumer.sign (request).unwrap ();
 		} else if (Signers.Bnb.equals (signer)) {
 			// bnb sign

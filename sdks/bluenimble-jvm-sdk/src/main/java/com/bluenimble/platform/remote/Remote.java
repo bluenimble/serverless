@@ -79,6 +79,7 @@ public interface Remote extends Recyclable {
 			String SignHashing		= "hashing";
 			String SignPlaceholder	= "signaturePlaceholder";
 			String SignSignatureName= "signatureName";
+			String Parameters		= "parameters";
 		
 		String Timeout			= "timeout";
 			String TimeoutConnect	= "connect";

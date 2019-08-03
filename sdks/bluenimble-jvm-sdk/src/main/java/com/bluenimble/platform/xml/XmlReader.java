@@ -37,8 +37,8 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.bluenimble.platform.Lang;
+import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.xml.support.Component;
-import com.bluenimble.platform.xml.support.ComponentAttribute;
 
 public class XmlReader extends DefaultHandler implements ErrorHandler {
 	
@@ -342,22 +342,10 @@ public class XmlReader extends DefaultHandler implements ErrorHandler {
     }
     
     public static void main (String [] args) throws Exception, IOException {
-    	XmlReader reader = new XmlReader (new File ("/temp/Folder.xml"));
-    	Component root = reader.getDocument ();
-    	
-    	for (int i = 0; i < root.attrLength (); i++) {
-    		ComponentAttribute attr = root.attributes (i);
-    		String name = attr.name ();
-    		name = name.substring (0, 1).toUpperCase () + name.substring (1);
-    		System.out.println ("public static final String " + name + " = \"" + attr.name () + "\";");
-    	}
-    	
-    	for (int i = 0; i < root.attrLength (); i++) {
-    		ComponentAttribute attr = root.attributes (i);
-    		String name = attr.name ();
-    		name = name.substring (0, 1).toUpperCase () + name.substring (1);
-    		System.out.println ("Properties.put (" + name + ", \"" + attr.value () + "\");");
-    	}
+    	XmlReader reader = new XmlReader (new File ("/Users/lilya/cnn_topstories.rss"));
+    	Component rss = reader.getDocument ();
+    	rss.trim ();
+    	System.out.println (((JsonObject)rss.toJson ()).shrink ());
     	
     }
     

@@ -16,6 +16,8 @@
  */
 package com.bluenimble.platform.xml;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 
 import javax.xml.parsers.SAXParser;
@@ -71,6 +73,10 @@ public abstract class XmlParser extends DefaultHandler {
 			}
 			throw new XmlParserException (th);
 		}
+	}
+
+	public void parse (InputStream xml) throws XmlParserException {
+		this.parse (new InputStreamReader (xml));
 	}
 
 	@Override

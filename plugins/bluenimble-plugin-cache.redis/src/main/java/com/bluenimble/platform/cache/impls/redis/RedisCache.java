@@ -36,7 +36,11 @@ public class RedisCache implements Cache {
 
 	@Override
 	public void put (byte [] key, byte [] value, int ttl) {
-		client.setex (key, ttl, value);
+		if (ttl > 0) {
+			client.setex (key, ttl, value);
+		} else {
+			client.set (key, value);
+		}
 	}
 
 	@Override
