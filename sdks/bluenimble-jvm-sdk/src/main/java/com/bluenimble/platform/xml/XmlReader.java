@@ -342,7 +342,7 @@ public class XmlReader extends DefaultHandler implements ErrorHandler {
     }
     
     public static void main (String [] args) throws Exception, IOException {
-    	XmlReader reader = new XmlReader (new File ("/Users/lilya/cnn_topstories.rss"));
+    	XmlReader reader = new XmlReader (new File ("/Users/lilya/cnn_topstories.xml"));
     	Component rss = reader.getDocument ();
     	rss.trim ();
     	System.out.println (((JsonObject)rss.toJson ()).shrink ());
