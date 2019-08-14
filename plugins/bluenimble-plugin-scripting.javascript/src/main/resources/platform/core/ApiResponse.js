@@ -144,6 +144,7 @@ ApiResponse.prototype.METHOD_FAILURE					= JC_ApiResponse.METHOD_FAILURE;
 ApiResponse.prototype.UNPROCESSABLE_ENTITY				= JC_ApiResponse.UNPROCESSABLE_ENTITY;
 ApiResponse.prototype.LOCKED							= JC_ApiResponse.LOCKED;
 ApiResponse.prototype.FAILED_DEPENDENCY					= JC_ApiResponse.FAILED_DEPENDENCY;
+ApiResponse.prototype.EXCEEDING_QUOTA_LIMITS			= JC_ApiResponse.EXCEEDING_QUOTA_LIMITS;
 
 ApiResponse.prototype.INTERNAL_SERVER_ERROR				= JC_ApiResponse.INTERNAL_SERVER_ERROR;
 ApiResponse.prototype.NOT_IMPLEMENTED					= JC_ApiResponse.NOT_IMPLEMENTED;

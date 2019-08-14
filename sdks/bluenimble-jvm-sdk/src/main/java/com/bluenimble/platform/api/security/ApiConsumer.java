@@ -38,6 +38,7 @@ public interface ApiConsumer extends Referenceable {
 		String Owner 		= "owner";
 		
 		String Token 		= "token";
+		String TokenType 	= "tokenType";
 
 		String AccessKey 	= "accessKey";
 		String SecretKey 	= "secretKey";

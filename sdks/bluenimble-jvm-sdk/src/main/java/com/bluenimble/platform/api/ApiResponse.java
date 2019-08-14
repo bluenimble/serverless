@@ -108,6 +108,7 @@ public interface ApiResponse extends Serializable {
 	public static final Status UNPROCESSABLE_ENTITY				= new Status (422, "Unprocessable Entity");
 	public static final Status LOCKED							= new Status (423, "Locked");
 	public static final Status FAILED_DEPENDENCY				= new Status (424, "Failed Dependency");
+	public static final Status EXCEEDING_QUOTA_LIMITS			= new Status (429, "Exceeding Quota Limits");
 
 	/** 
 	 * 

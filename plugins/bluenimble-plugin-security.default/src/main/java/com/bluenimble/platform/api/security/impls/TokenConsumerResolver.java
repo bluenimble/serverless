@@ -33,7 +33,6 @@ import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.api.security.ApiConsumerResolver;
 import com.bluenimble.platform.api.security.ApiConsumerResolverAnnotation;
 import com.bluenimble.platform.api.tracing.Tracer;
-import com.bluenimble.platform.api.tracing.Tracer.Level;
 import com.bluenimble.platform.json.JsonException;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.server.security.impls.DefaultApiConsumer;
@@ -177,10 +176,6 @@ public class TokenConsumerResolver implements ApiConsumerResolver {
 		String sExpiry 	= decrypted.substring (0, indexOfSpace);
 		
 		long expiry = Long.valueOf (sExpiry);
-		
-		api.tracer ().log (Level.Info, "Check -> Token Expires in date/millis : {0}", expiry);
-		
-		api.tracer ().log (Level.Info, "Check -> Compare to Now : {0}", System.currentTimeMillis ());
 		
 		if (expiry < System.currentTimeMillis ()) {
 			if (isServiceSecure) {

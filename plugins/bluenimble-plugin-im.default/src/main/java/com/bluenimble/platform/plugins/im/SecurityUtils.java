@@ -32,7 +32,6 @@ import com.bluenimble.platform.api.ApiSpace.Endpoint;
 import com.bluenimble.platform.api.ApiVerb;
 import com.bluenimble.platform.api.impls.JsonApiOutput;
 import com.bluenimble.platform.api.security.ApiConsumer;
-import com.bluenimble.platform.api.tracing.Tracer.Level;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 
@@ -80,12 +79,8 @@ public class SecurityUtils {
 		} 
 		age = age * 60 * 1000;
 		
-		api.tracer ().log (Level.Info, "Encrypt -> Token Age: {0}", age);
-		
 		long expiresOn = now.getTime () + age;
 		
-		api.tracer ().log (Level.Info, "Encrypt -> Token Expires On: {0}", expiresOn);
-
 		// encrypt
 		String toEncrypt = expiresOn + Lang.SPACE + thing;
 		try {

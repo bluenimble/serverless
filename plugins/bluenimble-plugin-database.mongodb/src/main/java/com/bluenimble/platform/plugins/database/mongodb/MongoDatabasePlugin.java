@@ -104,19 +104,29 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 			}
 			@Override
 			public Object get (ApiSpace space, String name) {
+				String fName = name;
+				// check if it's fature factory abc#alpha where abc is the feature name and alpha is what the application is looking for.
+				int indexOfSharp = fName.lastIndexOf (Lang.SHARP);
+				if (indexOfSharp > 0) {
+					fName = fName.substring (0, indexOfSharp);
+				}
 				Object oAllowProprietaryAccess = 
-					Json.find (space.getFeatures (), feature, name, ApiSpace.Features.Spec, Spec.AllowProprietaryAccess);
+					Json.find (space.getFeatures (), feature, fName, ApiSpace.Features.Spec, Spec.AllowProprietaryAccess);
 				boolean allowProprietaryAccess = 
 						oAllowProprietaryAccess == null || String.valueOf (oAllowProprietaryAccess).equalsIgnoreCase (Lang.TRUE);
 				
 				Object oCaseSensitive = 
-					Json.find (space.getFeatures (), feature, name, ApiSpace.Features.Spec, Spec.CaseSensitive);
+					Json.find (space.getFeatures (), feature, fName, ApiSpace.Features.Spec, Spec.CaseSensitive);
 				boolean caseSensitive = 
 						oCaseSensitive == null || String.valueOf (oCaseSensitive).equalsIgnoreCase (Lang.TRUE);
 
-				RecyclableClient rClient = (RecyclableClient)space.getRecyclable (createKey (name));
+				RecyclableClient rClient = (RecyclableClient)space.getRecyclable (createKey (fName));
 				
-				return new MongoDatabaseImpl (rClient.client, rClient.database, tracer (), caseSensitive, allowProprietaryAccess);
+				String database = rClient.database;
+				if (indexOfSharp > 0) {
+					database = name.substring (indexOfSharp + 1);
+				}
+				return new MongoDatabaseImpl (rClient.client, database, tracer (), caseSensitive, allowProprietaryAccess);
 				
 			}
 			@Override
@@ -205,9 +215,6 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 		}
 		
 		String database = Json.getString (spec, Spec.Database);
-		if (Lang.isNullOrEmpty (database)) {
-			return null;
-		}
 		
 		String host = Json.getString (spec, Spec.Host);
 		if (Lang.isNullOrEmpty (host)) {

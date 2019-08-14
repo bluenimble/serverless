@@ -21,6 +21,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.ByteBuffer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -953,6 +954,19 @@ public class Lang {
     	}
     	ExpressionCompiler compiler = withScripting ? ScriptedExpressionCompiler : ExpressionCompiler;
     	return compiler.compile (template, null).eval (new BasicVariableResolver (data));
+    }
+    
+    public static byte [] longToBytes (long x) {
+        ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+        buffer.putLong (x);
+        return buffer.array ();
+    }
+
+    public static long bytesToLong (byte [] bytes) {
+        ByteBuffer buffer = ByteBuffer.allocate (Long.BYTES);
+        buffer.put (bytes);
+        buffer.flip ();//need flip 
+        return buffer.getLong ();
     }
     
 }

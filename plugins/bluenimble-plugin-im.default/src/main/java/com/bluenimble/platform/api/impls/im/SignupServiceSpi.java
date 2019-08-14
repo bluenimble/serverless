@@ -178,6 +178,7 @@ public class SignupServiceSpi extends AbstractApiServiceSpi {
 			}
 
 			// create token
+			result.set (ApiConsumer.Fields.TokenType, Defaults.TokenType);
 			String [] tokenAndExpiration = SecurityUtils.tokenAndExpiration (api, result, now, 0);
 			result.set (ApiConsumer.Fields.Token, tokenAndExpiration [0]);
 			result.set (ApiConsumer.Fields.ExpiryDate, tokenAndExpiration [1]);

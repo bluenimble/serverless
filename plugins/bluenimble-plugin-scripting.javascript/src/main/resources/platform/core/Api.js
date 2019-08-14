@@ -308,7 +308,19 @@ function Api (proxy) {
 		if (!this.features || !this.features [featureType]) {
 			return feature;
 		}
-		return this.features[featureType][feature] || feature;
+		var featureName = feature;
+		var lastIndexOfSharp = feature.lastIndexOf ('#');
+		if (lastIndexOfSharp > -1) {
+			featureName = feature.substring (0, lastIndexOfSharp);
+		}
+		var found = this.features[featureType][featureName];
+		if (!found) {
+			return feature;
+		}
+		if (lastIndexOfSharp > -1) {
+			return found + '#' + feature.substring (lastIndexOfSharp + 1);
+		}
+		return found;
 	};
 
 };

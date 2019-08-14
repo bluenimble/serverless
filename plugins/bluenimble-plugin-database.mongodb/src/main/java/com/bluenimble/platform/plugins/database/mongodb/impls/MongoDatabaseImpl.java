@@ -598,7 +598,7 @@ public class MongoDatabaseImpl implements Database {
 				}
 				cursor.projection (Projections.include (pFields));
 			}
-
+			
 			return cursor;
 		} else if (Query.Construct.delete.equals (construct)) {
 			if (session == null) {

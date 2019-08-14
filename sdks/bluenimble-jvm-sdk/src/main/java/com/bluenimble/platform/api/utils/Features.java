@@ -20,14 +20,25 @@ public class Features {
 		if (aFeature != null) {
 			featureType = aFeature.name ();
 		}
-		if (!Lang.isNullOrEmpty (featureType)) {
-			JsonObject defautls = Json.getObject (api.getFeatures (), featureType);
-			if (!Json.isNullOrEmpty (defautls)) {
-				feature = Json.getString (defautls, feature, feature);
-			}
+		
+		if (Lang.isNullOrEmpty (featureType)) {
+			return api.space ().feature (type, feature, context);
 		}
 		
-		return api.space ().feature (type, feature, context);
+		String featureName = feature;
+		int lastIndexOfSharp = feature.lastIndexOf (Lang.SHARP);
+		if (lastIndexOfSharp > -1) {
+			featureName = feature.substring (0, lastIndexOfSharp);
+		}
+		JsonObject defautls = Json.getObject (api.getFeatures (), featureType);
+		if (!Json.isNullOrEmpty (defautls)) {
+			featureName = Json.getString (defautls, featureName, featureName);
+		}
+		if (lastIndexOfSharp > -1) {
+			featureName += Lang.SHARP + feature.substring (lastIndexOfSharp + 1);
+		}
+		
+		return api.space ().feature (type, featureName, context);
 	}
 	
 }

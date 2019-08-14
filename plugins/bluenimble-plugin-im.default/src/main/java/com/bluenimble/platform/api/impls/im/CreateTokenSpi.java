@@ -50,6 +50,8 @@ public class CreateTokenSpi extends AbstractApiServiceSpi {
 		
 		payload.remove (ApiSpace.Spec.secrets.Age);
 		
+		payload.set (ApiConsumer.Fields.TokenType, consumer.get (ApiConsumer.Fields.TokenType));
+		
 		String [] tokenAndExpiration = SecurityUtils.tokenAndExpiration (api, payload, new Date (), age);
 		
 		JsonObject result = new JsonObject ();

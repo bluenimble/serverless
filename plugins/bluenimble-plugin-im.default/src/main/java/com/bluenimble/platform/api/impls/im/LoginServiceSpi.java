@@ -64,6 +64,7 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 		String 	This			= "this";
 		String	Yes				= "y";
 		String	No				= "n";
+		String	TokenType		= "standard";
 	}
 
 	public interface Config {
@@ -108,6 +109,7 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 		String 	Password 		= "password";
 		String 	Email 			= "email";
 		String 	TokenAge 		= "tokenAge";
+		String 	TokenType		= "tokenType";
 		
 		String  ActivationCode	= "activationCode";
 	}
@@ -265,7 +267,11 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 			}
 			oAccount.set (Config.Owner, Defaults.No);
 		} else {
-			oAccount.set (Config.Owner, Defaults.Yes);
+			if (request.getChannel ().equals (ApiRequest.Channels.container.name ()) && payload.containsKey (Config.Owner)) {
+				oAccount.set (Config.Owner, Json.getBoolean (payload, Config.Owner, false) ? Defaults.Yes : Defaults.No);
+			} else {
+				oAccount.set (Config.Owner, Defaults.Yes);
+			}
 		}
 		
 		if (active) {
@@ -281,9 +287,12 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 			
 			// create token
 			long age = 0;
+			String tokenType = Defaults.TokenType;
 			if (request.getChannel ().equals (ApiRequest.Channels.container.name ())) {
 				age = Json.getLong (payload, Spec.TokenAge, 0);
+				tokenType = Json.getString (payload, Spec.TokenType, Defaults.TokenType);
 			}
+			oAccount.set (ApiConsumer.Fields.TokenType, tokenType);
 			String [] tokenAndExpiration = SecurityUtils.tokenAndExpiration (api, oAccount, now, age);
 			oAccount.set (ApiConsumer.Fields.Token, tokenAndExpiration [0]);
 			oAccount.set (ApiConsumer.Fields.ExpiryDate, tokenAndExpiration [1]);

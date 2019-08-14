@@ -322,8 +322,9 @@ public abstract class AbstractApiServer implements ApiServer {
 		
 		String fName = name;
 		// check if it's fature factory abc#alpha where abc is the feature name and alpha is what the application is looking for.
-		if (fName.lastIndexOf (Lang.SHARP) > 0) {
-			fName = fName.substring (0, fName.indexOf (Lang.SHARP));
+		int indexOfSharp = fName.lastIndexOf (Lang.SHARP);
+		if (indexOfSharp > 0) {
+			fName = fName.substring (0, indexOfSharp);
 		}
 		JsonObject oProvider = Json.getObject (oFeature, fName);
 		if (Json.isNullOrEmpty (oProvider)) {

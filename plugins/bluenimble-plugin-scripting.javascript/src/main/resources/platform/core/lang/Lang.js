@@ -34,6 +34,22 @@ var Lang = {
 		return new JC_String (bytes, charset);
 	},
 	/**	
+	  Convert a long number to a bytes array
+	  @param {byte[]} - bytes array
+	  @returns a long number
+	*/
+	longToBytes: function (x) {
+        return JC_Lang.longToBytes (x);
+    },
+	/**	
+	  Convert a byte array to a long number
+	  @param {long} - value
+	  @returns the byte array
+	*/
+    bytesToLong: function (bytes) {
+        return JC_Lang.bytesToLong (bytes);
+    },
+	/**	
 	  Generates a random hex based object id 
 	  @returns {string} the oid
 	*/

@@ -71,7 +71,7 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 	private static final String RuntimeKey = ApiSpace.Spec.Runtime.class.getSimpleName ().toLowerCase ();
 	
 	public interface Spaces {
-		String Sys 	= "sys";	 
+		String Sys 	= "sys";
 	}
 	
 	interface Describe {
@@ -149,40 +149,7 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 		}
 		return server.getKeys ();
 	}
-/*	
-	@Override
-	public void update (String apiNs, JsonObject descriptor) throws ApiManagementException {
-		ApiImpl api = (ApiImpl)api (apiNs);
-		if (api == null) {
-			throw new ApiManagementException ("Api " + apiNs + " not found");
-		}
-		
-		// update descriptor
-		JsonObject oldDescriptor = api.getDescriptor ();
-		oldDescriptor.set (Api.Spec.Name, Json.getString (descriptor, Api.Spec.Name, api.getName ()));
-		oldDescriptor.set (Api.Spec.Description, Json.getString (descriptor, Api.Spec.Description, api.getDescription ()));
-		
-		JsonObject oLogging = Json.getObject (descriptor, Api.Spec.Logging);
-		if (oLogging != null) {
-			oldDescriptor.set (Api.Spec.Logging, oLogging);
-			api.createtracer ();
-		}
-		
-		JsonObject oFeatures = Json.getObject (descriptor, Api.Spec.Features);
-		if (oFeatures != null) {
-			oldDescriptor.set (Api.Spec.Features, oFeatures);
-		}
-		
-		// write descriptor
-		api.updateDescriptor ();
-		
-		// remove old
-		remove (apiNs);
-		
-		// add new
-		register (api);		
-	}
-*/
+	
 	@Override
 	public Api install (String spaceFolder, String apiFile) throws ApiManagementException {
 		

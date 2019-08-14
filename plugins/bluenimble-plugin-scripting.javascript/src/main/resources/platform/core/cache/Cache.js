@@ -55,7 +55,10 @@ var Cache = function (proxy) {
 	  @param {integer} - positive or negative value of the increment
 	*/
 	this.increment = function (key, increment) {
-		proxy.increment (key, increment);
+		if (typeof increment === 'undefined' || increment === null) {
+			increment = 0;
+		}
+		return proxy.increment (key, increment);
 	};
 	
 };
