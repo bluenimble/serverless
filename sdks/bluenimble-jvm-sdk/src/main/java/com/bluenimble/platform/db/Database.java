@@ -77,6 +77,11 @@ public interface Database extends Recyclable {
 		String Total 		= "totalCount";
 	}
 	
+	interface Keywords {
+		String Set 			= "set";
+		String Unset 		= "unset";
+	}
+	
 	interface Proprietary {
 		String Database = "database";
 	}

@@ -107,6 +107,8 @@ public class MongoDatabaseImpl implements Database {
 		String Sort 		= "$sort";
 		String Skip 		= "$skip";
 		String Limit 		= "$limit";
+		String Set 			= "$set";
+		String Unset 		= "$unset";
 		String WiredTiger 	= "wiredTiger";
 		String IndexDetails = "indexDetails";
 	}
@@ -486,6 +488,21 @@ public class MongoDatabaseImpl implements Database {
 	public long update (String entity, Query query, JsonObject data) throws DatabaseException {
 		if (Json.isNullOrEmpty (data)) {
 			return 0;
+		}
+		
+		Object set 		= data.get (Keywords.Set);
+		Object unset 	= data.get (Keywords.Unset);
+		if (set == null && unset == null) {
+			data = (JsonObject)new JsonObject ().set (Tokens.Set, data);
+		} else {
+			if (set != null) {
+				data.set (Tokens.Set, set);
+				data.remove (Keywords.Set);
+			}
+			if (unset != null) {
+				data.set (Tokens.Unset, unset);
+				data.remove (Keywords.Unset);
+			}
 		}
 		
 		entity = entity (Lang.isNullOrEmpty (entity) ? query.entity () : entity);

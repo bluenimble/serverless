@@ -192,9 +192,14 @@ var Database = function (api, proxy) {
 			throw "missing query argument";
 		}
 		
+		if (!data) {
+			throw "missing data argument";
+		}
+		
 		return proxy.update (
 			entity,
-			new JC_JsonQuery (JC_ValueConverter.convert (query), data ? JC_ValueConverter.convert (data) : null)
+			new JC_JsonQuery (JC_ValueConverter.convert (query), null),
+			JC_ValueConverter.convert (data)
 		);
 	};
 
