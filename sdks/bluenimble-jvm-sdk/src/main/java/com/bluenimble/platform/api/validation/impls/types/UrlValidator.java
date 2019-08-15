@@ -36,7 +36,7 @@ public class UrlValidator extends AbstractTypeValidator {
 	public static final String TypeMessage			= "UrlType";
 	
 	public static final Pattern UrlRegex = 
-		    Pattern.compile ("^(mailto\\:|(news|(ht|f)tp(s?))\\://)[a-zA-Z0-9\\-\\.]+\\.[a-zA-Z]{2,3}(/\\S*)?$", Pattern.CASE_INSENSITIVE);
+		    Pattern.compile ("^\\b(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]", Pattern.CASE_INSENSITIVE);
 	
 	private static final String GuessUrl = "https://{0}.bluenimble.com";
 	
