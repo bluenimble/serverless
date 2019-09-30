@@ -34,7 +34,6 @@ import java.util.Set;
 import com.bluenimble.platform.encoding.Base64;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonEntity;
-import com.bluenimble.platform.json.JsonException;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.security.EncryptionProvider;
 import com.bluenimble.platform.security.EncryptionProvider.Mode;
@@ -649,11 +648,35 @@ public class Json {
 		}
 	}
 
-    public static void main (String [] args) throws JsonException {
-    	JsonObject template = new JsonObject ("{scheduler:'[node]', job: '[id]', expression: '[expression]', service: '[service]'}");
-    	JsonObject data = new JsonObject ("{node: alpha, id: jobId, expression: '0 0 0 0', service:{a: 'value'}}");
-		System.out.println (Json.template (template, data, false));
-		
+    public static void main (String [] args) throws Exception {
+    	JsonObject emojis = Json.load (new File ("/Users/lilya/Downloads/emojis.json"));
+    	JsonObject emojisNames = Json.load (new File ("/Users/lilya/Downloads/emojis-names.json"));
+    	
+    	JsonObject out = new JsonObject ();
+    	
+    	JsonArray aEmojis = Json.getArray (emojis, "emojis");
+    	for (int i = 0; i < aEmojis.count (); i++) {
+    		JsonObject e = (JsonObject)aEmojis.get (i);
+    		JsonObject r = new JsonObject ();
+    		r.set ("code", e.get ("html"));
+    		String sEmoji = Json.getString (e, "emoji");
+    		String sName = Json.getString (emojisNames, sEmoji);
+    		if (Lang.isNullOrEmpty (sName)) {
+    			continue;
+    		}
+    		sName = Lang.replace (sName, Lang.COLON, Lang.BLANK);
+    		r.set ("name", emojiName (sName));
+    		out.set (sName, r);
+    	}
+    	Json.store (out, new File ("/Users/lilya/Downloads/emojis-mini.json"));
+    }
+    private static final String emojiName (String name) {
+    	StringBuilder sb = new StringBuilder ();
+    	String [] arr = Lang.split (name, Lang.UNDERSCORE);
+    	for (String s : arr) {
+    		sb.append (Lang.capitalizeFirst (s)).append (Lang.SPACE);
+    	}
+    	return sb.toString ().trim ();
     }
     
 }

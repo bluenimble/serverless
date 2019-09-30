@@ -19,6 +19,7 @@
 package com.bluenimble.platform.cache.impls.redis;
 
 import java.nio.ByteBuffer;
+import java.util.Set;
 
 import com.bluenimble.platform.cache.Cache;
 
@@ -32,6 +33,11 @@ public class RedisCache implements Cache {
 	
 	public RedisCache (Jedis client) {
 		this.client = client;
+	}
+
+	@Override
+	public Set<byte []> keys (String pattern) {
+		return client.keys (pattern.getBytes ());
 	}
 
 	@Override

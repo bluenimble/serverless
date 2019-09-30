@@ -194,7 +194,7 @@ public class BasicConsumerResolver implements ApiConsumerResolver {
 		String 		feature 	= Json.getString (auth, Spec.Auth.Feature);
 		JsonObject 	query 		= Json.getObject (auth, Spec.Auth.Query);
 		
-		if (query == null || query.isEmpty ()) {
+		if (query == null) {
 			return null;
 		}
 

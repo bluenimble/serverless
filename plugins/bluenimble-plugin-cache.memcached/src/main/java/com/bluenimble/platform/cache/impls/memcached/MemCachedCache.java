@@ -19,6 +19,7 @@
 package com.bluenimble.platform.cache.impls.memcached;
 
 import java.nio.ByteBuffer;
+import java.util.Set;
 
 import com.bluenimble.platform.cache.Cache;
 
@@ -79,6 +80,11 @@ public class MemCachedCache implements Cache {
 
 	@Override
 	public void recycle () {
+	}
+
+	@Override
+	public Set<byte[]> keys (String pattern) {
+		return null;
 	}
 
 }

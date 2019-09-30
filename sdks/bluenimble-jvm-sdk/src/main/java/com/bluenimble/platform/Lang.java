@@ -969,4 +969,8 @@ public class Lang {
         return buffer.getLong ();
     }
     
+    public static void main (String[] args) {
+		System.out.println (Lang.UUID (30));
+	}
+    
 }

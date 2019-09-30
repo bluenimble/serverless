@@ -16,6 +16,8 @@
  */
 package com.bluenimble.platform.cache;
 
+import java.util.Set;
+
 import com.bluenimble.platform.Feature;
 import com.bluenimble.platform.Recyclable;
 
@@ -28,4 +30,6 @@ public interface Cache  extends Recyclable {
 	
 	long 		increment 	(byte [] key, long increment);
 
+	Set<byte []>
+				keys 		(String pattern);
 }
