@@ -13,6 +13,22 @@
 var Cache = function (proxy) {
 
 	/**	
+	  List keys by pattern
+	  @param {byte[]} - key pattern
+	  @return {JsonObject} - list of keys
+	*/
+	this.keys = function (pattern) {
+		if (!pattern || typeof pattern === 'undefined' || pattern === null) {
+			throw 'pattern is required'
+		}
+		var set = proxy.keys (pattern);
+		if (!set) {
+			return [];
+		}
+		return set.toArray ();
+	};
+	
+	/**	
 	  Add or update an entry into the cache
 	  @param {byte[]} - entry key
 	  @param {byte[]} - entry value
