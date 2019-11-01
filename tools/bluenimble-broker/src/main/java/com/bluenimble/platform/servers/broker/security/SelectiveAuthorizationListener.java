@@ -46,6 +46,8 @@ public class SelectiveAuthorizationListener implements AuthorizationListener {
 			return false;
 		}
 		
+		logger.info ("Tenant ID " + tenantId);
+		
 		Tenant tenant = broker.getTenantProvider ().get (tenantId);
 		if (tenant == null) {
 			logger.info ("No tenant found " + tenantId);

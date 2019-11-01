@@ -40,7 +40,14 @@ public class DefaultTenantProvider implements TenantProvider {
 
 	@Override
 	public Tenant get (String tenantId) {
-		JsonObject oTenant = Json.getObject (source, tenantId);
+		String tenantKey = tenantId;
+		
+		int indexOfDot = tenantId.indexOf (Lang.DOT);
+		if (indexOfDot > 0) {
+			tenantKey = tenantId.substring (0, indexOfDot + 1) + Lang.STAR;
+		}
+		
+		JsonObject oTenant = Json.getObject (source, tenantKey);
 		if (oTenant == null) {
 			return null;
 		}

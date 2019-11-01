@@ -1,6 +1,8 @@
 package com.bluenimble.platform.servers.broker.impls;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -10,6 +12,8 @@ import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.servers.broker.Peer;
+import com.bluenimble.platform.servers.broker.PeerChannel;
+import com.bluenimble.platform.servers.broker.PeerChannel.Access;
 import com.bluenimble.platform.servers.broker.listeners.EventListener;
 import com.corundumstudio.socketio.BroadcastOperations;
 import com.corundumstudio.socketio.SocketIOClient;
@@ -31,6 +35,10 @@ public class PeerImpl implements Peer {
 		String Durable 		= "durable";
 		String Channels 	= "channels";
 		String MonoChannel 	= "monoChannel";
+		interface Channel {
+			String Name 		= "name";
+			String Access 		= "access";
+		}
 	}
 	
 	protected String 			id;
@@ -38,7 +46,8 @@ public class PeerImpl implements Peer {
 	protected String 			tenant;
 	
 	protected boolean 			durable = true;
-	protected Set<String> 		channels;
+	protected Map<String, PeerChannel> 	
+								channels;
 	protected boolean 			monoChannel;
 	
 	private transient SocketIOServer 		server;
@@ -78,7 +87,7 @@ public class PeerImpl implements Peer {
 	}
 
 	@Override
-	public Set<String> channels () {
+	public Map<String, PeerChannel> channels () {
 		return channels;
 	}
 
@@ -119,15 +128,15 @@ public class PeerImpl implements Peer {
 	}
 
 	@Override
-	public void addChannel (String channel) {
+	public void addChannel (PeerChannel channel) {
 		if (channels == null) {
-			channels = new HashSet<String> ();
+			channels = new HashMap<String, PeerChannel> ();
 		}
-		channels.add (channel);
+		channels.put (channel.name (), channel);
 	}
 	
 	@Override
-	public boolean hasAccess (String channel) {
+	public boolean hasAccess (String channel, PeerChannel.Access access) {
 		// no defined channels, peer has right to all channels to execute actions
 		if (channels == null || channels.isEmpty ()) {
 			return false;
@@ -136,18 +145,23 @@ public class PeerImpl implements Peer {
 			return false;
 		}
 		
-		if (channels.contains (AnyChannel)) {
+		if (channels.containsKey (AnyChannel)) {
 			return true;
 		}
 		
-		boolean hasAccess = channels.contains (channel);
-		if (hasAccess) {
-			return true;
+		PeerChannel peerChannel = channels.get (channel);
+		if (peerChannel != null) {
+			if (peerChannel.access ().equals (Access.All)) {
+				return true;
+			}
+			return peerChannel.access ().equals (access);
 		}
+		
+		boolean hasAccess = false;
 		
 		// wildcard
-		for (String wildcard : channels) {
-			hasAccess = Lang.wmatches (wildcard, channel);
+		for (PeerChannel wildcard : channels.values ()) {
+			hasAccess = Lang.wmatches (wildcard.name (), channel);
 			if (hasAccess) {
 				break;
 			}
@@ -205,12 +219,12 @@ public class PeerImpl implements Peer {
 			return false;
 		}
 		
-		return hasAccess (channel);
+		return hasAccess (channel, Access.Read);
 	}
 	
 	@Override
 	public boolean canPublish (String channel) {
-		return hasAccess (channel); 
+		return hasAccess (channel, Access.Write); 
 	}
 	
 	@Override
@@ -249,7 +263,12 @@ public class PeerImpl implements Peer {
 		
 		JsonArray aChannels = new JsonArray ();
 		if (channels != null) {
-			aChannels.addAll (channels);
+			for (PeerChannel pc : channels.values ()) {
+				JsonObject opc = new JsonObject ();
+				opc.set (Spec.Channel.Name, pc.name ());
+				opc.set (Spec.Channel.Access, pc.access ().toString ());
+				aChannels.add (opc);
+			}
 		}
 		info.set (Spec.Channels, aChannels);
 		

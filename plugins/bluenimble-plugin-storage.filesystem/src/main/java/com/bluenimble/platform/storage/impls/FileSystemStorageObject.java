@@ -31,6 +31,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Date;
 import java.util.stream.Stream;
 
@@ -460,6 +461,18 @@ public class FileSystemStorageObject implements StorageObject {
 		
 		try {
 			return FileChannel.open (source.toPath (), options);
+		} catch (IOException ex) {
+			throw new StorageException (ex.getMessage (), ex);
+		}
+	}
+
+	@Override
+	public void truncate () throws StorageException {
+		if (isFolder ()) {
+			throw new StorageException (name () + " is a folder");
+		}
+		try {
+			FileChannel.open (source.toPath (), StandardOpenOption.WRITE).truncate (0).close ();
 		} catch (IOException ex) {
 			throw new StorageException (ex.getMessage (), ex);
 		}

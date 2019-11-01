@@ -69,6 +69,13 @@ var StorageObject = function (proxy) {
 	this.delete = function () {
 		return proxy.delete ();
 	};
+	
+	/**	
+	  Delete the content of this storage object
+	*/
+	this.truncate = function () {
+		return proxy.truncate ();
+	};
 
 	/**	
 	  Update the content of this storage object. Doesn't apply to folders

@@ -54,6 +54,7 @@ public interface StorageObject extends Serializable {
 
 	boolean 	delete 		() 											throws StorageException;
 	long		update		(InputStream payload, boolean append)		throws StorageException;
+	void		truncate	()											throws StorageException;
 	
 	void 		copy 		(Folder folder, boolean move) 				throws StorageException;
 	

@@ -177,6 +177,9 @@ public class JsonObject extends JsonAbstractEntity implements Map {
 		}
 		
 		value = JsValueConverter.convert (value);
+		if (value == null) {
+			return this;
+		}
 		
 		if (value instanceof JsonObject || value instanceof JsonArray) {
 			values.put (name, value);

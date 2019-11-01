@@ -554,7 +554,7 @@ public class Lang {
 		th = Lang.getRootCause (th);
 
 		String message = th.getMessage ();
-		if (message == null) {
+		if (message == null && th.getStackTrace () != null && th.getStackTrace ().length > 0) {
 			StackTraceElement ste = th.getStackTrace () [0];
 			message = 
 				th.getClass ().getSimpleName () + Lang.GREATER + Lang.SPACE + 
@@ -968,9 +968,5 @@ public class Lang {
         buffer.flip ();//need flip 
         return buffer.getLong ();
     }
-    
-    public static void main (String[] args) {
-		System.out.println (Lang.UUID (30));
-	}
     
 }

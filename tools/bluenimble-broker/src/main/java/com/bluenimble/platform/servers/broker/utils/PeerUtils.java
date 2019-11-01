@@ -9,6 +9,7 @@ import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.servers.broker.Peer;
+import com.bluenimble.platform.servers.broker.impls.PeerChannelImpl;
 import com.bluenimble.platform.servers.broker.impls.PeerImpl;
 import com.corundumstudio.socketio.HandshakeData;
 import com.corundumstudio.socketio.SocketIOClient;
@@ -46,7 +47,7 @@ public class PeerUtils {
 					if (Lang.isNullOrEmpty (channel)) {
 						continue;
 					}
-					peer.addChannel (channel);
+					peer.addChannel (new PeerChannelImpl (channel.trim ()));
 				}
 			}
 		}

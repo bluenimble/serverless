@@ -75,5 +75,10 @@ public class RegexValidator extends AbstractTypeValidator {
 		
 		return null;
 	}
+	
+	public static void main (String [] args) {
+		String regex = "^[a-zA-Z0-9\\.\\_\\-#@]+$";
+		System.out.println ("alp#ha1_.@".matches (regex));
+	}
 
 }

@@ -1,6 +1,7 @@
 package com.bluenimble.platform.servers.broker;
 
 import java.io.Serializable;
+import java.util.Map;
 import java.util.Set;
 
 import com.bluenimble.platform.json.JsonObject;
@@ -42,9 +43,10 @@ public interface Peer extends Serializable {
 	boolean 	isMonoChannel 	();
 	void		setMonoChannel	(boolean monoChannel);
 	
-	Set<String> channels 		();
-	void		addChannel		(String channel);
-	boolean		hasAccess		(String channel);
+	Map<String, PeerChannel> 
+				channels 		();
+	void		addChannel		(PeerChannel channel);
+	boolean		hasAccess		(String channel, PeerChannel.Access access);
 	
 	boolean		is 				(Set<String> peerTypes);
 	boolean		isNode 			();
