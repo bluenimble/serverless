@@ -33,13 +33,68 @@ import com.bluenimble.platform.api.ApiVerb;
 import com.bluenimble.platform.api.impls.JsonApiOutput;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.json.JsonArray;
+import com.bluenimble.platform.json.JsonException;
 import com.bluenimble.platform.json.JsonObject;
 
 public class SecurityUtils {
 	
-	interface Schemes {
+	public interface Schemes {
 		String Token 	= "token";
 		String Cookie 	= "cookie";
+	}
+	
+	public static JsonObject readToken (Api api, String token) throws ApiServiceExecutionException {
+		JsonObject auth = (JsonObject)Json.find (api.getSecurity (), Api.Spec.Security.Schemes, Schemes.Token, Api.Spec.Security.Auth);
+		if (auth == null) {
+			auth = (JsonObject)Json.find (api.getSecurity (), Api.Spec.Security.Schemes, Schemes.Cookie, Api.Spec.Security.Auth);
+		}
+		
+		// decrypt token
+		String decrypted = null;
+		
+		JsonObject secrets;
+		try {
+			secrets = api.space ().getSecrets (Json.getString (auth, ApiSpace.Spec.secrets.class.getSimpleName ()));
+		} catch (ApiManagementException e) {
+			throw new ApiServiceExecutionException (e.getMessage (), e);
+		}
+		if (secrets != null && secrets.containsKey (ApiSpace.Spec.secrets.Key)) {
+			String key = Json.getString (secrets, ApiSpace.Spec.secrets.Key);
+			
+			Crypto.Algorithm alg = Crypto.Algorithm.AES;
+					
+			try {
+				alg = Crypto.Algorithm.valueOf (Json.getString (secrets, ApiSpace.Spec.secrets.Algorithm, Crypto.Algorithm.AES.name ()).toUpperCase ());
+			} catch (Exception ex) {
+				// IGNORE - > invalid token
+			}
+			try {
+				decrypted = new String (Crypto.decrypt (Lang.decodeHex (token.toCharArray ()), key, alg));
+			} catch (Exception ex) {
+				throw new ApiServiceExecutionException (ex.getMessage (), ex);
+			}
+		}
+		
+		int indexOfSpace = decrypted.indexOf (Lang.SPACE);
+		if (indexOfSpace < 0) {
+			throw new ApiServiceExecutionException ("invalid token");
+		}
+		
+		String sExpiry 	= decrypted.substring (0, indexOfSpace);
+		
+		long expiry = Long.valueOf (sExpiry);
+		
+		String sInfo 	= decrypted.substring (indexOfSpace + 1);
+		
+		JsonObject object = null;
+		try {
+			object = new JsonObject (sInfo);
+			object.set (ApiConsumer.Fields.Token, token);
+			object.set (ApiConsumer.Fields.ExpiryDate, expiry);
+		} catch (JsonException e) {
+			throw new ApiServiceExecutionException (e.getMessage (), e);
+		}
+		return object;
 	}
 
 	public static String [] tokenAndExpiration (Api api, JsonObject entity, Date now, long age) throws ApiServiceExecutionException {
