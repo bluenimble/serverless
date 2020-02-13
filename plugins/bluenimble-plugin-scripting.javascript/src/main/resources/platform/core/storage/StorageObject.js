@@ -100,9 +100,6 @@ var StorageObject = function (proxy) {
 		if (!folder || !folder.proxy) {
 			throw 'folder should be a valid storage folder';
 		}
-		if (!name) {
-			throw 'name is required';
-		}
 		if (typeof move === 'undefined' || move === null) {
 			move = false;
 		}

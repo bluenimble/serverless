@@ -649,34 +649,30 @@ public class Json {
 	}
 
     public static void main (String [] args) throws Exception {
-    	JsonObject emojis = Json.load (new File ("/Users/lilya/Downloads/emojis.json"));
-    	JsonObject emojisNames = Json.load (new File ("/Users/lilya/Downloads/emojis-names.json"));
+    	JsonObject gfonts = Json.load (new File ("/Users/lilya/gfonts.json"));
     	
-    	JsonObject out = new JsonObject ();
-    	
-    	JsonArray aEmojis = Json.getArray (emojis, "emojis");
-    	for (int i = 0; i < aEmojis.count (); i++) {
-    		JsonObject e = (JsonObject)aEmojis.get (i);
-    		JsonObject r = new JsonObject ();
-    		r.set ("code", e.get ("html"));
-    		String sEmoji = Json.getString (e, "emoji");
-    		String sName = Json.getString (emojisNames, sEmoji);
-    		if (Lang.isNullOrEmpty (sName)) {
+    	JsonObject out   = new JsonObject ();
+     	
+    	JsonArray items = Json.getArray (gfonts, "items");
+    	for (int i = 0; i < items.count (); i++) {
+    		JsonObject item = (JsonObject)items.get (i);
+    		String category = Json.getString (item, "category");
+    		if (Lang.isNullOrEmpty (category)) {
     			continue;
     		}
-    		sName = Lang.replace (sName, Lang.COLON, Lang.BLANK);
-    		r.set ("name", emojiName (sName));
-    		out.set (sName, r);
+    		JsonArray aCategory = Json.getArray (out, category);
+    		if (aCategory == null) {
+    			aCategory = new JsonArray ();
+    			out.set (category, aCategory);
+    		}
+
+    		JsonObject f = new JsonObject ();
+    		f.set ("family", item.get ("family"));
+    		f.set ("variants", item.get ("variants"));
+    		f.set ("subsets", item.get ("subsets"));
+    		aCategory.add (f);
     	}
-    	Json.store (out, new File ("/Users/lilya/Downloads/emojis-mini.json"));
-    }
-    private static final String emojiName (String name) {
-    	StringBuilder sb = new StringBuilder ();
-    	String [] arr = Lang.split (name, Lang.UNDERSCORE);
-    	for (String s : arr) {
-    		sb.append (Lang.capitalizeFirst (s)).append (Lang.SPACE);
-    	}
-    	return sb.toString ().trim ();
+    	Json.store (out, new File ("/Users/lilya/fonts.json"));
     }
     
 }
