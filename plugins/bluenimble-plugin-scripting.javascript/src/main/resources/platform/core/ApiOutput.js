@@ -54,7 +54,7 @@ var ApiOutput = function (proxy) {
 };
 
 ApiOutput.prototype.fromBytes = function (name, bytes, contentType, extension) {
-	return new JC_ApiByteArrayOutput (name, bytes, contentType, extension);
+	return new JC_ByteArrayApiOutput (name, bytes, contentType, extension);
 };
 ApiOutput.prototype.fromJson = function (json) {
 	return new JC_JsonApiOutput (JC_ValueConverter.convert (json));
