@@ -96,14 +96,17 @@ var StorageObject = function (proxy) {
 	  @param {Folder} - the destination folder
 	  @param {boolean} - true: to move this storage object. false to create a copy of it
 	*/
-	this.copy = function (folder, move) {
+	this.copy = function (folder, move, altName) {
 		if (!folder || !folder.proxy) {
 			throw 'folder should be a valid storage folder';
 		}
 		if (typeof move === 'undefined' || move === null) {
 			move = false;
 		}
-		proxy.copy (folder.proxy, move);
+		if (typeof altName === 'undefined' || altName === null) {
+			altName = null;
+		}
+		proxy.copy (folder.proxy, move, altName);
 	};
 
 	/**	

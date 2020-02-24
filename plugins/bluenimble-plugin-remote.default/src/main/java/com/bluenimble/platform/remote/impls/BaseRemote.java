@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.bluenimble.platform.remote.Serializer;
+import com.bluenimble.platform.remote.impls.serializers.ByteArraySerializer;
 import com.bluenimble.platform.remote.impls.serializers.JsonSerializer;
 import com.bluenimble.platform.remote.impls.serializers.StreamSerializer;
 import com.bluenimble.platform.remote.impls.serializers.TextSerializer;
@@ -19,6 +20,7 @@ public abstract class BaseRemote extends AbstractRemote {
 	
 	protected static final Map<Serializer.Name, Serializer> Serializers = new HashMap<Serializer.Name, Serializer> ();
 	static {
+		Serializers.put (Serializer.Name.bytes, 	new ByteArraySerializer ());
 		Serializers.put (Serializer.Name.text, 		new TextSerializer ());
 		Serializers.put (Serializer.Name.json, 		new JsonSerializer ());
 		Serializers.put (Serializer.Name.stream, 	new StreamSerializer ());

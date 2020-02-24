@@ -31,20 +31,28 @@ import com.bluenimble.platform.json.JsonArray;
 public class FileUtils {
 	
 	private static final int BUFFER_SIZE = 32 * 1024;
-
+	
 	public static void copy (File source, File destFolder, boolean copyRoot) throws IOException {
+		copy (source, null, destFolder, copyRoot);
+	}
+	
+	public static void copy (File source, String altName, File destFolder, boolean copyRoot) throws IOException {
 		
 		if (source == null || destFolder == null) {
 			throw new IOException ("null args for FileUtils.copy");
 		}
 		
+		if (Lang.isNullOrEmpty (altName)) {
+			altName = source.getName ();
+		}
+		
 		if (source.isFile ()) {
-			copyFile (source, destFolder);
+			copyFile (source, destFolder, altName);
 			return;
 		}
 		
 		if (copyRoot) {
-			destFolder = new File (destFolder, source.getName ());
+			destFolder = new File (destFolder, altName);
 			destFolder.mkdir ();
 		}
 		
@@ -53,18 +61,21 @@ public class FileUtils {
 			return;
 		}
 		for (File file : files) {
-			copy (file, destFolder, true);
+			copy (file, null, destFolder, true);
 		}
 		
 	}
 	
-	private static void copyFile (File f, File folder) throws IOException {
-		
+	private static void copyFile (File f, File folder, String altName) throws IOException {
 		if (f == null || !f.exists () || !f.isFile ()) {
 			throw new IOException ("'" + f + "' not a valid file");
 		}
 		
-		File df = new File (folder, f.getName ());
+		if (Lang.isNullOrEmpty (altName)) {
+			altName = f.getName ();
+		}
+
+		File df = new File (folder, altName);
 		
 		InputStream is = null;
 		OutputStream os = null;

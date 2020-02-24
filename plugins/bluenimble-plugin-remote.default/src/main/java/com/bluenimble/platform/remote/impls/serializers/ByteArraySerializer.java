@@ -14,21 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.remote;
+package com.bluenimble.platform.remote.impls.serializers;
 
 import java.io.InputStream;
-import java.io.Serializable;
 
-public interface Serializer extends Serializable {
-	
-	enum Name {
-		bytes,
-		text,
-		json,
-		stream,
-		xml
+import com.bluenimble.platform.IOUtils;
+import com.bluenimble.platform.remote.SerializationException;
+import com.bluenimble.platform.remote.Serializer;
+
+public class ByteArraySerializer implements Serializer {
+
+	private static final long serialVersionUID = 5466668574952401976L;
+
+	@Override
+	public Object serialize (InputStream input) throws SerializationException {
+		if (input == null) {
+			return null;
+		}
+		try {
+			return IOUtils.toByteArray (input);
+		} catch (Exception ex) {
+			throw new SerializationException (ex.getMessage (), ex);
+		} finally {
+			IOUtils.closeQuietly (input);
+		}
 	}
-
-	Object serialize (InputStream input) throws SerializationException;
 	
 }

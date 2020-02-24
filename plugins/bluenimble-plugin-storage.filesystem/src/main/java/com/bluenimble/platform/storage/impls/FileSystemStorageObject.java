@@ -75,21 +75,24 @@ public class FileSystemStorageObject implements StorageObject {
 	}
 	
 	@Override
-	public void copy (Folder folder, boolean move)
+	public void copy (Folder folder, boolean move, String altName)
 			throws StorageException {
 		if (isRoot) {
 			throw new StorageException ("can't copy root root folder");
 		}
+		if (Lang.isNullOrEmpty (altName)) {
+			altName = name ();
+		}
 		if (move) {
-			source.renameTo (new File (((FileSystemFolder)folder).getSource (), name ()));
+			source.renameTo (new File (((FileSystemFolder)folder).getSource (), altName));
 		} else {
 			File newParent = ((FileSystemFolder)folder).getSource ();
 			try {
-				FileUtils.copy (source, ((FileSystemFolder)folder).getSource (), true);
+				FileUtils.copy (source, altName, ((FileSystemFolder)folder).getSource (), true);
 			} catch (IOException e) {
 				throw new StorageException (e.getMessage (), e);
 			}
-			setSource (new File (newParent, name ()));
+			setSource (new File (newParent, altName));
 		}
 	}
 

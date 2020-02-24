@@ -44,6 +44,7 @@ public class CopyObjectSpi extends AbstractApiServiceSpi {
 		String Object 	= "object";
 		String Folder 	= "folder";
 		String Move		= "move";
+		String AltName	= "altName";
 	}
 
 	@Override
@@ -64,6 +65,7 @@ public class CopyObjectSpi extends AbstractApiServiceSpi {
 		if (move == null) {
 			move = false;
 		}
+		String 	altName 	= (String)request.get (Spec.AltName);
 		
 		Storage storage = space.feature (Storage.class, provider, request);
 		
@@ -97,7 +99,7 @@ public class CopyObjectSpi extends AbstractApiServiceSpi {
 		}
 		
 		try {
-			so.copy (folder, move);
+			so.copy (folder, move, altName);
 		} catch (StorageException e) {
 			throw new ApiServiceExecutionException (e.getMessage (), e);
 		}

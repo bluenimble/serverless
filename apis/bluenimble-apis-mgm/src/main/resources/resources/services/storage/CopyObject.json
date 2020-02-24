@@ -6,7 +6,8 @@
 		"fields": {
 			"object": 	{ },
 			"folder": 	{ "required": "false" },
-			"move": 	{ "required": "false", "value": "false" }
+			"move": 	{ "required": "false", "value": "false" },
+			"altName": 	{ "required": "false" }
 		}
 	},
 	
