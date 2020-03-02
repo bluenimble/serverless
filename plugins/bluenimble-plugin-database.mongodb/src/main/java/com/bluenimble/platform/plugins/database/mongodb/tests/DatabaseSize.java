@@ -16,30 +16,16 @@
  */
 package com.bluenimble.platform.plugins.database.mongodb.tests;
 
-import java.util.List;
-
 import com.bluenimble.platform.db.Database;
-import com.bluenimble.platform.db.DatabaseObject;
-import com.bluenimble.platform.json.JsonObject;
-import com.bluenimble.platform.query.impls.JsonQuery;
+import com.bluenimble.platform.db.DatabaseException;
 
-public class FindAllWithSelect {
+public class DatabaseSize {
 	
-	public static void main (String [] args) throws Exception {
-		
-		String query = "{ select: [name], orderBy: { name: asc } }";
+	public static void main (String [] args) throws DatabaseException {
 		
 		Database db = new DatabaseServer ().get ();
 		
-		List<DatabaseObject> stories = db.find (
-			"Story",
-			new JsonQuery (new JsonObject (query)),
-			null
-		);
-		
-		for (DatabaseObject story : stories) {
-			System.out.println (story.toJson (null));
-		}
+		System.out.println (db.size ());
 		
 	}
 	

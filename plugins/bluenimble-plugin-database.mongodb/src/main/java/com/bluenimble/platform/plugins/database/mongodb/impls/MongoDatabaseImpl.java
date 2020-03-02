@@ -35,6 +35,7 @@ import org.bson.types.ObjectId;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.tracing.Tracer;
+import com.bluenimble.platform.api.tracing.Tracer.Level;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseException;
 import com.bluenimble.platform.db.DatabaseObject;
@@ -98,6 +99,8 @@ public class MongoDatabaseImpl implements Database {
 	
 	interface SpiDescribe {
 		String Size 		= "size";
+		String DbStats 		= "dbStats";
+		String DbSize 		= "dbSize";
 		String CollStats 	= "collStats";
 	}
 	
@@ -153,6 +156,17 @@ public class MongoDatabaseImpl implements Database {
 		this.db 					= client.getDatabase (databaseName);
 		this.tracer 				= tracer;
 		this.allowProprietaryAccess = allowProprietaryAccess;
+	}
+	
+	@Override
+	public long size () throws DatabaseException {
+		Document dbStats = null;
+		if (session == null) {
+			dbStats = db.runCommand (new Document (SpiDescribe.DbStats, 1));
+		} else {
+			dbStats = db.runCommand (session, new Document (SpiDescribe.DbStats, 1));
+		}
+		return dbStats.getLong (SpiDescribe.DbSize);
 	}
 
 	@Override
@@ -270,7 +284,7 @@ public class MongoDatabaseImpl implements Database {
 			return null;
 		}
 		
-		return toList (entity, result, visitor, query.select () != null);
+		return toList (entity, result, visitor, false);
 	}
 
 	@Override
@@ -578,6 +592,17 @@ public class MongoDatabaseImpl implements Database {
 				cursor = db.getCollection (entity).find (session, mQuery);
 			}
 			
+			Select select = query.select ();
+			tracer.log (Level.Info, "Select Fields -> " + select);
+			if (select != null && select.count () > 0) {
+				String [] pFields = new String [select.count ()];
+				for (int i = 0; i < select.count (); i++) {
+					pFields [i] = select.get (i);
+				}
+				System.out.println ("Projections -> " + Projections.include (pFields));
+				cursor.projection (Projections.include (pFields));
+			}
+			
 			// start / skip
 			if (query.start () > 0) {
 				cursor.skip (query.start ());
@@ -605,15 +630,6 @@ public class MongoDatabaseImpl implements Database {
 					sorts.add (sort);
 				}
 				cursor.sort (Sorts.orderBy (sorts));
-			}
-			
-			Select select = query.select ();
-			if (select != null && select.count () > 0) {
-				String [] pFields = new String [select.count ()];
-				for (int i = 0; i < select.count (); i++) {
-					pFields [i] = select.get (i);
-				}
-				cursor.projection (Projections.include (pFields));
 			}
 			
 			return cursor;
@@ -864,6 +880,28 @@ public class MongoDatabaseImpl implements Database {
 			entity = entity.toUpperCase ();
 		}
 		return entity;
+	}
+
+	@Override
+	public JsonObject describeEntity (String enity) throws DatabaseException {
+		JsonObject oEntity = new JsonObject ();
+		oEntity.set (Describe.Name, enity);
+		
+		Document callStats = null;
+		if (session == null) {
+			callStats = db.runCommand (new Document (SpiDescribe.CollStats, enity));
+		} else {
+			callStats = db.runCommand (session, new Document (SpiDescribe.CollStats, enity));
+		}
+		
+		// clean 
+		callStats.remove (Tokens.WiredTiger);
+		callStats.remove (Tokens.IndexDetails);
+		
+		oEntity.putAll (callStats);
+		
+		return oEntity;
+		
 	}
 	
 }

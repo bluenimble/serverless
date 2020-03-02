@@ -464,6 +464,25 @@ var Database = function (api, proxy) {
 		
 		return proxy.bulk (JC_ValueConverter.convert (values));
 	};
+	
+	/**	
+	  Describe an entity<br /> 
+	  @param {string} - the entity name
+	*/
+	this.describeEntity = function (entity) {
+		if (!entity) {
+			throw "missing entity argument";
+		}
+		return proxy.describeEntity (entity);
+	};
+	
+	/**	
+	  Describe an entity<br /> 
+	  @param {string} - the entity name
+	*/
+	this.size = function () {
+		return proxy.size ();
+	};
 
 };
 

@@ -150,6 +150,11 @@ public class OrientDatabase implements Database {
 	}
 
 	@Override
+	public long size () throws DatabaseException {
+		throw new DatabaseException ("Unsupported Operation");
+	}
+	
+	@Override
 	public DatabaseObject create (String entity) throws DatabaseException {
 		if (Lang.isNullOrEmpty (entity)) {
 			throw new DatabaseException ("Entity is null");
@@ -689,6 +694,11 @@ public class OrientDatabase implements Database {
 	@Override
 	public long update (String entity, Query query, JsonObject data) throws DatabaseException {
 		throw new UnsupportedOperationException ("update (String entity, Query query, JsonObject data)");
+	}
+
+	@Override
+	public JsonObject describeEntity (String enity) throws DatabaseException {
+		throw new UnsupportedOperationException ("describeEntity(String enity)");
 	}
 
 	/*

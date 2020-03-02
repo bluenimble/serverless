@@ -87,6 +87,7 @@ public interface Database extends Recyclable {
 	}
 	
 	Object 					proprietary (String name);
+	long 					size 		() 														throws DatabaseException;
 
 	Database 				trx 		();
 	Database 				commit 		() 														throws DatabaseException;
@@ -119,6 +120,9 @@ public interface Database extends Recyclable {
 	int						increment 	(DatabaseObject obj, String field, int value) 			throws DatabaseException;
 	
 	long 					count 		(String entity) 										throws DatabaseException;
+	
+	JsonObject 				describeEntity 	
+										(String enity) 											throws DatabaseException;
 	
 	JsonObject 				describe 	() 														throws DatabaseException;
 	

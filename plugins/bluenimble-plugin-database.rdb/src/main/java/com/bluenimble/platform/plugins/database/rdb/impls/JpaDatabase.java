@@ -62,6 +62,11 @@ public class JpaDatabase implements Database {
 	}
 	
 	@Override
+	public long size () throws DatabaseException {
+		throw new DatabaseException ("Unsupported Operation");
+	}
+	
+	@Override
 	public void createEntity (String entityName, Field... fields) throws DatabaseException {
 		throw new DatabaseException ("Unsupported Operation");
 	}	
@@ -453,6 +458,11 @@ public class JpaDatabase implements Database {
 	@Override
 	public long update (String entity, Query query, JsonObject data) throws DatabaseException {
 		throw new UnsupportedOperationException ("update (String entity, Query query, JsonObject data)");
+	}
+
+	@Override
+	public JsonObject describeEntity (String enity) throws DatabaseException {
+		throw new UnsupportedOperationException ("describeEntity(String enity)");
 	}
 
 }

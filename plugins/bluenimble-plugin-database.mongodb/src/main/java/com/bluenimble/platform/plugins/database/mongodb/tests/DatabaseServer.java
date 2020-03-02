@@ -40,7 +40,7 @@ public class DatabaseServer {
 		);
 
 		MongoClientURI uri = new MongoClientURI (
-			"mongodb+srv://usr:pwd@displaystream-primary-9zlqv.xyz.net",
+			"mongodb+srv://dsapi:Im%40ne1977@displaystream-primary-9zlqv.mongodb.net",
 			MongoClientOptions.builder ().cursorFinalizerEnabled (false).codecRegistry (codecRegistry).retryWrites (true)
 		);
 			
