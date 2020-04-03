@@ -31,7 +31,7 @@ public interface Indexer {
 	}
 	
 	interface Visitor {
-		boolean onRecord (JsonArray columns, JsonObject record);
+		boolean onRecord (JsonArray columns, JsonArray record);
 	}
 	
 	boolean 		exists 		(String entity) 												throws IndexerException;

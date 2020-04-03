@@ -41,8 +41,9 @@ public class ElasticSearchPlugin extends AbstractPlugin {
 	private static final long serialVersionUID = 3203657740159783537L;
 	
 	interface Spec {
-		String Remote = "remote";
-		String Index = "index";
+		String Remote 	= "remote";
+		String Index 	= "index";
+		String Config 	= "config";
 	}
 	
 	private String feature;
@@ -81,7 +82,12 @@ public class ElasticSearchPlugin extends AbstractPlugin {
 					remote = space.feature (Remote.class, remoteFeature, ApiContext.Instance);
 				}
 				
-				return new ElasticSearchIndexer (remote, index, tracer);
+				return new ElasticSearchIndexer (
+					remote, 
+					index, 
+					tracer, 
+					(JsonObject)Json.find (space.getFeatures (), feature, name, ApiSpace.Features.Spec, Spec.Config)
+				);
 			}
 			
 			@Override

@@ -91,15 +91,17 @@ public class ElasticSearchIndexer implements Indexer {
 	
 	private 			Remote remote;
 	private 			String index;
+	private 			JsonObject config;
 	
 	private 			Tracer tracer;
 	
 	private Map<String, String> QueriesCache = new ConcurrentHashMap<String, String> ();
 
-	public ElasticSearchIndexer (Remote remote, String index, Tracer tracer) {
+	public ElasticSearchIndexer (Remote remote, String index, Tracer tracer, JsonObject config) {
 		this.remote 	= remote;
 		this.index 		= index;
 		this.tracer 	= tracer;
+		this.config 	= config;
 	}
 	
 	@Override
@@ -516,14 +518,17 @@ public class ElasticSearchIndexer implements Indexer {
 			return;
 		}
 		
-		tracer.log (Tracer.Level.Debug, "SQL Query {0}", query);
+		tracer.log (Tracer.Level.Info, "SQL Query {0}", query);
 		
-		String cacheKey = query.construct ().name () + query.name ();
+		String cacheKey = null;
+		if (!Lang.isNullOrEmpty (query.name ())) {
+			cacheKey = construct.name () + query.name ();
+		}
 		
 		String 				sQuery 		= null;
 		Map<String, Object> bindings 	= query.bindings ();
 		
-		if (query.caching ().cache (Target.meta) && !Lang.isNullOrEmpty (query.name ())) {
+		if (cacheKey != null && query.caching ().cache (Target.meta)) {
 			sQuery 		= (String)QueriesCache.get (cacheKey);
 			tracer.log (Tracer.Level.Debug, "Query meta loaded from cache {0}", sQuery);
 		} 
@@ -535,7 +540,7 @@ public class ElasticSearchIndexer implements Indexer {
 			sQuery 		= (String)cQuery.query ();
 			bindings	= cQuery.bindings ();
 			
-			if (query.caching ().cache (Target.meta) && !Lang.isNullOrEmpty (query.name ())) {
+			if (cacheKey != null && query.caching ().cache (Target.meta)) {
 				QueriesCache.put (cacheKey, sQuery);
 				tracer.log (Tracer.Level.Debug, "Query meta stored in cache {0}", sQuery);
 			} 
@@ -550,9 +555,11 @@ public class ElasticSearchIndexer implements Indexer {
 			
 			ElkError error = new ElkError ();
 			
+			String sqlPath = Json.getString (config, Internal.Elk.Sql.class.getSimpleName ().toLowerCase (), Internal.Elk.Sql.Path);
+			
 			remote.post (
 				(JsonObject)new JsonObject ()
-					.set (Remote.Spec.Path, Internal.Elk.Sql.Path)
+					.set (Remote.Spec.Path, sqlPath)
 					.set (Remote.Spec.Headers, 
 						new JsonObject ()
 							.set (HttpHeaders.CONTENT_TYPE, ContentTypes.Json)
@@ -588,7 +595,7 @@ public class ElasticSearchIndexer implements Indexer {
 						}
 						
 						for (int i = 0; i < rows.count (); i++) {
-							boolean cancel = visitor.onRecord (columns, (JsonObject)rows.get (i));
+							boolean cancel = visitor.onRecord (columns, (JsonArray)rows.get (i));
 							if (cancel) {
 								return;
 							}
@@ -620,7 +627,18 @@ public class ElasticSearchIndexer implements Indexer {
 		
 		sqlQuery (Query.Construct.select, query, new Visitor () {
 			@Override
-			public boolean onRecord (JsonArray columns, JsonObject record) {
+			public boolean onRecord (JsonArray columns, JsonArray values) {
+				JsonObject record = new JsonObject ();
+				for (int i = 0; i < values.count (); i++) {
+					Object column = null;
+					if (i < columns.count ()) {
+						column = columns.get (i);
+					}
+					if (column == null) {
+						column = "Column-" + i;
+					}
+					record.set (String.valueOf (column), values.get (i));
+				}
 				result.set (record);
 				return false;
 			}

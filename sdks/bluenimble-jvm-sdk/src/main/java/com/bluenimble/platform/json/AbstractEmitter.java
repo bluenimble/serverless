@@ -125,7 +125,7 @@ public abstract class AbstractEmitter implements JsonEmitter {
 
 	protected void writeName (String name) {
 		write (Lang.QUOTE);
-		write (name);
+		write (Json.escape (name));
 		write (Lang.QUOTE);
 		write (Lang.COLON);
 	}

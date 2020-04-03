@@ -190,9 +190,6 @@ public class FileSystemStorageObject implements StorageObject {
 		}
 		validateName (name);
 		source.renameTo (new File (source.getParentFile (), name));
-		if (!name.equals (name ())) {
-			throw new StorageException ("unable rename object '" + name () + "' to '" + name + "'. Maybe the object is open by another device.");
-		}
 	}
 
 	@Override
