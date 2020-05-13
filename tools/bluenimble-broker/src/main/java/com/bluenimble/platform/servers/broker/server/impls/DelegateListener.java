@@ -52,9 +52,9 @@ public class DelegateListener implements DataListener<Object> {
 			return;
 		}
 		
-		peer.init (broker.server (), client);
+		peer.init (broker, null, client);
 		
-		Tenant tenant = broker.getTenantProvider ().get (peer.tenant ());
+		Tenant tenant = peer.tenant ();
 		
 		if (!tenant.supports (event)) {
 			peer.trigger (Default.error.name (), new JsonObject ().set (Message.Status, Response.Error).set (Message.Reason, "Unauthorized tenant action"));

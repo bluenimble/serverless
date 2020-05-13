@@ -14,7 +14,9 @@ import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.servers.broker.Peer;
 import com.bluenimble.platform.servers.broker.PeerChannel;
 import com.bluenimble.platform.servers.broker.PeerChannel.Access;
+import com.bluenimble.platform.servers.broker.Tenant;
 import com.bluenimble.platform.servers.broker.listeners.EventListener;
+import com.bluenimble.platform.servers.broker.server.Broker;
 import com.corundumstudio.socketio.BroadcastOperations;
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
@@ -43,7 +45,8 @@ public class PeerImpl implements Peer {
 	
 	protected String 			id;
 	protected String 			type;
-	protected String 			tenant;
+	protected String 			tenantId;
+	protected Tenant 			tenant;
 	
 	protected boolean 			durable = true;
 	protected Map<String, PeerChannel> 	
@@ -54,8 +57,9 @@ public class PeerImpl implements Peer {
 	private transient SocketIOClient 		client;
 	
 	@Override
-	public void init (SocketIOServer server, SocketIOClient client) {
-		this.server = server;
+	public void init (Broker broker, SocketIOServer server, SocketIOClient client) {
+		this.server = broker != null ? broker.server () : server;
+		this.tenant = broker != null ? broker.getTenantProvider ().get (tenantId) : null;
 		this.client = client;
 	}
 	
@@ -73,12 +77,12 @@ public class PeerImpl implements Peer {
 	}
 
 	@Override
-	public String tenant () {
+	public Tenant tenant () {
 		return tenant;
 	}
 	@Override
-	public void tenant (String tenant) {
-		this.tenant = tenant;
+	public void tenant (String tenantId) {
+		this.tenantId = tenantId;
 	}
 
 	@Override
@@ -186,12 +190,12 @@ public class PeerImpl implements Peer {
 			return;
 		}
 		*/
-		client.joinRoom (tenant + Lang.SLASH + channel);
+		client.joinRoom (tenantId + Lang.SLASH + channel);
 	}
 
 	@Override
 	public void leave (String channel) {
-		client.leaveRoom (tenant + Lang.SLASH + channel);
+		client.leaveRoom (tenantId + Lang.SLASH + channel);
 	}
 
 	@Override
@@ -243,6 +247,9 @@ public class PeerImpl implements Peer {
 
 	@Override
 	public void broadcast (String channel, Object data) {
+		if (tenant != null && tenant.namespacedBroadcast ()) {
+			channel = tenant.id () + Lang.SLASH + channel;
+		}
 		logger.info ("broadcast to " + channel);
 		BroadcastOperations ops = server.getRoomOperations (channel);
 		if (ops == null) {

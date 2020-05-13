@@ -62,6 +62,7 @@ public interface ApiHeaders {
 	String 	NodeID 				= "BNB-Node-ID";
 	String 	NodeType 			= "BNB-Node-Type";
 	String 	NodeVersion 		= "BNB-Node-Version";
+	String 	NodeStartTime 		= "BNB-Node-StartTime";
 	String 	ExecutionTime 		= "BNB-Execution-Time";
 	String 	Timestamp 			= "BNB-Timestamp";
 	String 	GeoLocation 		= "BNB-GeoLocation";

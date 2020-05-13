@@ -60,7 +60,7 @@ public class PublishEventListener implements EventListener<JsonObject> {
 				}
 			}
 			if (cantPublish != null) {
-				peer.trigger (Default.error.name (), new JsonObject ().set (Message.Status, Response.Error).set (Message.Reason, "Cant pubish to " + Lang.join (cantPublish)));
+				peer.trigger (Default.error.name (), new JsonObject ().set (Message.Status, Response.Error).set (Message.Reason, "Cant publish to " + Lang.join (cantPublish)));
 			}
 		}
 		

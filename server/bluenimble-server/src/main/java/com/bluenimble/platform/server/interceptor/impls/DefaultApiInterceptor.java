@@ -82,6 +82,7 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 		response.set (ApiHeaders.NodeID, 		Json.getString (request.getNode (), ApiRequest.Fields.Node.Id));
 		response.set (ApiHeaders.NodeType, 		Json.getString (request.getNode (), ApiRequest.Fields.Node.Type));
 		response.set (ApiHeaders.NodeVersion, 	Json.getString (request.getNode (), ApiRequest.Fields.Node.Version));
+		response.set (ApiHeaders.NodeStartTime, Json.getString (request.getNode (), ApiRequest.Fields.Node.StartTime));
 		
 		ApiMediaProcessor mediaProcessor = null;
 

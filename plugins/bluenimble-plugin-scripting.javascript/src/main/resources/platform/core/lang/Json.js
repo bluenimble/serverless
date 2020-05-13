@@ -19,12 +19,10 @@ var Json = {
 	  @returns {JsonObject} the json object
 	*/
 	object: function (data) {
-		var jd = JC_ValueConverter.convert (data);
-		var o = new JC_JsonObject ();
-		if (jd) {
-			o.putAll (jd);
+		if (!data) {
+			return new JC_JsonObject ();
 		}
-		return o;
+		return JC_ValueConverter.convert (data);
 	},
 	
 	/**	
@@ -33,10 +31,10 @@ var Json = {
 	  @returns {JsonArray} the json array
 	*/
 	array: function (data) {
-		if (data) {
-			return JC_ValueConverter.convert (data);
+		if (!data) {
+			return new JC_JsonArray ();
 		}
-		return new JC_JsonArray ();
+		return JC_ValueConverter.convert (data);
 	},
 	
 	merge: function (root, extra) {

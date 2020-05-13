@@ -15,6 +15,8 @@ public class TenantImpl implements Tenant {
 		String Name 		= "name";
 		
 		String Available 	= "available";
+		String NamespacedBroadcast 	
+							= "namespacedBroadcast";
 		
 		String Auths		= "auths";
 		String Events 		= "events";
@@ -54,6 +56,11 @@ public class TenantImpl implements Tenant {
 	@Override
 	public JsonObject toJson () {
 		return source;
+	}
+
+	@Override
+	public boolean namespacedBroadcast () {
+		return Json.getBoolean (source, Spec.NamespacedBroadcast, false);
 	}
 	
 }

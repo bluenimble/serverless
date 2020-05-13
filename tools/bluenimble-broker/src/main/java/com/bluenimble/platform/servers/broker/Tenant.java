@@ -10,6 +10,7 @@ public interface Tenant extends Serializable {
 	String 			id 			();
 	String 			name 		();
 	
+	boolean			namespacedBroadcast ();
 	boolean			available 	();
 	boolean			supports 	(String event);
 

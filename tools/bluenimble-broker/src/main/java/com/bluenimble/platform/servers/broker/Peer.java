@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.servers.broker.server.Broker;
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
 
@@ -34,7 +35,7 @@ public interface Peer extends Serializable {
 	String		type			();
 	void		type			(String type);
 	
-	String		tenant			();
+	Tenant		tenant			();
 	void		tenant			(String tenant);
 	
 	boolean 	isDurable 		();
@@ -53,7 +54,7 @@ public interface Peer extends Serializable {
 	
 	Set<String> joined 			();
 	
-	void		init 			(SocketIOServer server, SocketIOClient client);
+	void		init 			(Broker broker, SocketIOServer server, SocketIOClient client);
 	
 	void		trigger 		(String event, Object... message);
 	

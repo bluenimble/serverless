@@ -119,6 +119,7 @@ ApiConsumer.prototype.Fields = {
 	Permissions: JC_ApiConsumer_Fields.AccessKey,
 
 	Token: JC_ApiConsumer_Fields.Token,
+	TokenType: JC_ApiConsumer_Fields.TokenType,
 	AccessKey: JC_ApiConsumer_Fields.AccessKey,
 	SecretKey: JC_ApiConsumer_Fields.SecretKey,
 	Signature: JC_ApiConsumer_Fields.Signature,

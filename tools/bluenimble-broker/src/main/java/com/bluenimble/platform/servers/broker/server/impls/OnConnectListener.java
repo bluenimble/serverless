@@ -27,7 +27,7 @@ public class OnConnectListener implements ConnectListener {
 			return;
 		}
 		
-		peer.init (server, client);
+		peer.init (null, server, client);
 		
 		client.set (Peer.Key, peer);
 		
