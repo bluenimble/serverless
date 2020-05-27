@@ -45,7 +45,6 @@ import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
@@ -66,6 +65,7 @@ import com.bluenimble.platform.api.tracing.Tracer.Level;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.impls.AbstractPlugin;
+import com.bluenimble.platform.plugins.inbound.http.impl.CustomCorsFilter;
 import com.bluenimble.platform.plugins.inbound.http.impl.HttpApiRequest;
 import com.bluenimble.platform.plugins.inbound.http.impl.HttpApiResponse;
 import com.bluenimble.platform.plugins.inbound.http.readers.YamlApiRequestBodyReader;
@@ -102,6 +102,9 @@ public class JettyPlugin extends AbstractPlugin {
 	}
 	
 	interface Cors {
+		String AllowCredentials	= "allowCredentials";
+		String AllowNoOrigin	= "allowNoOrigin";
+		String PreflightMaxAge	= "preflightMaxAge";
         String Origins 			= "origins";
         String Methods 			= "methods";
         String Headers 			= "headers";
@@ -371,8 +374,11 @@ public class JettyPlugin extends AbstractPlugin {
         sContext.addServlet (apiHolder, Lang.SLASH + Lang.STAR);
         
         // cross origin
-        FilterHolder holder = new FilterHolder (CrossOriginFilter.class);
+        FilterHolder holder = new FilterHolder (CustomCorsFilter.class);
         holder.setName ("CORS");
+        holder.setInitParameter ("preflightMaxAge", String.valueOf (Json.getInteger (cors, Cors.PreflightMaxAge, 1800)));
+        holder.setInitParameter ("allowCredentials", String.valueOf (Json.getBoolean (cors, Cors.AllowCredentials, true)));
+        holder.setInitParameter ("allowNoOrigin", String.valueOf (Json.getBoolean (cors, Cors.AllowNoOrigin, false)));
         holder.setInitParameter ("allowedOrigins", Json.getString (cors, Cors.Origins, Lang.STAR));
         holder.setInitParameter ("allowedMethods", Json.getString (cors, Cors.Methods, "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS"));
         
