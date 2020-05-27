@@ -25,7 +25,7 @@ import com.bluenimble.platform.servers.broker.utils.PeerUtils;
 import com.corundumstudio.socketio.AuthorizationListener;
 import com.corundumstudio.socketio.HandshakeData;
 
-public class RestAuthorizationListener implements AuthorizationListener {
+public class RestAuthorizationListener implements AuthorizationListener, RefreshableAuthorizationListener {
 	
 	private static final Logger logger = LoggerFactory.getLogger (RestAuthorizationListener.class);
 	
@@ -52,20 +52,44 @@ public class RestAuthorizationListener implements AuthorizationListener {
 		if (Lang.isNullOrEmpty(token)) {
 			return false;
 		}
+		
+		JsonObject oPeer = this.getPeer (token);
+		if (oPeer == null) {
+			return false;
+		}
+		
+		oPeer.set (Peer.Spec.Token, token);
+		
+		String peer = token.substring (0, token.indexOf (Lang.COLON));
+		
+		data.getUrlParams ().put (Peer.Key, PeerUtils.toList (peer, oPeer));
 
+		return true;
+
+	}
+
+	@Override
+	public JsonObject refreshPeer (Peer peer) {
+		if (Lang.isNullOrEmpty (peer.token ())) {
+			return null;
+		}
+		return this.getPeer (peer.token ());
+	}
+
+	public JsonObject getPeer (String token) {
 		token = token.trim ();
 		
 		logger.info ("Auth Token: " + token);
 		
 		int indexOfColon = token.indexOf (Lang.COLON);
 		if (indexOfColon <= 0) {
-			return false;
+			return null;
 		}
 		
 		String peer = token.substring (0, indexOfColon);
 		String key 	= token.substring (indexOfColon + 1);
 		if (Lang.isNullOrEmpty (peer) || Lang.isNullOrEmpty (key)) {
-			return false;
+			return null;
 		}
 		
 		try {
@@ -99,7 +123,7 @@ public class RestAuthorizationListener implements AuthorizationListener {
 				int statusCode = response.getStatusLine ().getStatusCode (); 
 				if (statusCode != 200) { 
 					logger.info ("Status code " + statusCode);
-					return false;
+					return null;
 				}
 				
 				String responseText = EntityUtils.toString (response.getEntity ());
@@ -107,18 +131,13 @@ public class RestAuthorizationListener implements AuthorizationListener {
 				
 				logger.info ("Response Text " + responseText);
 				
-				JsonObject rPeer = new JsonObject (responseText);
-				
-				data.getUrlParams ().put (Peer.Key, PeerUtils.toList (peer, rPeer));
+				return new JsonObject (responseText);
 				
 			}
 		} catch (Exception ex) {
 			logger.error (ex.getMessage (), ex);
-			return false;
+			return null;
 		}
-		
-		return true;
-
 	}
 
 	public String getType() {

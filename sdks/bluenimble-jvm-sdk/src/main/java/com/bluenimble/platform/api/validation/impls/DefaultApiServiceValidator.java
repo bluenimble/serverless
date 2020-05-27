@@ -35,6 +35,7 @@ import com.bluenimble.platform.api.validation.TypeValidator;
 import com.bluenimble.platform.api.validation.ValueTransformer;
 import com.bluenimble.platform.api.validation.impls.transformers.AppendValueTransformer;
 import com.bluenimble.platform.api.validation.impls.transformers.LowerCaseValueTransformer;
+import com.bluenimble.platform.api.validation.impls.transformers.NullifyIfEmptyValueTransformer;
 import com.bluenimble.platform.api.validation.impls.transformers.PrependValueTransformer;
 import com.bluenimble.platform.api.validation.impls.transformers.ReplaceValueTransformer;
 import com.bluenimble.platform.api.validation.impls.transformers.TruncateValueTransformer;
@@ -92,6 +93,7 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 		addValueTransformer (ValueTransformer.Default.Prepend, 		new PrependValueTransformer ());
 		addValueTransformer (ValueTransformer.Default.Truncate, 	new TruncateValueTransformer ());
 		addValueTransformer (ValueTransformer.Default.Replace, 		new ReplaceValueTransformer ());
+		addValueTransformer (ValueTransformer.Default.Nullify, 		new NullifyIfEmptyValueTransformer ());
 
 		// validators
 		addTypeValidator (FieldType.String.toLowerCase (), 			new StringValidator ());

@@ -8,6 +8,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
@@ -16,6 +17,7 @@ import com.bluenimble.platform.servers.broker.PeerChannel;
 import com.bluenimble.platform.servers.broker.PeerChannel.Access;
 import com.bluenimble.platform.servers.broker.Tenant;
 import com.bluenimble.platform.servers.broker.listeners.EventListener;
+import com.bluenimble.platform.servers.broker.security.SelectiveAuthorizationListener;
 import com.bluenimble.platform.servers.broker.server.Broker;
 import com.corundumstudio.socketio.BroadcastOperations;
 import com.corundumstudio.socketio.SocketIOClient;
@@ -31,20 +33,9 @@ public class PeerImpl implements Peer {
 	
 	private static final Set<String> EmptySet = new HashSet<String> ();
 	
-	interface Spec {
-		String UUID 		= "uuid";
-		String Type 		= "type";
-		String Durable 		= "durable";
-		String Channels 	= "channels";
-		String MonoChannel 	= "monoChannel";
-		interface Channel {
-			String Name 		= "name";
-			String Access 		= "access";
-		}
-	}
-	
 	protected String 			id;
 	protected String 			type;
+	protected String 			token;
 	protected String 			tenantId;
 	protected Tenant 			tenant;
 	
@@ -52,12 +43,16 @@ public class PeerImpl implements Peer {
 	protected Map<String, PeerChannel> 	
 								channels;
 	protected boolean 			monoChannel;
+
+	protected String 			notifyOnDisconnect;
 	
+	private transient Broker				broker;
 	private transient SocketIOServer 		server;
 	private transient SocketIOClient 		client;
 	
 	@Override
 	public void init (Broker broker, SocketIOServer server, SocketIOClient client) {
+		this.broker = broker;
 		this.server = broker != null ? broker.server () : server;
 		this.tenant = broker != null ? broker.getTenantProvider ().get (tenantId) : null;
 		this.client = client;
@@ -74,6 +69,15 @@ public class PeerImpl implements Peer {
 	@Override
 	public String type () {
 		return type;
+	}
+
+	@Override
+	public String token () {
+		return token;
+	}
+	@Override
+	public void token (String token) {
+		this.token = token;
 	}
 
 	@Override
@@ -98,6 +102,16 @@ public class PeerImpl implements Peer {
 	@Override
 	public boolean isMonoChannel () {
 		return monoChannel;
+	}
+
+	@Override
+	public String notifyOnDisconnect () {
+		return notifyOnDisconnect;
+	}
+
+	@Override
+	public void notifyOnDisconnect (String channel) {
+		this.notifyOnDisconnect = channel;
 	}
 	
 	@Override
@@ -141,7 +155,7 @@ public class PeerImpl implements Peer {
 	
 	@Override
 	public boolean hasAccess (String channel, PeerChannel.Access access) {
-		// no defined channels, peer has right to all channels to execute actions
+		// no defined channels, peer has no access at all
 		if (channels == null || channels.isEmpty ()) {
 			return false;
 		}
@@ -247,26 +261,70 @@ public class PeerImpl implements Peer {
 
 	@Override
 	public void broadcast (String channel, Object data) {
+		this.send (EventListener.Default.message.name (), channel, data);
+	}
+	
+	@Override
+	public void send (String event, String channel, Object data) {
 		if (tenant != null && tenant.namespacedBroadcast ()) {
 			channel = tenant.id () + Lang.SLASH + channel;
 		}
-		logger.info ("broadcast to " + channel);
+		logger.info ("Send Event " + event + " to " + channel);
 		BroadcastOperations ops = server.getRoomOperations (channel);
 		if (ops == null) {
 			return;
 		}
 		
-		ops.sendEvent (EventListener.Default.message.name (), data);
+		ops.sendEvent (event, data);
 	}
 
+	@Override
+	public void refresh () {
+		if (this.broker == null) {
+			return;
+		}
+		SelectiveAuthorizationListener listener = this.broker.getAuthorizationListener ();
+		if (listener == null) {
+			return;
+		}
+		JsonObject oPeer = listener.refreshPeer (this);
+		this.tenant (Json.getString (oPeer, Spec.Tenant));
+		this.type (Json.getString (oPeer, Spec.Type));
+		this.setDurable (Json.getBoolean (oPeer, Spec.Durable, true));
+		this.setMonoChannel (Json.getBoolean (oPeer, Spec.MonoChannel, false));
+		this.notifyOnDisconnect (Json.getString (oPeer, Spec.NotifyOnDisconnect));
+		
+		JsonArray aChannels = Json.getArray (oPeer, Spec.Channels);
+		
+		Map<String, PeerChannel> newChannels = new HashMap<String, PeerChannel> ();
+		
+		if (aChannels != null && !aChannels.isEmpty ()) {
+			for (int i = 0; i < aChannels.count (); i++) {
+				String sChannel = (String)aChannels.get (i);
+				if (Lang.isNullOrEmpty (sChannel)) {
+					continue;
+				}
+				PeerChannelImpl channel = new PeerChannelImpl (sChannel.trim ());
+				newChannels.put (channel.name (), channel);
+			}
+		}
+		
+		this.channels = newChannels;
+		
+		client.set (Peer.Key, this);
+		
+	}
+	
 	@Override
 	public JsonObject info () {
 		JsonObject info = new JsonObject ();
 		
 		if (client != null) {
-			info.set (Spec.UUID, client.getSessionId ().toString ());
+			info.set (Spec.Id, client.getSessionId ().toString ());
 		}
 		info.set (Spec.Type, type ());
+		info.set (Spec.Token, token);
+		info.set (Spec.Tenant, tenantId);
 		
 		JsonArray aChannels = new JsonArray ();
 		if (channels != null) {
@@ -277,12 +335,15 @@ public class PeerImpl implements Peer {
 				aChannels.add (opc);
 			}
 		}
-		info.set (Spec.Channels, aChannels);
+		if (!aChannels.isEmpty ()) {
+			info.set (Spec.Channels, aChannels);
+		}
 		
 		info.set (Spec.Durable, isDurable ());
 		info.set (Spec.MonoChannel, isMonoChannel ());
+		info.set (Spec.NotifyOnDisconnect, notifyOnDisconnect ());
 		
 		return info;
 	}
-	
+
 }

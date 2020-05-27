@@ -20,4 +20,9 @@ public class AddTenantEventListener implements EventListener<JsonObject> {
 		return JsonObject.class;
 	}
 
+	@Override
+	public String name () {
+		return "addTenant";
+	}
+
 }

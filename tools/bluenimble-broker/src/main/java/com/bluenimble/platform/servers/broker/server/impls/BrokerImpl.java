@@ -322,5 +322,10 @@ public class BrokerImpl implements Broker {
 	public JsonObject describe () {
 		return describe;
 	}
+
+	@Override
+	public SelectiveAuthorizationListener getAuthorizationListener () {
+		return authListener;
+	}
 	
 }

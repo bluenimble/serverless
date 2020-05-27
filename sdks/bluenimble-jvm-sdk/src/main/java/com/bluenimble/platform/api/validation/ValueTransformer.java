@@ -7,10 +7,11 @@ public interface ValueTransformer {
 	interface Default {
 		String LowerCase = "lowercase";
 		String UpperCase = "uppercase";
-		String Append = "uppercase";
-		String Prepend = "uppercase";
-		String Replace = "uppercase";
-		String Truncate = "uppercase";
+		String Append = "append";
+		String Prepend = "prepend";
+		String Replace = "replace";
+		String Truncate = "truncate";
+		String Nullify = "nullify";
 	}
 
 	Object transform (ApiServiceValidator validator, JsonObject spec, Object object); 

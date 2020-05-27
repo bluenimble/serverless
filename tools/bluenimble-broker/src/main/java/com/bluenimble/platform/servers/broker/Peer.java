@@ -14,12 +14,18 @@ public interface Peer extends Serializable {
 	String Key = "Broker.Peer.Key";
 
 	interface Spec {
-		String Id 			= "id";
-		String Tenant 		= "tenant";
-		String Type 		= "type";
-		String Durable 		= "durable";
-		String MonoChannel 	= "monoChannel";
-		String Channels 	= "channels";
+		String Id 					= "id";
+		String Token 				= "token";
+		String Tenant 				= "tenant";
+		String Type 				= "type";
+		String Durable 				= "durable";
+		String MonoChannel 			= "monoChannel";
+		String NotifyOnDisconnect 	= "notifyOnDisconnect";
+		String Channels 			= "channels";
+		interface Channel {
+			String Name 			= "name";
+			String Access 			= "access";
+		}
 	}
 	
 	// default types
@@ -35,6 +41,9 @@ public interface Peer extends Serializable {
 	String		type			();
 	void		type			(String type);
 	
+	String		token			();
+	void		token			(String token);
+
 	Tenant		tenant			();
 	void		tenant			(String tenant);
 	
@@ -43,6 +52,9 @@ public interface Peer extends Serializable {
 	
 	boolean 	isMonoChannel 	();
 	void		setMonoChannel	(boolean monoChannel);
+	
+	String		notifyOnDisconnect ();
+	void		notifyOnDisconnect (String channel);
 	
 	Map<String, PeerChannel> 
 				channels 		();
@@ -61,6 +73,8 @@ public interface Peer extends Serializable {
 	void		join 			(String channel);
 	void		leave 			(String channel);
 	
+	void 		send 			(String event, String channel, Object data);
+	
 	void 		broadcast 		(String channel, Object data);
 	
 	boolean 	canJoin			(String channel);
@@ -68,6 +82,8 @@ public interface Peer extends Serializable {
 	boolean 	canPublish		(String channel);
 	
 	void		terminate 		(int delay);
+	
+	void		refresh 		();
 	
 	JsonObject	info			();
 

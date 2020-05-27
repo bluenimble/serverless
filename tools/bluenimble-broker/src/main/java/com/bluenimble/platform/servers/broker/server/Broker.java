@@ -5,6 +5,7 @@ import java.util.Date;
 
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.servers.broker.TenantProvider;
+import com.bluenimble.platform.servers.broker.security.SelectiveAuthorizationListener;
 import com.corundumstudio.socketio.SocketIOServer;
 
 public interface Broker extends Serializable {
@@ -69,6 +70,8 @@ public interface Broker extends Serializable {
 	}
 	
 	TenantProvider 	getTenantProvider ();
+	SelectiveAuthorizationListener
+					getAuthorizationListener ();
 	
 	SocketIOServer	server 		();
 

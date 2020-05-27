@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bluenimble.platform.Lang;
+import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.servers.broker.Peer;
 import com.bluenimble.platform.servers.broker.Tenant;
 import com.bluenimble.platform.servers.broker.server.Broker;
 import com.corundumstudio.socketio.AuthorizationListener;
@@ -59,26 +61,27 @@ public class SelectiveAuthorizationListener implements AuthorizationListener {
 			return false;
 		}
 		
-		if (tenant.auths ().isEmpty ()) {
+		if (tenant.authListener () == null) {
 			logger.info ("No auth listeners defined for tenant " + tenantId);
 			return false;
 		}
 		
-		for (int i = 0; i < tenant.auths ().size (); i++) {
-			Object auth = tenant.auths ().get (i);
-			logger.info ("check auth listener " + auth);
-			AuthorizationListener listener = listeners.get (String.valueOf (auth).toLowerCase ());
-			if (listener == null) {
-				continue;
-			}
-			boolean isAuthorized = listener.isAuthorized (data);
-			logger.info ("\tauthorized: " + isAuthorized);
-			if (isAuthorized) {
-				overridePeer (data);
-				return true;
-			}
+		AuthorizationListener listener = listeners.get (tenant.authListener ().toLowerCase ());
+		
+		if (listener == null) {
+			logger.error ("Auth listener " + tenant.authListener () + " not found in broker config.");
+			return false;
 		}
 		
+		boolean isAuthorized = listener.isAuthorized (data);
+		
+		if (isAuthorized) {
+			logger.info ("\tauthorized: " + isAuthorized);
+			overridePeer (data);
+			return true;
+		}
+		
+		logger.info ("\tNot Authorized");
 		return false;
 	}
 	
@@ -87,6 +90,34 @@ public class SelectiveAuthorizationListener implements AuthorizationListener {
 			return;
 		}
 		listeners.put (name, listener);
+	}
+	
+	public JsonObject refreshPeer (Peer peer) {
+		Tenant tenant = peer.tenant ();
+		if (!tenant.available ()) {
+			logger.info ("Tenant " + tenant.id () + " is not available (blocked)");
+			return null;
+		}
+		
+		if (tenant.authListener () == null) {
+			logger.info ("No auth listeners defined for tenant " + tenant.id ());
+			return null;
+		}
+		
+		AuthorizationListener listener = listeners.get (tenant.authListener ().toLowerCase ());
+		
+		if (listener == null) {
+			logger.error ("Auth listener " + tenant.id () + "/" + tenant.authListener () + " not found in broker config.");
+			return null;
+		}
+		
+		if (!RefreshableAuthorizationListener.class.isAssignableFrom (listener.getClass ())) {
+			logger.info ("Authorization Listener " + tenant.authListener () + " not refreshable");
+			return null;
+		}
+		
+		return ((RefreshableAuthorizationListener)listener).refreshPeer (peer);
+		
 	}
 	
 	private void overridePeer (HandshakeData data) {

@@ -1,7 +1,5 @@
 package com.bluenimble.platform.servers.broker.impls;
 
-import java.util.List;
-
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.servers.broker.Tenant;
@@ -18,7 +16,7 @@ public class TenantImpl implements Tenant {
 		String NamespacedBroadcast 	
 							= "namespacedBroadcast";
 		
-		String Auths		= "auths";
+		String Auth			= "auth";
 		String Events 		= "events";
 	}
 	
@@ -49,8 +47,8 @@ public class TenantImpl implements Tenant {
 	}
 	
 	@Override
-	public List<Object> auths () {
-		return Json.getArray (source, Spec.Auths);
+	public String authListener () {
+		return Json.getString (source, Spec.Auth);
 	}
 
 	@Override

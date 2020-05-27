@@ -28,20 +28,26 @@ public class PeerUtils {
 		
 		setId (peer, data.get (0));
 
-		setTenant (peer, data.get (1));
+		setToken (peer, data.get (1));
 		
-		setType (peer, data.get (2));
+		setTenant (peer, data.get (2));
 		
-		if (data.size () > 3) {
-			setDurable (peer, data.get (3));
-		}
+		setType (peer, data.get (3));
 		
 		if (data.size () > 4) {
-			setMonoChannel (peer, data.get (4));
+			setDurable (peer, data.get (4));
 		}
 		
 		if (data.size () > 5) {
-			String [] channels = Lang.split (data.get (5), Lang.SPACE, true);
+			setMonoChannel (peer, data.get (5));
+		}
+		
+		if (data.size () > 6) {
+			setNotifyOnDisconnect (peer, data.get (6));
+		}
+		
+		if (data.size () > 7) {
+			String [] channels = Lang.split (data.get (7), Lang.SPACE, true);
 			if (channels != null && channels.length > 0) {
 				for (String channel : channels) {
 					if (Lang.isNullOrEmpty (channel)) {
@@ -81,6 +87,13 @@ public class PeerUtils {
 		peer.type (sType.trim ());
 	}
 	
+	private static void setToken (Peer peer, String token) {
+		if (Lang.isNullOrEmpty (token)) {
+			return;
+		}
+		peer.token (token.trim ());
+	}
+	
 	private static void setTenant (Peer peer, String sTenant) {
 		if (Lang.isNullOrEmpty (sTenant)) {
 			return;
@@ -99,6 +112,13 @@ public class PeerUtils {
 		peer.setMonoChannel (Lang.TrueValues.contains (sMonoChannel));
 	}
 	
+	private static void setNotifyOnDisconnect (Peer peer, String channel) {
+		if (Lang.isNullOrEmpty (channel)) {
+			return;
+		}
+		peer.notifyOnDisconnect (channel.trim ());
+	}
+	
 	public static List<String> toList (String id, JsonObject data) {
 		if (Lang.isNullOrEmpty (id)) {
 			return null;
@@ -110,10 +130,12 @@ public class PeerUtils {
 			return list;
 		}
 		
+		list.add (Json.getString (data, Peer.Spec.Token));
 		list.add (Json.getString (data, Peer.Spec.Tenant));
 		list.add (Json.getString (data, Peer.Spec.Type));
 		list.add (Json.getString (data, Peer.Spec.Durable));
 		list.add (Json.getString (data, Peer.Spec.MonoChannel));
+		list.add (Json.getString (data, Peer.Spec.NotifyOnDisconnect));
 		
 		JsonArray channels = Json.getArray (data, Peer.Spec.Channels);
 		if (!Json.isNullOrEmpty (channels)) {

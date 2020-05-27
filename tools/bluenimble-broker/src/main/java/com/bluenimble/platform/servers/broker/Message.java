@@ -9,5 +9,8 @@ public interface Message {
 	String Data 		= "data";
 	String Reason 		= "reason";
 	String Timestamp 	= "timestamp";
+	String Listener 	= "listener";
+	String Transaction 	= "transaction";
+	String RefreshPeer  = "refreshPeer";
 
 }

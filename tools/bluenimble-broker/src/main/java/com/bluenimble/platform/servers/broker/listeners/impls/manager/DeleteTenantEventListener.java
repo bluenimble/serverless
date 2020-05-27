@@ -19,4 +19,9 @@ public class DeleteTenantEventListener implements EventListener<JsonObject> {
 		return JsonObject.class;
 	}
 
+	@Override
+	public String name () {
+		return "deleteTenant";
+	}
+
 }
