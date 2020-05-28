@@ -104,6 +104,7 @@ public class JettyPlugin extends AbstractPlugin {
 	interface Cors {
 		String AllowCredentials	= "allowCredentials";
 		String AllowNoOrigin	= "allowNoOrigin";
+		String ReturnOrigin		= "returnOrigin";
 		String PreflightMaxAge	= "preflightMaxAge";
         String Origins 			= "origins";
         String Methods 			= "methods";
@@ -381,6 +382,11 @@ public class JettyPlugin extends AbstractPlugin {
         holder.setInitParameter ("allowNoOrigin", String.valueOf (Json.getBoolean (cors, Cors.AllowNoOrigin, false)));
         holder.setInitParameter ("allowedOrigins", Json.getString (cors, Cors.Origins, Lang.STAR));
         holder.setInitParameter ("allowedMethods", Json.getString (cors, Cors.Methods, "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS"));
+        
+        String returnOrigin = Json.getString (cors, Cors.ReturnOrigin);
+        if (!Lang.isNullOrEmpty (returnOrigin)) {
+        	holder.setInitParameter ("returnOrigin", returnOrigin);
+        }
         
         // allow headers
         String sAllowedHeaders = Lang.STAR;

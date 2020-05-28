@@ -40,6 +40,7 @@
 			"cors": {
 				"allowCredentials": "[ this.cors.allowCredentials | 'true' ]",
 				"allowNoOrigin": "[ this.cors.allowNoOrigin | 'false' ]",
+				"returnOrigin": "[ this.cors.returnOrigin | '' ]",
 				"preflightMaxAge": "[ this.cors.preflightMaxAge | '1800' ]",
 				"origins": "[ this.cors.origins | '*' ]",
 				"methods": "[ this.cors.methods | 'GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS' ]",

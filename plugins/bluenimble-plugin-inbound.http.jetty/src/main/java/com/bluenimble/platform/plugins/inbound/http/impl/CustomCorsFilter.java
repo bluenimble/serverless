@@ -47,6 +47,7 @@ public class CustomCorsFilter implements Filter {
 	public static final String PREFLIGHT_MAX_AGE_PARAM = "preflightMaxAge";
 	public static final String ALLOW_CREDENTIALS_PARAM = "allowCredentials";
 	public static final String ALLOW_NO_ORIGIN_PARAM = "allowNoOrigin";
+	public static final String RETURN_ORIGIN_PARAM = "returnOrigin";
 	public static final String EXPOSED_HEADERS_PARAM = "exposedHeaders";
 	public static final String OLD_CHAIN_PREFLIGHT_PARAM = "forwardPreflight";
 	public static final String CHAIN_PREFLIGHT_PARAM = "chainPreflight";
@@ -69,6 +70,7 @@ public class CustomCorsFilter implements Filter {
 	private int preflightMaxAge;
 	private boolean allowCredentials;
 	private boolean allowNoOrigin;
+	private String returnOrigin;
 	private boolean chainPreflight;
 
 	@Override
@@ -113,6 +115,8 @@ public class CustomCorsFilter implements Filter {
 		if (allowedNoOriginConfig == null)
 			allowedNoOriginConfig = "false";
 		allowNoOrigin = Boolean.parseBoolean(allowedNoOriginConfig);
+
+		returnOrigin = config.getInitParameter(RETURN_ORIGIN_PARAM);
 
 		String exposedHeadersConfig = config.getInitParameter(EXPOSED_HEADERS_PARAM);
 		if (exposedHeadersConfig == null)
@@ -287,6 +291,8 @@ public class CustomCorsFilter implements Filter {
 	private void handleSimpleResponse(HttpServletRequest request, HttpServletResponse response, String origin) {
 		if (origin == null) {
 			origin = Lang.STAR;
+		} else if (returnOrigin != null) {
+			origin = returnOrigin;
 		}
 		response.setHeader(ACCESS_CONTROL_ALLOW_ORIGIN_HEADER, origin);
 		// W3C CORS spec http://www.w3.org/TR/cors/#resource-implementation
@@ -301,6 +307,8 @@ public class CustomCorsFilter implements Filter {
 	private void handlePreflightResponse(HttpServletRequest request, HttpServletResponse response, String origin) {
 		if (origin == null) {
 			origin = Lang.STAR;
+		} else if (returnOrigin != null) {
+			origin = returnOrigin;
 		}
 		boolean methodAllowed = isMethodAllowed(request);
 
