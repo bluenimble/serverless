@@ -31,7 +31,7 @@ public class OnConnectListener implements ConnectListener {
 		
 		client.set (Peer.Key, peer);
 		
-		client.sendEvent (EventListener.Default.peer.name (), peer.info ());
+		client.sendEvent (EventListener.Default.ready.name (), peer.info ());
     }
 
 }

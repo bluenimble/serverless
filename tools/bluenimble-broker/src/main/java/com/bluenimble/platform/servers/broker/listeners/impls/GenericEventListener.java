@@ -3,9 +3,6 @@ package com.bluenimble.platform.servers.broker.listeners.impls;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.servers.broker.Peer;
 import com.bluenimble.platform.servers.broker.PeerAck;
@@ -15,8 +12,6 @@ import com.bluenimble.platform.servers.broker.utils.MessagingUtils;
 public class GenericEventListener implements EventListener<GenericObject> {
 	
 	private static final long serialVersionUID = 4331863772457952104L;
-	
-	private static final Logger logger = LoggerFactory.getLogger (GenericEventListener.class);
 	
 	@Override
 	public void process (Peer peer, GenericObject message, PeerAck ack) {

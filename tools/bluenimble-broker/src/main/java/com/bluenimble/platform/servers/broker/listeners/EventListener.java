@@ -15,7 +15,7 @@ public interface EventListener<T> extends Serializable {
 		disconnected,
 		message,
 		error,
-		peer
+		ready
 	}
 	
 	void 		process (Peer peer, T message, PeerAck ack);

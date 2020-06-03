@@ -74,7 +74,9 @@ var StorageObject = function (proxy) {
 	  Delete the content of this storage object
 	*/
 	this.truncate = function () {
-		return proxy.truncate ();
+		var status = proxy.truncate ();
+		this.length = this.isFolder ? 0 : proxy.length ();
+		return status;
 	};
 
 	/**	
@@ -88,7 +90,9 @@ var StorageObject = function (proxy) {
 		if (typeof append === 'undefined' || append === null) {
 			append = false;
 		}
-		return proxy.update (payload.proxy, append);
+		var updated = proxy.update (payload.proxy, append);
+		this.length = proxy.length ();
+		return updated;
 	};
 
 	/**	
