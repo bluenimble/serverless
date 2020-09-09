@@ -17,7 +17,7 @@
 package com.bluenimble.platform.query.impls;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -295,7 +295,7 @@ public class SqlQueryCompiler extends EventedQueryCompiler {
 		
 		if (value instanceof LocalDateTime) {
 			LocalDateTime ldt = ((LocalDateTime)value);
-			value = Date.from (ldt.atZone (ZoneId.systemDefault ()).toInstant ());
+			value = Date.from (ldt.atZone (ZoneOffset.UTC).toInstant ());
 		}
 		
 		bindings.put (parameter, value);

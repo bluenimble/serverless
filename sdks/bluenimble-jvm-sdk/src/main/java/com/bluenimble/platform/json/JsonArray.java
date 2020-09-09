@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -33,6 +34,10 @@ import com.bluenimble.platform.templating.impls.converters.JsValueConverter;
 public class JsonArray extends JsonAbstractEntity implements List<Object> {
 
 	private static final long serialVersionUID = 5969290028072204587L;
+
+	public interface Filter {
+		boolean visit (Object object);
+	} 
 
 	public static final JsonArray 	Blank 		= new JsonArray (Collections.unmodifiableList (new ArrayList<Object> ()));
 
@@ -183,7 +188,28 @@ public class JsonArray extends JsonAbstractEntity implements List<Object> {
 		}
 		return values.remove (index);
 	}
+
+	public void forEach (Filter filter) {
+		if (values == null) {
+			return;
+		}
+		Iterator<Object> iterator = values.iterator ();
+		while (iterator.hasNext()) {
+			Object o = iterator.next ();
+			boolean remove = filter.visit (o);
+			if (remove) {
+				iterator.remove ();
+			}
+		}
+	}
 	
+	public void sort (Comparator<Object> comparator) {
+		if (this.count () == 0) {
+			return;
+		}
+		Collections.sort (values, comparator);
+	}
+
 	public boolean isNull (int index) {
 		return Lang.Null.equals (get (index));
 	}

@@ -8,23 +8,19 @@ import com.bluenimble.platform.json.JsonObject;
 
 public class AppendValueTransformer implements ValueTransformer {
 
-	interface Spec {
-		String Value 	= "value";
-	}
-	
 	@Override
 	public Object transform (ApiServiceValidator validator, JsonObject spec, Object object) {
 		if (object == null) {
 			return null;
 		}
 		if (object instanceof String) {
-			return String.valueOf (object) + Json.getString (spec, Spec.Value, Lang.BLANK);
+			return String.valueOf (object) + Json.getString (spec, Value, Lang.BLANK);
 		} else if (object instanceof Integer) {
-			return (Integer)object + Json.getInteger (spec, Spec.Value, 0);
+			return (Integer)object + Json.getInteger (spec, Value, 0);
 		} else if (object instanceof Long) {
-			return (Long)object + Json.getLong (spec, Spec.Value, 0);
+			return (Long)object + Json.getLong (spec, Value, 0);
 		} else if (object instanceof Double) {
-			return (Double)object + Json.getDouble (spec, Spec.Value, 0);
+			return (Double)object + Json.getDouble (spec, Value, 0);
 		}
 		
 		return object;

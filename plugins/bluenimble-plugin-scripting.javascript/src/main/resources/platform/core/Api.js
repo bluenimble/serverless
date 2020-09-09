@@ -72,6 +72,12 @@ function Api (proxy) {
 	this.resourcesManager	= new ApiResourcesManager (proxy.getResourcesManager ());
 
 	/**	
+	  Get the services manager of this api
+	  @type {ApiServicesManager}
+	*/
+	this.servicesManager	= new ApiServicesManager (proxy.getServicesManager ());
+
+	/**	
 	  The runtime status of this api. Running, Stopped, Paused or Failed
 	  @type {string}
 	*/

@@ -17,6 +17,7 @@
 package com.bluenimble.platform.api.validation.impls.types;
 
 import java.text.ParseException;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -117,7 +118,9 @@ public abstract class AbstractDateValidator extends AbstractTypeValidator {
 		
 		if (feedback == null) {
 			if (Json.getBoolean (spec, Spec.Cast, true)) {
-				return date;
+				return date.toInstant ()
+					      .atZone (ZoneOffset.UTC)
+					      .toLocalDateTime ();
 			}
 			return value;
 		}

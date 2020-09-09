@@ -17,7 +17,6 @@
 package com.bluenimble.platform.indexer;
 
 import com.bluenimble.platform.Feature;
-import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.query.Query;
 
@@ -30,8 +29,13 @@ public interface Indexer {
 		String Delete = "delete";
 	}
 	
+	interface FieldsFilter {
+		String Include = "include";
+		String Exclude = "exclude";
+	}
+	
 	interface Visitor {
-		boolean onRecord (JsonArray columns, JsonArray record);
+		boolean onRecord (JsonObject record);
 	}
 	
 	boolean 		exists 		(String entity) 												throws IndexerException;
@@ -41,7 +45,7 @@ public interface Indexer {
 	JsonObject 		clear 		(String entity) 												throws IndexerException;
 	
 	JsonObject 		put 		(String entity, JsonObject doc) 								throws IndexerException;
-	JsonObject 		get 		(String entity, String id) 										throws IndexerException;
+	JsonObject 		get 		(String entity, String id, JsonObject fields) 					throws IndexerException;
 	//JsonObject 		update 		(String [] entities, JsonObject query, JsonObject doc) 			throws IndexerException;
 	JsonObject 		update 		(String entity, JsonObject doc, boolean partial) 				throws IndexerException;
 	JsonObject 		delete 		(String entity, String id) 										throws IndexerException;
@@ -52,4 +56,7 @@ public interface Indexer {
 	
 	void			find 		(Query query, Visitor visitor) 									throws IndexerException;
 	JsonObject		findOne 	(Query query) 													throws IndexerException;
+	
+	JsonObject 		updateByQuery (String entity, JsonObject update, JsonObject options) 		throws IndexerException;
+	JsonObject 		deleteByQuery (String entity, JsonObject delete, JsonObject options) 		throws IndexerException;
 }

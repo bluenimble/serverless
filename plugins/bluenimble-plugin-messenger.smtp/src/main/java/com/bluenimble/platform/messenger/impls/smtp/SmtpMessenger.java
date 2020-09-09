@@ -20,8 +20,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,14 +34,12 @@ import javax.mail.Message;
 import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.Transport;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import com.github.jknack.handlebars.Handlebars;
-import com.github.jknack.handlebars.Template;
-import com.github.jknack.handlebars.io.TemplateSource;
 import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
@@ -51,6 +52,11 @@ import com.bluenimble.platform.messaging.MessengerException;
 import com.bluenimble.platform.messaging.Recipient;
 import com.bluenimble.platform.messaging.Sender;
 import com.bluenimble.platform.messaging.impls.JsonSender;
+import com.github.jknack.handlebars.Handlebars;
+import com.github.jknack.handlebars.Helper;
+import com.github.jknack.handlebars.Options;
+import com.github.jknack.handlebars.Template;
+import com.github.jknack.handlebars.io.TemplateSource;
 
 public class SmtpMessenger implements Messenger {
 
@@ -65,8 +71,14 @@ public class SmtpMessenger implements Messenger {
 	private static final String StartDelimitter 	= "[[";
 	private static final String EndDelimitter 		= "]]";
 	
+	private static final String Scope 				= "scope";
+	
 	private String 	user;
 	private Session session;
+	
+	enum MessageRecipientScope {
+		TO, CC, BCC
+	}
 	
 	public SmtpMessenger (String user, Session session) {
 		this.session = session;
@@ -74,6 +86,11 @@ public class SmtpMessenger implements Messenger {
 		
 		engine.startDelimiter (StartDelimitter);
 		engine.endDelimiter (EndDelimitter);
+		engine.registerHelper ("json", new Helper<JsonObject>() {
+			public CharSequence apply (JsonObject data, Options options) {
+				return new Handlebars.SafeString (data.toString ());
+			}
+		});
 	}
 	
 	@Override
@@ -108,12 +125,28 @@ public class SmtpMessenger implements Messenger {
 				message.setFrom (new InternetAddress (user, senderName));
 			}
 			
-			InternetAddress [] toAddresses = new InternetAddress [recipients.length];
-			for (int i = 0; i < recipients.length; i++) {
-				toAddresses [i] = new InternetAddress (recipients [i].id ());
+			Map<MessageRecipientScope, List<InternetAddress>> addresses = this.getRecipients (recipients);
+			Iterator<MessageRecipientScope> scopes = addresses.keySet ().iterator ();
+			while (scopes.hasNext ()) {
+				MessageRecipientScope scope = scopes.next ();
+				List<InternetAddress> scopeAddresses = addresses.get (scope);
+				InternetAddress [] toAddresses = new InternetAddress [scopeAddresses.size ()];
+				scopeAddresses.toArray (toAddresses);
+				switch (scope) {
+					case TO:
+						message.setRecipients (Message.RecipientType.TO, toAddresses);
+						break;
+					case CC:
+						message.setRecipients (Message.RecipientType.CC, toAddresses);
+						break;
+					case BCC:
+						message.setRecipients (Message.RecipientType.BCC, toAddresses);
+						break;
+					default:
+						break;
+				}
 			}
 			
-			message.setRecipients (Message.RecipientType.TO, toAddresses);
 			message.setSubject (subject);
 			message.setSentDate (new Date ());
 
@@ -225,6 +258,27 @@ public class SmtpMessenger implements Messenger {
 		
 		send (sender, recipients, subject, sw.toString (), attachments);
 		
+	}
+	
+	private Map<MessageRecipientScope, List<InternetAddress>> getRecipients (Recipient [] recipients) throws AddressException {
+		Map<MessageRecipientScope, List<InternetAddress>> addresses = new HashMap<MessageRecipientScope, List<InternetAddress>> ();
+		for (Recipient r : recipients) {
+			MessageRecipientScope type = null;
+			try {
+				type = MessageRecipientScope.valueOf (
+						Json.getString (r.features (), Scope, MessageRecipientScope.TO.name ()).toUpperCase ()
+				);
+			} catch (Exception ex) {
+				type = MessageRecipientScope.TO;
+			}
+			List<InternetAddress> list = addresses.get (type);
+			if (list == null) {
+				list = new ArrayList<InternetAddress> ();
+				addresses.put (type, list);
+			}
+			list.add (new InternetAddress (r.id ()));
+		}
+		return addresses;
 	}
 	
 	

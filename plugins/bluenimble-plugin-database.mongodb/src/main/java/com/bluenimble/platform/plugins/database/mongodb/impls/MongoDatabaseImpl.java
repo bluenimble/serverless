@@ -19,7 +19,7 @@ package com.bluenimble.platform.plugins.database.mongodb.impls;
 import static com.mongodb.client.model.Filters.eq;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -461,19 +461,51 @@ public class MongoDatabaseImpl implements Database {
 		return DatabaseObject.class.isAssignableFrom (value.getClass ());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public JsonObject bulk (JsonObject data) throws DatabaseException {
-		
-		JsonObject result = (JsonObject)new JsonObject ().set (Database.Fields.Total, 0);
-		
-		if (data == null || data.isEmpty ()) {
-			return result;
+		if (Json.isNullOrEmpty (data)) {
+			throw new DatabaseException ("no data to be added to database");
 		}
-			
-		// TODO
-		throw new UnsupportedOperationException ("MongoDB - bulk not supported");
 		
-		// return result;
+		Date now = new Date ();
+		
+		JsonObject result = new JsonObject ();
+		
+		int total = 0;
+		
+		Iterator<String> entities = data.keys ();
+		while (entities.hasNext ()) {
+			String entity = entities.next ();
+			JsonArray array = Json.getArray (data, entity);
+			if (array == null || array.isEmpty ()) {
+				continue;
+			}
+			List<Document> records = new ArrayList<Document> ();
+			for (int i = 0; i < array.count (); i++) {
+				JsonObject object = (JsonObject)array.get (i);
+				boolean add = prepareObject (object, now);
+				if (!add) {
+					continue;
+				}
+				Document record = new Document ();
+				record.putAll (object);
+				records.add (record);
+			}
+			total += array.count ();
+			
+			result.set (entity, array.count ());
+			
+			entity = entity (entity);
+
+			if (this.session == null) {
+				this.getInternal ().getCollection (entity).insertMany (records);
+			} else {
+				this.getInternal ().getCollection (entity).insertMany (this.session, records);
+			}
+		}
+		
+		return (JsonObject)result.set (Database.Fields.Total, total);
 		
 	}
 
@@ -826,7 +858,7 @@ public class MongoDatabaseImpl implements Database {
 		
 		if (value instanceof LocalDateTime) {
 			LocalDateTime ldt = ((LocalDateTime)value);
-			value = Date.from (ldt.atZone (ZoneId.systemDefault ()).toInstant ());
+			value = Date.from (ldt.atZone (ZoneOffset.UTC).toInstant ());
 		}
 		
 		if ((field.equals (Database.Fields.Id) || field.endsWith (IdPostfix)) && 
@@ -902,6 +934,51 @@ public class MongoDatabaseImpl implements Database {
 		
 		return oEntity;
 		
+	}
+	
+	private boolean prepareObject (JsonObject object, Date now) {
+		if (Json.isNullOrEmpty (object)) {
+			return false;
+		}
+		List<String> refs = null;
+		Iterator<String> keys = object.keys ();
+		while (keys.hasNext ()) {
+			String key = keys.next ();
+			if (!key.startsWith (Lang.DOLLAR)) {
+				continue;
+			}
+			JsonObject ref = Json.getObject (object, key);
+			String entity = entity (Json.getString (ref, Database.Fields.Entity));
+			String id = Json.getString (ref, Database.Fields.Id);
+			if (Lang.isNullOrEmpty (entity) || Lang.isNullOrEmpty (id)) {
+				continue;
+			}
+			Object objectId = id;
+			if (ObjectId.isValid (id)) {
+				objectId = new ObjectId (id);
+			}
+			ref.set (DatabaseObjectImpl.ObjectIdKey, objectId);
+			ref.set (DatabaseObjectImpl.ObjectEntityKey, entity);
+			
+			// remove fields
+			ref.remove (Database.Fields.Entity);
+			ref.remove (Database.Fields.Id);
+			if (refs == null) {
+				refs = new ArrayList<String> ();
+			}
+			refs.add (key);
+		}
+		if (!object.containsKey (Database.Fields.Timestamp)) {
+			object.set (Database.Fields.Timestamp, now);
+		}
+		if (refs == null) {
+			return true;
+		}
+		for (String ref : refs) {
+			object.set (ref.substring (1), object.get (ref));
+			object.remove (ref);
+		}
+		return true;
 	}
 	
 }

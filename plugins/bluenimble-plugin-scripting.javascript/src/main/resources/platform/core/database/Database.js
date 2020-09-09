@@ -462,7 +462,7 @@ var Database = function (api, proxy) {
 			throw "missing data argument";
 		}
 		
-		return proxy.bulk (JC_ValueConverter.convert (values));
+		return proxy.bulk (JC_ValueConverter.convert (data));
 	};
 	
 	/**	

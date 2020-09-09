@@ -1,9 +1,10 @@
 var JC_Byte					= Java.type ('java.lang.Byte');
 var JC_String				= Java.type ('java.lang.String');
-var JC_Integer				= Java.type ('java.lang.Integer');
+var JC_Integer			= Java.type ('java.lang.Integer');
 var JC_Double				= Java.type ('java.lang.Double');
-var JC_Thread 				= Java.type ('java.lang.Thread');
-var JC_Callable				= Java.type ('com.bluenimble.platform.api.ContextualCallable');
+var JC_Thread 			= Java.type ('java.lang.Thread');
+var JC_Comparator 	= Java.type ('java.util.Comparator');
+var JC_Callable			= Java.type ('com.bluenimble.platform.api.ContextualCallable');
 
 var JC_ByteArrayOutputStream= Java.type ('java.io.ByteArrayOutputStream');
 
@@ -12,11 +13,12 @@ var JC_ApiOutput_Defaults	= Java.type ('com.bluenimble.platform.api.ApiOutput.De
 var JC_ApiOutput_Disposition= Java.type ('com.bluenimble.platform.api.ApiOutput.Disposition');
 var JC_JsonApiOutput		= Java.type ('com.bluenimble.platform.api.impls.JsonApiOutput');
 
-var JC_Instant				= Java.type ('java.time.Instant');
+var JC_Instant				  = Java.type ('java.time.Instant');
+var JC_ChronoUnit				= Java.type ('java.time.temporal.ChronoUnit');
 var JC_LocalDateTime		= Java.type ('java.time.LocalDateTime');
 var JC_ZonedDateTime		= Java.type ('java.time.ZonedDateTime');
-var JC_ZoneOffset			= Java.type ('java.time.ZoneOffset');
-var JC_ZoneId				= Java.type ('java.time.ZoneId');
+var JC_ZoneOffset			  = Java.type ('java.time.ZoneOffset');
+var JC_ZoneId				    = Java.type ('java.time.ZoneId');
 var JC_DateTimeFormatter	= Java.type ('java.time.format.DateTimeFormatter');
 var JC_Month				= Java.type ('java.time.Month');
 
@@ -29,7 +31,8 @@ var JC_Crypto_Hashing 		= Java.type ('com.bluenimble.platform.Crypto.Hashing');
 var JC_Base64 				= Java.type ('com.bluenimble.platform.encoding.Base64');
 
 var JC_JsonObject 			= Java.type ('com.bluenimble.platform.json.JsonObject');
-var JC_JsonArray 			= Java.type ('com.bluenimble.platform.json.JsonArray');
+var JC_JsonArray 			 = Java.type ('com.bluenimble.platform.json.JsonArray');
+var JC_JsonArrayFilter = Java.type ('com.bluenimble.platform.json.JsonArray.Filter');
 var JC_Json 				= Java.type ('com.bluenimble.platform.Json');
 
 var JC_IOUtils 				= Java.type ('com.bluenimble.platform.IOUtils');
@@ -217,6 +220,9 @@ var JC_Libs_BN_Signer 		= Java.type ('com.bluenimble.platform.api.impls.scriptin
 	}
 	if (typeof ApiResourcesManager === 'undefined') {
 		load (core + '/ApiResourcesManager.js');
+	}
+	if (typeof ApiServicesManager === 'undefined') {
+		load (core + '/ApiServicesManager.js');
 	}
 	if (typeof ApiStreamSource === 'undefined') {
 		load (core + '/ApiStreamSource.js');

@@ -53,7 +53,7 @@ public class ContainerApiRequest extends AbstractApiRequest {
 		this.channel 		= ApiRequest.Channels.container.name ();
 		this.api 			= endpoint.api ();
 		this.verb 			= endpoint.verb ();
-		this.endpoint 		= parentRequest.getEndpoint ();
+		this.endpoint 		= parent.getEndpoint ();
 		
 		this.resource		= endpoint.resource ();
 		if (resource == null || resource.length == 0) {
@@ -62,13 +62,14 @@ public class ContainerApiRequest extends AbstractApiRequest {
 		} else {
 			this.path 		= Lang.SLASH + Lang.join (resource, Lang.SLASH);
 		}
-		
+
 		this.device 		= (JsonObject)new JsonObject ()
 									.set (ApiRequest.Fields.Device.Agent, agent)
 									.set (ApiRequest.Fields.Device.Origin, Origin)
-									.set (ApiRequest.Fields.Device.Language, parent.getLang ());
+									.set (ApiRequest.Fields.Device.Language, parent.getLang ())
+									.set (ApiRequest.Fields.Device.Location, parent.getDevice ().get (ApiRequest.Fields.Device.Location));
 
-		this.node 			= parentRequest.getNode ();
+		this.node 			= parent.getNode ();
 	}
 
 	@Override

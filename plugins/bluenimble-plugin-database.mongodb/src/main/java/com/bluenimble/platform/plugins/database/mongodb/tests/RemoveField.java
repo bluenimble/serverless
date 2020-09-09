@@ -14,8 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bluenimble.platform.messaging;
+package com.bluenimble.platform.plugins.database.mongodb.tests;
 
-public interface Recipient extends Actor {
+import com.bluenimble.platform.db.Database;
+import com.bluenimble.platform.db.DatabaseException;
+import com.bluenimble.platform.db.DatabaseObject;
+
+public class RemoveField {
+	
+	public static void main (String [] args) throws DatabaseException {
+		
+		Database db = new DatabaseServer ().get ();
+		
+		DatabaseObject dbo = db.get ("Display", "5efc27f9a7085b50a90d2b3e");
+		
+		DatabaseObject child = (DatabaseObject)dbo.get ("approvalRequest");
+		
+		child.remove ("approvalRequest");
+		
+		dbo.save ();
+		
+	}
 	
 }

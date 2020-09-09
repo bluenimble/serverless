@@ -969,4 +969,9 @@ public class Lang {
         return buffer.getLong ();
     }
     
+    public static void main (String[] args) throws ParseException {
+    	Date date = Lang.toDate ("2020-08-24", DEFAULT_DATE_FORMAT, UTC_TZ);
+    	System.out.println (date);
+	}
+    
 }

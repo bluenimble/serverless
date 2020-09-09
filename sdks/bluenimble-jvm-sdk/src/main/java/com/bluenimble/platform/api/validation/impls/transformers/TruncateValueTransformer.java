@@ -7,7 +7,7 @@ import com.bluenimble.platform.json.JsonObject;
 
 public class TruncateValueTransformer implements ValueTransformer {
 
-	interface Spec {
+	interface SpecExt {
 		String Start 	= "start";
 		String End 		= "end";
 	}
@@ -19,8 +19,8 @@ public class TruncateValueTransformer implements ValueTransformer {
 		}
 		String value = String.valueOf (object);
 		
-		int start 	= Json.getInteger (spec, Spec.Start, 0);
-		int end 	= Json.getInteger (spec, Spec.End, value.length ());
+		int start 	= Json.getInteger (spec, SpecExt.Start, 0);
+		int end 	= Json.getInteger (spec, SpecExt.End, value.length ());
 		
 		return value.substring (start, end);
 	}

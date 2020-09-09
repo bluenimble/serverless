@@ -160,7 +160,7 @@ var DatabaseObject = function (database, proxy) {
 			return null;
 		}
 		if (JC_ValueConverter.isDate (value)) {
-			return new LocalDateTime ( JC_LocalDateTime.ofInstant (value.toInstant (), JC_ZoneId.systemDefault ()) );
+			return new LocalDateTime ( JC_LocalDateTime.ofInstant (value.toInstant (), JC_ZoneOffset.UTC) );
 		} else if (database.proxy.isEntity (value)) {
 			return new DatabaseObject (database, value);
 		}

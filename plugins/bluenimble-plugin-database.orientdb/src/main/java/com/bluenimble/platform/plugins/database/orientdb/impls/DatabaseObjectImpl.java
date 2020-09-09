@@ -18,6 +18,7 @@ package com.bluenimble.platform.plugins.database.orientdb.impls;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -110,7 +111,7 @@ public class DatabaseObjectImpl implements DatabaseObject {
 			value = ((DatabaseObjectImpl)value).document;
 		} else if (value instanceof LocalDateTime) {
 			LocalDateTime ldt = ((LocalDateTime)value);
-			value = Date.from (ldt.atZone (ZoneId.systemDefault ()).toInstant ());
+			value = Date.from (ldt.atZone (ZoneOffset.UTC).toInstant ());
 		} else if (value instanceof JsonObject) {
 			JsonObject child = (JsonObject)value;
 			if (child.containsKey (Database.Fields.Entity)) {

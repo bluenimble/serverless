@@ -19,7 +19,7 @@ package com.bluenimble.platform.plugins.database.mongodb.impls;
 import static com.mongodb.client.model.Filters.eq;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -131,9 +131,13 @@ public class DatabaseObjectImpl implements DatabaseObject {
 	public Date getTimestamp () {
 		return (Date)document.get (Database.Fields.Timestamp);
 	}
-
+	
 	@Override
 	public void set (String key, Object value) throws DatabaseException {
+		_set (key, value, true);
+	}
+
+	public void _set (String key, Object value, boolean markForUpdate) throws DatabaseException {
 		if (Lang.isNullOrEmpty (key)) {
 			return;
 		}
@@ -162,7 +166,7 @@ public class DatabaseObjectImpl implements DatabaseObject {
 			}
 		} else if (value instanceof LocalDateTime) {
 			LocalDateTime ldt = ((LocalDateTime)value);
-			value = Date.from (ldt.atZone (ZoneId.systemDefault ()).toInstant ());
+			value = Date.from (ldt.atZone (ZoneOffset.UTC).toInstant ());
 		} else if (value instanceof JsonObject) {
 			JsonObject child = (JsonObject)value;
 			if (child.containsKey (Database.Fields.Entity)) {
@@ -210,7 +214,7 @@ public class DatabaseObjectImpl implements DatabaseObject {
 		
 		document.append (key, value);
 		
-		if (!key.equals (Database.Fields.Timestamp)) {
+		if (!key.equals (Database.Fields.Timestamp) && markForUpdate) {
 			markForUpdate (key, value);
 		}
 		
@@ -274,7 +278,7 @@ public class DatabaseObjectImpl implements DatabaseObject {
 			@SuppressWarnings({ "rawtypes", "unchecked" })
 			DatabaseObjectList list = new DatabaseObjectList (db, (List<Document>)one2ManyLink);
 			try {
-				set (key, list);
+				_set (key, list, false);
 			} catch (DatabaseException e) {
 				throw new RuntimeException (e.getMessage (), e);
 			}
@@ -291,7 +295,7 @@ public class DatabaseObjectImpl implements DatabaseObject {
 			refObject.persistent = true;
 			try {
 				// refObject.set (key, ref.get (Database.Fields.Timestamp));
-				set (key, refObject);
+				_set (key, refObject, false);
 			} catch (DatabaseException e) {
 				throw new RuntimeException (e.getMessage (), e);
 			}

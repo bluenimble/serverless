@@ -72,6 +72,24 @@ var Json = {
 	date: function (data, property) {
 		return JC_Json.getDate (JC_ValueConverter.convert (data), property);
 	}, 
+
+	sort: function (array, comapartor) {
+		var JComparator = Java.extend (JC_Comparator, {
+			compare: function (o1, o2) {
+				return comapartor (o1, o2);
+			}
+		});
+		array.sort (new JComparator ());
+	}, 
+
+	forEach: function (array, filter) {
+		var JFilter = Java.extend (JC_JsonArrayFilter, {
+			visit: function (object) {
+				return filter (object);
+			}
+		});
+		array.forEach (new JFilter ());
+	}, 
 	
 	template: function (model, data, withScripting) {
 		if (typeof withScripting == 'undefined') {

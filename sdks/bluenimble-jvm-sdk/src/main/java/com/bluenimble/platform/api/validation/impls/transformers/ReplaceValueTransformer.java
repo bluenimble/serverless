@@ -8,7 +8,7 @@ import com.bluenimble.platform.json.JsonObject;
 
 public class ReplaceValueTransformer implements ValueTransformer {
 
-	interface Spec {
+	interface SpecExt {
 		String Old 	= "old";
 		String New 	= "new";
 	}
@@ -19,7 +19,7 @@ public class ReplaceValueTransformer implements ValueTransformer {
 			return null;
 		}
 		
-		return Lang.replace (String.valueOf (object), Json.getString (spec, Spec.Old), Json.getString (spec, Spec.New));
+		return Lang.replace (String.valueOf (object), Json.getString (spec, SpecExt.Old), Json.getString (spec, SpecExt.New));
 	}
 
 }

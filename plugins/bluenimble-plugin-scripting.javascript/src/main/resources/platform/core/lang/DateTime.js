@@ -23,6 +23,21 @@ var LocalDateTime = function (proxy) {
 	  
 	  @returns {LocalDateTime} Returns a copy of this datetime plus the specified number of days.
 	*/
+	this.toEpoch = function (offsetId) {
+		var offset;
+		if (offsetId) {
+			offset = JC_ZoneOffset.of (offsetId);
+		} else {
+			offset = JC_ZoneOffset.UTC;
+		}
+		return proxy.toEpochSecond (offset);
+	};
+	/**	
+	  Adding a number of days to this Date instance
+	  @param {integer} number of days to be added
+	  
+	  @returns {LocalDateTime} Returns a copy of this datetime plus the specified number of days.
+	*/
 	this.plusDays = function (amount) {
 		return new LocalDateTime (proxy.plusDays (amount));
 	};
@@ -333,6 +348,26 @@ var LocalDateTime = function (proxy) {
 		return proxy.isEqual (date.proxy);
 	};
 	/**	
+	  Calculates the amount of time until another date-time in terms of the specified unit.
+	  @param {LocalDateTime} the the end date-time
+	  
+	  @returns {integer} the amount of time between this date-time and the end date-time
+	*/
+	this.until = function (endDate, unit) {
+		if (endDate == null || typeof endDate == 'undefined') {
+			return 0;
+		}
+		var jUnit = JC_ChronoUnit.DAYS; 
+		if (unit != null && typeof unit != 'undefined') {
+			try {
+				jUnit = JC_ChronoUnit.valueOf (unit.toUpperCase ());
+			} catch (e) {
+				// ignore
+			}
+		}
+		return proxy.until (endDate.proxy, jUnit);
+	};
+	/**	
 	  Compare this datetime instance to the date in argument 
 	  @param {LocalDateTime} the date to be compared to
 	  
@@ -358,30 +393,40 @@ var DateTime = {
 	  @returns {LocalDateTime} a date instance 
 	*/
 	now: function (zone) {
-		var jc_ldt;
 		if (!zone) {
-			jc_ldt = JC_LocalDateTime.now ();
-		} else {
-			jc_ldt = JC_LocalDateTime.now (JC_ZoneId.of (zone));
+			zone = 'UTC';
 		}
-		return new LocalDateTime (jc_ldt);
+		return new LocalDateTime (JC_LocalDateTime.now (JC_ZoneId.of (zone)));
 	},
 	/**	
 	  Get a date object corresponding to the timestamp in a specific time zone 
-	  @param {integer} [timestamp] - the integere timestamp
+	  @param {integer} [timestamp] - the integer timestamp
 	  @param {string} [timezone] - the timezone of the resulting date
 	  
 	  @returns {LocalDateTime} a date instance 
 	*/
 	withTimestamp: function (timestamp, zone) {
-		var tz;
-		if (zone) {
-			tz = JC_ZoneId.of (zone);
-		} else {
-			tz = JC_ZoneId.systemDefault ();
+		if (!zone) {
+			zone = 'UTC';
 		}
-		
-		return new LocalDateTime ( JC_LocalDateTime.ofInstant (JC_Instant.ofEpochMilli (timestamp), tz) ); 
+		return new LocalDateTime ( JC_LocalDateTime.ofInstant (JC_Instant.ofEpochMilli (timestamp), JC_ZoneId.of (zone)) ); 
+	},
+	/**	
+	  Get a date object corresponding to the native date 
+	  @param {Object} [date] - the date object
+	  
+	  @returns {LocalDateTime} a datetime instance 
+	*/
+	withDate: function (date, zone) {
+		if (date.getClass ().getName () == 'java.util.Date') {
+			if (!zone) {
+				zone = 'UTC';
+			}
+			return new LocalDateTime ( JC_LocalDateTime.ofInstant (JC_Instant.ofEpochMilli (date.getTime ()), JC_ZoneId.of (zone)) ); 
+		} else if (date.getClass ().getName () == 'java.time.LocalDateTime') {
+			return new LocalDateTime (date);
+		} 
+		return date;
 	},
 	/**	
 	  Creates a LocalDateTime instance by parsing a string using a specific date format

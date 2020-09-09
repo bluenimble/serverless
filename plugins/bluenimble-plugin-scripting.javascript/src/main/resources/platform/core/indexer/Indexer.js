@@ -61,14 +61,15 @@ var Indexer = function (proxy) {
 	  Get a document by id
 	  @param {string} - entity name
 	  @param {string} - document id
+	  @param {Object} - include and exclude fields
 	  @example
 	  
-	  api.indexer (request).get ('Order', '123456789');
+	  api.indexer (request).get ('Order', '123456789', { include: ['orderNo', 'timestamp'], exclude: ['createdBy'] });
 	  
 	  @return {Object} [result] - document data
 	*/
-	this.get = function (entity, id) {
-		return proxy.get (typeof entity === 'undefined' ? null : entity, id);
+	this.get = function (entity, id, fields) {
+		return proxy.get (typeof entity === 'undefined' ? null : entity, id, JC_ValueConverter.convert (fields));
 	};
 	
 	/**	
@@ -92,6 +93,44 @@ var Indexer = function (proxy) {
 			partial = false;
 		}
 		return proxy.update (typeof entity === 'undefined' ? null : entity, JC_ValueConverter.convert (doc), partial);
+	};
+	
+	/**	
+	  Update Documents using a query 
+	  @param {string} - entity name
+	  @param {Object} - update payload
+	  @param {Object} - options
+	  @example
+	  
+	  api.indexer (request).updateByQuery ('Orders', {
+	  	// your query
+	  }, {
+	  	// your options
+	  } );
+	  
+	  @return {Object} [result] - update operation result
+	*/
+	this.updateByQuery = function (entity, update, options) {
+		return proxy.updateByQuery (typeof entity === 'undefined' ? null : entity, JC_ValueConverter.convert (update), JC_ValueConverter.convert (options));
+	};
+	
+	/**	
+	  Delete Documents using a query 
+	  @param {string} - entity name
+	  @param {Object} - delete payload
+	  @param {Object} - options
+	  @example
+	  
+	  api.indexer (request).updateByQuery ('Orders', {
+	  	// your query
+	  }, {
+	  	// your options
+	  } );
+	  
+	  @return {Object} [result] - update operation result
+	*/
+	this.deleteByQuery = function (entity, _delete, options) {
+		return proxy.deleteByQuery (typeof entity === 'undefined' ? null : entity, JC_ValueConverter.convert (_delete), JC_ValueConverter.convert (options));
 	};
 	
 	/**	

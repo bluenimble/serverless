@@ -18,6 +18,9 @@ package com.bluenimble.platform.json;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -413,6 +416,10 @@ public class JsonObject extends JsonAbstractEntity implements Map {
 						child = Lang.toUTC ((Date)child);
 					} else if (child instanceof Calendar) {
 						child = Lang.toUTC (((Calendar)child).getTime ());
+					} else if (child instanceof LocalDate) {
+						child = ((LocalDate)child).format (DateTimeFormatter.ofPattern (Lang.DEFAULT_DATE_FORMAT));
+					} else if (child instanceof LocalDateTime) {
+						child = ((LocalDateTime)child).format (DateTimeFormatter.ofPattern (Lang.UTC_DATE_FORMAT));
 					}
 					emitter.onValue (this, key, child);
 				}

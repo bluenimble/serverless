@@ -69,8 +69,6 @@ public interface ApiServiceValidator extends Serializable {
 		
 		String Transforms	= "transforms";
 		
-		String Spec			= "spec";
-		
 		String Exclusive	= "!";
 
 	}

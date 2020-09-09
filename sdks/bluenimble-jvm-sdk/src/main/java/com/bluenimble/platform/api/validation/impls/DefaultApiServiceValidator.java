@@ -40,6 +40,9 @@ import com.bluenimble.platform.api.validation.impls.transformers.PrependValueTra
 import com.bluenimble.platform.api.validation.impls.transformers.ReplaceValueTransformer;
 import com.bluenimble.platform.api.validation.impls.transformers.TruncateValueTransformer;
 import com.bluenimble.platform.api.validation.impls.transformers.UpperCaseValueTransformer;
+import com.bluenimble.platform.api.validation.impls.transformers.MultiplyValueTransformer;
+import com.bluenimble.platform.api.validation.impls.transformers.DivideValueTransformer;
+import com.bluenimble.platform.api.validation.impls.transformers.ModuloValueTransformer;
 import com.bluenimble.platform.api.validation.impls.types.AlphaNumericValidator;
 import com.bluenimble.platform.api.validation.impls.types.ArrayValidator;
 import com.bluenimble.platform.api.validation.impls.types.Base64Validator;
@@ -94,6 +97,9 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 		addValueTransformer (ValueTransformer.Default.Truncate, 	new TruncateValueTransformer ());
 		addValueTransformer (ValueTransformer.Default.Replace, 		new ReplaceValueTransformer ());
 		addValueTransformer (ValueTransformer.Default.Nullify, 		new NullifyIfEmptyValueTransformer ());
+		addValueTransformer (ValueTransformer.Default.Multiply, 	new MultiplyValueTransformer ());
+		addValueTransformer (ValueTransformer.Default.Divide, 		new DivideValueTransformer ());
+		addValueTransformer (ValueTransformer.Default.Modulo, 		new ModuloValueTransformer ());
 
 		// validators
 		addTypeValidator (FieldType.String.toLowerCase (), 			new StringValidator ());
@@ -223,18 +229,7 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 			
 			Object value = valueOf (name, fSpec, request, consumer, data);
 			
-			JsonArray transforms = Json.getArray (fSpec, Spec.Transforms);
-			if (!Json.isNullOrEmpty (transforms)) {
-				for (int i = 0; i < transforms.count (); i++) {
-					JsonObject oTransform = (JsonObject)transforms.get (i);
-					String transformName = Json.getString (oTransform, Spec.Name);
-					ValueTransformer t = getValueTransformer (transformName);
-					if (t == null) {
-						continue;
-					}
-					value = t.transform (this, Json.getObject (oTransform, Spec.Spec), value);
-				}
-			}
+			value = transform (fSpec, value, 0);
 			
 			Object message = validator.validate (
 				api,
@@ -255,6 +250,7 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 					}
 					feedback.set (name, message);
 				} else {
+					message = transform (fSpec, message, 1);
 					// it a value cast. set new value...
 					if (data != null) {
 						data.put (name, message);
@@ -279,6 +275,26 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 			validate (api, altSpec, consumer, request, data);
 		}
 		
+	}
+
+	private Object transform (JsonObject fSpec, Object value, int timing) {
+		JsonArray transforms = Json.getArray (fSpec, Spec.Transforms);
+		if (Json.isNullOrEmpty (transforms)) {
+			return value;
+		}
+		for (int i = 0; i < transforms.count (); i++) {
+			JsonObject oTransform = (JsonObject)transforms.get (i);
+			String transformName = Json.getString (oTransform, Spec.Name);
+			if (Json.getInteger (oTransform, ValueTransformer.Timing, 0) != timing) {
+				continue;
+			}
+			ValueTransformer t = getValueTransformer (transformName);
+			if (t == null) {
+				continue;
+			}
+			value = t.transform (this, Json.getObject (oTransform, ValueTransformer.Spec), value);
+		}
+		return value;
 	}
 
 	private String getLabel (String name, String title) {

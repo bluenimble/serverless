@@ -631,6 +631,30 @@ public class Json {
 		return true;
 	}
 	
+	public static String toUrlParameters (JsonObject object) {
+		if (Json.isNullOrEmpty (object)) {
+			return Lang.BLANK;
+		}
+		boolean empty = true;
+		StringBuilder result = new StringBuilder ();
+		Iterator<String> keys = object.keys ();
+		while (keys.hasNext ()) {
+			String key = keys.next ();
+			Object child = object.get (key);
+			if ((child instanceof JsonObject) || (child instanceof JsonArray)) {
+				continue;
+			}
+			if (!empty) {
+				result.append (Lang.AMP);
+			}
+			empty = false;
+			result.append (key).append (Lang.EQUALS).append (child);
+		}
+		String sResult = result.toString ();
+		result.setLength (0);
+		return sResult;
+	}
+	
 	private static String pad (String paraphrase) {
 		if (paraphrase.length () == 16) {
 			return paraphrase;
@@ -649,30 +673,14 @@ public class Json {
 	}
 
     public static void main (String [] args) throws Exception {
-    	JsonObject gfonts = Json.load (new File ("/Users/lilya/gfonts.json"));
-    	
-    	JsonObject out   = new JsonObject ();
-     	
-    	JsonArray items = Json.getArray (gfonts, "items");
-    	for (int i = 0; i < items.count (); i++) {
-    		JsonObject item = (JsonObject)items.get (i);
-    		String category = Json.getString (item, "category");
-    		if (Lang.isNullOrEmpty (category)) {
-    			continue;
-    		}
-    		JsonArray aCategory = Json.getArray (out, category);
-    		if (aCategory == null) {
-    			aCategory = new JsonArray ();
-    			out.set (category, aCategory);
-    		}
-
-    		JsonObject f = new JsonObject ();
-    		f.set ("family", item.get ("family"));
-    		f.set ("variants", item.get ("variants"));
-    		f.set ("subsets", item.get ("subsets"));
-    		aCategory.add (f);
-    	}
-    	Json.store (out, new File ("/Users/lilya/fonts.json"));
+    	JsonObject object = new JsonObject ();
+    	object.set ("p1", "alpha");
+    	object.set ("p2", 3);
+    	object.set ("p3", true);
+    	object.set ("p4", new JsonObject ());
+    	object.set ("p5", new Date ());
+    	object.set ("p6", new JsonArray ());
+    	System.out.println (toUrlParameters (object));
     }
     
 }

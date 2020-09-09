@@ -57,16 +57,24 @@ public class ElasticSearchIndexer implements Indexer {
 			String Type 	= "_type";
 			String Create	= "_create";
 			String Update 	= "_update";
-			//String UpdateByQuery
-			//				= "_update_by_query";
+			String UpdateByQuery
+							= "_update_by_query";
+			String DeleteByQuery
+							= "_delete_by_query";
 			String Bulk 	= "_bulk";
 			String Search 	= "_search";
 			
 			String Count 	= "_count";
 			String CountField
 							= "count";
+			String NameField
+							= "name";
 			String Hits 	= "hits";
 			String Source 	= "_source";
+			String SourceIncludes
+							= "_source_includes";
+			String SourceExcludes
+							= "_source_excludes";
 			String Mapping 	= "_mapping";
 			String Query 	= "query";
 			String MatchAll = "match_all";
@@ -359,13 +367,47 @@ public class ElasticSearchIndexer implements Indexer {
 	}
 	
 	@Override
-	public JsonObject get (String entity, String id) throws IndexerException {
+	public JsonObject get (String entity, String id, JsonObject fields) throws IndexerException {
 		if (remote == null) {
 			throw new IndexerException ("No Remoting feature attached to this indexer");
 		}
 		
 		if (Lang.isNullOrEmpty (id)) {
 			throw new IndexerException ("Document Id cannot be null.");
+		}
+		
+		String filter = null;
+
+		String sIncludeFields = null;
+		String sExcludeFields = null;
+		
+		JsonArray aIncludes = Json.getArray (fields, FieldsFilter.Include);
+		if (!Json.isNullOrEmpty (aIncludes)) {
+			if (sIncludeFields == null) {
+				sIncludeFields = Lang.BLANK;
+			}
+			sIncludeFields = Internal.Elk.SourceIncludes + Lang.EQUALS + aIncludes.join (Lang.COMMA, false);
+		}
+		
+		JsonArray aExcludes = Json.getArray (fields, FieldsFilter.Exclude);
+		if (!Json.isNullOrEmpty (aExcludes)) {
+			if (sExcludeFields == null) {
+				sExcludeFields = Lang.BLANK;
+			}
+			sExcludeFields = Internal.Elk.SourceExcludes + Lang.EQUALS + aExcludes.join (Lang.COMMA, false);
+		}
+		
+		if (sIncludeFields != null || sExcludeFields != null) {
+			filter = Lang.QMARK;
+			if (sIncludeFields != null) {
+				filter += sIncludeFields;
+			}
+			if (sExcludeFields != null) {
+				filter += ((sIncludeFields != null ? Lang.AMP : Lang.BLANK) + sExcludeFields);
+			}
+		}
+		if (filter == null) {
+			filter = Lang.BLANK;
 		}
 		
 		tracer.log (Tracer.Level.Info, "Lookup document [{0}]", id);
@@ -375,7 +417,7 @@ public class ElasticSearchIndexer implements Indexer {
 		
 		remote.get (
 			(JsonObject)new JsonObject ()
-				.set (Remote.Spec.Path, entity (entity) + id)
+				.set (Remote.Spec.Path, entity (entity) + id + Lang.SLASH + Internal.Elk.Source + filter)
 				.set (Remote.Spec.Serializer, Serializer.Name.json), 
 			new Remote.Callback () {
 				@Override
@@ -397,11 +439,96 @@ public class ElasticSearchIndexer implements Indexer {
 			}
 		);
 		
+		if (error.code == 404) {
+			return null;
+		}
+		
 		if (error.happened ()) {
 			throw new IndexerException ("Error occured while calling Indexer: Code=" + error.code + ", Message: " + error.message);
 		}
 		
 		return result;
+	}
+	
+	@Override
+	public JsonObject updateByQuery (String entity, JsonObject update, JsonObject options) throws IndexerException {
+		ValueHolder<JsonObject> result = new ValueHolder<JsonObject> ();
+		ElkError error = new ElkError ();
+		
+		remote.post (
+			(JsonObject)new JsonObject ()
+				.set (Remote.Spec.Path, entity(entity) + Internal.Elk.UpdateByQuery + Lang.QMARK + Json.toUrlParameters (options))
+				.set (Remote.Spec.Headers, 
+					new JsonObject ().set (HttpHeaders.CONTENT_TYPE, ContentTypes.Json)
+				)
+				.set (Remote.Spec.Data, update)
+				.set (Remote.Spec.Serializer, Serializer.Name.json),
+			new Remote.Callback () {
+				@Override
+				public void onStatus (int status, boolean chunked, Map<String, Object> headers) {
+				}
+				@Override
+				public void onData (int code, byte [] data) {
+				}
+				@Override
+				public void onError (int code, Object message) {
+					error.set (code, message);
+				}
+				@Override
+				public void onDone (int code, Object data) {
+					if (data == null) {
+						return;
+					}
+					result.set ((JsonObject)data);
+				}
+			}
+		);
+		
+		if (error.happened ()) {
+			throw new IndexerException ("Error occured while calling Indexer: Code=" + error.code + ", Message: " + error.message);
+		}
+		
+		return result.get ();
+	}
+	
+	@Override
+	public JsonObject deleteByQuery (String entity, JsonObject delete, JsonObject options) throws IndexerException {
+		ValueHolder<JsonObject> result = new ValueHolder<JsonObject> ();
+		ElkError error = new ElkError ();
+		
+		remote.post (
+			(JsonObject)new JsonObject ()
+				.set (Remote.Spec.Path, entity(entity) + Internal.Elk.DeleteByQuery + Lang.QMARK + Json.toUrlParameters (options))
+				.set (Remote.Spec.Headers, 
+					new JsonObject ().set (HttpHeaders.CONTENT_TYPE, ContentTypes.Json)
+				).set (Remote.Spec.Data, delete)
+				.set (Remote.Spec.Serializer, Serializer.Name.json),
+			new Remote.Callback () {
+				@Override
+				public void onStatus (int status, boolean chunked, Map<String, Object> headers) {
+				}
+				@Override
+				public void onData (int code, byte [] data) {
+				}
+				@Override
+				public void onError (int code, Object message) {
+					error.set (code, message);
+				}
+				@Override
+				public void onDone (int code, Object data) {
+					if (data == null) {
+						return;
+					}
+					result.set ((JsonObject)data);
+				}
+			}
+		);
+		
+		if (error.happened ()) {
+			throw new IndexerException ("Error occured while calling Indexer: Code=" + error.code + ", Message: " + error.message);
+		}
+		
+		return result.get ();
 	}
 	
 	@Override
@@ -557,6 +684,9 @@ public class ElasticSearchIndexer implements Indexer {
 			
 			String sqlPath = Json.getString (config, Internal.Elk.Sql.class.getSimpleName ().toLowerCase (), Internal.Elk.Sql.Path);
 			
+			tracer.log (Tracer.Level.Info, "Sql Api Path => {0}", sqlPath);
+			tracer.log (Tracer.Level.Info, "Sql Query Payload => {0}", oQuery);
+			
 			remote.post (
 				(JsonObject)new JsonObject ()
 					.set (Remote.Spec.Path, sqlPath)
@@ -595,7 +725,7 @@ public class ElasticSearchIndexer implements Indexer {
 						}
 						
 						for (int i = 0; i < rows.count (); i++) {
-							boolean cancel = visitor.onRecord (columns, (JsonArray)rows.get (i));
+							boolean cancel = visitor.onRecord (rowToRecord (columns, (JsonArray)rows.get (i)));
 							if (cancel) {
 								return;
 							}
@@ -613,6 +743,27 @@ public class ElasticSearchIndexer implements Indexer {
 		}		
 	}
 	
+	private JsonObject rowToRecord (JsonArray columns, JsonArray row) {
+		if (Json.isNullOrEmpty (columns) || Json.isNullOrEmpty (row)) {
+			return null;
+		}
+		
+		JsonObject record = new JsonObject ();
+		
+		for (int i = 0; i < columns.count (); i++) {
+			if (i >= row.count ()) {
+				continue;
+			}
+			Object value = row.get (i);
+			if (value == null) {
+				continue;
+			}
+			record.set (Json.getString (((JsonObject)columns.get (i)), Internal.Elk.NameField), value);
+		}
+		
+		return record;
+	}
+	
 	@Override
 	public void find (Query query, Visitor visitor) throws IndexerException {
 		sqlQuery (Query.Construct.select, query, visitor);
@@ -627,18 +778,7 @@ public class ElasticSearchIndexer implements Indexer {
 		
 		sqlQuery (Query.Construct.select, query, new Visitor () {
 			@Override
-			public boolean onRecord (JsonArray columns, JsonArray values) {
-				JsonObject record = new JsonObject ();
-				for (int i = 0; i < values.count (); i++) {
-					Object column = null;
-					if (i < columns.count ()) {
-						column = columns.get (i);
-					}
-					if (column == null) {
-						column = "Column-" + i;
-					}
-					record.set (String.valueOf (column), values.get (i));
-				}
+			public boolean onRecord (JsonObject record) {
 				result.set (record);
 				return false;
 			}
@@ -651,6 +791,11 @@ public class ElasticSearchIndexer implements Indexer {
 	private CompiledQuery compile (Query.Construct construct, final Query query) throws IndexerException {
 		QueryCompiler compiler = new SqlQueryCompiler (construct) {
 			private static final long serialVersionUID = -1248971549807669897L;
+			
+			@Override
+			protected String bind (Object value) {
+				return null;
+			}
 			
 			@Override
 			protected void onQuery (Timing timing, Query query)
@@ -925,7 +1070,7 @@ public class ElasticSearchIndexer implements Indexer {
 		sPayload.append (Lang.ENDLN);
 		
 		tracer.log (
-			Tracer.Level.Info, 
+			Tracer.Level.Debug,
 			"Bulk Paylod [{0}]", 
 			sPayload.toString ()
 		);

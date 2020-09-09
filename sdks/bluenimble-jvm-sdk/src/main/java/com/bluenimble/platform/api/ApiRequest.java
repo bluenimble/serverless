@@ -77,7 +77,7 @@ public interface ApiRequest extends ApiContext {
 			String Agent 		= "agent";
 			String Os 			= "os";
 			String Category 	= "category";
-			String Location 	= "geo";
+			String Location 	= "location";
 		}
 		
 		interface Data 		{
