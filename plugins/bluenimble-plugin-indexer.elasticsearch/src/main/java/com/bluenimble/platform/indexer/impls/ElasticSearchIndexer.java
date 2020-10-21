@@ -541,7 +541,7 @@ public class ElasticSearchIndexer implements Indexer {
 			throw new IndexerException ("Document cannot be null nor empty.");
 		}
 		
-		String id = Json.getString (doc, Internal.Id); 
+		String id = Json.getString (doc, Internal.Id);
 		
 		if (Lang.isNullOrEmpty (id)) {
 			throw new IndexerException ("Document Id cannot be null.");
@@ -549,7 +549,7 @@ public class ElasticSearchIndexer implements Indexer {
 		
 		if (!partial) {
 			tracer.log (Tracer.Level.Info, "It's not partial update. Create document [{0}]", id);
-			return create (entity, doc);
+			return put (entity, doc);
 		}
 		
 		tracer.log (Tracer.Level.Info, "Update partially document [{0}]", id);
@@ -1006,7 +1006,7 @@ public class ElasticSearchIndexer implements Indexer {
 					);
 					sPayload.append (document.toString (0, true)).append (Lang.ENDLN);
 					
-					item.remove (Internal.Id);
+					// item.remove (Internal.Id);
 					
 					sPayload.append (item.toString (0, true));
 					

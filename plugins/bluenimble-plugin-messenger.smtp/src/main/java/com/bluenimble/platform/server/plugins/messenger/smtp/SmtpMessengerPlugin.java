@@ -46,12 +46,14 @@ public class SmtpMessengerPlugin extends AbstractPlugin {
 
 	private static final long serialVersionUID = 3203657740159783537L;
 	
-	interface Spec {
+	public interface Spec {
 		String Server 	= "server";
 		
 		String Auth 		= "auth";
 			String User 	= "user";
 			String Password = "password";
+		String Sender 	= "sender";
+			String SenderName 	= "name";
 	}
 	
 	private JsonArray mimeTypes;
@@ -179,8 +181,16 @@ public class SmtpMessengerPlugin extends AbstractPlugin {
 		if (overwrite) {
 			removeClient (space, name);
 		}
+
+		JsonObject sender = Json.getObject (spec, Spec.Sender);
+		if (sender != null) {
+			sender = sender.duplicate ();
+		} else {
+			sender = new JsonObject ();
+		}
+		sender.set (Spec.User, user);
 		
-		space.addRecyclable (sessionKey, new RecyclableMessenger (new SmtpMessenger (user, session)));
+		space.addRecyclable (sessionKey, new RecyclableMessenger (new SmtpMessenger (sender, session)));
 	
 		feature.set (ApiSpace.Spec.Installed, true);
 	}
@@ -214,7 +224,7 @@ public class SmtpMessengerPlugin extends AbstractPlugin {
 		private SmtpMessenger messenger;
 		
 		public RecyclableMessenger (SmtpMessenger messenger) {
-			this.messenger = messenger;
+			this.messenger 	= messenger;
 		}
 		
 		@Override

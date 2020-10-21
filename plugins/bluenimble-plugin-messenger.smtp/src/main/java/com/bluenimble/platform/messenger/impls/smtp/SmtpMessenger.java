@@ -58,6 +58,8 @@ import com.github.jknack.handlebars.Options;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.TemplateSource;
 
+import com.bluenimble.platform.server.plugins.messenger.smtp.SmtpMessengerPlugin;
+
 public class SmtpMessenger implements Messenger {
 
 	private static final long serialVersionUID = 4303282790607692198L;
@@ -73,16 +75,16 @@ public class SmtpMessenger implements Messenger {
 	
 	private static final String Scope 				= "scope";
 	
-	private String 	user;
-	private Session session;
+	private JsonObject 	rootSender;
+	private Session 		session;
 	
 	enum MessageRecipientScope {
 		TO, CC, BCC
 	}
 	
-	public SmtpMessenger (String user, Session session) {
-		this.session = session;
-		this.user = user;
+	public SmtpMessenger (JsonObject sender, Session session) {
+		this.rootSender 	= sender;
+		this.session 	= session;
 		
 		engine.startDelimiter (StartDelimitter);
 		engine.endDelimiter (EndDelimitter);
@@ -118,6 +120,11 @@ public class SmtpMessenger implements Messenger {
 			}
 
 			String senderName = sender.name ();
+
+			String user = Json.getString (rootSender, SmtpMessengerPlugin.Spec.User);
+			if (Lang.isNullOrEmpty (senderName)) {
+				senderName = Json.getString (rootSender, SmtpMessengerPlugin.Spec.SenderName);
+			}
 			
 			if (Lang.isNullOrEmpty (senderName)) {
 				message.setFrom (new InternetAddress (user));

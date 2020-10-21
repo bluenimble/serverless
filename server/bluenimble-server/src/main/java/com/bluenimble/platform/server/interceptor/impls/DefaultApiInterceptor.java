@@ -428,7 +428,7 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 		if (mediaProcessor == null) {
 			response.set (ApiHeaders.ContentType, ApiContentTypes.Json);
 			try {
-				response.write (response.getError ());
+				response.write (response.getError ().toString (0, true));
 				response.close ();
 			} catch (Exception iox) {
 				logError (api, Lang.BLANK, iox);
@@ -440,13 +440,13 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 		}
 			
 		try {
-			logError (api, "<" + request.getId () + "> Send Error Response\n" + response.getError ().toString (2, false), null);
+			logError (api, "<" + request.getId () + "> Send Error Response\n" + response.getError ().toString (2, true), null);
 			mediaProcessor.process (api, service, consumer, null, request, response);
 		} catch (Exception mex) {
 			logError (api, "\tMediaProcessor - Writing Error - caused an error\n", mex);
 			response.error (ApiResponse.INTERNAL_SERVER_ERROR, Lang.toMessage (mex));
 			try {
-				response.write (response.getError ());
+				response.write (response.getError ().toString (0, true));
 				response.close ();
 			} catch (Exception iox) {
 				logError (api, Lang.BLANK, iox);

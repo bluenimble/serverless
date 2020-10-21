@@ -17,7 +17,6 @@
 package com.bluenimble.platform.plugins.database.orientdb.impls;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
