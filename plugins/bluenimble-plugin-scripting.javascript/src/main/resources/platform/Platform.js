@@ -111,7 +111,6 @@ var JC_Libs_BN_Signer 		= Java.type ('com.bluenimble.platform.api.impls.scriptin
 	// load (tools + '/ast/estraverse.js'); 
 	// load (tools + '/ast/escodegen.js'); 
 	
-	// lang	
 	if (typeof Lang === 'undefined') {
 		load (core + '/lang/Lang.js');
 	}

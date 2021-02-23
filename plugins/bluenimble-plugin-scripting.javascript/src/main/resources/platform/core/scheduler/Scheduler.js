@@ -34,9 +34,7 @@ var Scheduler = function (proxy) {
 	
 	/**	
 	  Schedule a Job
-	  @param {string} - job id
-	  @param {string} - trigger expression
-	  @param {Object} - service spec
+	  @param {Object} - job spec { id, expression, service, metadata }
 	  @param {boolean} - save
 	  @example
 	  
@@ -48,7 +46,8 @@ var Scheduler = function (proxy) {
 	    6. Day-of-Week
 	    7. Year (optional field)
 	    **Expression**     **Meaning**
-	    0 0 12 * * ?     Fire at 12pm (noon) every day
+	    0 0/1 * * * ? *  Fire every minute, every day
+	   	0 0 12 * * ?     Fire at 12pm (noon) every day
 	    0 15 10 ? * *     Fire at 10:15am every day
 	    0 15 10 * * ?     Fire at 10:15am every day
 	    0 15 10 * * ? *     Fire at 10:15am every day
@@ -69,18 +68,25 @@ var Scheduler = function (proxy) {
 	    0 0 12 1/5 * ?     Fire at 12pm (noon) every 5 days every month, starting on the first day of the month.
 	    0 11 11 11 11 ?     Fire every November 11th at 11:11am.
     	  
-	  api.scheduler (request).schedule ('Job-001', '* * *', {
-        endpoint: 'https://my-task-executor-server',
-        data: {
-        	a: 'avalue'
-        }
+	  api.scheduler (request).schedule ({
+	  	id: 'Job-001', 
+	  	expression: '* * *', 
+	  	service: {
+	  		type: 'remote',
+	  		request: {
+		        endpoint: 'https://my-task-executor-server/path',
+		        data: {
+		        	a: 'avalue'
+		        }
+	  		}
+	    }
 	  }, true);
 	*/
-	this.schedule = function (jobId, expression, service, save) {
+	this.schedule = function (job, save) {
 		if (typeof save === 'undefined' || save === null) {
 			save = false;
 		}
-		return proxy.schedule (jobId, expression, JC_ValueConverter.convert (service), save);
+		return proxy.schedule (JC_ValueConverter.convert (job), save).name ();
 	};
 	
 	/**	
@@ -149,7 +155,7 @@ var Scheduler = function (proxy) {
 	  
 	  api.scheduler (request).list (1, 100, 2);
 	*/
-	this.list = function (offset, count, status) {
+	this.list = function (offset, count, status, metaQuery) {
 		if (typeof offset === 'undefined' || offset === null) {
 			offset = 0;
 		}
@@ -159,7 +165,7 @@ var Scheduler = function (proxy) {
 		if (typeof status === 'undefined' || status === null) {
 			status = 2;
 		}
-		return proxy.list (offset, count, status);
+		return proxy.list (offset, count, status, JC_ValueConverter.convert (metaQuery));
 	};
 
 };

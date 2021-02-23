@@ -23,11 +23,11 @@ import com.bluenimble.platform.db.DatabaseObject;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.query.impls.JsonQuery;
 
-public class FindAll {
+public class FindUsingNative {
 	
 	public static void main (String [] args) throws Exception {
 		
-		String query = "{ count: 10000 }";
+		String query = "{ native: { 'plan.id': 'free' } }";
 		
 		Database db = new DatabaseServer ().get ();
 		
@@ -38,13 +38,6 @@ public class FindAll {
 		);
 		
 		System.out.println ("Found " + orgs.size () + " orgs");
-		
-		for (DatabaseObject org : orgs) {
-			Object r = org.get ("referral");
-			if (r == null || (r instanceof String)) {
-				System.out.println (org.getId () + " -> " + r);
-			}
-		}
 		
 	}
 	

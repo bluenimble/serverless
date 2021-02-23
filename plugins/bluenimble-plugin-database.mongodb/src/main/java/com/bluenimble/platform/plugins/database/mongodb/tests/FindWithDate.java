@@ -16,35 +16,34 @@
  */
 package com.bluenimble.platform.plugins.database.mongodb.tests;
 
-import java.util.List;
+import java.util.Date;
 
+import com.bluenimble.platform.Json;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseObject;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.query.impls.JsonQuery;
 
-public class FindAll {
+public class FindWithDate {
 	
 	public static void main (String [] args) throws Exception {
 		
-		String query = "{ count: 10000 }";
+		Date date = new Date (1612552852403L);
+		
+		JsonObject jq = new JsonObject (
+			"{ where: { 'display.id': '601a1d604c5fb67415301879', timestamp: { op: 'lte', value: 0 }, status: 2 } }"
+		);
+		
+		Json.set (jq, "where.timestamp.value", date);
 		
 		Database db = new DatabaseServer ().get ();
 		
-		List<DatabaseObject> orgs = db.find (
-			"Organization", 
-			new JsonQuery (new JsonObject (query)),
-			null
+		DatabaseObject display = db.findOne (
+			"Display", 
+			new JsonQuery (jq)
 		);
 		
-		System.out.println ("Found " + orgs.size () + " orgs");
-		
-		for (DatabaseObject org : orgs) {
-			Object r = org.get ("referral");
-			if (r == null || (r instanceof String)) {
-				System.out.println (org.getId () + " -> " + r);
-			}
-		}
+		System.out.println (display);
 		
 	}
 	

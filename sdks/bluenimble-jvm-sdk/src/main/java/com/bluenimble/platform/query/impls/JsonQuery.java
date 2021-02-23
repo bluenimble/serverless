@@ -161,8 +161,8 @@ public class JsonQuery implements Query {
 	}
 
 	@Override
-	public boolean isNative () {
-		return Json.getBoolean (source, Spec.Native, false);
+	public Object getNative () {
+		return source.get (Spec.Native);
 	}
 
 	@Override

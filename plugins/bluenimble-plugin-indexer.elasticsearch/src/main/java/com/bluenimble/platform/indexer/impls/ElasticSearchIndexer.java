@@ -70,6 +70,8 @@ public class ElasticSearchIndexer implements Indexer {
 			String NameField
 							= "name";
 			String Hits 	= "hits";
+			String Aggregations 
+							= "aggregations";
 			String Source 	= "_source";
 			String SourceIncludes
 							= "_source_includes";
@@ -815,10 +817,19 @@ public class ElasticSearchIndexer implements Indexer {
 			}
 			
 			@Override
-			protected void onSelect (Timing timing, Select select) throws QueryException {
-				super.onSelect (timing, select);
+			protected void onSelect (Timing timing, Select select)
+					throws QueryException {
+				if (Timing.start.equals (timing)) {
+					buff.append (dml.name ());
+				} else {
+					if (select == null || select.count () == 0) {
+						buff.append (Lang.SPACE).append (Lang.STAR);
+					}
+					buff.append (Lang.SPACE).append (Sql.From).append (Lang.SPACE);
+					this.entity ();
+				} 
 			}
-			
+
 			@Override
 			protected String operatorFor (Operator operator) {
 				return super.operatorFor (operator);
@@ -910,7 +921,9 @@ public class ElasticSearchIndexer implements Indexer {
 					}
 					JsonObject oData = (JsonObject)data;
 					if (!isCount) {
+						JsonObject aggregartions = Json.getObject (oData, Internal.Elk.Aggregations);
 						oData = result (Json.getObject (oData, Internal.Elk.Hits));
+						oData.set (Internal.Elk.Aggregations, aggregartions);
 					}
 					result.set (oData);
 				}
@@ -1071,7 +1084,7 @@ public class ElasticSearchIndexer implements Indexer {
 		
 		tracer.log (
 			Tracer.Level.Debug,
-			"Bulk Paylod [{0}]", 
+			"Bulk Payload [{0}]", 
 			sPayload.toString ()
 		);
 		

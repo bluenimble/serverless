@@ -6,12 +6,15 @@ import static org.quartz.JobKey.jobKey;
 import static org.quartz.TriggerBuilder.newTrigger;
 import static org.quartz.TriggerKey.triggerKey;
 
+import java.util.Date;
 import java.util.TimeZone;
 
 import org.quartz.CronScheduleBuilder;
+import org.quartz.CronTrigger;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
 
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
@@ -25,6 +28,7 @@ import com.bluenimble.platform.db.DatabaseException;
 import com.bluenimble.platform.db.DatabaseObject;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
+import com.bluenimble.platform.query.Query;
 import com.bluenimble.platform.query.impls.JsonQuery;
 import com.bluenimble.platform.scheduler.Scheduler;
 import com.bluenimble.platform.scheduler.SchedulerException;
@@ -53,7 +57,7 @@ public class QuartzScheduler implements Scheduler {
 	private ApiSpace 				space;
 	private String 					node;
 	private String 					id;
-	private org.quartz.Scheduler 	oScheduler;
+	public 	org.quartz.Scheduler 	oScheduler;
 	private JsonObject 				spec;
 
 	public QuartzScheduler (ApiSpace space, String node, String id, JsonObject spec, org.quartz.Scheduler oScheduler) {
@@ -89,16 +93,22 @@ public class QuartzScheduler implements Scheduler {
 	}
 	
 	@Override
-	public void schedule (String id, String expression, JsonObject service, boolean save) throws SchedulerException {
+	public SchedulingResult schedule (JsonObject job, boolean save) throws SchedulerException {
+		
+		space.tracer ().log (Level.Info, "Schedule Job {0}", job);
 		
 		if (!save) {
 			try {
-				doSchedule (id, expression, service);
+				return doSchedule (job);
 			} catch (Exception e) {
 				throw new SchedulerException (e.getMessage (), e);
 			} 
-			return;
 		}
+		
+		job.set (SchedulerPlugin.Spec.Job.Scheduler, node);
+		job.set (SchedulerPlugin.Spec.Job.Running, true);
+		
+		job.shrink ();
 		
 		// persist if having a databaseJobs
 		JsonObject databaseJobs = (JsonObject)Json.find (spec, SchedulerPlugin.Spec.Jobs, SchedulerPlugin.Spec.DatabaseJobs);
@@ -110,6 +120,7 @@ public class QuartzScheduler implements Scheduler {
 		
 		ApiContext context = new DefaultApiContext ();
 		boolean withError = true;
+		SchedulingResult scheduled = SchedulingResult.Unknown;
 		try {
 			Database db = space.feature (
 				Database.class, 
@@ -117,58 +128,55 @@ public class QuartzScheduler implements Scheduler {
 				context
 			).trx ();
 			
-			JsonObject tplData = (JsonObject)new JsonObject ()
-					.set (SchedulerPlugin.Spec.DatabaseJob.Node, node)
-					.set (SchedulerPlugin.Spec.DatabaseJob.Scheduler, this.id)
-					.set (SchedulerPlugin.Spec.Job.Id, id);
-			
 			JsonObject getQuery = (JsonObject)Json.find (
 				databaseJobs, 
 				Spec.DatabaseJob.Queries.class.getSimpleName ().toLowerCase (), Spec.DatabaseJob.Queries.Get
 			);
 
 			if (!Json.isNullOrEmpty (getQuery)) {
+				getQuery = Json.template (
+					getQuery, 
+					(JsonObject)new JsonObject ()
+						.set (SchedulerPlugin.Spec.DatabaseJob.Node, node)
+						.set (SchedulerPlugin.Spec.Job.Id, job.get (SchedulerPlugin.Spec.Job.Id)), 
+					false
+				);
 				DatabaseObject dbo = db.findOne (
 					Json.getString (databaseJobs, SchedulerPlugin.Spec.DatabaseJob.Entity),
 					new JsonQuery (getQuery)
 				);
 				if (dbo != null) {
-					throw new SchedulerException ("Job " + node + "/" + id + " already exist");
+					throw new SchedulerException ("Job " + node + "/" + job.get (SchedulerPlugin.Spec.Job.Id) + " already exist");
 				}
 			}
 			
-			tplData
-				.set (SchedulerPlugin.Spec.Job.Expression, expression)
-				.set (SchedulerPlugin.Spec.Job.Service, service);
-			
-			JsonObject createAction = (JsonObject)Json.find (
-				databaseJobs, 
-				Spec.DatabaseJob.Actions.class.getSimpleName ().toLowerCase (), Spec.DatabaseJob.Actions.Create
-			);
-			
-			JsonObject values = Json.template (createAction, tplData, false);
-			
-			space.tracer ().log (Level.Info, "Create DB CronJon with values: {0}", values);
+			job.set (SchedulerPlugin.Spec.DatabaseJob.Job, job.get (SchedulerPlugin.Spec.Job.Id));
+			job.remove (SchedulerPlugin.Spec.Job.Id);
 			
 			DatabaseObject dbo = db.create (Json.getString (databaseJobs, SchedulerPlugin.Spec.DatabaseJob.Entity));
-			dbo.load (values);
+			dbo.load (job);
 			dbo.save ();
 			
 			// schedule job
-			doSchedule (id, expression, service);
+			scheduled = doSchedule (job);
 			
-			withError = false;
+			if (scheduled.equals (SchedulingResult.Scheduled)) {
+				withError = false;
+			}
 		} catch (Exception e) {
 			throw new SchedulerException (e.getMessage (), e);
 		} finally {
 			context.finish (withError);
 			context.recycle ();
 		}
-		
+		return scheduled;
 	}
 
 	@Override
 	public void unschedule (String id, boolean save) throws SchedulerException {
+		if (Lang.isNullOrEmpty (id)) {
+			throw new SchedulerException ("Job Id is required for Unschedule operation");
+		}
 		if (!save) {
 			try {
 				doUnschedule (id);
@@ -193,7 +201,7 @@ public class QuartzScheduler implements Scheduler {
 				Database.class, 
 				Json.getString (databaseJobs, SchedulerPlugin.Spec.DatabaseJob.Feature, Features.Default), 
 				context
-			);
+			).trx ();
 			
 			JsonObject getQuery = (JsonObject)Json.find (
 				databaseJobs, 
@@ -204,7 +212,6 @@ public class QuartzScheduler implements Scheduler {
 					getQuery,
 					(JsonObject)new JsonObject ()
 						.set (SchedulerPlugin.Spec.DatabaseJob.Node, node)
-						.set (SchedulerPlugin.Spec.DatabaseJob.Scheduler, this.id)
 						.set (SchedulerPlugin.Spec.Job.Id, id),
 					false
 				);
@@ -215,6 +222,7 @@ public class QuartzScheduler implements Scheduler {
 				);
 				
 				if (dbo != null) {
+					space.tracer ().log (Level.Info, "Delete Database Job {0}", dbo.getId ());
 					dbo.delete ();
 				}
 			}
@@ -259,7 +267,6 @@ public class QuartzScheduler implements Scheduler {
 			
 			JsonObject tplData = (JsonObject)new JsonObject ()
 					.set (SchedulerPlugin.Spec.DatabaseJob.Node, node)
-					.set (SchedulerPlugin.Spec.DatabaseJob.Scheduler, this.id)
 					.set (SchedulerPlugin.Spec.Job.Id, id);
 			
 			JsonObject getQuery = (JsonObject)Json.find (
@@ -335,7 +342,6 @@ public class QuartzScheduler implements Scheduler {
 			
 			JsonObject tplData = (JsonObject)new JsonObject ()
 					.set (SchedulerPlugin.Spec.DatabaseJob.Node, node)
-					.set (SchedulerPlugin.Spec.DatabaseJob.Scheduler, this.id)
 					.set (SchedulerPlugin.Spec.Job.Id, id);
 			
 			JsonObject getQuery = (JsonObject)Json.find (
@@ -408,7 +414,6 @@ public class QuartzScheduler implements Scheduler {
 			
 			JsonObject tplData = (JsonObject)new JsonObject ()
 					.set (SchedulerPlugin.Spec.DatabaseJob.Node, node)
-					.set (SchedulerPlugin.Spec.DatabaseJob.Scheduler, this.id)
 					.set (SchedulerPlugin.Spec.Job.Id, id);
 			
 			getQuery = Json.template (getQuery, tplData, false);
@@ -445,8 +450,8 @@ public class QuartzScheduler implements Scheduler {
 	}
 	
 	@Override
-	public JsonObject list (int offset, int count, int status) throws SchedulerException {
-		// persist if having a databaseJobs
+	public JsonObject list (int offset, int count, int status, JsonObject metaQuery) throws SchedulerException {
+		// list only if having a databaseJobs
 		JsonObject databaseJobs = (JsonObject)Json.find (spec, SchedulerPlugin.Spec.Jobs, SchedulerPlugin.Spec.DatabaseJobs);
 		if (Json.isNullOrEmpty (databaseJobs)) {
 			throw new SchedulerException ("No Persistent Jobs config found");
@@ -471,6 +476,14 @@ public class QuartzScheduler implements Scheduler {
 		if (Json.isNullOrEmpty (listQuery)) {
 			throw new SchedulerException ("No Persistent Jobs List Query config found");
 		}
+		if (!Json.isNullOrEmpty (metaQuery)) {
+			JsonObject where = Json.getObject (listQuery, Query.Construct.where.name ());
+			if (where == null) {
+				where = new JsonObject ();
+				listQuery.set (Query.Construct.where.name (), where);
+			}
+			where.merge (metaQuery);
+		}
 		
 		JsonObject result 	= new JsonObject ();
 		JsonArray 	aJobs 	= new JsonArray ();
@@ -485,8 +498,7 @@ public class QuartzScheduler implements Scheduler {
 			);
 			
 			JsonObject tplData = (JsonObject)new JsonObject ()
-					.set (SchedulerPlugin.Spec.DatabaseJob.Node, node)
-					.set (SchedulerPlugin.Spec.DatabaseJob.Scheduler, this.id);
+					.set (SchedulerPlugin.Spec.DatabaseJob.Node, node);
 			
 			listQuery = Json.template (listQuery, tplData, false);
 			
@@ -549,12 +561,42 @@ public class QuartzScheduler implements Scheduler {
 		return oTrigger;
 	}
 	
-	private void doSchedule (String id, String expression, JsonObject service) throws Exception {
+	private SchedulingResult doSchedule (JsonObject oJob) throws Exception {
+
+		if (oJob.containsKey (SchedulerPlugin.Spec.DatabaseJob.Job) && !oJob.containsKey (SchedulerPlugin.Spec.Job.Id)) {
+			oJob.set (SchedulerPlugin.Spec.Job.Id, oJob.get (SchedulerPlugin.Spec.DatabaseJob.Job));
+			oJob.remove (SchedulerPlugin.Spec.DatabaseJob.Job);
+		}
+
+		String 		id 			= Json.getString (oJob, Spec.Job.Id);
+		String 		expression	= Json.getString (oJob, Spec.Job.Expression);
+		JsonObject 	lifecycle	= Json.getObject (oJob, Spec.Job.Lifecycle);
+		boolean 	running		= Json.getBoolean (oJob, Spec.Job.Running, true);
+		
+		Date now		= new Date ();
+		Date startTime 	= Json.getDate (oJob, SchedulerPlugin.Spec.Job.StartTime);
+		Date endTime 	= Json.getDate (oJob, SchedulerPlugin.Spec.Job.EndTime);
+		
+		if (endTime.before (now)) {
+			return SchedulingResult.Expired;
+		}
+		
+		if (endTime != null) {
+			Date starting = startTime;
+			if (starting == null) {
+				starting = now;
+			}
+			if (endTime.before (starting)) {
+				return SchedulingResult.Expired;
+			}
+		}
+
 		space.tracer ().log (Level.Info, "Schedule Job {0}", id);
 		JobBuilder builder = newJob (JobTask.class).withIdentity (Prefix.Job + id, this.id);
 		
+		builder.usingJobData (SchedulerPlugin.Spec.Job.Id, id);
 		builder.usingJobData (SchedulerPlugin.Spec.Job.Space, space.getNamespace ());
-		builder.usingJobData (SchedulerPlugin.Spec.Job.Service, service.toString (0, true));
+		builder.usingJobData (SchedulerPlugin.Spec.Job.Lifecycle, lifecycle.toString (0, true));
 		
 		JobDetail job = builder.build ();
 		
@@ -564,11 +606,24 @@ public class QuartzScheduler implements Scheduler {
 		if (!Lang.isNullOrEmpty (timeZone)) {
 			csb.inTimeZone (TimeZone.getTimeZone (timeZone));
 		}
-		Trigger trigger = newTrigger ()
+		TriggerBuilder<CronTrigger> triggerBuilder = newTrigger ()
 				.withIdentity (Prefix.Trigger + id, this.id)
-				.withSchedule (csb)
-			    .build ();
-		oScheduler.scheduleJob (job, trigger);
+				.withSchedule (csb);
+		
+		if (startTime != null) {
+			space.tracer ().log (Level.Info, "  w/ StartTime {0}", Lang.toUTC (startTime));
+			triggerBuilder.startAt (startTime);
+		}
+		if (endTime != null) {
+			space.tracer ().log (Level.Info, "  w/ EndTime {0}", Lang.toUTC (endTime));
+			triggerBuilder.endAt (endTime);
+		}
+		
+		oScheduler.scheduleJob (job, triggerBuilder.build ());
+		if (!running) {
+			oScheduler.pauseJob (jobKey (Prefix.Job + id, this.id));
+		}
+		return SchedulingResult.Scheduled;
 	}
 
 	private void doUnschedule (String id) throws Exception {

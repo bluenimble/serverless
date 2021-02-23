@@ -35,7 +35,6 @@ import org.bson.types.ObjectId;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.tracing.Tracer;
-import com.bluenimble.platform.api.tracing.Tracer.Level;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseException;
 import com.bluenimble.platform.db.DatabaseObject;
@@ -44,6 +43,7 @@ import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.database.mongodb.impls.filters.BetweenFilterAppender;
 import com.bluenimble.platform.plugins.database.mongodb.impls.filters.DefaultFilterAppender;
 import com.bluenimble.platform.plugins.database.mongodb.impls.filters.FilterAppender;
+import com.bluenimble.platform.plugins.database.mongodb.impls.filters.InFilterAppender;
 import com.bluenimble.platform.plugins.database.mongodb.impls.filters.LikeFilterAppender;
 import com.bluenimble.platform.plugins.database.mongodb.impls.filters.NilFilterAppender;
 import com.bluenimble.platform.plugins.database.mongodb.impls.filters.RegexFilterAppender;
@@ -88,7 +88,7 @@ public class MongoDatabaseImpl implements Database {
 
 	private static final long serialVersionUID = 3547537996525908902L;
 	
-	private static final String IdPostfix = Lang.DOT + Database.Fields.Id;
+	public static final String IdPostfix = Lang.DOT + Database.Fields.Id;
 
 	interface Describe {
 		String Size 		= "size";
@@ -132,10 +132,10 @@ public class MongoDatabaseImpl implements Database {
 		FilterAppenders.put (Operator.nbtw, new BetweenFilterAppender ());
 		FilterAppenders.put (Operator.nil, new NilFilterAppender ());
 		FilterAppenders.put (Operator.nnil, new NilFilterAppender ());
+		FilterAppenders.put (Operator.in, new InFilterAppender ());
+		FilterAppenders.put (Operator.nin, new InFilterAppender ());
 		FilterAppenders.put (Operator.regex, new RegexFilterAppender ());
 		FilterAppenders.put (Operator.ftq, new TextFilterAppender ());
-		//FilterAppenders.put (Operator.near, "");
-		//FilterAppenders.put (Operator.within, "");
 	}
 	
 	private Map<String, BasicDBObject> QueriesCache = new ConcurrentHashMap<String, BasicDBObject> ();
@@ -274,9 +274,9 @@ public class MongoDatabaseImpl implements Database {
 		
 		entity = entity (Lang.isNullOrEmpty (entity) ? query.entity () : entity);
 		
-		FindIterable<Document> result;
+		MongoIterable<Document> result;
 		try {
-			result = (FindIterable<Document>)_query (entity, Query.Construct.select, query);
+			result = (MongoIterable<Document>)_query (entity, Query.Construct.select, query);
 		} catch (Exception e) {
 			throw new DatabaseException (e.getMessage (), e);
 		}
@@ -489,6 +489,17 @@ public class MongoDatabaseImpl implements Database {
 					continue;
 				}
 				Document record = new Document ();
+
+				Object id = object.get (Database.Fields.Id);
+				if (id != null) {
+					if (id instanceof String && ObjectId.isValid ((String)id)) {
+						record.append (DatabaseObjectImpl.ObjectIdKey, new ObjectId ((String)id));
+					} else {
+						record.append (DatabaseObjectImpl.ObjectIdKey, id);
+					}
+					object.remove (Database.Fields.Id);
+				}
+
 				record.putAll (object);
 				records.add (record);
 			}
@@ -579,7 +590,7 @@ public class MongoDatabaseImpl implements Database {
 		return result.getModifiedCount ();
 	}
 
-	private List<DatabaseObject> toList (String entity, FindIterable<Document> documents, Visitor visitor, boolean partial) {
+	private List<DatabaseObject> toList (String entity, MongoIterable<Document> documents, Visitor visitor, boolean partial) {
 		
 		if (visitor == null) {
 			List<Document> items = documents.into (new ArrayList<Document> ());
@@ -610,6 +621,21 @@ public class MongoDatabaseImpl implements Database {
 	}
 
 	private Object _query (String entity, Query.Construct construct, final Query query) throws DatabaseException {
+		// check if it's an aggregation
+		Object qNative = query.getNative ();
+		if (qNative != null && qNative instanceof JsonArray && construct.equals (Query.Construct.select)) {
+			// create the pipeline
+			JsonArray aNative = (JsonArray)qNative;
+			List<BasicDBObject> pipeline = new ArrayList<BasicDBObject>();
+			for (int i = 0; i < aNative.count (); i++) {
+				pipeline.add (new BasicDBObject ((JsonObject)aNative.get (i)));
+			}
+			if (session == null) {
+				return db.getCollection (entity).aggregate (pipeline);
+			} else {
+				return db.getCollection (entity).aggregate (session, pipeline);
+			}
+		}
 		
 		BasicDBObject mQuery = createQuery (entity, construct, query);
 		if (mQuery == null) {
@@ -625,13 +651,11 @@ public class MongoDatabaseImpl implements Database {
 			}
 			
 			Select select = query.select ();
-			tracer.log (Level.Info, "Select Fields -> " + select);
 			if (select != null && select.count () > 0) {
 				String [] pFields = new String [select.count ()];
 				for (int i = 0; i < select.count (); i++) {
 					pFields [i] = select.get (i);
 				}
-				System.out.println ("Projections -> " + Projections.include (pFields));
 				cursor.projection (Projections.include (pFields));
 			}
 			
@@ -743,8 +767,8 @@ public class MongoDatabaseImpl implements Database {
 	private CompiledQuery compile (String entity, Query.Construct construct, final Query query) {
 		
 		BasicDBObject mq = null;
-		if (query.isNative ()) {
-			mq  = new BasicDBObject (query.toJson ());
+		if (query.getNative () != null) {
+			mq  = new BasicDBObject ((JsonObject)query.getNative ());
 		} else {
 			mq = new BasicDBObject ();
 		}
@@ -763,7 +787,7 @@ public class MongoDatabaseImpl implements Database {
 			}
 		};
 		
-		if (query.isNative ()) {
+		if (query.getNative () != null) {
 			return cQuery;
 		}
 		

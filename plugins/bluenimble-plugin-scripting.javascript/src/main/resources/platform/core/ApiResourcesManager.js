@@ -14,7 +14,7 @@
 var ApiResourcesManager = function (proxy) {
 
 	/**	
-	  Get a resource - folder or file - for the given path
+	  Get a resource - folder or file - with the given path
 	  @param {string} path - the path of the folder or file
 	  
 	  @returns {ApiResource} the resource for the given path

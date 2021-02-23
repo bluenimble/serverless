@@ -405,12 +405,12 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 		
 		ContainerApiRequest 	request 	= new ContainerApiRequest (
 			parentRequest, 
-			parentRequest.getSpace () + Lang.COLON + parentRequest.getApi () + Lang.SLASH + parentRequest.getService ().getName (), 
+			parentRequest.getSpace () + Lang.COLON + parentRequest.getApi () + Lang.SLASH + parentRequest.getService ().getId (), 
 			endpoint
 		);
 		
-		request.set (ContainerApiRequest.Consumer, consumer, Scope.Parameter);
-		request.set (ContainerApiRequest.Caller, getNamespace (), Scope.Parameter);
+		request.set (ApiRequest.Consumer, consumer, Scope.Parameter);
+		request.set (ApiRequest.Caller, getNamespace (), Scope.Parameter);
 		
 		return request;
 	}

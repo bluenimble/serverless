@@ -18,10 +18,10 @@ var LocalDateTime = function (proxy) {
 	this.clazz 		= 'LocalDateTime';
 	
 	/**	
-	  Adding a number of days to this Date instance
-	  @param {integer} number of days to be added
+	  Converts this date-time to the number of mili seconds from the epoch of 1970-01-01T00:00:00Z.
+	  @param {string} offsetId - time zone offset to use for the conversion
 	  
-	  @returns {LocalDateTime} Returns a copy of this datetime plus the specified number of days.
+	  @returns {LocalDateTime} Returns the number of seconds from the epoch of 1970-01-01T00:00:00Z
 	*/
 	this.toEpoch = function (offsetId) {
 		var offset;
@@ -30,13 +30,13 @@ var LocalDateTime = function (proxy) {
 		} else {
 			offset = JC_ZoneOffset.UTC;
 		}
-		return proxy.toEpochSecond (offset);
+		return proxy.toInstant (offset).toEpochMilli ();
 	};
 	/**	
 	  Adding a number of days to this Date instance
 	  @param {integer} number of days to be added
 	  
-	  @returns {LocalDateTime} Returns a copy of this datetime plus the specified number of days.
+	  @returns {LocalDateTime} Returns a copy of this date time plus the specified number of days.
 	*/
 	this.plusDays = function (amount) {
 		return new LocalDateTime (proxy.plusDays (amount));
@@ -175,6 +175,17 @@ var LocalDateTime = function (proxy) {
 	*/
 	this.minusYears = function (amount) {
 		return new LocalDateTime (proxy.minusYears (amount));
+	};
+	/**	
+	  Obtains an instance of LocalDateTime from year, month, day of the this date object, with the specified hour, minute and second.
+	  @param {integer} hour of the day
+	  @param {integer} minute of the hour
+	  @param {integer} second of the minute
+	  
+	  @returns {LocalDateTime} Returns a copy of this datetime with the hour, minute and second fields updated.
+	*/
+	this.withTime = function (hour, minute, second) {
+		return new LocalDateTime (JC_LocalDateTime.of (proxy.getYear (), proxy.getMonth (), proxy.getDayOfMonth (), hour, minute, second));
 	};
 	/**	
 	  Create a datetime instance with updated Day Of The Month
@@ -387,6 +398,15 @@ var DateTime = {
 	UTC: JC_Lang.UTC_DATE_FORMAT,
 	
 	/**	
+	  Get a LocalDateTime from proxy 
+	  @param {object} - proxy
+	  
+	  @returns {LocalDateTime} a date instance 
+	*/
+	wrap: function (proxy) {
+		return new LocalDateTime (proxy);
+	},
+	/**	
 	  Get the current date in a specific time zone 
 	  @param {string} [timezone] - the timezone of the resulting date
 	  
@@ -418,6 +438,9 @@ var DateTime = {
 	  @returns {LocalDateTime} a datetime instance 
 	*/
 	withDate: function (date, zone) {
+		if (!date || date == null) {
+			return;
+		}
 		if (date.getClass ().getName () == 'java.util.Date') {
 			if (!zone) {
 				zone = 'UTC';

@@ -16,9 +16,18 @@
  */
 package com.bluenimble.platform.server.plugins.scheduler;
 
+import static org.quartz.impl.matchers.EverythingMatcher.allTriggers;
+
+import java.util.Date;
 import java.util.Iterator;
 
+import org.quartz.JobDataMap;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 import org.quartz.Scheduler;
+import org.quartz.Trigger;
+import org.quartz.Trigger.CompletedExecutionInstruction;
+import org.quartz.TriggerListener;
 import org.quartz.impl.DirectSchedulerFactory;
 import org.quartz.simpl.RAMJobStore;
 import org.quartz.simpl.SimpleThreadPool;
@@ -32,6 +41,7 @@ import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.ApiSpace.Features;
 import com.bluenimble.platform.api.Manageable;
 import com.bluenimble.platform.api.impls.DefaultApiContext;
+import com.bluenimble.platform.api.tracing.Tracer.Level;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseObject;
 import com.bluenimble.platform.json.JsonObject;
@@ -39,7 +49,9 @@ import com.bluenimble.platform.plugins.Plugin;
 import com.bluenimble.platform.plugins.PluginRegistryException;
 import com.bluenimble.platform.plugins.impls.AbstractPlugin;
 import com.bluenimble.platform.query.impls.JsonQuery;
+import com.bluenimble.platform.scheduler.Scheduler.SchedulingResult;
 import com.bluenimble.platform.scheduler.SchedulerException;
+import com.bluenimble.platform.scheduler.impls.quartz.JobTask;
 import com.bluenimble.platform.scheduler.impls.quartz.QuartzScheduler;
 import com.bluenimble.platform.server.ApiServer;
 import com.bluenimble.platform.server.ApiServer.Event;
@@ -48,6 +60,11 @@ import com.bluenimble.platform.server.ServerFeature;
 public class SchedulerPlugin extends AbstractPlugin {
 
 	private static final long serialVersionUID = 3203657740159783537L;
+	
+	private static final JobTask JobTaskUnschedule 				= 
+			new JobTask (SchedulerPlugin.Spec.Lifecycle.Action.Unschedule);
+	private static final JsonObject JobTaskUnscheduleRuntime 	= 
+			(JsonObject)new JsonObject ().set (JobTask.Spec.Action, Spec.Lifecycle.Action.Unschedule);
 	
 	interface Prefix {
 		String Scheduler 	= "scheduler-";
@@ -67,7 +84,12 @@ public class SchedulerPlugin extends AbstractPlugin {
 			String LocalJobs 	= "local";
 			String DatabaseJobs	= "database";
 			
-		interface Service {
+		interface Lifecycle {
+			interface Action {
+				String Schedule		= "schedule";
+				String Tick			= "tick";
+				String Unschedule	= "unschedule";
+			}
 			String Type			= "type";
 			String Feature 		= "feature";
 			String Runtime 		= "runtime";
@@ -77,18 +99,23 @@ public class SchedulerPlugin extends AbstractPlugin {
 		
 		interface Job {
 			String Id = "id";
+			String Scheduler 	= "scheduler";
 			String Expression 	= "expression";
-			String Service		= "service";
+			String Lifecycle	= "lifecycle";
 			String Space		= "space";
+			String Metadata		= "metadata";
+			String StartTime 	= "startTime";
+			String EndTime 		= "endTime";
+			String Running 		= "running";
 		}
 		
 		interface DatabaseJob {
 			String Feature 		= "feature";
 			String Entity 		= "entity";
 			String Fields 		= "fields";
+			String Job 			= "job";
 
 			String Node 		= "node";
-			String Scheduler 	= "scheduler";
 			
 			interface Queries {
 				String Get 		= "get";
@@ -167,7 +194,7 @@ public class SchedulerPlugin extends AbstractPlugin {
 				createSchedulers (space);
 				break;
 			case AddFeature:
-				createScheduler (space, Json.getObject (space.getFeatures (), feature), (String)args [0], (Boolean)args [1]);
+				createScheduler (space, Json.getObject (space.getFeatures (), feature), (String)args [0], (Boolean)args [1], false);
 				break;
 			case DeleteFeature:
 				removeScheduler (space, (String)args [0]);
@@ -186,12 +213,12 @@ public class SchedulerPlugin extends AbstractPlugin {
 		
 		Iterator<String> keys = allFeatures.keys ();
 		while (keys.hasNext ()) {
-			createScheduler (space, allFeatures, keys.next (), false);
+			createScheduler (space, allFeatures, keys.next (), false, true);
 		}
 		
 	}
 	
-	private void createScheduler (ApiSpace space, JsonObject allFeatures, String name, boolean overwrite) throws PluginRegistryException {
+	private void createScheduler (ApiSpace space, JsonObject allFeatures, String name, boolean overwrite, boolean isStartupTime) throws PluginRegistryException {
 		
 		JsonObject feature = Json.getObject (allFeatures, name);
 		
@@ -238,27 +265,63 @@ public class SchedulerPlugin extends AbstractPlugin {
             );
             
             qScheduler = schedulerFactory.getScheduler (schedulerId);
+            
         } catch (Exception e) {
         	 throw new PluginRegistryException (e);
         }
         
-        QuartzScheduler scheduler = new QuartzScheduler (space, server.id (), schedulerId, spec, qScheduler);
+        final QuartzScheduler scheduler = new QuartzScheduler (space, server.id (), schedulerId, spec, qScheduler);
         
         try {
+            // add ending listener
+        	scheduler.oScheduler.getListenerManager().addTriggerListener (new TriggerListener () {
+				@Override
+				public String getName () {
+					return "EndedTriggerListener";
+				}
+				@Override
+				public void triggerFired (Trigger trigger, JobExecutionContext context) { }
+				@Override
+				public boolean vetoJobExecution (Trigger trigger, JobExecutionContext context) { return false; }
+				@Override
+				public void triggerMisfired (Trigger trigger) { }
+				@Override
+				public void triggerComplete (Trigger trigger, JobExecutionContext context,
+						CompletedExecutionInstruction triggerInstructionCode) {
+					JobDataMap jobDataMap = context.getJobDetail ().getJobDataMap ();
+					String jobId = jobDataMap.getString (Spec.Job.Id);
+					space.tracer ().log (Level.Info, "Calling TriggerListener On Job {0}", jobId);
+					space.tracer ().log (Level.Info, "Trigger EndTime {0}", trigger.getEndTime ());
+					if (trigger.getEndTime () != null && trigger.getEndTime ().before (new Date ())) {
+						space.tracer ().log (Level.Info, " -> TriggerListener - Unschedule {0}", jobId);
+						try {
+							scheduler.unschedule (jobId, true);
+							JobTaskUnschedule.execute (context);
+						} catch (SchedulerException e) {
+							throw new RuntimeException (e.getMessage (), e);
+						} catch (JobExecutionException e) {
+							space.tracer ().log (Level.Warning, "Ending Job Error", e);
+						}
+					}
+				}
+    		}, allTriggers ());
+            
 			scheduler.start ();
-		} catch (SchedulerException e) {
+			
+		} catch (Exception e) {
 			throw new PluginRegistryException (e);
 		}
 
-		// load local and remote jobs
-        loadJobs (space, scheduler, name, spec);
-		
 		space.addRecyclable (
 			schedulerKey, 
 			new RecyclableScheduler (scheduler)
 		);
 	
 		feature.set (ApiSpace.Spec.Installed, true);
+
+		// load local and remote jobs
+        loadJobs (space, scheduler, name, spec, isStartupTime);
+		
 	}
 	
 	private void removeScheduler (ApiSpace space, String featureName) {
@@ -277,7 +340,7 @@ public class SchedulerPlugin extends AbstractPlugin {
 		return feature + Lang.DOT + getNamespace () + Lang.DOT + name;
 	}
 	
-	private void loadJobs (ApiSpace space, QuartzScheduler scheduler, String feature, JsonObject spec) throws PluginRegistryException {
+	private void loadJobs (ApiSpace space, QuartzScheduler scheduler, String feature, JsonObject spec, boolean isStartupTime) throws PluginRegistryException {
 		
 		JsonObject jobs = Json.getObject (spec, Spec.Jobs);
 		if (Json.isNullOrEmpty (jobs)) {
@@ -289,14 +352,10 @@ public class SchedulerPlugin extends AbstractPlugin {
 			Iterator<String> ids = localJobs.keys ();
 			while (ids.hasNext ()) {
 				String jobId = ids.next ();
-				JsonObject oJob  = Json.getObject (localJobs, jobId);
+				JsonObject oJob  = Json.getObject (localJobs, jobId).duplicate ();
+				oJob.set (Spec.Job.Id, jobId);
 				try {
-					scheduler.schedule (
-						jobId,
-						Json.getString (oJob, Spec.Job.Expression), 
-						Json.getObject (oJob, Spec.Job.Service),
-						false
-					);
+					scheduler.schedule (oJob, false);
 				} catch (Exception ex) {
 					throw new PluginRegistryException (ex.getMessage (), ex);
 				}
@@ -310,7 +369,7 @@ public class SchedulerPlugin extends AbstractPlugin {
 		
 		JsonObject query = (JsonObject)Json.find (
 			databaseJobs, 
-			Spec.DatabaseJob.Queries.class.getSimpleName ().toLowerCase (), Spec.DatabaseJob.Queries.Running
+			Spec.DatabaseJob.Queries.class.getSimpleName ().toLowerCase (), Spec.DatabaseJob.Queries.All
 		);
 		
 		if (Json.isNullOrEmpty (query)) {
@@ -319,32 +378,66 @@ public class SchedulerPlugin extends AbstractPlugin {
 		
 		JsonObject tplData = new JsonObject ();
 		tplData.set (Spec.DatabaseJob.Node, server.id ());
-		tplData.set (Spec.DatabaseJob.Scheduler, feature);
 		
 		query = Json.template (query, tplData, false);
+		
+		loadDatabaseJobs (space, scheduler, query, databaseJobs, isStartupTime ? 0 : -1);
+	}
+	
+	private void loadDatabaseJobs (ApiSpace space, QuartzScheduler scheduler, JsonObject query, JsonObject databaseJobs, int timeout) throws PluginRegistryException {
 		
 		JsonObject fields = Json.getObject (databaseJobs, Spec.DatabaseJob.Fields);
 		
 		boolean withError = true;
 		
+		Database db = null;
 		try {
-			Database db = space.feature (Database.class, Json.getString (databaseJobs, Spec.DatabaseJob.Feature, Features.Default), DefaultApiContext);
-			
+			try {
+				db = space.feature (Database.class, Json.getString (databaseJobs, Spec.DatabaseJob.Feature, Features.Default), DefaultApiContext);
+			} catch (Exception ex) {
+				// Ignore
+			}
+			if (db == null && timeout > -1) {
+				if (timeout >= 30000) {
+					throw new PluginRegistryException ("Scheduler Jobs Database feature not found");
+				}
+				try {
+			        Thread.sleep (3000);
+			    } catch (InterruptedException ex) {
+			        Thread.currentThread ().interrupt ();
+			    }
+				this.loadDatabaseJobs (space, scheduler, query, databaseJobs, timeout + 3000);
+				return;
+			}
 			db.find (
-				Json.getString (databaseJobs, Spec.DatabaseJob.Entity), 
+				Json.getString (databaseJobs, Spec.DatabaseJob.Entity),
 				new JsonQuery (query),
 				new Database.Visitor () {
 					@Override
 					public boolean onRecord (DatabaseObject dbo) {
+						JsonObject job = new JsonObject ();
+						job.set (Spec.Job.Id, (String)dbo.get (Json.getString (fields, Spec.Job.Id, Spec.Job.Id)));
+						job.set (Spec.Job.Expression, (String)dbo.get (Json.getString (fields, Spec.Job.Expression, Spec.Job.Expression)));
+						job.set (Spec.Job.Lifecycle, (JsonObject)dbo.get (Json.getString (fields, Spec.Job.Lifecycle, Spec.Job.Lifecycle)));
+						job.set (Spec.Job.StartTime, (String)dbo.get (Json.getString (fields, Spec.Job.StartTime, Spec.Job.StartTime)));
+						job.set (Spec.Job.EndTime, (String)dbo.get (Json.getString (fields, Spec.Job.EndTime, Spec.Job.EndTime)));
+						SchedulingResult scheduled = SchedulingResult.Unknown;
 						try {
-							scheduler.schedule (
-								(String)dbo.get (Json.getString (fields, Spec.Job.Id, Spec.Job.Id)), 
-								(String)dbo.get (Json.getString (fields, Spec.Job.Expression, Spec.Job.Expression)), 
-								(JsonObject)dbo.get (Json.getString (fields, Spec.Job.Service, Spec.Job.Service)),
-								false
-							);
+							scheduled = scheduler.schedule (job, false);
 						} catch (SchedulerException e) {
 							throw new RuntimeException (e.getMessage (), e);
+						}
+						try {
+							if (scheduled.equals (SchedulingResult.Expired)) {
+								dbo.delete ();
+								JobTaskUnschedule.process (
+									space, 
+									Json.getObject (job, Spec.Job.Lifecycle), 
+									JobTaskUnscheduleRuntime
+								);
+							}
+						} catch (Exception e) {
+							space.tracer().log (Level.Error, "Deleting Expired Job Error", e);
 						}
 						return false;
 					}

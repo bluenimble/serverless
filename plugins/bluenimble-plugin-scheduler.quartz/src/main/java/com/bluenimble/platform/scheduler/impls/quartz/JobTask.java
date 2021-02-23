@@ -23,17 +23,28 @@ import com.bluenimble.platform.shell.Shell;
 
 public class JobTask implements Job {
 	
-	interface Spec {
+	public interface Spec {
 		String FireTime 				= "fireTime";
-		String PreviousFireTime 		= "previousfireTime";
-		String NextFireTime 			= "nextfireTime";
+		String PreviousFireTime 		= "previousFireTime";
+		String NextFireTime 			= "nextFireTime";
 		String ScheduledFireTime 		= "scheduledFireTime";
 		String RunTime 					= "runTime";
+		String Action 					= "action";
 	}
 	
-	enum ServiceType {
+	enum ActionType {
 		shell,
 		remote
+	}
+	
+	private String action = SchedulerPlugin.Spec.Lifecycle.Action.Tick;
+	
+	public JobTask () {
+		
+	}
+	
+	public JobTask (String action) {
+		this.action = action;
 	}
 	
 	public void execute (JobExecutionContext context) throws JobExecutionException {
@@ -45,17 +56,32 @@ public class JobTask implements Job {
 		
 		space.tracer ().log (Level.Info, "Execute Job {0}", context.getJobDetail ().getKey ());
 		
-		JsonObject service;
+		JsonObject lifecycle;
 		try {
-			service = new JsonObject ((String)data.get (SchedulerPlugin.Spec.Job.Service));
+			lifecycle = new JsonObject ((String)data.get (SchedulerPlugin.Spec.Job.Lifecycle));
 		} catch (JsonException e) {
 			throw new JobExecutionException (e.getMessage (), e);
 		}
 		
-		ServiceType serviceType = ServiceType.shell;
 		try {
-			serviceType = ServiceType.valueOf (
-				Json.getString (service, SchedulerPlugin.Spec.Service.Type, ServiceType.shell.name ())
+			this.process (space, lifecycle, jobRuntime (context));
+		} catch (Exception e) {
+			throw new JobExecutionException (e.getMessage (), e);
+		}
+		
+	}
+	
+	public void process (ApiSpace space, JsonObject lifecycle, JsonObject runtime) {
+		JsonObject oAction = Json.getObject (lifecycle, action);
+		
+		if (oAction == null) {
+			throw new RuntimeException ("Job lifecycle " + action + " action not defined");
+		}
+		
+		ActionType serviceType = ActionType.shell;
+		try {
+			serviceType = ActionType.valueOf (
+				Json.getString (oAction, SchedulerPlugin.Spec.Lifecycle.Type, ActionType.shell.name ())
 			);
 		} catch (Exception e) {
 			// Ignore, default to shell
@@ -63,25 +89,24 @@ public class JobTask implements Job {
 		
 		switch (serviceType) {
 			case shell:
-				shell (space, context, service);
+				shell (space, runtime, oAction);
 				break;
 			case remote:
-				remote (space, context, service);
+				remote (space, runtime, oAction);
 				break;
 			default:
 				break;
 		}
-		
 	}
 	
-	private void remote (ApiSpace space, JobExecutionContext context, JsonObject service) {
+	private void remote (ApiSpace space, JsonObject runtime, JsonObject oAction) {
 		Remote oRemote = space.feature (
 			Remote.class, 
-			Json.getString (service, SchedulerPlugin.Spec.Service.Feature, Features.Default), 
+			Json.getString (oAction, SchedulerPlugin.Spec.Lifecycle.Feature, Features.Default), 
 			ApiContext.Instance
 		);
 		
-		JsonObject request = Json.getObject (service, SchedulerPlugin.Spec.Service.Request).duplicate ();
+		JsonObject request = Json.getObject (oAction, SchedulerPlugin.Spec.Lifecycle.Request).duplicate ();
 		
 		JsonObject rData = Json.getObject (request, Remote.Spec.Data);
 		if (rData == null) {
@@ -89,7 +114,7 @@ public class JobTask implements Job {
 			request.set (Remote.Spec.Data, rData);
 		}
 		
-		rData.set (SchedulerPlugin.Spec.Service.Runtime, jobRuntime (context));
+		rData.set (SchedulerPlugin.Spec.Lifecycle.Runtime, runtime);
 		
 		space.tracer ().log (Level.Info, "Execute Remote Job Request {0}", request);
 		
@@ -115,19 +140,19 @@ public class JobTask implements Job {
 		);
 	}
 	
-	private void shell (ApiSpace space, JobExecutionContext context, JsonObject service) {
+	private void shell (ApiSpace space, JsonObject runtime, JsonObject oAction) {
 		Shell oShell = space.feature (
 			Shell.class, 
-			Json.getString (service, SchedulerPlugin.Spec.Service.Feature, Features.Default), 
+			Json.getString (oAction, SchedulerPlugin.Spec.Lifecycle.Feature, Features.Default), 
 			ApiContext.Instance
 		);
 		
-		space.tracer ().log (Level.Info, "Execute Shell Job {0}", service);
+		space.tracer ().log (Level.Info, "Execute Shell Job {0}", oAction);
 		
-		JsonObject params = service.duplicate ();
-		params.set (SchedulerPlugin.Spec.Service.Runtime, jobRuntime (context));
+		JsonObject params = oAction.duplicate ();
+		params.set (SchedulerPlugin.Spec.Lifecycle.Runtime, runtime);
 		
-		JsonObject result = oShell.run (Json.getString (service, SchedulerPlugin.Spec.Service.Command), params);
+		JsonObject result = oShell.run (Json.getString (oAction, SchedulerPlugin.Spec.Lifecycle.Command), params);
 		
 		space.tracer ().log (Level.Info, ">>>> Shell Job Result {0}", result);
 	}
@@ -135,8 +160,9 @@ public class JobTask implements Job {
 	private JsonObject jobRuntime (JobExecutionContext context) {
 		JsonObject runtime = new JsonObject ();
 		
+		runtime.set (Spec.Action, action);
 		runtime.set (Spec.FireTime, context.getFireTime ());
-		runtime.set (Spec.NextFireTime, context.getJobRunTime ());
+		runtime.set (Spec.NextFireTime, context.getNextFireTime());
 		runtime.set (Spec.PreviousFireTime, context.getPreviousFireTime ());
 		runtime.set (Spec.ScheduledFireTime, context.getScheduledFireTime ());
 		runtime.set (Spec.RunTime, context.getJobRunTime ());

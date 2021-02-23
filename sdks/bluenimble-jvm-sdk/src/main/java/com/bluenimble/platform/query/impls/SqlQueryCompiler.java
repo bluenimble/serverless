@@ -20,8 +20,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.query.CompiledQuery;
@@ -39,6 +41,22 @@ import com.bluenimble.platform.query.Select;
 public class SqlQueryCompiler extends EventedQueryCompiler {
 
 	private static final long serialVersionUID = -721087118950354168L;
+	
+	private static final Set<Class<?>> Primitives = new HashSet<Class<?>>();
+	static {
+		Primitives.add (Boolean.class);
+		Primitives.add (Boolean.TYPE);
+		Primitives.add (Short.class);
+		Primitives.add (Short.TYPE);
+		Primitives.add (Integer.class);
+		Primitives.add (Integer.TYPE);
+		Primitives.add (Long.class);
+		Primitives.add (Long.TYPE);
+		Primitives.add (Float.class);
+		Primitives.add (Float.TYPE);
+		Primitives.add (Double.class);
+		Primitives.add (Double.TYPE);
+	}
 	
 	private static final String					ParamPrefix		= "p";
 	
@@ -304,6 +322,14 @@ public class SqlQueryCompiler extends EventedQueryCompiler {
 	}
 
 	protected void valueOf (Object value) {
+		if (value == null) {
+			buff.append (Lang.NULL);
+			return;
+		}
+		if (Primitives.contains (value.getClass ())) {
+			buff.append (value);
+			return;
+		}
 		String sValue = String.valueOf (value);
 		if (sValue.startsWith (Lang.COLON)) {
 			buff.append (sValue);

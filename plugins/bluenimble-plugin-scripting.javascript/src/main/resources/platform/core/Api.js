@@ -290,8 +290,9 @@ function Api (proxy) {
 	/**	
 	  Call a service
 	  @param {ApiConsumer} consumer - the consumer making the request
-	  @param {ApiConsumer} request - the request
+	  @param {ApiConsumer} request - the parent request
 	  @param {ApiConsumer} spec - the request spec for the target service
+	  @returns {ApiOutput} the output
 	*/
 	this.call = function (consumer, request, spec) {
 		if (!consumer) {
@@ -304,6 +305,25 @@ function Api (proxy) {
 			throw "request spec is required";
 		}
 		return new ApiOutput (JC_ApiUtils.call (proxy, consumer.proxy, request.proxy, JC_ValueConverter.convert (spec)));
+	};
+
+	/**	
+	  Create a request
+	  @param {ApiConsumer} consumer - the consumer making the request
+	  @param {ApiConsumer} request - the parent request
+	  @param {ApiConsumer} spec - the request spec for the target service
+	*/
+	this.request = function (consumer, request, spec) {
+		if (!consumer) {
+			throw "consumer is required";
+		}
+		if (!request) {
+			throw "parent request is required";
+		}
+		if (!spec) {
+			throw "request spec is required";
+		}
+		return new ApiRequest (JC_ApiUtils.request (proxy, consumer.proxy, request.proxy, JC_ValueConverter.convert (spec), true), true);
 	};
 
 	// private

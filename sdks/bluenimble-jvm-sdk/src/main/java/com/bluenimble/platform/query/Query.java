@@ -81,7 +81,7 @@ public interface Query extends Serializable {
 	
 	Map<String, Object>	bindings 	();
 	
-	boolean				isNative	();
+	Object				getNative	();
 	
 	JsonObject 			toJson 		();
 	

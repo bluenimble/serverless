@@ -40,6 +40,7 @@ public class ContainerApiRequest extends AbstractApiRequest {
 	
 	private String 							path;
 	private String 							endpoint;
+	private String 							language;
 	
 	private Map<String, Object> 			headers;
 	private Map<String, ApiStreamSource> 	streams;
@@ -70,6 +71,13 @@ public class ContainerApiRequest extends AbstractApiRequest {
 									.set (ApiRequest.Fields.Device.Location, parent.getDevice ().get (ApiRequest.Fields.Device.Location));
 
 		this.node 			= parent.getNode ();
+		this.language		= parent.getLang ();
+		
+		// detach parent request
+		Boolean dettached = (Boolean)parentRequest.get (ApiRequest.Detached);
+		if (dettached != null && dettached) {
+			this.parent = null;
+		}
 	}
 
 	@Override
@@ -79,7 +87,7 @@ public class ContainerApiRequest extends AbstractApiRequest {
 
 	@Override
 	public String getLang () {
-		return parent.getLang ();
+		return this.language;
 	}
 
 	@Override

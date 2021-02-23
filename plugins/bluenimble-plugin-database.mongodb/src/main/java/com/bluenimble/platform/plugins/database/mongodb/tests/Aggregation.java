@@ -23,27 +23,24 @@ import com.bluenimble.platform.db.DatabaseObject;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.query.impls.JsonQuery;
 
-public class FindAll {
+public class Aggregation {
 	
 	public static void main (String [] args) throws Exception {
 		
-		String query = "{ count: 10000 }";
+		String query = "{ native: [{ '$match': { 'type': 'funds', 'available': true } }, { '$group': { _id: '$owner._id', global: { '$sum': '$value.global' } } }] }";
 		
 		Database db = new DatabaseServer ().get ();
 		
-		List<DatabaseObject> orgs = db.find (
-			"Organization", 
+		List<DatabaseObject> aggs = db.find (
+			"OrganizationGrant", 
 			new JsonQuery (new JsonObject (query)),
 			null
 		);
 		
-		System.out.println ("Found " + orgs.size () + " orgs");
+		System.out.println ("Found " + aggs.size () + " orgs");
 		
-		for (DatabaseObject org : orgs) {
-			Object r = org.get ("referral");
-			if (r == null || (r instanceof String)) {
-				System.out.println (org.getId () + " -> " + r);
-			}
+		for (DatabaseObject agg : aggs) {
+			System.out.println (agg);
 		}
 		
 	}

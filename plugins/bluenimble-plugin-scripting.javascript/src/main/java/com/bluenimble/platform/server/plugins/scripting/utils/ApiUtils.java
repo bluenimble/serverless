@@ -33,6 +33,13 @@ import com.bluenimble.platform.json.JsonObject;
 public class ApiUtils {
 	
 	public static ApiOutput call (final Api api, final ApiConsumer consumer, final ApiRequest pRequest, final JsonObject oRequest) throws ApiServiceExecutionException {
+		return api.call (request (api, consumer, pRequest, oRequest, false));
+	}
+	
+	public static ApiRequest request (final Api api, final ApiConsumer consumer, final ApiRequest pRequest, final JsonObject oRequest, boolean detachParentRequest) {
+		if (detachParentRequest) {
+			pRequest.set (ApiRequest.Detached, detachParentRequest, ApiRequest.Scope.Parameter);
+		}
 		ApiRequest request = api.space ().request (pRequest, consumer, new Endpoint () {
 			@Override
 			public String space () {
@@ -86,7 +93,7 @@ public class ApiUtils {
 			}
 		}
 		
-		return api.call (request);
+		return request;
 	}
 	
 }

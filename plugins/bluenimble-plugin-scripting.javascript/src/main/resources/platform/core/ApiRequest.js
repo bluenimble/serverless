@@ -11,7 +11,7 @@
   @access private
   @augments ApiContext
 */
-var ApiRequest = function (proxy) {
+var ApiRequest = function (proxy, canTrigger) {
 
 	this.proxy 		= proxy;
 	
@@ -20,7 +20,17 @@ var ApiRequest = function (proxy) {
 	  @type {ApiService}
 	  @readonly
 	*/
-	this.service 	= new ApiService (proxy.getService ());
+	this.service 	= proxy.getService () ? new ApiService (proxy.getService ()) : undefined;
+	
+	this.getService = function () {
+		if (this.service) {
+			return this.service;
+		}
+		if (proxy.getService () == null) {
+			return;
+		}
+		return new ApiService (proxy.getService ());
+	};
 	
 	/**	
 	  The request track.  
@@ -148,6 +158,16 @@ var ApiRequest = function (proxy) {
 	  @readonly
 	*/
 	this.parent 		= proxy.getParent () != null ? new ApiRequest (proxy.getParent ()) : null;
+	
+	/**	
+	  If autoTriggered, add the send function 
+	  @returns {ApiOutput} the output
+	*/
+	if (canTrigger) {
+		this.send = function (api) {
+			return new ApiOutput (api.proxy.call (proxy));
+		};
+	}
 
 	/**	
 	  Set a parameter, header 

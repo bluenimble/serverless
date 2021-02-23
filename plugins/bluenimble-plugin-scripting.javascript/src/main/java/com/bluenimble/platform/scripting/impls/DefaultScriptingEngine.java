@@ -78,7 +78,7 @@ public class DefaultScriptingEngine implements ScriptingEngine {
 	static {
 		Denied.add ("var quit=function(){};");
 		Denied.add ("var exit=function(){};");
-		Denied.add ("var print=function(){};");
+		// Denied.add ("var print=function(){};");
 		Denied.add ("var echo=function(){};");
 		Denied.add ("var readFully=function(){};");
 		Denied.add ("var readLine=function(){};");

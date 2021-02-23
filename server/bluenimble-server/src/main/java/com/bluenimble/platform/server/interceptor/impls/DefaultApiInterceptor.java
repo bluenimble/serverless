@@ -337,6 +337,10 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 				status = ApiResponse.INTERNAL_SERVER_ERROR;
 			}
 			
+			if (Lang.isDebugMode ()) {
+				th.printStackTrace ();
+			}
+			
 			if (response instanceof ContainerApiResponse) {
 				if (th instanceof ApiServiceExecutionException) {
 					((ContainerApiResponse)response).setException ((ApiServiceExecutionException)th);

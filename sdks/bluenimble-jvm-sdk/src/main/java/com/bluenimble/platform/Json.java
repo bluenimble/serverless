@@ -655,6 +655,19 @@ public class Json {
 		return sResult;
 	}
 	
+	public static JsonObject toStructuredObject (JsonObject nameValuePairs) {
+		if (Json.isNullOrEmpty (nameValuePairs)) {
+			return null;
+		}
+		JsonObject result = new JsonObject ();
+		Iterator<String> accessors = nameValuePairs.keys ();
+		while (accessors.hasNext ()) {
+			String accessor = accessors.next ();
+			Json.set (result, accessor, nameValuePairs.get (accessor));
+		}
+		return result;
+	}
+	
 	private static String pad (String paraphrase) {
 		if (paraphrase.length () == 16) {
 			return paraphrase;

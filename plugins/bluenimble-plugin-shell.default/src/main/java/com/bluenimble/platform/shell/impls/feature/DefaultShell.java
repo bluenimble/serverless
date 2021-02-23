@@ -25,6 +25,7 @@ import com.bluenimble.platform.shell.OsCommandExecuterCallbackException;
 import com.bluenimble.platform.shell.OsCommandExecuterException;
 import com.bluenimble.platform.shell.OsProcessHandle;
 import com.bluenimble.platform.shell.Shell;
+import com.bluenimble.platform.shell.impls.DefaultOsCommandExecuter;
 import com.bluenimble.platform.shell.impls.OsCommandExecuterStringCallback;
 
 public class DefaultShell implements Shell {
@@ -77,6 +78,11 @@ public class DefaultShell implements Shell {
 		}
 		
 		return result;
+	}
+	
+	public static void main (String [] args) {
+		DefaultShell shell = new DefaultShell ("/Users/lilya/Downloads", new DefaultOsCommandExecuter ());
+		System.err.println (shell.run ("./test.sh alpha", null));
 	}
 	
 }

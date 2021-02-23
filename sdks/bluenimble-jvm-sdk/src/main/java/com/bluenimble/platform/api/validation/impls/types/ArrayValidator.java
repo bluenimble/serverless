@@ -106,17 +106,19 @@ public class ArrayValidator extends AbstractTypeValidator {
 		
 		String sType = Json.getString (spec, Spec.SType, FieldType.Object);
 		
-		TypeValidator tValidator = validator.getTypeValidator (sType);
-		if (tValidator == null) {
-			tValidator = validator.getTypeValidator (FieldType.Object);
-		}
-		for (int i = 0; i < array.count (); i++) {
-			Object innerFeedback = tValidator.validate (api, consumer, request, validator, name, label + "->index " + i, spec, array.get (i));
-			if (innerFeedback != null) {
-				if (innerFeedback instanceof JsonObject) {
-					return innerFeedback;
-				} else {
-					array.set (i, innerFeedback);
+		if (!sType.equalsIgnoreCase (FieldType.Raw)) {
+			TypeValidator tValidator = validator.getTypeValidator (sType);
+			if (tValidator == null) {
+				tValidator = validator.getTypeValidator (FieldType.Object);
+			}
+			for (int i = 0; i < array.count (); i++) {
+				Object innerFeedback = tValidator.validate (api, consumer, request, validator, name, label + "->index " + i, spec, array.get (i));
+				if (innerFeedback != null) {
+					if (innerFeedback instanceof JsonObject) {
+						return innerFeedback;
+					} else {
+						array.set (i, innerFeedback);
+					}
 				}
 			}
 		}
