@@ -39,8 +39,10 @@ import com.bluenimble.platform.security.EncryptionProvider;
 import com.bluenimble.platform.security.EncryptionProvider.Mode;
 import com.bluenimble.platform.security.EncryptionProviderException;
 import com.bluenimble.platform.templating.ExpressionCompiler;
+import com.bluenimble.platform.templating.SimpleVariableResolver;
 import com.bluenimble.platform.templating.VariableResolver;
 import com.bluenimble.platform.templating.impls.BasicVariableResolver;
+import com.bluenimble.platform.templating.impls.DefaultExpressionCompiler;
 
 public class Json {
 
@@ -686,14 +688,23 @@ public class Json {
 	}
 
     public static void main (String [] args) throws Exception {
-    	JsonObject object = new JsonObject ();
-    	object.set ("p1", "alpha");
-    	object.set ("p2", 3);
-    	object.set ("p3", true);
-    	object.set ("p4", new JsonObject ());
-    	object.set ("p5", new Date ());
-    	object.set ("p6", new JsonArray ());
-    	System.out.println (toUrlParameters (object));
+    	ExpressionCompiler ECompiler = new DefaultExpressionCompiler ();
+    	
+    	JsonObject master = new JsonObject ("{ provider: 'remote.default', spec: { endpoint: \"https://[scheduler | 'scheduler'].display.stream:9335/schedulers/default\" } }") ;
+    	
+    	JsonObject rdata = new JsonObject ();
+    	//rdata.set ("scheduler", "scheduler-001");
+    	
+    	Json.resolve (master, ECompiler, new SimpleVariableResolver () {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public Object resolve (String namespace, String... property) {
+				Object v = Json.find (rdata, property);
+				Json.remove (rdata, property);
+				return v;
+			}
+		});
+    	System.out.println (master);
     }
     
 }

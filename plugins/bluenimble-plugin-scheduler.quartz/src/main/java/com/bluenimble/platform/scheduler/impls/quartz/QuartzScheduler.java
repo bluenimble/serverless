@@ -577,7 +577,7 @@ public class QuartzScheduler implements Scheduler {
 		Date startTime 	= Json.getDate (oJob, SchedulerPlugin.Spec.Job.StartTime);
 		Date endTime 	= Json.getDate (oJob, SchedulerPlugin.Spec.Job.EndTime);
 		
-		if (endTime.before (now)) {
+		if (endTime != null && endTime.before (now)) {
 			return SchedulingResult.Expired;
 		}
 		
