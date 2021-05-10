@@ -23,7 +23,7 @@ var ApiRequestTrack = function (proxy) {
 		if (!key || !value) {
 			return this;
 		}
-		proxy.put (key, value);
+		proxy.put (key, JC_ValueConverter.convert (value));
 		return this;
 	};
 	

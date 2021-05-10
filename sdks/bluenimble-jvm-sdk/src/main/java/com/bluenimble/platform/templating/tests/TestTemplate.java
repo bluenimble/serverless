@@ -17,6 +17,7 @@
 package com.bluenimble.platform.templating.tests;
 
 import com.bluenimble.platform.Json;
+import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.templating.SimpleVariableResolver;
 import com.bluenimble.platform.templating.VariableResolver;
@@ -26,6 +27,8 @@ public class TestTemplate {
 	
 	public static void main (String [] args) {
 	
+		String exp0 = "[action.message]";
+		
 		String exp1 = "hello dudes";
 		
 		String exp2 = "Hello [model.c]";
@@ -40,26 +43,25 @@ public class TestTemplate {
 		
 		String exp7 = "[ model.alpha | '' ]>>json";
 
-		final JsonObject model = (JsonObject)new JsonObject ().set ("a", "A Value").set ("b", 409).set ("c", "Hello");
+		final JsonObject model = (JsonObject)new JsonObject ().set ("action", new JsonObject ().set("message", "hello below")).set ("a", "A Value").set ("b", 409).set ("c", "Hello");
+		
+		System.out.println ("Model " + model);
 		
 		VariableResolver vr = new SimpleVariableResolver () {
 			private static final long serialVersionUID = -485939153491337463L;
 
 			@Override
 			public Object resolve (String namespace, String... property) {
-				if (namespace == null) {
-					return null;
-				}
-				if (namespace == null || namespace.equals ("model")) {
-					return Json.find (model, property);
-				}
-				return null;
+				String [] path = Lang.add (new String [] {namespace}, property);
+				System.out.println ("Find " + Lang.join (path, "."));
+				return Json.find (model, path);
 			}
 			
 		};
 		
 		DefaultExpressionCompiler compiler = new DefaultExpressionCompiler ();
 		
+		System.out.println ("exp0: " + compiler.compile (exp0, null).eval (vr));
 		System.out.println ("exp1: " + compiler.compile (exp1, null).eval (vr));
 		System.out.println ("exp2: " + compiler.compile (exp2, null).eval (vr));
 		System.out.println ("exp3: " + compiler.compile (exp3, null).eval (vr));

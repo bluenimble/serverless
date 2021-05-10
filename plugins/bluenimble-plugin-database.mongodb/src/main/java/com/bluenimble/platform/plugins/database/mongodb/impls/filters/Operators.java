@@ -46,8 +46,8 @@ public class Operators {
 		OperatorsMap.put (Operator.all, new OperatorSpec ("$all"));
 		OperatorsMap.put (Operator.btw, new OperatorSpec (Unknown));
 		OperatorsMap.put (Operator.nbtw, new OperatorSpec (Unknown, true));
-		OperatorsMap.put (Operator.nil, new OperatorSpec ("$exists", true));
-		OperatorsMap.put (Operator.nnil, new OperatorSpec ("$exists", false));
+		OperatorsMap.put (Operator.nil, new OperatorSpec ("$exists", false));
+		OperatorsMap.put (Operator.nnil, new OperatorSpec ("$exists", true));
 		OperatorsMap.put (Operator.regex, new OperatorSpec (Unknown));
 		OperatorsMap.put (Operator.ftq, new OperatorSpec (Unknown));
 		OperatorsMap.put (Operator.near, new OperatorSpec (Unknown));

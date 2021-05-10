@@ -897,7 +897,8 @@ public class ElasticSearchIndexer implements Indexer {
 			(JsonObject)new JsonObject ()
 				.set (Remote.Spec.Path, indexPath + types + 
 						(types.equals (Lang.BLANK) ? Lang.BLANK : Lang.SLASH) + 
-						(isCount ? Internal.Elk.Count : Internal.Elk.Search))
+						(isCount ? Internal.Elk.Count : Internal.Elk.Search) +
+						(isCount ? Lang.BLANK : "?rest_total_hits_as_int=true"))
 				.set (Remote.Spec.Headers, 
 					new JsonObject ()
 						.set (HttpHeaders.CONTENT_TYPE, ContentTypes.Json)
