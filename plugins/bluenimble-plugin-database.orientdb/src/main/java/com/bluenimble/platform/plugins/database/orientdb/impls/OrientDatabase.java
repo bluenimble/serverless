@@ -700,6 +700,11 @@ public class OrientDatabase implements Database {
 	public JsonObject describeEntity (String enity) throws DatabaseException {
 		throw new UnsupportedOperationException ("describeEntity(String enity)");
 	}
+	
+	@Override
+	public long countObjects(String entity, Query query) throws DatabaseException {
+		throw new UnsupportedOperationException ("countObjects(String entity, Query query)");
+	}
 
 	/*
 	@Override

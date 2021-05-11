@@ -113,6 +113,7 @@ public interface Database extends Recyclable {
 
 	List<DatabaseObject> 	find 		(String entity, Query query, Visitor visitor) 			throws DatabaseException;
 	DatabaseObject 			findOne 	(String entity, Query query) 							throws DatabaseException;
+	long 					countObjects (String entity, Query query) 							throws DatabaseException;
 	
 	List<DatabaseObject> 	pop 		(String entity, Query query, Visitor visitor) 			throws DatabaseException;
 	DatabaseObject 			popOne 		(String entity, Query query) 							throws DatabaseException;

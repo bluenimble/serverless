@@ -255,14 +255,12 @@ public class JpaDatabase implements Database {
 
 	@Override
 	public JsonObject bulk (JsonObject data) throws DatabaseException {
-		// TODO 
-		return null;
+		throw new UnsupportedOperationException ("bulk (JsonObject data)");
 	}
 
 	@Override
 	public JsonObject describe () throws DatabaseException {
-		// TODO 
-		return null;
+		throw new UnsupportedOperationException ("describe ()");
 	}
 
 	@Override
@@ -463,6 +461,11 @@ public class JpaDatabase implements Database {
 	@Override
 	public JsonObject describeEntity (String enity) throws DatabaseException {
 		throw new UnsupportedOperationException ("describeEntity(String enity)");
+	}
+
+	@Override
+	public long countObjects(String entity, Query query) throws DatabaseException {
+		throw new UnsupportedOperationException ("countObjects(String entity, Query query)");
 	}
 
 }

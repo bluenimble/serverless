@@ -276,7 +276,7 @@ public class MongoDatabaseImpl implements Database {
 		
 		MongoIterable<Document> result;
 		try {
-			result = (MongoIterable<Document>)_query (entity, Query.Construct.select, query);
+			result = (MongoIterable<Document>)_query (entity, Query.Construct.select, query, false);
 		} catch (Exception e) {
 			throw new DatabaseException (e.getMessage (), e);
 		}
@@ -299,6 +299,20 @@ public class MongoDatabaseImpl implements Database {
 		}
 		
 		return result.get (0);
+	}
+
+	@Override
+	public long countObjects (String entity, Query query) throws DatabaseException {
+		
+		entity = entity (Lang.isNullOrEmpty (entity) ? query.entity () : entity);
+		
+		query.count (10000);
+		
+		try {
+			return (Long)_query (entity, Query.Construct.select, query, true);
+		} catch (Exception e) {
+			throw new DatabaseException (e.getMessage (), e);
+		}
 	}
 
 	@Override
@@ -372,7 +386,7 @@ public class MongoDatabaseImpl implements Database {
 			return 0;
 		}
 		
-		Object result = _query (entity, Query.Construct.delete, query);
+		Object result = _query (entity, Query.Construct.delete, query, false);
 		if (result == null) {
 			return 0;
 		}
@@ -620,7 +634,7 @@ public class MongoDatabaseImpl implements Database {
 		return null;
 	}
 
-	private Object _query (String entity, Query.Construct construct, final Query query) throws DatabaseException {
+	private Object _query (String entity, Query.Construct construct, final Query query, boolean count) throws DatabaseException {
 		// check if it's an aggregation
 		Object qNative = query.getNative ();
 		if (qNative != null && qNative instanceof JsonArray && construct.equals (Query.Construct.select)) {
@@ -643,52 +657,66 @@ public class MongoDatabaseImpl implements Database {
 		}
 
 		if (Query.Construct.select.equals (construct)) {
+			long counted = 0;
 			FindIterable<Document> cursor = null;
-			if (session == null) {
-				cursor = db.getCollection (entity).find (mQuery);
+			if (count) {
+				if (session == null) {
+					counted = db.getCollection (entity).countDocuments (mQuery);
+				} else {
+					counted = db.getCollection (entity).countDocuments (session, mQuery);
+				}
 			} else {
-				cursor = db.getCollection (entity).find (session, mQuery);
-			}
-			
-			Select select = query.select ();
-			if (select != null && select.count () > 0) {
-				String [] pFields = new String [select.count ()];
-				for (int i = 0; i < select.count (); i++) {
-					pFields [i] = select.get (i);
+				if (session == null) {
+					cursor = db.getCollection (entity).find (mQuery);
+				} else {
+					cursor = db.getCollection (entity).find (session, mQuery);
 				}
-				cursor.projection (Projections.include (pFields));
 			}
 			
-			// start / skip
-			if (query.start () > 0) {
-				cursor.skip (query.start ());
-			}
-			
-			// count / limit
-			if (query.count () > 0) {
-				cursor.limit (query.count ());
-			}
-			
-	        // orderBy
-			OrderBy orderBy = query.orderBy ();
-			if (orderBy != null && orderBy.count () > 0) {
-				List<Bson> sorts = new ArrayList<Bson> ();
-				Iterator<String> oFields = orderBy.fields ();
-				while (oFields.hasNext ()) {
-					String field = oFields.next ();
-					OrderByField of = orderBy.get (field);
-					Bson sort = null;
-					if (of.direction ().equals (Direction.asc)) {
-						sort = Sorts.ascending (field);
-					} else {
-						sort = Sorts.descending (field);
+			if (cursor != null) {
+				Select select = query.select ();
+				if (select != null && select.count () > 0) {
+					String [] pFields = new String [select.count ()];
+					for (int i = 0; i < select.count (); i++) {
+						pFields [i] = select.get (i);
 					}
-					sorts.add (sort);
+					cursor.projection (Projections.include (pFields));
 				}
-				cursor.sort (Sorts.orderBy (sorts));
+				
+				// start / skip
+				if (query.start () > 0) {
+					cursor.skip (query.start ());
+				}
+				
+				// count / limit
+				if (query.count () > 0) {
+					cursor.limit (query.count ());
+				}
+				
+		        // orderBy
+				OrderBy orderBy = query.orderBy ();
+				if (orderBy != null && orderBy.count () > 0) {
+					List<Bson> sorts = new ArrayList<Bson> ();
+					Iterator<String> oFields = orderBy.fields ();
+					while (oFields.hasNext ()) {
+						String field = oFields.next ();
+						OrderByField of = orderBy.get (field);
+						Bson sort = null;
+						if (of.direction ().equals (Direction.asc)) {
+							sort = Sorts.ascending (field);
+						} else {
+							sort = Sorts.descending (field);
+						}
+						sorts.add (sort);
+					}
+					cursor.sort (Sorts.orderBy (sorts));
+				}
+				
+				return cursor;				
+			} else {
+				return counted;
 			}
-			
-			return cursor;
+
 		} else if (Query.Construct.delete.equals (construct)) {
 			if (session == null) {
 				return db.getCollection (entity).deleteMany (mQuery);

@@ -217,6 +217,40 @@ var Database = function (api, proxy) {
 	};
 
 	/**	
+	  Count records based on a query
+	  @param {string} - the entity/table name
+	  @param {JsonObject} - the query spec<br/>
+	  @example
+	  
+	  db.find (entity: 'YourEntityName', {
+	  	where: {
+	  		prop1: '123',
+	  		prop2: { op: 'gt', value: 35 }
+	  	}
+	  }, function (dbo) {
+	  	// do something useful with the DatabaseObject
+	  });
+	  
+	  @param {JsonObject} [bindings] - the query parameters
+	  
+	*/
+	this.countObjects = function (entity, query, visitor, bindings) {
+	
+		if (!entity) {
+			throw "missing entity argument";
+		}
+
+		if (!query) {
+			throw "missing query argument";
+		}
+		
+		return proxy.countObjects (
+			entity,
+			new JC_JsonQuery (JC_ValueConverter.convert (query), bindings ? JC_ValueConverter.convert (bindings) : null)
+		);
+	};
+
+	/**	
 	  Find records based on a query
 	  @param {string} - the entity/table name
 	  @param {JsonObject} - the query spec<br/>

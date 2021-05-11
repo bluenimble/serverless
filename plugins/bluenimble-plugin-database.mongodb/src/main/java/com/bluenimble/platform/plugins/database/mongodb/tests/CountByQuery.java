@@ -16,35 +16,24 @@
  */
 package com.bluenimble.platform.plugins.database.mongodb.tests;
 
-import java.util.List;
-
 import com.bluenimble.platform.db.Database;
-import com.bluenimble.platform.db.DatabaseObject;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.query.impls.JsonQuery;
 
-public class FindAll {
+public class CountByQuery {
 	
 	public static void main (String [] args) throws Exception {
 		
-		String query = "{ select: [] }";
+		String query = "{ where: { referral: { value: 'RVTBNVHOJ8CY' } } }";
 		
 		Database db = new DatabaseServer ().get ();
 		
-		List<DatabaseObject> orgs = db.find (
+		long count = db.countObjects (
 			"Organization", 
-			new JsonQuery (new JsonObject (query)),
-			null
+			new JsonQuery (new JsonObject (query))
 		);
 		
-		System.out.println ("Found " + orgs.size () + " orgs");
-		
-		for (DatabaseObject org : orgs) {
-			Object r = org.get ("referral");
-			if (r == null || (r instanceof String)) {
-				System.out.println (org.getId () + " -> " + r);
-			}
-		}
+		System.out.println ("Found " + count + " orgs");
 		
 	}
 	
