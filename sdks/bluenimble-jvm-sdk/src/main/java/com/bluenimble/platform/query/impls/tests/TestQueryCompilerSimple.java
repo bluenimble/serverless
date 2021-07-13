@@ -27,10 +27,17 @@ public class TestQueryCompilerSimple {
 
 	public static void main (String [] args) throws Exception {
 		
-		Query query = new JsonQuery (new JsonObject ("{ where: { name: { op: 'all', value: [Beta, Zeta] } } }, orderBy: { name: asc } }") );
+		Query query = new JsonQuery (new JsonObject ("{ where: { alpha: { op: 'gt', value: 'TODAY()', raw: true }, or: [{'user.id': user.id}, {'user.email': recipient.email}], name: { op: 'all', value: [Beta, Zeta] } } }, orderBy: { name: asc } }" ));
 		System.out.println ("Select==>");
-
-		QueryCompiler sc = new SqlQueryCompiler (Query.Construct.select);
+		
+		QueryCompiler sc = new SqlQueryCompiler (Query.Construct.select) {
+			private static final long serialVersionUID = -1248971549807669897L;
+			
+			@Override
+			protected String bind (Object value) {
+				return null;
+			}
+		};
 		
 		CompiledQuery cq = sc.compile (query);
 		

@@ -16,16 +16,23 @@
  */
 package com.bluenimble.platform.plugins.sdks.aws;
 
+import com.bluenimble.platform.PackageClassLoader;
 import com.bluenimble.platform.plugins.impls.AbstractPlugin;
+import com.bluenimble.platform.sdks.aws.services.CloudFrontUriSignerServiceSpi;
 import com.bluenimble.platform.server.ApiServer;
 
 public class AwsSdkPlugin extends AbstractPlugin {
 
 	private static final long serialVersionUID = -7715328225346939289L;
 	
+	interface Registered {
+		String CloudFrontSigner 	= "CloudFrontSigner";
+	}
+	
 	@Override
 	public void init (ApiServer server) throws Exception {
-		
+		PackageClassLoader pcl = (PackageClassLoader)AwsSdkPlugin.class.getClassLoader ();
+		pcl.registerObject (Registered.CloudFrontSigner, new CloudFrontUriSignerServiceSpi ());
 	}
 
 }

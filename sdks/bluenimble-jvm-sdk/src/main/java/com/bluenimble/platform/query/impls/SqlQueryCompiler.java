@@ -132,6 +132,26 @@ public class SqlQueryCompiler extends EventedQueryCompiler {
 	}
 
 	@Override
+	protected void onConjunction (Timing timing, Conjunction conjunction, int index) throws QueryException {
+		switch (timing) {
+			case start:
+				if (index > 0) {
+					if (conjunction == null) {
+						conjunction = Conjunction.and;
+					}
+					buff.append (Lang.SPACE).append (conjunction.name ()).append (Lang.SPACE);
+				}
+				buff.append (Lang.PARENTH_OPEN);
+				break;
+			case end:
+				buff.append (Lang.PARENTH_CLOSE);
+				break;
+			default:
+				break;	
+		}
+	}
+
+	@Override
 	protected void onFilter (Timing timing, Filter filter, Conjunction conjunction, boolean isWhere)
 			throws QueryException {
 		
@@ -162,7 +182,7 @@ public class SqlQueryCompiler extends EventedQueryCompiler {
 				break;
 		}
 	}
-
+	
 	@Override
 	protected void onCondition (Condition condition, Conjunction conjunction, int index)
 			throws QueryException {
@@ -202,7 +222,7 @@ public class SqlQueryCompiler extends EventedQueryCompiler {
 					if (p != null) {
 						buff.append (Lang.COLON).append (p);
 					} else {
-						valueOf (o);
+						valueOf (condition, o);
 					}
 					if (i + 1 != values.size ()) {
 						buff.append (Lang.COMMA);
@@ -224,7 +244,7 @@ public class SqlQueryCompiler extends EventedQueryCompiler {
 		if (parameter != null) {
 			buff.append (Lang.COLON).append (parameter);
 		} else {
-			valueOf (value);
+			valueOf (condition, value);
 		}
 		
 	}
@@ -321,7 +341,7 @@ public class SqlQueryCompiler extends EventedQueryCompiler {
 		return parameter;
 	}
 
-	protected void valueOf (Object value) {
+	protected void valueOf (Condition condition, Object value) {
 		if (value == null) {
 			buff.append (Lang.NULL);
 			return;
@@ -335,7 +355,13 @@ public class SqlQueryCompiler extends EventedQueryCompiler {
 			buff.append (sValue);
 			return;
 		}
-		buff.append (Lang.APOS).append (Lang.replace (sValue, Lang.APOS, Lang.BACKSLASH + Lang.APOS)).append (Lang.APOS);
+		if (!condition.isRaw ()) {
+			buff.append (Lang.APOS);
+		}
+		buff.append (Lang.replace (sValue, Lang.APOS, Lang.BACKSLASH + Lang.APOS));
+		if (!condition.isRaw ()) {
+			buff.append (Lang.APOS);
+		}
 	}
 	
 	protected void entity () {

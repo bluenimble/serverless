@@ -24,6 +24,50 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     
+    <organization>
+        <name>BlueNimble, Inc.</name>
+        <url>https://www.bluenimble.com</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>Apache 2</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>mloukili@bluenimble.com</id>
+            <name>Mohammed Loukili</name>
+            <email>mloukili@bluenimble.com</email>
+            <organization>BlueNimble, Inc.</organization>
+            <organizationUrl>http://www.bluenimble.com</organizationUrl>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+                <role>founder</role>
+            </roles>
+            <timezone>+8</timezone>
+        </developer>
+    </developers>
+    
+    <scm>
+        <connection>scm:git:git@github.com:bluenimble/serverless.git</connection>
+        <developerConnection>scm:git:git@github.com:bluenimble/serverless.git</developerConnection>
+        <url>scm:git:git@github.com:bluenimble/serverless.git</url>
+    </scm>
+    
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+          <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
     <build>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<resources>

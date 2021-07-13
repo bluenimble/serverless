@@ -96,6 +96,7 @@ public abstract class EventedQueryCompiler implements QueryCompiler {
 					// ignore
 					continue;
 				}
+				this.onConjunction (Timing.start, conjunction, counter);
 				@SuppressWarnings("unchecked")
 				List<Object> list = (List<Object>)condition;
 				for (int i = 0; i < list.size (); i++) {
@@ -105,9 +106,11 @@ public abstract class EventedQueryCompiler implements QueryCompiler {
 					}
 					processFilter ((Filter)subFilter, i == 0 ? null : subConjunction, false);
 				}
+				this.onConjunction (Timing.end, conjunction, counter);
 			} else if (Condition.class.isAssignableFrom (condition.getClass ())) {
-				onCondition ((Condition)condition, conjunction, counter++);
+				onCondition ((Condition)condition, conjunction, counter);
 			}
+			counter++;
 		}
 		onFilter (Timing.end, filter, conjunction, isWhere);
 	}
@@ -146,6 +149,8 @@ public abstract class EventedQueryCompiler implements QueryCompiler {
 	protected abstract void onSelectField 	(String field, int count, int index) 			throws QueryException;
 	
 	protected abstract void onFilter 		(Timing timing, Filter filter, Conjunction conjunction, boolean isWhere) 
+																							throws QueryException;
+	protected abstract void onConjunction 	(Timing timing, Conjunction conjunction, int index) 
 																							throws QueryException;
 	protected abstract void onCondition 	(Condition condition, Conjunction conjunction, int index) 
 																							throws QueryException;

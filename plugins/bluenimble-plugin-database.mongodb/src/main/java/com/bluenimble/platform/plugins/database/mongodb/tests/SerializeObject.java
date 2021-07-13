@@ -25,13 +25,13 @@ public class SerializeObject {
 	
 	public static void main (String [] args) throws Exception {
 		
-		String schema = "{ _fields:all, createdBy:false, owner:false, share:{_fields:simple}, broadcast:{_fields:minimal, displays: true} }";
+		String schema = "{ _fields: all }";
 		
 		Database db = new DatabaseServer ().get ();
 		
-		DatabaseObject employee = db.get ("Story", "5caed941d3345d7545a77fae");
+		DatabaseObject manager = db.get ("File", "60d236b6894e0477680ad479");
 		
-		System.out.println (employee.toJson (new JsonBeanSerializer (new JsonObject (schema))));
+		System.out.println (manager.toJson (new JsonBeanSerializer (new JsonObject (schema))));
 		
 	}
 	

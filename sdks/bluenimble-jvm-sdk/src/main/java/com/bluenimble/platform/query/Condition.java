@@ -25,5 +25,6 @@ public interface Condition extends Serializable {
 	String 		field 		();
 	Object 		value 		();
 	Operator 	operator 	();
+	boolean		isRaw 	();
 	
 }

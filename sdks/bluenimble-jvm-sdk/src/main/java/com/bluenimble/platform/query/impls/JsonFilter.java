@@ -64,13 +64,14 @@ public class JsonFilter implements Filter {
 	
 	private Object conditionFor (String field, Object o) {
 		if (!(o instanceof JsonObject)) {
-			return new ConditionImpl (field, Operator.eq, o);
+			return new ConditionImpl (field, Operator.eq, o, false);
 		}
 		JsonObject spec = (JsonObject)o;
 		return new ConditionImpl (
 			field, 
 			Operator.valueOf (Json.getString (spec, JsonQuery.Spec.Operator, Operator.eq.name ())), 
-			spec.get (JsonQuery.Spec.Value)
+			spec.get (JsonQuery.Spec.Value),
+			Json.getBoolean (spec, JsonQuery.Spec.IsRaw, false)
 		);
 	}
 

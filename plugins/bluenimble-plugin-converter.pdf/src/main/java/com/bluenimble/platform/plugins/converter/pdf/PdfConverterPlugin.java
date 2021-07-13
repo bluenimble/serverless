@@ -17,17 +17,19 @@
 package com.bluenimble.platform.plugins.converter.pdf;
 
 import com.bluenimble.platform.PackageClassLoader;
+import com.bluenimble.platform.converter.pdf.services.SplitApiServiceSpi;
 import com.bluenimble.platform.plugins.impls.AbstractPlugin;
 import com.bluenimble.platform.server.ApiServer;
 
-import com.bluenimble.platform.converter.pdf.services.SplitApiServiceSpi;
+import com.bluenimble.platform.converter.pdf.services.ConvertApiServiceSpi;
 
 public class PdfConverterPlugin extends AbstractPlugin {
 
 	private static final long serialVersionUID = -7715328225346939289L;
 	
 	interface Registered {
-		String SplitService 	= "split";
+		String ConvertService 	= "ConvertToPdf";
+		String SplitService 	= "SplitPdf";
 	}
 	
 	@Override
@@ -35,6 +37,7 @@ public class PdfConverterPlugin extends AbstractPlugin {
 		PackageClassLoader pcl = (PackageClassLoader)PdfConverterPlugin.class.getClassLoader ();
 		
 		pcl.registerObject (Registered.SplitService, new SplitApiServiceSpi ());
+		pcl.registerObject (Registered.ConvertService, new ConvertApiServiceSpi ());
 	}
 
 }

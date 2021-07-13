@@ -1,6 +1,6 @@
 {
-	"namespace": "converter.pdf",
-	"name": "Pdf Converter - PdfBox",
+	"namespace": "enterprise.pdf",
+	"name": "Pdf Operations - Convertions and Transforms",
 	
 	"spi": {
 		"class": "com.bluenimble.platform.plugins.converter.pdf.PdfConverterPlugin",

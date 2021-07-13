@@ -50,6 +50,8 @@ public class JsonQuery implements Query {
 		String Value 		= "value";
 		
 		String Native		= "native";
+		
+		String IsRaw		= "raw";
 	}
 	
 	protected JsonObject 			source;

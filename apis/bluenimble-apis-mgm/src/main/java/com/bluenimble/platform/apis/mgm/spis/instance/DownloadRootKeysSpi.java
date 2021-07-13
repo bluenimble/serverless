@@ -39,8 +39,6 @@ public class DownloadRootKeysSpi extends AbstractApiServiceSpi {
 
 	private static final long serialVersionUID = -3682312790255625219L;
 	
-	
-
 	interface Output {
 		String Name 		= "name";
 		String Endpoints 	= "endpoints";

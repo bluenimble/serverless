@@ -28,10 +28,12 @@ public class ConditionImpl implements Condition {
 	private String field;
 	private Query.Operator operator;
 	private Object value;
+	private boolean isRaw;
 	
-	public ConditionImpl (String field, Query.Operator operator, Object value) {
+	public ConditionImpl (String field, Query.Operator operator, Object value, boolean isRaw) {
 		this.field 		= field;
 		this.operator 	= operator;
+		this.isRaw 	= isRaw;
 		if (value instanceof JsonObject) {
 			value = new JsonQuery ((JsonObject)value);
 		}
@@ -51,6 +53,11 @@ public class ConditionImpl implements Condition {
 	@Override
 	public Operator operator () {
 		return operator;
+	}
+
+	@Override
+	public boolean isRaw () {
+		return isRaw;
 	}
 	
 }

@@ -40,7 +40,7 @@ public class DatabaseServer {
 		);
 
 		MongoClientURI uri = new MongoClientURI (
-			"mongodb+srv://",
+			"mongodb+srv://api:Ad%40m2010@displaystream-primary-9zlqv.mongodb.net",
 			MongoClientOptions.builder ().cursorFinalizerEnabled (false).codecRegistry (codecRegistry).retryWrites (true)
 		);
 			
@@ -48,7 +48,7 @@ public class DatabaseServer {
 	}
 	public Database get () {
 		
-		return new MongoDatabaseImpl (client (), "dsdev", new Tracer () {
+		return new MongoDatabaseImpl (client (), "neetworkiin-dev", new Tracer () {
 			private static final long serialVersionUID = 4922972723643535449L;
 
 			@Override
