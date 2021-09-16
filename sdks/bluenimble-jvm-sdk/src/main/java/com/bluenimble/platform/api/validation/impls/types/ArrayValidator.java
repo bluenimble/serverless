@@ -63,6 +63,9 @@ public class ArrayValidator extends AbstractTypeValidator {
 			array = (JsonArray)value;
 		} else {
 			String sValue = String.valueOf (value);
+			if (Lang.isNullOrEmpty (sValue)) {
+				return null;
+			}
 			if (!sValue.startsWith (Lang.ARRAY_OPEN)) {
 				sValue = Lang.ARRAY_OPEN + sValue + Lang.ARRAY_CLOSE;
 			}

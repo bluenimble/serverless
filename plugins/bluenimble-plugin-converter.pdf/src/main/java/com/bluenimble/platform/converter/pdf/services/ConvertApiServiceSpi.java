@@ -62,6 +62,7 @@ public class ConvertApiServiceSpi extends AbstractApiServiceSpi {
 		String in = (String)request.get (Spec.InFile, ApiRequest.Scope.Parameter);
 		String out = (String)request.get (Spec.OutFile, ApiRequest.Scope.Parameter);
 		
+
 		InputStream is = null;
 		try {
 			if (format != null) {

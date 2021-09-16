@@ -24,8 +24,6 @@ import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -971,8 +969,8 @@ public class Lang {
         return buffer.getLong ();
     }
     
-    public static void main (String[] args) throws ParseException {
-    	LocalDateTime.parse ("2021-02-18T23:59:59Z", DateTimeFormatter.ofPattern ("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
+    public static void main (String[] args) throws Exception {
+    	System.out.print (Lang.keys (20, 30) [1]);
 	}
     
 }

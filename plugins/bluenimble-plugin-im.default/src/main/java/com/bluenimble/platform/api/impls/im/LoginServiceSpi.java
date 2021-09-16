@@ -27,12 +27,14 @@ import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiOutput;
 import com.bluenimble.platform.api.ApiRequest;
 import com.bluenimble.platform.api.ApiResponse;
+import com.bluenimble.platform.api.ApiService;
 import com.bluenimble.platform.api.ApiServiceExecutionException;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.impls.spis.AbstractApiServiceSpi;
 import com.bluenimble.platform.api.security.ApiConsumer;
 import com.bluenimble.platform.db.Database;
 import com.bluenimble.platform.db.DatabaseObject;
+import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.im.SecurityUtils;
 import com.bluenimble.platform.query.Query;
@@ -68,6 +70,7 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 	}
 
 	public interface Config {
+		String TrustedServices			= "trusted";
 		String Lookup					= "lookup";
 		String Check					= "check";
 		String Database 				= "database";
@@ -110,7 +113,7 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 		String 	Email 			= "email";
 		String 	TokenAge 		= "tokenAge";
 		String 	TokenType		= "tokenType";
-		
+		String  ForcePassword 	= "forcePassword";
 		String  ActivationCode	= "activationCode";
 	}
 
@@ -142,7 +145,15 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 				query.set (Query.Construct.where.name (), where);
 				
 				where.set (Json.getString (config, Config.UserProperty, Fields.Email), payload.get (Spec.User));
-				if (!request.getChannel ().equals (ApiRequest.Channels.container.name ())) {
+				
+				boolean forcePassword = Json.getBoolean (payload, Spec.ForcePassword, true);
+				
+				JsonArray bypassServices = Json.getArray (config, Config.TrustedServices);
+				ApiService callingService = null;
+				if (request.getParent () != null) {
+					callingService = request.getParent ().getService ();
+				}
+				if (forcePassword || bypassServices == null || callingService == null || !bypassServices.contains (callingService.getId ())) {
 					where.set (
 						Json.getString (config, Config.PasswordProperty, Fields.Password), 
 						encryptPassword ? Crypto.md5 (Json.getString (payload, Spec.Password), Encodings.UTF8) : Json.getString (payload, Spec.Password)

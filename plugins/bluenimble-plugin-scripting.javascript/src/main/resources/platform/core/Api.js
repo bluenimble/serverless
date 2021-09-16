@@ -290,8 +290,8 @@ function Api (proxy) {
 	/**	
 	  Call a service
 	  @param {ApiConsumer} consumer - the consumer making the request
-	  @param {ApiConsumer} request - the parent request
-	  @param {ApiConsumer} spec - the request spec for the target service
+	  @param {ApiRequest} request - the parent request
+	  @param {JsonObject} spec - the request spec for the target service
 	  @returns {ApiOutput} the output
 	*/
 	this.call = function (consumer, request, spec) {
@@ -308,9 +308,28 @@ function Api (proxy) {
 	};
 
 	/**	
+	  Validate a request
+	  @param {ApiConsumer} consumer - the consumer making the request
+	  @param {JsonObject} spec - the request spec for the target service
+	  @param {ApiRequest} request - the parent request
+	*/
+	this.validate = function (consumer, spec, request) {
+		if (!consumer) {
+			throw "consumer is required";
+		}
+		if (!request) {
+			throw "parent request is required";
+		}
+		if (!spec) {
+			throw "request spec is required";
+		}
+		proxy.validate (consumer.proxy, JC_ValueConverter.convert (spec), request.proxy);
+	};
+
+	/**	
 	  Create a request
 	  @param {ApiConsumer} consumer - the consumer making the request
-	  @param {ApiConsumer} request - the parent request
+	  @param {ApiRequest} request - the parent request
 	  @param {ApiConsumer} spec - the request spec for the target service
 	*/
 	this.request = function (consumer, request, spec) {

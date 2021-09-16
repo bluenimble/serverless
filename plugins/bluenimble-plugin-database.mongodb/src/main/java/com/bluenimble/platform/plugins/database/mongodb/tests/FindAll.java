@@ -27,24 +27,19 @@ public class FindAll {
 	
 	public static void main (String [] args) throws Exception {
 		
-		String query = "{ select: [] }";
+		String query = "{ count: 1000, where: {\n" + 
+				"				deleted: { }\n" + 
+				"			} }";
 		
 		Database db = new DatabaseServer ().get ();
 		
 		List<DatabaseObject> orgs = db.find (
-			"Organization", 
+			"Display", 
 			new JsonQuery (new JsonObject (query)),
 			null
 		);
 		
-		System.out.println ("Found " + orgs.size () + " orgs");
-		
-		for (DatabaseObject org : orgs) {
-			Object r = org.get ("referral");
-			if (r == null || (r instanceof String)) {
-				System.out.println (org.getId () + " -> " + r);
-			}
-		}
+		System.out.println ("Found " + orgs.size () + " Displays");
 		
 	}
 	
