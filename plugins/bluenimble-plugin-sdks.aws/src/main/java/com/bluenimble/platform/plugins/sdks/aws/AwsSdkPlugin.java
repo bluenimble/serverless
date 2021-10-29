@@ -18,7 +18,7 @@ package com.bluenimble.platform.plugins.sdks.aws;
 
 import com.bluenimble.platform.PackageClassLoader;
 import com.bluenimble.platform.plugins.impls.AbstractPlugin;
-import com.bluenimble.platform.sdks.aws.services.CloudFrontUriSignerServiceSpi;
+import com.bluenimble.platform.sdks.aws.services.cf.CloudFrontUriSignerServiceSpi;
 import com.bluenimble.platform.server.ApiServer;
 
 public class AwsSdkPlugin extends AbstractPlugin {

@@ -1,4 +1,4 @@
-package com.bluenimble.platform.sdks.aws.services;
+package com.bluenimble.platform.sdks.aws.services.cf;
 
 import java.io.InputStream;
 import java.security.PrivateKey;

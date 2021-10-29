@@ -1,4 +1,4 @@
-package com.bluenimble.platform.sdks.aws.services;
+package com.bluenimble.platform.sdks.aws.examples;
 
 import java.io.File;
 import java.io.FileInputStream;

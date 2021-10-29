@@ -234,7 +234,7 @@ var Database = function (api, proxy) {
 	  @param {JsonObject} [bindings] - the query parameters
 	  
 	*/
-	this.countObjects = function (entity, query, visitor, bindings) {
+	this.countObjects = function (entity, query, bindings) {
 	
 		if (!entity) {
 			throw "missing entity argument";

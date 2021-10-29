@@ -153,7 +153,7 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 				if (request.getParent () != null) {
 					callingService = request.getParent ().getService ();
 				}
-				if (forcePassword || bypassServices == null || callingService == null || !bypassServices.contains (callingService.getId ())) {
+				if (forcePassword || callingService == null || bypassServices == null || !bypassServices.contains (callingService.getId ())) {
 					where.set (
 						Json.getString (config, Config.PasswordProperty, Fields.Password), 
 						encryptPassword ? Crypto.md5 (Json.getString (payload, Spec.Password), Encodings.UTF8) : Json.getString (payload, Spec.Password)
@@ -200,9 +200,9 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 		}
 
 		JsonObject 	org 				= Json.getObject (config, Config.Organization);
-		String 		ifPresentField 		= (String)Json.find (config, Config.Organization, Config.IfPresent);
+		String 		ifPresentField 		= (String)Json.find (config, Config.IfPresent);
 		
-		if (org != null && payload.get (ifPresentField) != null) {
+		if (org != null && ifPresentField != null && payload.get (ifPresentField) != null) {
 			payload.set (Spec.User, account.getId ());
 			JsonObject lookup 		= Json.getObject (org, Config.Lookup);
 			JsonObject lookupQuery 	= Json.getObject (lookup, Config.Query);

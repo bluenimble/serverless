@@ -425,7 +425,7 @@ public class MongoDatabaseImpl implements Database {
 		describe.set (Describe.Size, 0);
 		
 		MongoIterable<String> collections = null;
-				
+		
 		if (session == null) {
 			collections = db.listCollectionNames ();
 		} else {

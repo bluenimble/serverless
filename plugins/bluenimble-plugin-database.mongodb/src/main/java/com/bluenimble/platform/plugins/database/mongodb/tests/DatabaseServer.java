@@ -30,6 +30,7 @@ import com.bluenimble.platform.plugins.database.mongodb.impls.MongoDatabaseImpl;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientURI;
+import com.mongodb.WriteConcern;
 
 public class DatabaseServer {
 
@@ -40,8 +41,8 @@ public class DatabaseServer {
 		);
 
 		MongoClientURI uri = new MongoClientURI (
-			"mongodb+srv://...",
-			MongoClientOptions.builder ().cursorFinalizerEnabled (false).codecRegistry (codecRegistry).retryWrites (true)
+			"",
+			MongoClientOptions.builder ().cursorFinalizerEnabled (false).codecRegistry (codecRegistry).retryWrites (true).writeConcern (WriteConcern.MAJORITY)
 		);
 			
 		return new MongoClient (uri);

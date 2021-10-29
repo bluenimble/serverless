@@ -52,7 +52,7 @@ else
 fi
 export JAVA
 
-JAVA_OPTS_SCRIPT="-Djna.nosys=true -XX:+HeapDumpOnOutOfMemoryError -XX:MaxDirectMemorySize=7879m -Djava.awt.headless=true -Dfile.encoding=UTF8 -Djava.net.preferIPv4Stack=true -DBNB_HOME=$BNB_HOME"
+JAVA_OPTS_SCRIPT="-Djna.nosys=true -Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2 -XX:+HeapDumpOnOutOfMemoryError -XX:MaxDirectMemorySize=7879m -Djava.awt.headless=true -Dfile.encoding=UTF8 -Djava.net.preferIPv4Stack=true -DBNB_HOME=$BNB_HOME"
 
 BNB_PID=$BNB_HOME/bnb.pid
 

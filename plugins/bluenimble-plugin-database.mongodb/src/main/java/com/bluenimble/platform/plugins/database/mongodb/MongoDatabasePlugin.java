@@ -40,6 +40,8 @@ import com.bluenimble.platform.server.ServerFeature;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientURI;
+import com.mongodb.ReadConcern;
+import com.mongodb.WriteConcern;
 
 public class MongoDatabasePlugin extends AbstractPlugin {
 
@@ -47,7 +49,10 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 	
 	private CodecRegistry codecRegistry;
 	
-	private static final String DefaultDriver = "mongodb+srv";
+	private static final String DefaultDriver 		= "mongodb+srv";
+	
+	private static final String DefaultWriteConcern = "MAJORITY";
+	private static final String DefaultReadConcern 	= "MAJORITY";
 	
 	interface Spec {
 		String Host 	= "host";
@@ -65,6 +70,11 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 						= "connectTimeout"; 
 		String SocketTimeout
 						= "socketTimeout";
+		
+		String WriteConcern
+						= "writeConcern";
+		String ReadConcern
+						= "readConcern";
 		
 		String RetryWrites
 						= "retryWrites";
@@ -222,10 +232,28 @@ public class MongoDatabasePlugin extends AbstractPlugin {
 		}
 		
 		String driver = Json.getString (spec, Spec.Driver, DefaultDriver);
+		
+		String swc = Json.getString (spec, Spec.WriteConcern, DefaultWriteConcern);
+		WriteConcern wc = null;
+		try {
+			wc = (WriteConcern)WriteConcern.class.getField (swc).get (null);
+		} catch (Exception e) {
+			wc = WriteConcern.MAJORITY;
+		}
+		
+		String src = Json.getString (spec, Spec.ReadConcern, DefaultReadConcern);
+		ReadConcern rc = null;
+		try {
+			rc = (ReadConcern)ReadConcern.class.getField (src).get (null);
+		} catch (Exception e) {
+			rc = ReadConcern.MAJORITY;
+		}
 
 		MongoClientOptions.Builder optionsBuilder = 
 				MongoClientOptions.builder ()
 					.cursorFinalizerEnabled (false)
+					.readConcern (rc)
+					.writeConcern (wc)
 					.retryWrites (Json.getBoolean (spec, Spec.RetryWrites, true))
 					.codecRegistry (codecRegistry)
 					.sslEnabled (Json.getBoolean (spec, Spec.SSL, false))
