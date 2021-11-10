@@ -67,9 +67,13 @@ public class LongValidator extends AbstractTypeValidator {
 		}
 		
 		if (!isLong) {
+			Double dValue = null;
 			try {
-				iValue = Long.parseLong (String.valueOf (value));
-				isLong = true;
+				dValue = Double.parseDouble (String.valueOf (value));
+				iValue = dValue.longValue ();
+				if (dValue == iValue) {
+					isLong = true;
+				}
 			} catch (NumberFormatException nfex) {
 			}
 		}
@@ -101,15 +105,11 @@ public class LongValidator extends AbstractTypeValidator {
 		}
 
 		JsonObject enumFeedback = ValidationUtils.checkEnum (api, request, validator, spec, label, iValue, feedback);
-		if (feedback == null) {
-			feedback = enumFeedback;
+		if (enumFeedback != null) {
+			return enumFeedback;
 		}
 		
-		if (feedback == null) {
-			return iValue;
-		}
-		
-		return feedback;
+		return iValue;
 	}
 
 	@Override

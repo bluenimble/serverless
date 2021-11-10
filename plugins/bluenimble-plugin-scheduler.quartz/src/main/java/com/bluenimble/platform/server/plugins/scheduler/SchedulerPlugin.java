@@ -100,6 +100,7 @@ public class SchedulerPlugin extends AbstractPlugin {
 		interface Job {
 			String Id = "id";
 			String Scheduler 	= "scheduler";
+			String Interval		= "interval";
 			String Expression 	= "expression";
 			String Lifecycle	= "lifecycle";
 			String Space		= "space";
@@ -418,6 +419,7 @@ public class SchedulerPlugin extends AbstractPlugin {
 						JsonObject job = new JsonObject ();
 						job.set (Spec.Job.Id, (String)dbo.get (Json.getString (fields, Spec.Job.Id, Spec.Job.Id)));
 						job.set (Spec.Job.Expression, (String)dbo.get (Json.getString (fields, Spec.Job.Expression, Spec.Job.Expression)));
+						job.set (Spec.Job.Interval, (Integer)dbo.get (Json.getString (fields, Spec.Job.Interval, Spec.Job.Interval)));
 						job.set (Spec.Job.Lifecycle, (JsonObject)dbo.get (Json.getString (fields, Spec.Job.Lifecycle, Spec.Job.Lifecycle)));
 						job.set (Spec.Job.StartTime, (String)dbo.get (Json.getString (fields, Spec.Job.StartTime, Spec.Job.StartTime)));
 						job.set (Spec.Job.EndTime, (String)dbo.get (Json.getString (fields, Spec.Job.EndTime, Spec.Job.EndTime)));

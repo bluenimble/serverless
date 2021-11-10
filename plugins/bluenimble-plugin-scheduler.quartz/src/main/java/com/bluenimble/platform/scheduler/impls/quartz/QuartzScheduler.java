@@ -1,6 +1,7 @@
 package com.bluenimble.platform.scheduler.impls.quartz;
 
 import static org.quartz.CronScheduleBuilder.cronSchedule;
+import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.JobKey.jobKey;
 import static org.quartz.TriggerBuilder.newTrigger;
@@ -10,7 +11,6 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import org.quartz.CronScheduleBuilder;
-import org.quartz.CronTrigger;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.Trigger;
@@ -570,8 +570,13 @@ public class QuartzScheduler implements Scheduler {
 
 		String 		id 			= Json.getString (oJob, Spec.Job.Id);
 		String 		expression	= Json.getString (oJob, Spec.Job.Expression);
+		int 		timeInSecs	= Json.getInteger (oJob, Spec.Job.Interval, 3600);
 		JsonObject 	lifecycle	= Json.getObject (oJob, Spec.Job.Lifecycle);
 		boolean 	running		= Json.getBoolean (oJob, Spec.Job.Running, true);
+		
+		if (expression == null && timeInSecs <= 0) {
+			throw new SchedulerException ("Job requires an expression or Time in Seconds to be scheduled");
+		}
 		
 		Date now		= new Date ();
 		Date startTime 	= Json.getDate (oJob, SchedulerPlugin.Spec.Job.StartTime);
@@ -602,13 +607,20 @@ public class QuartzScheduler implements Scheduler {
 		
 		String timeZone = Json.getString (this.spec, SchedulerPlugin.Spec.TimeZone);
 		
-		CronScheduleBuilder csb = cronSchedule (expression);
-		if (!Lang.isNullOrEmpty (timeZone)) {
-			csb.inTimeZone (TimeZone.getTimeZone (timeZone));
+		TriggerBuilder<Trigger> triggerBuilder = newTrigger ()
+				.withIdentity (Prefix.Trigger + id, this.id);
+		
+		if (expression != null) {
+			space.tracer ().log (Level.Info, "Schedule Job {0} with expression {1}", id, expression);
+			CronScheduleBuilder csb = cronSchedule (expression);
+			if (!Lang.isNullOrEmpty (timeZone)) {
+				csb.inTimeZone (TimeZone.getTimeZone (timeZone));
+			}
+			triggerBuilder.withSchedule (csb);
+		} else if (timeInSecs > 0) {
+			space.tracer ().log (Level.Info, "Schedule Job {0} with timeInSecs {1}", id, timeInSecs);
+			triggerBuilder.withSchedule (simpleSchedule ().withIntervalInSeconds (timeInSecs).repeatForever ());
 		}
-		TriggerBuilder<CronTrigger> triggerBuilder = newTrigger ()
-				.withIdentity (Prefix.Trigger + id, this.id)
-				.withSchedule (csb);
 		
 		if (startTime != null) {
 			space.tracer ().log (Level.Info, "  w/ StartTime {0}", Lang.toUTC (startTime));

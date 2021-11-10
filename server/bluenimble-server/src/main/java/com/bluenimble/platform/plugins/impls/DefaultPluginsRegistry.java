@@ -60,7 +60,7 @@ public class DefaultPluginsRegistry implements PluginsRegistry, ClassLoaderRegis
 	private static final Comparator<Plugin> Comparator = new Comparator<Plugin>() {
 	    @Override
 	    public int compare (Plugin left, Plugin right) {
-	        return left.getWeight () - right.getWeight (); // use your logic
+	        return left.getWeight () - right.getWeight ();
 	    }
 	};
 	
@@ -434,10 +434,11 @@ public class DefaultPluginsRegistry implements PluginsRegistry, ClassLoaderRegis
 
 	@Override
 	public void onEvent (final Event event, final Manageable target, Object... args) throws PluginRegistryException {
-		final Iterator<String> names = getNames ();
-		while (names.hasNext ()) {
-			String plugin = names.next ();
-			lockup (plugin).onEvent (event, target, args);
+		List<Plugin> list = new ArrayList<Plugin> (plugins.values ());
+		Collections.sort (list, Comparator);
+		
+		for (Plugin p : list) {
+			p.onEvent (event, target, args);
 		}
 	}
 

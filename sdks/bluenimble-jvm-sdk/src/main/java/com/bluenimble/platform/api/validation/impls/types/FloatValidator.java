@@ -105,15 +105,11 @@ public class FloatValidator extends AbstractTypeValidator {
 		}
 		
 		JsonObject enumFeedback = ValidationUtils.checkEnum (api, request, validator, spec, label, fValue, feedback);
-		if (feedback == null) {
-			feedback = enumFeedback;
+		if (enumFeedback != null) {
+			return enumFeedback;
 		}
 		
-		if (feedback == null) {
-			return fValue;
-		}
-		
-		return feedback;
+		return fValue;
 	}
 
 

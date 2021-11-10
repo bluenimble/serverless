@@ -67,9 +67,13 @@ public class IntegerValidator extends AbstractTypeValidator {
 		}
 		
 		if (!isInteger) {
+			Double dValue = null;
 			try {
-				iValue = Integer.parseInt (String.valueOf (value));
-				isInteger = true;
+				dValue = Double.parseDouble (String.valueOf (value));
+				iValue = dValue.intValue ();
+				if (dValue == iValue) {
+					isInteger = true;
+				}
 			} catch (NumberFormatException nfex) {
 			}
 		}
@@ -105,15 +109,11 @@ public class IntegerValidator extends AbstractTypeValidator {
 		}
 		
 		JsonObject enumFeedback = ValidationUtils.checkEnum (api, request, validator, spec, label, iValue, feedback);
-		if (feedback == null) {
-			feedback = enumFeedback;
+		if (enumFeedback != null) {
+			return enumFeedback;
 		}
 		
-		if (feedback == null) {
-			return iValue;
-		}
-		
-		return feedback;
+		return iValue;
 	}
 
 
