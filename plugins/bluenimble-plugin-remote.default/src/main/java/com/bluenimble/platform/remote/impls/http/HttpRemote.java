@@ -118,7 +118,9 @@ public class HttpRemote extends BaseRemote {
 				@Override
 				public Object resolve (String namespace, String... property) {
 					Object v = Json.find (rdata, property);
-					Json.remove (rdata, property);
+					if (rdata != null) {
+						Json.remove (rdata, property);
+					}
 					return v;
 				}
 			});

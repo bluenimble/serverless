@@ -437,7 +437,7 @@ public class Json {
     
     public static void remove (JsonObject target, String... path) {
 		
-    	if (path == null || path.length == 0) {
+    	if (target == null || path == null || path.length == 0) {
     		return;
     	}
     	
