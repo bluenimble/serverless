@@ -27,12 +27,14 @@ var ApiService = function (proxy) {
 	  @readonly
 	*/
 	this.name 			= proxy.getName 		();
+	
 	/**	
 	  The description of this service
 	  @type {string}
 	  @readonly
 	*/
 	this.description 	= proxy.getDescription 	();
+	
 	/**	
 	  The endpoint of this service
 	  @type {string}
@@ -45,21 +47,25 @@ var ApiService = function (proxy) {
 	  @type {JsonObject}
 	*/
 	this.security 		= proxy.getSecurity 	();
+	
 	/**	
 	  The runtime block of this service - if any -
 	  @type {JsonObject}
 	*/
 	this.runtime		= proxy.getRuntime 		();
+	
 	/**	
 	  The features block of this service - if any -
 	  @type {JsonObject}
 	*/
 	this.features		= proxy.getFeatures 	();
+	
 	/**	
 	  The media block of this service - if any -
 	  @type {JsonObject}
 	*/
 	this.media			= proxy.getMedia 		();
+	
 	/**	
 	  The spi block of this service - if any -
 	  @type {JsonObject}

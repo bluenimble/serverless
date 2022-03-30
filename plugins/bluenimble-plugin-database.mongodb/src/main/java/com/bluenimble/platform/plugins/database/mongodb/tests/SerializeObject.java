@@ -25,7 +25,7 @@ public class SerializeObject {
 	
 	public static void main (String [] args) throws Exception {
 		
-		String schema = "{ _fields: all, medias: false, createdBy: false, owner: { _fields: minimal, broker: true } }";
+		String schema = "{ _fields: simple, createdBy: { _fields: ['id'] } }";
 		
 		Database db = new DatabaseServer ().get ();
 		

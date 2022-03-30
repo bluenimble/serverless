@@ -48,6 +48,7 @@ import com.bluenimble.platform.messaging.impls.JsonSender;
 import com.bluenimble.platform.plugins.im.SecurityUtils;
 import com.bluenimble.platform.query.Query;
 import com.bluenimble.platform.query.impls.JsonQuery;
+import com.bluenimble.platform.reflect.beans.BeanSerializer;
 
 public class SignupServiceSpi extends AbstractApiServiceSpi {
 
@@ -154,9 +155,18 @@ public class SignupServiceSpi extends AbstractApiServiceSpi {
 		
 		payload.remove (Spec.Password);
 		
-		JsonObject result = account.toJson (LoginServiceSpi.BeanSerializer);
+		BeanSerializer beanSerializer = (BeanSerializer)config.get (Config.Serializer);
 		
-		result.set (Config.Owner, Defaults.Yes);
+		if (beanSerializer == null) {
+			beanSerializer = LoginServiceSpi.BeanSerializer;
+		}
+		JsonObject result = account.toJson (beanSerializer);
+		
+		JsonObject appendResponse = Json.getObject (config, Config.AppendResponse);
+		if (appendResponse != null) {
+			result.putAll (appendResponse);
+		}
+		// result.set (Config.Owner, Defaults.Yes);
 		
 		String email = Json.getString (payload, Spec.Email); 
 		if (Lang.isNullOrEmpty (email)) {
@@ -179,7 +189,7 @@ public class SignupServiceSpi extends AbstractApiServiceSpi {
 
 			// create token
 			result.set (ApiConsumer.Fields.TokenType, Defaults.TokenType);
-			String [] tokenAndExpiration = SecurityUtils.tokenAndExpiration (api, result, now, 0);
+			String [] tokenAndExpiration = SecurityUtils.tokenAndExpiration (api, consumer, result, now, 0);
 			result.set (ApiConsumer.Fields.Token, tokenAndExpiration [0]);
 			result.set (ApiConsumer.Fields.ExpiryDate, tokenAndExpiration [1]);
 			

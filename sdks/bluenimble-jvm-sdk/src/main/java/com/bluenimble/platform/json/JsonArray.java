@@ -454,5 +454,14 @@ public class JsonArray extends JsonAbstractEntity implements List<Object> {
 	public List<Object> toList () {
 		return values;
 	}
+	
+	public static void main (String[] args) {
+		JsonArray array = new JsonArray ();
+		array.add ("Line 1");
+		array.add ("");
+		array.add ("Line 2");
+		
+		System.out.println ("Array Join " + array.join ("<br>", false));
+	}
 
 }

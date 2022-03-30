@@ -154,7 +154,7 @@ public class PeerImpl implements Peer {
 	}
 	
 	@Override
-	public boolean hasAccess (String channel, PeerChannel.Access access) {
+	public boolean hasAccess (String channel, Access access) {
 		// no defined channels, peer has no access at all
 		if (channels == null || channels.isEmpty ()) {
 			return false;

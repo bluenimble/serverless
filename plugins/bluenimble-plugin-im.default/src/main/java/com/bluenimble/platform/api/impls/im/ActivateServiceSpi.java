@@ -89,7 +89,7 @@ public class ActivateServiceSpi extends AbstractApiServiceSpi {
 		JsonObject oAccount = account.toJson (DefaultBeanSerializer.Default);
 		
 		// create token
-		String [] tokenAndExpiration = SecurityUtils.tokenAndExpiration (api, oAccount, now, 0);
+		String [] tokenAndExpiration = SecurityUtils.tokenAndExpiration (api, consumer, oAccount, now, 0);
 
 		oAccount.remove (Json.getString (config, Config.PasswordProperty, Spec.Password));
 		oAccount.set (ApiConsumer.Fields.Token, tokenAndExpiration [0]);

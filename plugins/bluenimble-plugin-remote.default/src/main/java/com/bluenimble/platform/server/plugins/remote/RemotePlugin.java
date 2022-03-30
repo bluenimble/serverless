@@ -250,9 +250,9 @@ public class RemotePlugin extends AbstractPlugin {
 		JsonObject pool = Json.getObject (spec, Remote.Spec.Pool);
 		builder.connectionPool (
 			new ConnectionPool (
-				Json.getInteger (pool, HttpRemote.Pool.MaxIdleConnections, 10),
+				Json.getInteger (pool, HttpRemote.Pool.MaxIdleConnections, 50),
 				Json.getLong (pool, HttpRemote.Pool.KeepAliveDuration, 60),
-				TimeUnit.MINUTES
+				TimeUnit.SECONDS
 			)
 		);
 		

@@ -219,6 +219,9 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 			}
 			
 			track.update (consumer);
+			
+			// api life cycle - onValidate
+			api.getSpi ().onValidate (api, consumer, service, request, response);
 
 			try {
 				server.getServiceValidator ().validate (api, service.getSpecification (), consumer, request);

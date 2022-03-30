@@ -970,7 +970,7 @@ public class Lang {
     }
     
     public static void main (String[] args) throws Exception {
-    	System.out.print (Lang.keys (20, 30) [1]);
+    	System.out.print (template("[= type == 'user' ? 1 : 0]", (JsonObject)new JsonObject ().set ("type", "user"), true));
 	}
     
 }

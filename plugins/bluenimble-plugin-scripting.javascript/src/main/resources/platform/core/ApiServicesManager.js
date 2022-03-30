@@ -24,6 +24,10 @@ var ApiServicesManager = function (proxy) {
 		if (serviceProxy == null) {
 			return;
 		}
+		var helper = serviceProxy.getHelper ('SpecAndSpiPair');
+		if (helper) {
+			return helper.spec ();
+		}
 		return new ApiService (serviceProxy);
 	};
 	

@@ -106,7 +106,6 @@ public class MediaRoutingUtils {
 						}
 						if (XLocation.toLowerCase ().equals (name.toLowerCase ())) {
 							if (status <= 0) {
-								tracer.log (Tracer.Level.Info, "Set Status to " + ApiResponse.MOVED_PERMANENTLY.getCode ());
 								response.setStatus (ApiResponse.MOVED_PERMANENTLY);
 							}
 							// tracer.log (Tracer.Level.Info, "... and location to " + hv);

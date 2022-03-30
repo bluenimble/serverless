@@ -100,6 +100,16 @@ var DatabaseObject = function (database, proxy) {
 	};
 	
 	/**	
+	  Get a this database object data as Json
+	  @param {function} - a function to filter which key/value pairs to serialize (optional)
+	  
+	  @returns {JsonObject} the database object as a json object
+	*/
+	this.json = function (serializer) {
+		return proxy.toJson (serializer);
+	};
+	
+	/**	
 	  Set a field value
 	  @param {string} - the field name
 	  @param {object} - the field value

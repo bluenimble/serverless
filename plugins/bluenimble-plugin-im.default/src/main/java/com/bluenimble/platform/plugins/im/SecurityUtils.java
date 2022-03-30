@@ -17,6 +17,7 @@
 package com.bluenimble.platform.plugins.im;
 
 import java.util.Date;
+import java.util.Iterator;
 
 import com.bluenimble.platform.Crypto;
 import com.bluenimble.platform.Json;
@@ -97,9 +98,9 @@ public class SecurityUtils {
 		return object;
 	}
 
-	public static String [] tokenAndExpiration (Api api, JsonObject entity, Date now, long age) throws ApiServiceExecutionException {
+	public static String [] tokenAndExpiration (Api api, ApiConsumer consumer, JsonObject entity, Date now, long age) throws ApiServiceExecutionException {
 		
-		String thing = salt (api, entity);
+		String thing = salt (api, consumer, entity);
 		
 		JsonObject auth = (JsonObject)Json.find (api.getSecurity (), Api.Spec.Security.Schemes, Schemes.Token, Api.Spec.Security.Auth);
 		if (auth == null) {
@@ -149,7 +150,7 @@ public class SecurityUtils {
 		
 	}
 	
-	private static String salt (Api api, JsonObject entity) {
+	private static String salt (Api api, ApiConsumer consumer, JsonObject entity) {
 		JsonObject subset = new JsonObject ();
 		
 		JsonArray fields = Json.getArray (api.getSecurity (), Api.Spec.Security.Encrypt);
@@ -160,6 +161,12 @@ public class SecurityUtils {
 			String property = String.valueOf (fields.get (i));
 			Json.set (subset, property, Json.find (entity, Lang.split (property, Lang.DOT)));
 		}
+		Iterator<String> keys = subset.keys ();
+		while (keys.hasNext ()) {
+			String key = keys.next ();
+			consumer.set (key, subset.get (key));
+		}
+		consumer.set (ApiConsumer.Fields.Anonymous, false);
 		return subset.toString (0, true);
 	}
 

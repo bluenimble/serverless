@@ -39,10 +39,8 @@ import com.bluenimble.platform.security.EncryptionProvider;
 import com.bluenimble.platform.security.EncryptionProvider.Mode;
 import com.bluenimble.platform.security.EncryptionProviderException;
 import com.bluenimble.platform.templating.ExpressionCompiler;
-import com.bluenimble.platform.templating.SimpleVariableResolver;
 import com.bluenimble.platform.templating.VariableResolver;
 import com.bluenimble.platform.templating.impls.BasicVariableResolver;
-import com.bluenimble.platform.templating.impls.DefaultExpressionCompiler;
 
 public class Json {
 
@@ -688,23 +686,22 @@ public class Json {
 	}
 
     public static void main (String [] args) throws Exception {
-    	ExpressionCompiler ECompiler = new DefaultExpressionCompiler ();
-    	
-    	JsonObject master = new JsonObject ("{ provider: 'remote.default', spec: { endpoint: \"https://[scheduler | 'scheduler'].display.stream:9335/schedulers/default\" } }") ;
-    	
-    	JsonObject rdata = new JsonObject ();
-    	//rdata.set ("scheduler", "scheduler-001");
-    	
-    	Json.resolve (master, ECompiler, new SimpleVariableResolver () {
-			private static final long serialVersionUID = 1L;
-			@Override
-			public Object resolve (String namespace, String... property) {
-				Object v = Json.find (rdata, property);
-				Json.remove (rdata, property);
-				return v;
-			}
-		});
-    	System.out.println (master);
+    	String schema = "*, workspace ( logo ( source ) ), user ( id, firstName, lastName, avatar ( source ) )";
+		schema = Lang.replace (schema, " ", "");
+    	schema = "{" + schema + "}";
+    	schema = Lang.replace (schema, "(", ":{");
+    	schema = Lang.replace (schema, ")", "}");
+		schema = Lang.replace (schema, "}", ":true}");
+		schema = Lang.replace (schema, ",", ":true,");
+		System.out.println ("Schema 1 " + schema);
+		schema = Lang.replace (schema, "}:true", "}");
+		System.out.println ("Schema 2 " + schema);
+		schema = Lang.replace (schema, "*:true", "_fields:simple");
+		if (schema.endsWith ("}:true}}")) {
+			schema = schema.substring (0, schema.length () - 8) + "}}}";
+		}
+		System.out.println ("schema " + schema);
+		System.out.println (new JsonObject (schema)) ;
     }
     
 }

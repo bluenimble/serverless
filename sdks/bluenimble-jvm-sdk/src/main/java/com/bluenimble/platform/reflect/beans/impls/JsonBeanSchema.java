@@ -34,6 +34,7 @@ public class JsonBeanSchema implements BeanSchema {
 		String Fields = "_fields";
 	}
 	
+	private static final String 		Minimal 			= "minimal";
 	private static final String 		All 				= "all";
 	private static final String 		XAll 				= "xall";
 	private static final Set<String> 	AllowedStrategies 	= new HashSet<String> (Arrays.asList (new String [] { "minimal", "simple", "all", "xall"}));
@@ -42,26 +43,11 @@ public class JsonBeanSchema implements BeanSchema {
 	protected boolean 		simpleRefs;
 	protected FetchStrategy fetchStrategy;
 	
+	protected JsonBeanSchema () {
+	}
+	
 	public JsonBeanSchema (JsonObject schema) {
-		Object fields = schema.get (Spec.Fields);
-		if (fields != null && fields instanceof JsonArray) {
-			this.schema = new JsonObject ();
-			JsonArray aFields = (JsonArray)fields;
-			for (int i = 0; i < aFields.count (); i++) {
-				String sField = String.valueOf (aFields.get (i)).trim ();
-				boolean include = true;
-				if (sField.startsWith (Lang.XMARK)) {
-					sField = sField.substring (1);
-					include = false;
-				}
-				this.schema.set (sField, include);
-			}
-			this.schema.merge (schema);
-			this.schema.remove (Spec.Fields);
-		} else {
-			this.schema = schema;
-		}
-		setFetchStrategy ();
+		create (this, schema);
 	}
 
 	@Override
@@ -71,10 +57,10 @@ public class JsonBeanSchema implements BeanSchema {
 		}
 		Object o = schema.get (field);
 		if (o == null) {
-			return simpleRefs ? BeanSchema.Simple : BeanSchema.Minimal;
+			return simpleRefs ? BeanSchema.Simple : (this.fetchStrategy == FetchStrategy.all ? BeanSchema.Minimal : null);
 		}
-		if (o instanceof JsonObject) {
-			return new JsonBeanSchema ((JsonObject)o);
+		if (o instanceof JsonBeanSchema) {
+			return (JsonBeanSchema)o;
 		}
 		return BeanSchema.Minimal;
 	}
@@ -129,8 +115,10 @@ public class JsonBeanSchema implements BeanSchema {
 						continue;
 					}
 					Object value = schema.get (sKey);
-					if (!(value instanceof Boolean) || (value instanceof Boolean && ((Boolean)value))) {
+					if (!(value instanceof Boolean) || (Boolean)value) {
 						fields.add (sKey);
+					} else {
+						fields.remove (sKey);
 					}
 				}
 				return fields;
@@ -159,8 +147,11 @@ public class JsonBeanSchema implements BeanSchema {
 			fetchStrategy = FetchStrategy.listed;
 			return;
 		}
+		
 		fs = fs.toLowerCase ();
+		
 		FetchStrategy strategy = null;
+		
 		if (!AllowedStrategies.contains (fs)) {
 			strategy = FetchStrategy.minimal;
 		} else {
@@ -175,17 +166,63 @@ public class JsonBeanSchema implements BeanSchema {
 			fetchStrategy = strategy;
 			return;
 		}
+		
 		// if it's all, excluding fields, return listed
 		if (strategy.equals (FetchStrategy.all)) {
 			fetchStrategy = FetchStrategy.listed;
 			return;
 		}
+		
 		// if it's minimal, including adt. fields, return extended
 		if (strategy.equals (FetchStrategy.minimal)) {
 			fetchStrategy = FetchStrategy.extended;
 			return;
 		}
 		fetchStrategy = strategy;
+	}
+
+	private static void create (JsonBeanSchema jbs, JsonObject schema) {
+		Object fields = schema.get (Spec.Fields);
+		if (fields != null && fields instanceof JsonArray) {
+			JsonArray aFields = (JsonArray)fields;
+			for (int i = 0; i < aFields.count (); i++) {
+				String sField = String.valueOf (aFields.get (i)).trim ();
+				boolean include = true;
+				if (sField.startsWith (Lang.XMARK)) {
+					sField = sField.substring (1);
+					include = false;
+				}
+				schema.set (sField, include);
+			}
+			schema.merge (schema);
+			schema.remove (Spec.Fields);
+		}
+		
+		fields = schema.get (Spec.Fields);
+		// if enumerated, compose it
+		if (fields == null) {
+			schema.set (Spec.Fields, Minimal);
+			if (!schema.containsKey (Database.Fields.Timestamp)) {
+				schema.set (Database.Fields.Timestamp, false);
+			}
+			if (!schema.containsKey (Database.Fields.Id)) {
+				schema.set (Database.Fields.Id, false);
+			}
+		}
+		
+		jbs.schema = schema;
+		jbs.setFetchStrategy ();
+		
+		Iterator<String> keys = schema.keys ();
+		while (keys.hasNext ()) {
+			String key = keys.next ();
+			Object o = schema.get (key);
+			if (o instanceof JsonObject) {
+				JsonBeanSchema cjbs = new JsonBeanSchema ();
+				create (cjbs, (JsonObject)o);
+				schema.set (key, cjbs);
+			}
+		}
 	}
 
 	private boolean isOnlyIdAndTimestamp (Set<String> keys) {

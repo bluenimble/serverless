@@ -100,7 +100,11 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 		
 		String Data 					= "data";
 		
+		String AddOwner					= "addOwner";
 		String Owner					= "owner";
+		
+		String Serializer				= "serializer";
+		String AppendResponse			= "appendResponse";
 		
 		interface onFinish	{
 			String ResultProperty = "resultProperty";
@@ -185,7 +189,11 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 			active = false;
 		}
 		
-		JsonObject oAccount = account.toJson (BeanSerializer);
+		BeanSerializer beanSerializer = (BeanSerializer)config.get (Config.Serializer);
+		if (beanSerializer == null) {
+			beanSerializer = BeanSerializer;
+		}
+		JsonObject oAccount = account.toJson (beanSerializer);
 		
 		oAccount.remove (Json.getString (config, Config.PasswordProperty, Spec.Password));
 		
@@ -201,6 +209,8 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 
 		JsonObject 	org 				= Json.getObject (config, Config.Organization);
 		String 		ifPresentField 		= (String)Json.find (config, Config.IfPresent);
+		
+		boolean addOwner = Json.getBoolean (config, Config.AddOwner, false);
 		
 		if (org != null && ifPresentField != null && payload.get (ifPresentField) != null) {
 			payload.set (Spec.User, account.getId ());
@@ -276,8 +286,10 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 					}
 				}
 			}
-			oAccount.set (Config.Owner, Defaults.No);
-		} else {
+			if (addOwner) {
+				oAccount.set (Config.Owner, Defaults.No);
+			}
+		} else if (addOwner) {
 			if (request.getChannel ().equals (ApiRequest.Channels.container.name ()) && payload.containsKey (Config.Owner)) {
 				oAccount.set (Config.Owner, Json.getBoolean (payload, Config.Owner, false) ? Defaults.Yes : Defaults.No);
 			} else {
@@ -304,7 +316,7 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 				tokenType = Json.getString (payload, Spec.TokenType, Defaults.TokenType);
 			}
 			oAccount.set (ApiConsumer.Fields.TokenType, tokenType);
-			String [] tokenAndExpiration = SecurityUtils.tokenAndExpiration (api, oAccount, now, age);
+			String [] tokenAndExpiration = SecurityUtils.tokenAndExpiration (api, consumer, oAccount, now, age);
 			oAccount.set (ApiConsumer.Fields.Token, tokenAndExpiration [0]);
 			oAccount.set (ApiConsumer.Fields.ExpiryDate, tokenAndExpiration [1]);
 		} 

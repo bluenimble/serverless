@@ -37,7 +37,7 @@ public class EmailValidator extends AbstractTypeValidator {
 	public static final String TypeMessage			= "EmailType";
 	
 	public static final Pattern EmailRegex = 
-		    Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+		    Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,18}$", Pattern.CASE_INSENSITIVE);
 	
 	private static final String GuessEmail = "{0}@bluenimble.com";
 	

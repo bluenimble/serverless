@@ -1,0 +1,24 @@
+{
+
+	"handlers": {
+		"space": {
+			"description": "refresh a space. This refreshes the space features",
+			
+			"args": [{
+				"name": "space", "desc": "space to refresh"
+			}, {
+				"name": "descriptor", "desc": "a variable name holding a json object representing the space descriptor\nUse the json create, json set and json load commands to create descriptors"
+			}],
+		
+			"request": {
+				"method": "post",
+				"service": "<% keys.endpoints.management %>/spaces/<% arg.0 %>/refresh",
+				"contentType": "application/json",
+				"body": {
+					"payload": "<% arg.1 %>"
+				}
+			}
+		}
+	}
+
+}

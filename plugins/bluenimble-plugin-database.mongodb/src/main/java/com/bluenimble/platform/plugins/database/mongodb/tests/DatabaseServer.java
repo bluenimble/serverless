@@ -49,7 +49,7 @@ public class DatabaseServer {
 	}
 	public Database get () {
 		
-		return new MongoDatabaseImpl (client (), "displaystream", new Tracer () {
+		return new MongoDatabaseImpl (client (), "dsdev", new Tracer () {
 			private static final long serialVersionUID = 4922972723643535449L;
 
 			@Override

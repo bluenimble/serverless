@@ -50,6 +50,18 @@ var Database = function (api, proxy) {
 	};
 
 	/**	
+	  Create a database entity/table/collection
+	  @param {string} - the entity/table/collection name
+	*/
+	this.createEntity = function (entity) {
+		if (!entity) {
+			throw "missing entity argument";
+		}
+		
+		proxy.createEntity (entity)
+	},
+
+	/**	
 	  Create a database object for the given entity name
 	  @param {string} - the entity/table name
 	  @param {JsonObject} [data] - data to load on creation of this object

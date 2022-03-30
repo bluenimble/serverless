@@ -400,7 +400,7 @@ if (recipe.version) {
 var Keys;
 
 if (recipe.get ('keys')) {
-    Keys = BlueNimble.keys (recipe.get ('keys'));
+    Keys = BlueNimble.useKeys (recipe.get ('keys'));
 	if (!Keys) {
 		throw 'Security Keys (' + recipe.get ('keys') + ') not found in recipe.';
 	}

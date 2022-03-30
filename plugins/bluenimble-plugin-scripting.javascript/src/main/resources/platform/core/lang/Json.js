@@ -96,6 +96,10 @@ var Json = {
 			withScripting = false;
 		}
 		return JC_Json.template (JC_ValueConverter.convert (model), JC_ValueConverter.convert (data), withScripting);
+	},
+	
+	newBeanSerializer: function (schema) {
+		return new JC_JsonBeanSerializer (JC_ValueConverter.convert (schema));
 	}
 	
 };

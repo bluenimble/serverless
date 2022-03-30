@@ -225,7 +225,7 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 				validator = getTypeValidator (FieldType.Object);
 			}
 			
-			String label = getLabel (name, fSpec.getString (Spec.Title));
+			String label = getMessage (api, request.getLang (), getLabel (name, fSpec.getString (Spec.Title)));
 			
 			Object value = valueOf (name, fSpec, request, consumer, data);
 			

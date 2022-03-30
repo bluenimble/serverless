@@ -328,7 +328,10 @@ var LocalDateTime = function (proxy) {
 	  
 	  @returns {string} a formatted date string
 	*/
-	this.format = function (format) {
+	this.format = function (format, language) {
+		if (language) {
+			return proxy.format (JC_DateTimeFormatter.ofPattern (format, new JC_Locale (language)));
+		}
 		return proxy.format (JC_DateTimeFormatter.ofPattern (format));
 	};
 	/**	

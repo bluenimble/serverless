@@ -123,7 +123,6 @@ public class StreamMediaProcessor implements ApiMediaProcessor {
 		);
 		
 		if (output.get (ApiOutput.Defaults.Exit) != null && (Boolean)output.get (ApiOutput.Defaults.Exit)) {
-			api.tracer ().log (Tracer.Level.Info, "Output Exit. Response will be sent now.");
 			response.flushHeaders ();
 			try {
 				response.close ();

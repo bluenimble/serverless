@@ -31,6 +31,7 @@ public interface ApiSpi extends Serializable {
 	// request life cycle
 	void		onRequest		(Api api, ApiRequest request, ApiResponse response) throws ApiServiceExecutionException;
 	void		onService		(Api api, ApiService service, ApiRequest request, ApiResponse response) throws ApiServiceExecutionException;
+	void		onValidate		(Api api, ApiConsumer consumer, ApiService service, ApiRequest request, ApiResponse response) throws ApiServiceExecutionException;
 	void		onExecute		(Api api, ApiConsumer consumer, ApiService service, ApiRequest request, ApiResponse response) throws ApiServiceExecutionException;
 	void		afterExecute	(Api api, ApiConsumer consumer, ApiService service, ApiRequest request, ApiResponse response) throws ApiServiceExecutionException;
 	

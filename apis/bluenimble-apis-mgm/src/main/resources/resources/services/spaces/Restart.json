@@ -9,7 +9,7 @@
 	},
 	
 	"security": {
-		"roles": ["super"]
+		"roles": ["super", "admin"]
 	},
 	
 	"spi": {

@@ -59,6 +59,7 @@ public class ScriptableApiSpi implements ApiSpi {
 		String OnRequest 	= "onRequest";
 		String OnService 	= "onService";
 		String OnExecute 	= "onExecute";
+		String OnValidate 	= "onValidate";
 		String AfterExecute = "afterExecute";
 
 		String OnError 		= "onError";
@@ -241,6 +242,50 @@ public class ScriptableApiSpi implements ApiSpi {
 			}
 			throw new ApiServiceExecutionException (cause.getMessage (), cause).status (status);
 		}		
+	}
+
+	@Override
+	public void onValidate (Api api, ApiConsumer consumer, ApiService service,
+			ApiRequest request, ApiResponse response)
+			throws ApiServiceExecutionException {
+		SpecAndSpiPair ssp = (SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name);
+		if (ssp == null) {
+			return;
+		}
+
+		Object spi = ssp.spi ();
+		if (spi == null) {
+			return;
+		}
+		
+		ScriptingEngine engine = api.space ().feature (ScriptingEngine.class, ApiSpace.Features.Default, request);
+		if (!engine.has (spi, Functions.OnValidate)) {
+			return;
+		}
+		
+		Object jsApi = ((SpecAndSpiPair)api.getHelper (SpecAndSpiPair.Name)).spec ();
+		if (jsApi == null) {
+			throw new ApiServiceExecutionException ("api or spi not attached on Api OnStart");
+		}		
+		
+		try {
+			// invoke onValidate
+			engine.invoke (spi, Functions.OnValidate, jsApi, consumer, service, request, response);
+		} catch (ScriptingEngineException ex) {
+			ex.setScript (Json.getString (api.getSpiDef (), Api.Spec.Spi.Function));
+			Throwable cause = ex;
+			if (ex.getCause () != null) {
+				cause = ex.getCause ();
+			}
+			ApiResponse.Status status = null;
+			if (cause instanceof NashornException && cause.getCause () != null) {
+				if (cause.getCause () instanceof ApiServiceExecutionException) {
+					ApiServiceExecutionException see = (ApiServiceExecutionException)cause.getCause ();
+					status = see.status ();
+				}
+			}
+			throw new ApiServiceExecutionException (cause.getMessage (), cause).status (status);
+		}	
 	}
 
 	@Override

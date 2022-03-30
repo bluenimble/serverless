@@ -32,11 +32,11 @@ public class PeerChannelImpl implements PeerChannel {
 		int indexOfColon = spec.indexOf (Lang.COLON);
 		if (indexOfColon > 0) {
 			try {
-				this.access = Access.valueOf (spec.substring (0, indexOfColon).toLowerCase ());
+				this.access = Access.valueOf (spec.substring (indexOfColon + 1));
 			} catch (Exception ex) {
 				// IGNORE
 			}
-			this.name = spec.substring (indexOfColon + 1);
+			this.name = spec.substring (0, indexOfColon);
 		}
 	}
 

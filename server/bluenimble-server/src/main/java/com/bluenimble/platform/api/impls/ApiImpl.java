@@ -859,33 +859,57 @@ public class ApiImpl implements Api {
 	
 	private void loadI18n () throws Exception {
 		File messagesFolder = new File (new File (home, ConfigKeys.Folders.Resources), ConfigKeys.Folders.Messages);
-		if (messagesFolder.exists ()) {
-			File [] fMessages = messagesFolder.listFiles (new FileFilter () {
-				@Override
-				public boolean accept (File file) {
-					return file.isFile () && file.getName ().endsWith (ConfigKeys.JsonExt);
-				}
-			});
-			if (fMessages != null && fMessages.length > 0) {
-				for (File mFile : fMessages) {
-					JsonObject messages = Json.load (mFile);
-					Iterator<String> keys = messages.keys ();
-					while (keys.hasNext ()) {
-						String key = keys.next ();
-						JsonObject langsMessages = Json.getObject (messages, key);
-						Iterator<String> langs = langsMessages.keys ();
-						while (langs.hasNext ()) {
-							String lang = langs.next ();
-							JsonObject langI18n = i18n.get (lang);
-							if (langI18n == null) {
-								langI18n = new JsonObject ();
-								i18n.put (lang, langI18n);
-							}
-							langI18n.put (key, langsMessages.get (lang));
-						}
+		if (!messagesFolder.exists ()) {
+			return;
+		}
+		File [] fMessages = messagesFolder.listFiles (new FileFilter () {
+			@Override
+			public boolean accept (File file) {
+				return file.isFile () && file.getName ().endsWith (ConfigKeys.JsonExt);
+			}
+		});
+		if (fMessages == null || fMessages.length <= 0) {
+			return;
+		}
+		for (File mFile : fMessages) {
+			JsonObject messages = Json.load (mFile);
+
+			if (mFile.getName ().indexOf('-') > 0) {
+				this.loadSingleLangI18n (mFile.getName (), messages);
+				return;
+			}
+			
+			Iterator<String> keys = messages.keys ();
+			while (keys.hasNext ()) {
+				String key = keys.next ();
+				JsonObject langsMessages = Json.getObject (messages, key);
+				Iterator<String> langs = langsMessages.keys ();
+				while (langs.hasNext ()) {
+					String lang = langs.next ();
+					JsonObject langI18n = i18n.get (lang);
+					if (langI18n == null) {
+						langI18n = new JsonObject ();
+						i18n.put (lang, langI18n);
 					}
+					langI18n.put (key, langsMessages.get (lang));
 				}
 			}
+		}
+	}
+	
+	private void loadSingleLangI18n (String fileName, JsonObject langsMessages) throws Exception {
+		String lang = fileName.substring (fileName.indexOf ('-') + 1, fileName.indexOf ('.'));
+		
+		JsonObject langI18n = i18n.get (lang);
+		if (langI18n == null) {
+			langI18n = new JsonObject ();
+			i18n.put (lang, langI18n);
+		}
+		
+		Iterator<String> keys = langsMessages.keys ();
+		while (keys.hasNext ()) {
+			String key = keys.next ();
+			langI18n.put (key, langsMessages.get (key));
 		}
 	}
 	

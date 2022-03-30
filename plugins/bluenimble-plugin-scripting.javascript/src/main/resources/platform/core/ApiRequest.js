@@ -13,6 +13,8 @@
 */
 var ApiRequest = function (proxy, canTrigger) {
 
+	this.clazz 		= 'ApiRequest';
+	
 	this.proxy 		= proxy;
 	
 	/**	

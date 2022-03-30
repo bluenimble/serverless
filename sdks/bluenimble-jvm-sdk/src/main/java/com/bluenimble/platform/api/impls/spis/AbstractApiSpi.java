@@ -45,6 +45,9 @@ public abstract class AbstractApiSpi implements ApiSpi {
 	public void	onService 	(Api api, ApiService service, ApiRequest request, ApiResponse response) {
 	}
 	@Override
+	public void	onValidate	(Api api, ApiConsumer consumer, ApiService service, ApiRequest request, ApiResponse response) {
+	}
+	@Override
 	public void	onExecute	(Api api, ApiConsumer consumer, ApiService service, ApiRequest request, ApiResponse response) {
 	}
 	@Override

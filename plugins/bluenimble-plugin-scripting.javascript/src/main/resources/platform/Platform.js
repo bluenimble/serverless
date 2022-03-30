@@ -1,10 +1,12 @@
 var JC_Byte					= Java.type ('java.lang.Byte');
 var JC_String				= Java.type ('java.lang.String');
-var JC_Integer			= Java.type ('java.lang.Integer');
+var JC_Integer				= Java.type ('java.lang.Integer');
 var JC_Double				= Java.type ('java.lang.Double');
-var JC_Thread 			= Java.type ('java.lang.Thread');
-var JC_Comparator 	= Java.type ('java.util.Comparator');
-var JC_Callable			= Java.type ('com.bluenimble.platform.api.ContextualCallable');
+var JC_Thread 				= Java.type ('java.lang.Thread');
+var JC_Comparator 			= Java.type ('java.util.Comparator');
+var JC_Locale				= Java.type ('java.util.Locale');
+
+var JC_Callable				= Java.type ('com.bluenimble.platform.api.ContextualCallable');
 
 var JC_ByteArrayOutputStream= Java.type ('java.io.ByteArrayOutputStream');
 
@@ -135,6 +137,9 @@ var JC_Libs_BN_Signer 		= Java.type ('com.bluenimble.platform.api.impls.scriptin
 	if (typeof Json === 'undefined') {
 		load (core + '/lang/Json.js');
 	}
+	if (typeof HtmlParser === 'undefined') {
+		load (core + '/lang/HtmlParser.js');
+	}
 
 	if (typeof InputStream === 'undefined') {
 		load (core + '/lang/InputStream.js');
@@ -261,6 +266,7 @@ var JC_Libs_BN_Signer 		= Java.type ('com.bluenimble.platform.api.impls.scriptin
 			Hex: Hex,
 			DateTime: DateTime,
 			Json: Json,
+			HtmlParser: HtmlParser,
 			ApiConsumer: ApiConsumer.prototype,
 			ApiRequest: ApiRequest.prototype,
 			ApiResponse: ApiResponse.prototype,

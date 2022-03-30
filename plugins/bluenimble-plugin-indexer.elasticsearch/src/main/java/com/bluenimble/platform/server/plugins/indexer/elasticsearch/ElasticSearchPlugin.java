@@ -24,7 +24,6 @@ import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.ApiContext;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.Manageable;
-import com.bluenimble.platform.api.tracing.Tracer.Level;
 import com.bluenimble.platform.indexer.Indexer;
 import com.bluenimble.platform.indexer.impls.ElasticSearchIndexer;
 import com.bluenimble.platform.json.JsonObject;
@@ -33,8 +32,8 @@ import com.bluenimble.platform.plugins.PluginRegistryException;
 import com.bluenimble.platform.plugins.impls.AbstractPlugin;
 import com.bluenimble.platform.remote.Remote;
 import com.bluenimble.platform.server.ApiServer;
-import com.bluenimble.platform.server.ServerFeature;
 import com.bluenimble.platform.server.ApiServer.Event;
+import com.bluenimble.platform.server.ServerFeature;
 
 public class ElasticSearchPlugin extends AbstractPlugin {
 
@@ -74,19 +73,28 @@ public class ElasticSearchPlugin extends AbstractPlugin {
 			
 			@Override
 			public Object get (ApiSpace space, String name) {
+				String fName = name;
+				// check if it's fature factory abc#alpha where abc is the feature name and alpha is what the application is looking for.
+				int indexOfSharp = fName.lastIndexOf (Lang.SHARP);
+				if (indexOfSharp > 0) {
+					fName = fName.substring (0, indexOfSharp);
+				}
 				String remoteFeature = (String)Json.find (space.getFeatures (), feature, name, ApiSpace.Features.Spec, Spec.Remote);
-				String index 		 = (String)Json.find (space.getFeatures (), feature, name, ApiSpace.Features.Spec, Spec.Index);
-				tracer.log (Level.Info, "Indexer Feature Remote " + remoteFeature);
 				Remote remote = null;
 				if (!Lang.isNullOrEmpty (remoteFeature)) {
 					remote = space.feature (Remote.class, remoteFeature, ApiContext.Instance);
+				}
+				
+				String index =  (String)Json.find (space.getFeatures (), feature, name, ApiSpace.Features.Spec, Spec.Index);
+				if (indexOfSharp > 0) {
+					index = name.substring (indexOfSharp + 1);
 				}
 				
 				return new ElasticSearchIndexer (
 					remote, 
 					index, 
 					tracer, 
-					(JsonObject)Json.find (space.getFeatures (), feature, name, ApiSpace.Features.Spec, Spec.Config)
+					(JsonObject)Json.find (space.getFeatures (), feature, fName, ApiSpace.Features.Spec, Spec.Config)
 				);
 			}
 			

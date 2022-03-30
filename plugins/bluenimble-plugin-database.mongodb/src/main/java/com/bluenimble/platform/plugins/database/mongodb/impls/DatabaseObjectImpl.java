@@ -557,9 +557,6 @@ public class DatabaseObjectImpl implements DatabaseObject {
 			} else if (v instanceof Map && !(v instanceof JsonObject)) {
 				v = new JsonObject ((Map<String, Object>)v, true);
 			} else if (v instanceof DatabaseObjectImpl) {
-				if (BeanSchema.FetchStrategy.simple.equals (schema.fetchStrategy ())) {
-					continue;
-				}
 				v = toJson (((DatabaseObjectImpl)v), serializer, schema.schema (level, f), level + 1, true);
 			} else if (v instanceof DatabaseObjectList) {
 				if (BeanSchema.FetchStrategy.simple.equals (schema.fetchStrategy ())) {
