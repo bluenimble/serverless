@@ -653,9 +653,10 @@ public class JsonObject extends JsonAbstractEntity implements Map {
 		return this;
 	}
     
-	public static void main (String[] args) {
-		JsonObject obj = (JsonObject)new JsonObject ().set ("a", new JsonObject ().set ("b", "bValue"));
-		System.out.println ("val " + obj.find ("a.b", "."));
+	public static void main (String[] args) throws Exception {
+		JsonObject obj = new JsonObject ("{ arr: ['a', '\\n', 'b', '\\n']}"); 
+		obj.shrink();
+		System.out.println (obj);
 	}
 	
 	
