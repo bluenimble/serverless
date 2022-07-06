@@ -96,6 +96,7 @@ public abstract class EventedQueryCompiler implements QueryCompiler {
 					// ignore
 					continue;
 				}
+				System.out.println ("subConjunction " + subConjunction);
 				this.onConjunction (Timing.start, conjunction, counter);
 				@SuppressWarnings("unchecked")
 				List<Object> list = (List<Object>)condition;

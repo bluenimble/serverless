@@ -34,7 +34,7 @@ var Task = function (api, fn, options) {
 			}
 		}
 	});
-	
+
 	/**	
 	  Start task execution
 	*/

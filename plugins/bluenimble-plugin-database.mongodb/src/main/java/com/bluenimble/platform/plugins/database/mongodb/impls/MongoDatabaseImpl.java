@@ -381,7 +381,7 @@ public class MongoDatabaseImpl implements Database {
 
 	@Override
 	public int delete (String entity, Query query) throws DatabaseException {
-		
+
 		if (query == null) {
 			return 0;
 		}

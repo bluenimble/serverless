@@ -26,7 +26,12 @@ public abstract class ContextualCallable<T> implements Callable<T> {
 	public T call () throws Exception {
 		ApiContext context = new DefaultApiContext ();
 		try {
-			return run (context);
+			T r = run (context);
+			context.finish (false);
+			return r;
+		} catch (Exception ex) {
+			context.finish (true);
+			throw ex;
 		} finally {
 			context.recycle ();
 		}

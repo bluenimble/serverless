@@ -327,6 +327,9 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 			Object dValue = data.get (name);
 			if (dValue == null) {
 				dValue = defaultValue;
+				if (dValue != null) {
+					data.put (name, dValue);
+				}
 			}
 			return dValue;
 		}

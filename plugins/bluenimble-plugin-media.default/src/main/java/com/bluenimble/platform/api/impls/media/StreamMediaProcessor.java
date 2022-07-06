@@ -40,7 +40,6 @@ import com.bluenimble.platform.api.ApiService;
 import com.bluenimble.platform.api.media.ApiMediaProcessor;
 import com.bluenimble.platform.api.media.DataWriter;
 import com.bluenimble.platform.api.security.ApiConsumer;
-import com.bluenimble.platform.api.tracing.Tracer;
 import com.bluenimble.platform.http.utils.HttpUtils;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.server.plugins.media.utils.DefaultVariableResolver;

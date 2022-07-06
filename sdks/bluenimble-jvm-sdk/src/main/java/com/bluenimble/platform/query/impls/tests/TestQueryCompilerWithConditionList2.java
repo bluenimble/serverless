@@ -23,22 +23,22 @@ import com.bluenimble.platform.query.QueryCompiler;
 import com.bluenimble.platform.query.impls.JsonQuery;
 import com.bluenimble.platform.query.impls.SqlQueryCompiler;
 
-public class TestQueryCompilerWithConditionList {
+public class TestQueryCompilerWithConditionList2 {
 
 	public static void main (String [] args) throws Exception {
 		
-		Query query = new JsonQuery (new JsonObject ("{ where = {\n" + 
+		Query query = new JsonQuery (new JsonObject ("{ where = { and:[{\n" + 
 				"				or: [{\n" + 
-				"					'createdBy.id': '5ca3cdb9894e04330ad8bbf9',\n" + 
+				"					'createdBy.id': '5ca3cdb9894e04330ad8bbf9'},{\n" + 
 				"					'recipient.id': '5ca3cf2b894e04330ad8bbfb'\n" + 
-				"				}, {\n" + 
-				"					'createdBy.id': '5ca3cf2b894e04330ad8bbfb',\n" + 
+				"				}] }, { or: [{\n" + 
+				"					'createdBy.id': '5ca3cf2b894e04330ad8bbfb'},{\n" + 
 				"					'recipient.id': '5ca3cdb9894e04330ad8bbf9'\n" + 
-				"				}] \n" + 
+				"				}] } ]\n" + 
 				"			} }") );
 		System.out.println ("Select==>");
 		
-		System.out.println (query.where().get ("or"));
+		//System.out.println (query.where().get ("or"));
 
 		QueryCompiler sc = new SqlQueryCompiler (Query.Construct.select);
 		

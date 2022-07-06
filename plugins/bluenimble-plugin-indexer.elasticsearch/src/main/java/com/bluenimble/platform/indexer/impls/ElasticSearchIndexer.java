@@ -43,6 +43,8 @@ import com.bluenimble.platform.query.impls.SqlQueryCompiler;
 import com.bluenimble.platform.remote.Remote;
 import com.bluenimble.platform.remote.Serializer;
 
+import com.bluenimble.platform.server.plugins.indexer.elasticsearch.ElasticSearchPlugin;
+
 public class ElasticSearchIndexer implements Indexer {
 	
 	private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
@@ -50,6 +52,7 @@ public class ElasticSearchIndexer implements Indexer {
 	private interface Internal {
 		String 	Id 			= "id";
 		String 	Timestamp 	= "timestamp";
+		String 	Indexes		= "indexes";
 		
 		interface Elk {
 			String Id 		= "_id";
@@ -837,10 +840,25 @@ public class ElasticSearchIndexer implements Indexer {
 			
 			@Override
 			protected void entity () {
-				if (!Lang.isNullOrEmpty (query.entity ())) {
-					buff.append (query.entity ());
-				} else if (!Lang.isNullOrEmpty (index)) {
+				String index = Lang.BLANK;
+				String sIndexes = query.entity ();
+				if (sIndexes != null) {
+					String [] indexes = sIndexes.split (Lang.COMMA);
+					for (int i = 0; i < indexes.length; i++) {
+						index += ElasticSearchIndexer.this.config.get (ElasticSearchPlugin.Spec.Prefix) + 
+									(String)indexes [i].trim () + 
+									ElasticSearchIndexer.this.config.get (ElasticSearchPlugin.Spec.Postfix);
+						if (i < (indexes.length - 1)) {
+							index += Lang.COMMA;
+						}
+					}
+				}
+				if (!Lang.isNullOrEmpty (index)) {
 					buff.append (index);
+					return;
+				}
+				if (!Lang.isNullOrEmpty (ElasticSearchIndexer.this.index)) {
+					buff.append (ElasticSearchIndexer.this.index);
 				}
 			}
 		}; 
@@ -886,9 +904,24 @@ public class ElasticSearchIndexer implements Indexer {
 		);
 		
 		String indexPath = Lang.BLANK;
-		if (!Lang.isNullOrEmpty (index)) {
+
+		JsonArray indexes = Json.getArray (query, Internal.Indexes);
+		if (indexes != null && !indexes.isEmpty ()) {
+			query.remove (Internal.Indexes);
+			for (int i = 0; i < indexes.size (); i++) {
+				indexPath += this.config.get (ElasticSearchPlugin.Spec.Prefix) + 
+							(String)indexes.get (i) + 
+							this.config.get (ElasticSearchPlugin.Spec.Postfix);
+			}
+		}
+		
+		// if there an index and no indexes specified in query
+		if (!Lang.isNullOrEmpty (index) && indexPath.equals (Lang.BLANK)) {
 			indexPath = index + Lang.SLASH;
 		}
+		
+		// add slash
+		indexPath += Lang.SLASH;
 		
 		ValueHolder<JsonObject> result = new ValueHolder<JsonObject> ();
 		ElkError error = new ElkError ();

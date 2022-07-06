@@ -39,10 +39,12 @@ public class ElasticSearchPlugin extends AbstractPlugin {
 
 	private static final long serialVersionUID = 3203657740159783537L;
 	
-	interface Spec {
+	public interface Spec {
 		String Remote 	= "remote";
 		String Index 	= "index";
 		String Config 	= "config";
+		String Prefix 	= "prefix";
+		String Postfix 	= "postfix";
 	}
 	
 	private String feature;

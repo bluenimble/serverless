@@ -7,9 +7,9 @@ public class Connect {
 
 	public static void main (String [] args) {
 		Jedis client = new Jedis (
-			new HostAndPort ("redis-19604.c74.us-east-1-4.ec2.cloud.redislabs.com", 19604)
+			new HostAndPort ("", 19604)
 		);
-		client.auth ("6zviBgUqSQWvmHKEW9XrnbS2eTEz27Cp");
+		client.auth ("");
 		System.out.println ("done!");
 		client.close ();
 	}
