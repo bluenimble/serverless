@@ -37,6 +37,7 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 import com.bluenimble.platform.api.ApiResponse;
+import com.bluenimble.platform.api.ApiServiceExecutionException;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.regex.WildcardCompiler;
@@ -563,6 +564,13 @@ public class Lang {
 		
 		JsonObject error = new JsonObject ();
 		error.set (ApiResponse.Error.Message, message);
+		
+		if (ApiServiceExecutionException.class.isAssignableFrom (th.getClass ())) {
+			ApiServiceExecutionException asee = (ApiServiceExecutionException)th;
+			if (asee.properties () != null && !asee.properties ().isEmpty ()) {
+				error.merge (asee.properties ());
+			}
+		}
 		
 		if (!Lang.isDebugMode ()) {
 			return error;

@@ -16,11 +16,14 @@
  */
 package com.bluenimble.platform.api;
 
+import com.bluenimble.platform.json.JsonObject;
+
 public class ApiServiceExecutionException extends Exception {
 
 	private static final long serialVersionUID = 1165308892883189037L;
 	
-	private ApiResponse.Status status;
+	private ApiResponse.Status 	status;
+	private JsonObject properties;
 
 	public ApiServiceExecutionException () {
 		super ();
@@ -48,9 +51,21 @@ public class ApiServiceExecutionException extends Exception {
 		this.status = status;
 		return this;
 	}
+	
+	public ApiServiceExecutionException set (String key, Object value) {
+		if (properties == null) {
+			properties = new JsonObject ();
+		}
+		properties.set (key, value);
+		return this;
+	}
 
 	public ApiResponse.Status status () {
 		return status;
+	}
+	
+	public JsonObject properties () {
+		return properties;
 	}
 	
 	public Throwable getRootCause () {

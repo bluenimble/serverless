@@ -331,4 +331,9 @@ public class ApiServiceImpl implements ApiService {
 		}
 	}
 
+	@Override
+	public Object get (String name) {
+		return this.source.get (name);
+	}
+
 }

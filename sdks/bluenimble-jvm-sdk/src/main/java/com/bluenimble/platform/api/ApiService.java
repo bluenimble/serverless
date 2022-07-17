@@ -92,6 +92,8 @@ public interface ApiService extends Manageable {
 	JsonObject 					getTracking 		();
 	JsonObject 					getSpiDef 			();
 	
+	Object 						get 				(String name);
+	
 	ApiStatus					status				();
 	void						pause				();
 	void						resume				();

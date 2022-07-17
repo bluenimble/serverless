@@ -26,51 +26,51 @@ var ApiService = function (proxy) {
 	  @type {string}
 	  @readonly
 	*/
-	this.name 			= proxy.getName 		();
+	this.name 			= proxy.getName ();
 	
 	/**	
 	  The description of this service
 	  @type {string}
 	  @readonly
 	*/
-	this.description 	= proxy.getDescription 	();
+	this.description 	= proxy.getDescription ();
 	
 	/**	
 	  The endpoint of this service
 	  @type {string}
 	  @readonly
 	*/
-	this.endpoint 		= proxy.getEndpoint 	();
+	this.endpoint 		= proxy.getEndpoint ();
 	
 	/**	
 	  The security block of this service - if any -
 	  @type {JsonObject}
 	*/
-	this.security 		= proxy.getSecurity 	();
+	this.security 		= proxy.getSecurity ();
 	
 	/**	
 	  The runtime block of this service - if any -
 	  @type {JsonObject}
 	*/
-	this.runtime		= proxy.getRuntime 		();
+	this.runtime		= proxy.getRuntime ();
 	
 	/**	
 	  The features block of this service - if any -
 	  @type {JsonObject}
 	*/
-	this.features		= proxy.getFeatures 	();
+	this.features		= proxy.getFeatures ();
 	
 	/**	
 	  The media block of this service - if any -
 	  @type {JsonObject}
 	*/
-	this.media			= proxy.getMedia 		();
+	this.media			= proxy.getMedia ();
 	
 	/**	
 	  The spi block of this service - if any -
 	  @type {JsonObject}
 	*/
-	this.spiDef			= proxy.getSpiDef 		();
+	this.spiDef			= proxy.getSpiDef ();
 	
 	/**	
 	  The error message in case of a failure during deployment of this service
@@ -78,6 +78,15 @@ var ApiService = function (proxy) {
 	  @readonly
 	*/
 	this.failure		= proxy.getFailure ();
+	
+	/**	
+	  Get a spec part
+	  @type {string}
+	  @readonly
+	*/
+	this.get = function (name) {
+		return proxy.getSpecification (name);
+	};
 	
 	/**	
 	  The runtime status of this service. Running, Stopped, Paused or Failed

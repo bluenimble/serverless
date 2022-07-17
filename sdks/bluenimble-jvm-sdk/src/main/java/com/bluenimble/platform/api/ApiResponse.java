@@ -31,6 +31,7 @@ public interface ApiResponse extends Serializable {
 	interface 		Error {
 		String Code 	= "code";
 		String Message 	= "message";
+		String Properties = "properties";
 		String Trace 	= "trace";
 			String Clazz 	= "class";
 			String Line 	= "line";
