@@ -568,7 +568,7 @@ public class Lang {
 		if (ApiServiceExecutionException.class.isAssignableFrom (th.getClass ())) {
 			ApiServiceExecutionException asee = (ApiServiceExecutionException)th;
 			if (asee.properties () != null && !asee.properties ().isEmpty ()) {
-				error.merge (asee.properties ());
+				error.set (ApiResponse.Error.Properties, asee.properties ());
 			}
 		}
 		

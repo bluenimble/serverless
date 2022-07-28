@@ -64,14 +64,24 @@ public abstract class AbstractApiResponse extends BaseApiResponse {
 		}
 		error.set (Error.Code, this.status.getCode ());
 		
-		if (message != null && (message instanceof Object [])) {
+		// no message
+		if (message == null) {
+			return this;
+		}
+		
+		// a message, trace, properties array
+		if (message instanceof Object []) {
 			Object [] aMessage = (Object [])message;
 			error.set (Error.Message, aMessage [0]);
 			error.set (Error.Trace, aMessage [1]);
-		} else {
-			error.set (Error.Message, message);
+			if (aMessage [2] != null) {
+				error.merge ((JsonObject)aMessage [2]);
+			}
+			return this;
 		}
 		
+		// a string or object message
+		error.set (Error.Message, message);
 		return this;
 	}
 	

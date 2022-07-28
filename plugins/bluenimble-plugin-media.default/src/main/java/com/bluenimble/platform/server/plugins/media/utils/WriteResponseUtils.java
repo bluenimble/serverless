@@ -34,7 +34,7 @@ public class WriteResponseUtils {
 		response.set (ApiHeaders.ContentType, contentType);
 
 		try {
-			response.write (Lang.isDebugMode () ? error.toString (2, false) : error.toString ());
+			response.write (error.toString (0, true));
 		} catch (Exception ex) {
 			tracer.log (Tracer.Level.Error, Lang.BLANK, ex);
 		}

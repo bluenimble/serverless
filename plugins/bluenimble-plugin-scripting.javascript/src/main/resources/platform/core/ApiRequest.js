@@ -181,7 +181,7 @@ var ApiRequest = function (proxy, canTrigger) {
 		if (!scope) {
 			scope = this.Scope.Parameter;
 		}
-		proxy.set (key, value, JC_ApiRequest_Scope.valueOf (scope));
+		proxy.set (key, JC_ValueConverter.convert (value), JC_ApiRequest_Scope.valueOf (scope));
 	};
 	
 	/**	

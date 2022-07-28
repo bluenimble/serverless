@@ -385,7 +385,14 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 					
 					// logError (api, "<" + request.getId () + "> - Execute Service / Media Processing - caused an error\n" + oError.toString (), null);
 										
-					response.error (status, new Object [] { oError.get (ApiResponse.Error.Message), oError.get (ApiResponse.Error.Trace)});
+					response.error (
+						status, 
+						new Object [] { 
+							oError.get (ApiResponse.Error.Message), 
+							oError.get (ApiResponse.Error.Trace), 
+							oError.get (ApiResponse.Error.Properties)
+						}
+					);
 					writeError (mediaProcessor, api, consumer, service, request, response);
 					
 					track.finish (
