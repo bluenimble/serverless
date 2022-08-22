@@ -506,6 +506,8 @@ public class ApiImpl implements Api {
 			return space.getServer ().message (lang, key, args);
 		}
 		
+		msg = Lang.replace (msg, Lang.APOS, Lang.APOS + Lang.APOS);
+		
 		return MessageFormat.format (msg, args);
 	}
 
@@ -876,7 +878,7 @@ public class ApiImpl implements Api {
 
 			if (mFile.getName ().indexOf('-') > 0) {
 				this.loadSingleLangI18n (mFile.getName (), messages);
-				return;
+				continue;
 			}
 			
 			Iterator<String> keys = messages.keys ();
@@ -899,18 +901,12 @@ public class ApiImpl implements Api {
 	
 	private void loadSingleLangI18n (String fileName, JsonObject langsMessages) throws Exception {
 		String lang = fileName.substring (fileName.indexOf ('-') + 1, fileName.indexOf ('.'));
-		
 		JsonObject langI18n = i18n.get (lang);
 		if (langI18n == null) {
 			langI18n = new JsonObject ();
 			i18n.put (lang, langI18n);
 		}
-		
-		Iterator<String> keys = langsMessages.keys ();
-		while (keys.hasNext ()) {
-			String key = keys.next ();
-			langI18n.put (key, langsMessages.get (key));
-		}
+		langI18n.merge (langsMessages);
 	}
 	
 	void clear () {

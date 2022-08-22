@@ -73,6 +73,8 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 	private static final long serialVersionUID = 7521000052639259961L;
 		
 	private static final char ConsumerScope = 'c';
+	
+	private static final String UnknownField = "UnknownField";
 
 	private static final Map<String, Scope> Scopes 	= new HashMap<String, Scope> ();
 	static {
@@ -214,6 +216,24 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 			
 			JsonObject fSpec = (JsonObject)oSpec;
 			
+			// check channels
+			JsonArray channels = Json.getArray (fSpec, Spec.Channels);
+			if (channels != null && channels.count () > 0) {
+				if (!channels.contains (request.getChannel ())) {
+					Object value = valueOf (name, fSpec, request, consumer, data, null, false);
+					if (value != null) {
+						if (feedback == null) {
+							feedback = new JsonObject ();
+						}
+						feedback.set (name, ValidationUtils.feedback (
+							null, spec, Spec.Channels, 
+							getMessage (api, request.getLang (), UnknownField)
+						));
+						continue;
+					}
+				}
+			}
+			
 			String type = Json.getString (fSpec, Spec.Type, FieldType.String);
 			
 			if (type.equalsIgnoreCase (FieldType.Raw)) {
@@ -227,14 +247,14 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 			
 			String label = getMessage (api, request.getLang (), getLabel (name, fSpec.getString (Spec.Title)));
 			
-			Object value = valueOf (name, fSpec, request, consumer, data);
+			Object value = valueOf (name, fSpec, request, consumer, data, fSpec.get (Spec.Value), true);
 			
 			value = transform (fSpec, value, 0);
 			
 			Object message = validator.validate (
 				api,
 				consumer, 
-				request, 	
+				request,
 				this,
 				name,
 				label,
@@ -319,15 +339,14 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 		return api.message (lang, key, args);
 	}
 	
-	public Object valueOf (String name, JsonObject fieldSpec, ApiRequest request, ApiConsumer consumer, Map<String, Object> data) {
-		
-		Object defaultValue = fieldSpec.get (Spec.Value);
+	public Object valueOf (String name, JsonObject fieldSpec, ApiRequest request, ApiConsumer consumer,
+						   Map<String, Object> data, Object defaultValue, boolean setValue) {
 		
 		if (data != null) {
 			Object dValue = data.get (name);
 			if (dValue == null) {
 				dValue = defaultValue;
-				if (dValue != null) {
+				if (dValue != null && setValue) {
 					data.put (name, dValue);
 				}
 			}
@@ -365,12 +384,11 @@ public class DefaultApiServiceValidator implements ApiServiceValidator {
 			value = defaultValue;
 		}
 		
-		if (value != null) {
+		if (value != null && setValue) {
 			request.set (name, value);
 		}
 		
 		return value;
-		
 	}
 
 	@Override

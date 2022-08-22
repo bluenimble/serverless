@@ -50,8 +50,13 @@ public class DefaultShell implements Shell {
 	
 	@Override
 	public JsonObject run (String command, JsonObject params) {
-		
 		JsonObject result = new JsonObject ();
+		
+		if (!this.baseDirectory.exists ()) {
+			result.set (Spec.Code, 1000);
+			result.set (Spec.Message, "Shell directory not found");
+			return result;
+		}
 		
 		try {
 			executer.execute (

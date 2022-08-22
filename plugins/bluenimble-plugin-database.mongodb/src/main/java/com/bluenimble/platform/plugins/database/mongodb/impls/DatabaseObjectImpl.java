@@ -554,6 +554,8 @@ public class DatabaseObjectImpl implements DatabaseObject {
 			
 			if (v instanceof Date) {
 				v = Lang.toUTC ((Date)v);
+			} else if (ObjectId.class.isAssignableFrom (v.getClass ())) {
+				v = v.toString ();
 			} else if (v instanceof Map && !(v instanceof JsonObject)) {
 				v = new JsonObject ((Map<String, Object>)v, true);
 			} else if (v instanceof DatabaseObjectImpl) {

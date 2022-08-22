@@ -62,8 +62,6 @@ public class SignupServiceSpi extends AbstractApiServiceSpi {
 		String Template 	= "template";
 	}
 
-	private static final String AccountExists = "AccountExists";
-
 	@Override
 	public ApiOutput execute (Api api, ApiConsumer consumer, ApiRequest request, ApiResponse response)
 			throws ApiServiceExecutionException {
@@ -98,9 +96,15 @@ public class SignupServiceSpi extends AbstractApiServiceSpi {
 		}
 		
 		if (account != null) {
-			String message = api.message (request.getLang (), AccountExists);
-			if (message == null || message.equals (AccountExists)) {
+			String message = null;
+			String messageKey = Json.getString (config, Config.AccountExistsMessage);
+			if (messageKey == null) {
 				message = "Account already exists";
+			} else {
+				message = api.message (request.getLang (), messageKey);
+				if (message == null || message.equals (messageKey)) {
+					message = "Account already exists";
+				}
 			}
 			throw new ApiServiceExecutionException (message).status (ApiResponse.CONFLICT);
 		}

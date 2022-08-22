@@ -70,6 +70,7 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 	}
 
 	public interface Config {
+		String AccountExistsMessage		= "Signup.AccountExists";
 		String TrustedServices			= "trusted";
 		String Lookup					= "lookup";
 		String Check					= "check";

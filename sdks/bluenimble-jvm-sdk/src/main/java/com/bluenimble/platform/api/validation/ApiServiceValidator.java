@@ -38,6 +38,8 @@ public interface ApiServiceValidator extends Serializable {
 		String Fields		= "fields";
 		String Selectors	= "selectors";
 		
+		String Channels		= "channels";
+		
 		String Secret 		= "secret";
 		
 		String Min 			= "min";

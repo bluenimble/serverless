@@ -22,6 +22,8 @@ public class ApiServiceExecutionException extends Exception {
 
 	private static final long serialVersionUID = 1165308892883189037L;
 	
+	private static final String Reason = "reason";
+	
 	private ApiResponse.Status 	status;
 	private JsonObject properties;
 
@@ -58,6 +60,10 @@ public class ApiServiceExecutionException extends Exception {
 		}
 		properties.set (key, value);
 		return this;
+	}
+	
+	public static ApiServiceExecutionException create (Api api, String language, String reason, Object...args) {
+		return new ApiServiceExecutionException (api.message (language, reason, args)).set (Reason, reason);
 	}
 
 	public ApiResponse.Status status () {
