@@ -978,7 +978,7 @@ public class Lang {
     }
     
     public static void main (String[] args) throws Exception {
-    	System.out.print (template("[= type == 'user' ? 1 : 0]", (JsonObject)new JsonObject ().set ("type", "user"), true));
+    	System.out.print (UUID(50).toLowerCase ());
 	}
     
 }
