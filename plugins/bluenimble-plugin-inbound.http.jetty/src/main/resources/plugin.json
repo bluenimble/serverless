@@ -48,7 +48,9 @@
 					"allow": 	"[ this.cors.headers.allow | '' ]>>json",
 					"expose": 	"[ this.cors.headers.expose | '' ]>>json"
 				}
-			}
+			},
+			
+			"altMediaTypes": "[ this.altMediaTypes | '' ]"
 		}
 	}
 }	

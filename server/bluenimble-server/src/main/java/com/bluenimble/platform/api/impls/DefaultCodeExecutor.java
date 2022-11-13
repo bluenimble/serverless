@@ -228,7 +228,7 @@ public class DefaultCodeExecutor implements CodeExecutor {
 			new SpaceThreadFactory (group)
 		);
 		
-		timeout 			= Json.getLong (_service, Spec.Timeout, 10000);
+		timeout 			= Json.getLong (_service, Spec.Timeout, 600000);
 		awaitTermination 	= Json.getLong (_service, Spec.AwaitTermination, 60000);
 		
 		return this;

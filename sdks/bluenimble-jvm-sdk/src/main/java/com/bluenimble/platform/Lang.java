@@ -978,7 +978,7 @@ public class Lang {
     }
     
     public static void main (String[] args) throws Exception {
-    	System.out.print (UUID(50).toLowerCase ());
+    	System.out.print (UUID(12));
 	}
     
 }

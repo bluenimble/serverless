@@ -1,0 +1,17 @@
+{
+	"namespace": "shell.jproc",
+	"name": "JProc Shell Client Implementation",
+	
+	"spi": {
+		"class": "com.bluenimble.platform.server.plugins.shell.jproc.JProcPlugin",
+		"properties": {
+			"version": "[version]",
+			"vendor": {
+				"name": "BlueNimble, Inc",
+				"links": [{
+					"Read More": "https://www.bluenimble.com"
+				}]
+			}
+		}
+	}
+}	

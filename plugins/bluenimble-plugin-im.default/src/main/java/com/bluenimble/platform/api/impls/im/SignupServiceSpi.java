@@ -170,7 +170,6 @@ public class SignupServiceSpi extends AbstractApiServiceSpi {
 		if (appendResponse != null) {
 			result.putAll (appendResponse);
 		}
-		// result.set (Config.Owner, Defaults.Yes);
 		
 		String email = Json.getString (payload, Spec.Email); 
 		if (Lang.isNullOrEmpty (email)) {

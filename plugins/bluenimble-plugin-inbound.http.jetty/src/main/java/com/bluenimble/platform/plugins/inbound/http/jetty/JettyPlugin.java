@@ -175,6 +175,8 @@ public class JettyPlugin extends AbstractPlugin {
 
 	private Server 		httpServer;
 	
+	private JsonObject	altMediaTypes;
+	
 	@Override
 	public void init (final ApiServer server) throws Exception {
 		
@@ -220,7 +222,7 @@ public class JettyPlugin extends AbstractPlugin {
         connector.setIdleTimeout (idleTimeout * 1000);
 
         httpServer.addConnector (connector);
-       
+        
         if (ssl != null && 
         		!Lang.isNullOrEmpty (ssl.getString (Ssl.Keystore)) && 
         		!Lang.isNullOrEmpty (ssl.getString (Ssl.Password))) {
@@ -509,6 +511,14 @@ public class JettyPlugin extends AbstractPlugin {
 	public JsonArray getRequestBodyReaders () {
 		return null;
 	}
+	
+	public JsonObject getAltMediaTypes() {
+		return altMediaTypes;
+	}
+	public void setAltMediaTypes(JsonObject altMediaTypes) {
+		this.altMediaTypes = altMediaTypes;
+	}
+
 	public void setRequestBodyReaders (JsonArray requestBodyReaders) {
 		if (Json.isNullOrEmpty (requestBodyReaders)) {
 			return;
@@ -548,7 +558,14 @@ public class JettyPlugin extends AbstractPlugin {
 		}
 	}
 	
-	public ApiRequestBodyReader getReader (String mediaType) {
+	public ApiRequestBodyReader getReader (ApiRequest request, String mediaType) {
+		if (Json.isNullOrEmpty (altMediaTypes)) {
+			return readers.get (mediaType);
+		}
+		String altMediaType = altMediaTypes.getString (request.getPath ());
+		if (altMediaType != null) {
+			mediaType = altMediaType;
+		}
 		return readers.get (mediaType);
 	}
 

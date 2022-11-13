@@ -153,9 +153,9 @@ public class HttpApiRequest extends AbstractApiRequest {
 			}
 			
 			if (!NonPayloadTypes.contains (contentType)) {
-				ApiRequestBodyReader reader = plugin.getReader (contentType.toLowerCase ());
+				ApiRequestBodyReader reader = plugin.getReader (this, contentType.toLowerCase ());
 				if (reader == null) {
-					reader = plugin.getReader (ApiContentTypes.Stream);
+					reader = plugin.getReader (this, ApiContentTypes.Stream);
 				}
 				set (Payload, reader.read (proxy.getInputStream (), contentType, proxy.getContentLengthLong ()), Scope.Parameter);
 			}
