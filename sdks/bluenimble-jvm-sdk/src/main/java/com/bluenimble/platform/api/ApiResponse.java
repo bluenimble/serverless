@@ -32,6 +32,7 @@ public interface ApiResponse extends Serializable {
 		String Code 	= "code";
 		String Message 	= "message";
 		String Properties = "properties";
+		String CallChain = "callChain";
 		String Trace 	= "trace";
 			String Clazz 	= "class";
 			String Line 	= "line";

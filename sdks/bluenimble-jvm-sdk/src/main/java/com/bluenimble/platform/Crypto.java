@@ -155,7 +155,7 @@ public class Crypto {
 		System.out.print ("Decrypted-Decoded " + new String (decrypted));
 		*/
 		
-		System.out.println (Crypto.md5 ("Youtube@DS!2022", Encodings.UTF8));
+		System.out.println (Crypto.md5 ("12345678", Encodings.UTF8));
 		
 	}
 	

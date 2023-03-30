@@ -46,13 +46,16 @@ public class CreateTokenSpi extends AbstractApiServiceSpi {
 		
 		long age = Json.getLong (payload, ApiSpace.Spec.secrets.Age, 0);
 		
-		payload.merge (consumer.toJson ());
+		// get the existing consumer
+		JsonObject oConsumer = consumer.toJson ().duplicate ();
 		
-		payload.remove (ApiSpace.Spec.secrets.Age);
+		// copy the payload to the consumer
+		oConsumer.merge (payload);
 		
-		payload.set (ApiConsumer.Fields.TokenType, consumer.get (ApiConsumer.Fields.TokenType));
-		
-		String [] tokenAndExpiration = SecurityUtils.tokenAndExpiration (api, consumer, payload, new Date (), age);
+		String [] tokenAndExpiration = 
+			SecurityUtils.tokenAndExpiration (
+				api, consumer, oConsumer, new Date (), age
+			);
 		
 		JsonObject result = new JsonObject ();
 		

@@ -81,7 +81,7 @@ var ApiConsumer = function (proxy) {
 		if (!(typeof a === 'boolean')) {
 			a = JC_Lang.TrueValues.contains (a);				
 		}
-		proxy.set (ApiConsumer.Fields.Anonymous, a);
+		proxy.set (JC_ApiConsumer_Fields.Anonymous, a);
 	};
 	
 	/**	

@@ -331,14 +331,16 @@ public class ElasticSearchIndexer implements Indexer {
 			doc.set (Internal.Timestamp, utc ());
 		}
 		
-		tracer.log (Tracer.Level.Info, "Indexing document [{0}]", id);
+		entity = entity (entity);
+		
+		tracer.log (Tracer.Level.Info, "Indexing document [{0} -> {1}]", entity, id);
 		
 		JsonObject result = new JsonObject ();
 		ElkError error = new ElkError ();
 		
 		remote.put (
 			(JsonObject)new JsonObject ()
-				.set (Remote.Spec.Path, entity (entity) + id + Lang.SLASH + Internal.Elk.Create)
+				.set (Remote.Spec.Path, entity + id + Lang.SLASH + Internal.Elk.Create)
 				.set (Remote.Spec.Headers, 
 					new JsonObject ()
 						.set (HttpHeaders.CONTENT_TYPE, ContentTypes.Json)
@@ -557,7 +559,9 @@ public class ElasticSearchIndexer implements Indexer {
 			return put (entity, doc);
 		}
 		
-		tracer.log (Tracer.Level.Info, "Update partially document [{0}]", id);
+		entity = entity (entity);
+		
+		tracer.log (Tracer.Level.Info, "Update partially document [{0} -> {1}]", entity, id);
 		
 		doc.remove (Internal.Id);
 		
@@ -566,7 +570,7 @@ public class ElasticSearchIndexer implements Indexer {
 		
 		remote.post (
 			(JsonObject)new JsonObject ()
-				.set (Remote.Spec.Path, entity (entity) + id + Lang.SLASH + Internal.Elk.Update)
+				.set (Remote.Spec.Path, entity + id + Lang.SLASH + Internal.Elk.Update)
 				.set (Remote.Spec.Headers, 
 					new JsonObject ()
 						.set (HttpHeaders.CONTENT_TYPE, ContentTypes.Json)

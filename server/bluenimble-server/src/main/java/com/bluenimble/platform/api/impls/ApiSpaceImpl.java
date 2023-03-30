@@ -182,40 +182,6 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 		
 	}
 	
-	/*
-	@Override
-	public Api install (ApiStreamSource source) throws ApiManagementException {
-		
-		boolean started = isStarted ();
-		
-		// if the space is new, start it before 
-		if (!started) {
-			
-			// start executor (this is important if the space just created since it will be down)
-			try {
-				started = start ();
-			} catch (Exception e) {
-				throw new ApiManagementException (e.getMessage (), e);
-			}
-			
-			// notify space creation if it's new
-			if (started) {
-				try {
-					server.getPluginsRegistry ().onEvent (Event.Create, this);
-				} catch (Exception ex) {
-					throw new ApiManagementException (ex.getMessage (), ex);
-				} 
-			}
-		}
-		
-		if (!started) {
-			throw new ApiManagementException ("Can't install Api, couldn't start owner space");
-		}
-		
-		return _install (source);
-	}
-	*/
-	
 	@Override
 	public Api install (ApiStreamSource source) throws ApiManagementException {
 		if (source == null) {
@@ -247,21 +213,6 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 		
 		return api;
 	}
-
-	/*
-	@Override
-	public Api install (JsonObject descriptor) throws ApiManagementException {
-		if (Lang.isNullOrEmpty (getNamespace ())) {
-			throw new ApiManagementException (
-				"Api " + Api.Spec.Namespace + " not found in descriptor "
-			);
-		}
-		// create api home
-		File apiHome = new File (home, getNamespace () + Lang.UNDERSCORE + Lang.UUID (40));
-		
-		return install (apiHome, descriptor);
-	}
-	*/
 	
 	@Override
 	public void uninstall (String apiNs) throws ApiManagementException {

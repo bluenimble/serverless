@@ -16,6 +16,8 @@
  */
 package com.bluenimble.platform.api.impls.scripting;
 
+import java.util.Iterator;
+
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
 import com.bluenimble.platform.api.Api;
@@ -241,13 +243,25 @@ public class ScriptableApiServiceSpi implements ApiServiceSpi {
 				cause = ex.getCause ();
 			}
 			ApiResponse.Status status = null;
+			JsonObject properties = null;
 			if (cause instanceof NashornException && cause.getCause () != null) {
 				if (cause.getCause () instanceof ApiServiceExecutionException) {
 					ApiServiceExecutionException see = (ApiServiceExecutionException)cause.getCause ();
 					status = see.status ();
+					properties = see.properties ();
 				}
 			}
-			throw new ApiServiceExecutionException (cause.getMessage (), cause).status (status);
+			
+			ApiServiceExecutionException exception = new ApiServiceExecutionException (cause.getMessage (), cause).status (status);
+			if (properties != null) {
+				Iterator<String> keys = properties.keys ();
+				while (keys.hasNext ()) {
+					String key = keys.next ();
+					exception.set (key, properties.get (key));
+				}
+			}
+			
+			throw exception;
 		}		
 		
 		if (result == null || (result instanceof Undefined)) {

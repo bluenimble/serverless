@@ -686,22 +686,9 @@ public class Json {
 	}
 
     public static void main (String [] args) throws Exception {
-    	String schema = "*, workspace ( logo ( source ) ), user ( id, firstName, lastName, avatar ( source ) )";
-		schema = Lang.replace (schema, " ", "");
-    	schema = "{" + schema + "}";
-    	schema = Lang.replace (schema, "(", ":{");
-    	schema = Lang.replace (schema, ")", "}");
-		schema = Lang.replace (schema, "}", ":true}");
-		schema = Lang.replace (schema, ",", ":true,");
-		System.out.println ("Schema 1 " + schema);
-		schema = Lang.replace (schema, "}:true", "}");
-		System.out.println ("Schema 2 " + schema);
-		schema = Lang.replace (schema, "*:true", "_fields:simple");
-		if (schema.endsWith ("}:true}}")) {
-			schema = schema.substring (0, schema.length () - 8) + "}}}";
-		}
-		System.out.println ("schema " + schema);
-		System.out.println (new JsonObject (schema)) ;
+    	JsonObject object = new JsonObject ("{tags:\"[tags]\"}");
+    	JsonObject data = new JsonObject ("{tags:[\"1\", \"2\"]}");
+    	System.out.println (Json.template (object, data, false));
     }
     
 }

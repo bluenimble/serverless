@@ -345,11 +345,18 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 			}
 			
 			if (response instanceof ContainerApiResponse) {
+				ApiServiceExecutionException see = null;
 				if (th instanceof ApiServiceExecutionException) {
-					((ContainerApiResponse)response).setException ((ApiServiceExecutionException)th);
+					see = (ApiServiceExecutionException)th;
 				} else {
-					((ContainerApiResponse)response).setException (new ApiServiceExecutionException (th.getMessage (), th));
+					see = new ApiServiceExecutionException (th.getMessage (), th);
 				}
+				
+				JsonArray callChain = getRequestCallChain (request);
+				
+				see.set (ApiResponse.Error.CallChain, callChain);
+				
+				((ContainerApiResponse)response).setException (see);
 				
 				track.finish (
 					(JsonObject)Lang.toError (th).set (ApiResponse.Error.Code, status.getCode ())
@@ -417,6 +424,23 @@ public class DefaultApiInterceptor implements ApiInterceptor {
 		}
 		response.error (e.status (), err);
 		writeError (mediaProcessor, api, consumer, service, request, response);
+	}
+	
+	private JsonArray getRequestCallChain (ApiRequest request) {
+		JsonArray chain = new JsonArray ();
+		chain.add (request.getService ().getId ());
+
+		if (request.getParent () == null) {
+			return chain;
+		}
+		
+		ApiRequest parent = request.getParent ();
+		while (parent != null) {
+			chain.add (parent.getService ().getId ());
+			parent = parent.getParent ();
+		}
+		
+		return chain;
 	}
 
 	private void logDebug (Api api, Object o) {
