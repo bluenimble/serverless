@@ -138,6 +138,14 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 		
 		boolean encryptPassword = Json.getBoolean (config, Config.EncryptPassword, true);
 		
+		if (payload.containsKey (Spec.Password) && encryptPassword) {
+			try {
+				payload.set (Spec.Password, Crypto.md5 (Json.getString (payload, Spec.Password), Encodings.UTF8));
+			} catch (Exception ex) {
+				throw new ApiServiceExecutionException (ex.getMessage (), ex);
+			}
+		}
+		
 		Database db = feature (api, Database.class, Json.getString (config, Config.Database, ApiSpace.Features.Default), request).trx ();
 		
 		DatabaseObject account = null;
@@ -161,7 +169,7 @@ public class LoginServiceSpi extends AbstractApiServiceSpi {
 				if (forcePassword || callingService == null || bypassServices == null || !bypassServices.contains (callingService.getId ())) {
 					where.set (
 						Json.getString (config, Config.PasswordProperty, Fields.Password), 
-						encryptPassword ? Crypto.md5 (Json.getString (payload, Spec.Password), Encodings.UTF8) : Json.getString (payload, Spec.Password)
+						Json.getString (payload, Spec.Password)
 					);
 				}
 			} else {

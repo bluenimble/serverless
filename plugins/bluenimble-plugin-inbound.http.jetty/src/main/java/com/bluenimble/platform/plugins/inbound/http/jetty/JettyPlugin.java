@@ -76,10 +76,9 @@ public class JettyPlugin extends AbstractPlugin {
 	
 	private static final long serialVersionUID = 4642997488038621776L;
 	
-	private static final String 	FavIcon 		= "favicon.ico";
-	private static final String 	FavIconPath 	= Lang.SLASH + FavIcon;
-	private static 	 	 byte [] 	FavIconContent 	= null;
-
+	private static final String [] 				StaticFiles 	= { "favicon.ico", "robots.txt" };
+	private static final Map<String, byte []> 	StaticContent 	= new HashMap<String, byte []> ();
+	
 	interface Pool {
 		String Min 				= "min";
 		String Max 				= "max";
@@ -182,13 +181,15 @@ public class JettyPlugin extends AbstractPlugin {
 		
 		Log.setLog (new JettyLogger (this));
 		
-		// load favicon
-		InputStream favicon = null;
-		try {
-			favicon = new FileInputStream (new File (home, FavIcon));
-			FavIconContent = IOUtils.toByteArray (favicon);
-		} finally {
-			IOUtils.closeQuietly (favicon);
+		// load static files
+		for (int i = 0; i < StaticFiles.length; i++) {
+			InputStream io = null;
+			try {
+				io = new FileInputStream (new File (home, StaticFiles [i]));
+				StaticContent.put (Lang.SLASH + StaticFiles [i], IOUtils.toByteArray (io));
+			} finally {
+				IOUtils.closeQuietly (io);
+			}
 		}
 		
 		Integer poolIdleTimeout 	= Json.getInteger (pool, Pool.IdleTimeout, 300);
@@ -297,8 +298,8 @@ public class JettyPlugin extends AbstractPlugin {
 	
 	        	@Override
 				protected void doGet (HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-	        		if (FavIconPath.equals (req.getRequestURI ())) {
-	        			resp.getOutputStream ().write (FavIconContent);
+	        		if (StaticContent.containsKey (req.getRequestURI ())) {
+	        			resp.getOutputStream ().write (StaticContent.get (req.getRequestURI ()));
 	        			return;
 	        		}
 	        		execute (req, resp);

@@ -849,9 +849,9 @@ public class ElasticSearchIndexer implements Indexer {
 				if (sIndexes != null) {
 					String [] indexes = sIndexes.split (Lang.COMMA);
 					for (int i = 0; i < indexes.length; i++) {
-						index += ElasticSearchIndexer.this.config.get (ElasticSearchPlugin.Spec.Prefix) + 
-									(String)indexes [i].trim () + 
-									ElasticSearchIndexer.this.config.get (ElasticSearchPlugin.Spec.Postfix);
+						index += Json.getString (ElasticSearchIndexer.this.config, ElasticSearchPlugin.Spec.Prefix, Lang.BLANK) + 
+								 (String)indexes [i].trim () + 
+								 Json.getString (ElasticSearchIndexer.this.config, ElasticSearchPlugin.Spec.Suffix, Lang.BLANK);
 						if (i < (indexes.length - 1)) {
 							index += Lang.COMMA;
 						}
@@ -913,19 +913,27 @@ public class ElasticSearchIndexer implements Indexer {
 		if (indexes != null && !indexes.isEmpty ()) {
 			query.remove (Internal.Indexes);
 			for (int i = 0; i < indexes.size (); i++) {
-				indexPath += this.config.get (ElasticSearchPlugin.Spec.Prefix) + 
+				indexPath += Json.getString (this.config, ElasticSearchPlugin.Spec.Prefix, Lang.BLANK) + 
 							(String)indexes.get (i) + 
-							this.config.get (ElasticSearchPlugin.Spec.Postfix);
+							Json.getString (this.config, ElasticSearchPlugin.Spec.Suffix, Lang.BLANK);
+				if (i < (indexes.size () - 1)) {
+					indexPath += Lang.COMMA;
+				}
 			}
 		}
 		
 		// if there an index and no indexes specified in query
 		if (!Lang.isNullOrEmpty (index) && indexPath.equals (Lang.BLANK)) {
-			indexPath = index + Lang.SLASH;
+			indexPath = index;
 		}
 		
 		// add slash
 		indexPath += Lang.SLASH;
+		
+		tracer.log ( Tracer.Level.Info, "Search Path {0}", indexPath + types + 
+				(types.equals (Lang.BLANK) ? Lang.BLANK : Lang.SLASH) + 
+				(isCount ? Internal.Elk.Count : Internal.Elk.Search) +
+				(isCount ? Lang.BLANK : "?rest_total_hits_as_int=true"));
 		
 		ValueHolder<JsonObject> result = new ValueHolder<JsonObject> ();
 		ElkError error = new ElkError ();

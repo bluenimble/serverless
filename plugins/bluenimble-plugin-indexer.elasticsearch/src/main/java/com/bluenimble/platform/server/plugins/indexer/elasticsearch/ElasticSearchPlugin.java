@@ -44,7 +44,7 @@ public class ElasticSearchPlugin extends AbstractPlugin {
 		String Index 	= "index";
 		String Config 	= "config";
 		String Prefix 	= "prefix";
-		String Postfix 	= "postfix";
+		String Suffix 	= "suffix";
 	}
 	
 	private String feature;

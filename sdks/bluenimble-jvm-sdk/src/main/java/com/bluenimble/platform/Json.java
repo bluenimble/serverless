@@ -686,8 +686,9 @@ public class Json {
 	}
 
     public static void main (String [] args) throws Exception {
-    	JsonObject object = new JsonObject ("{tags:\"[tags]\"}");
-    	JsonObject data = new JsonObject ("{tags:[\"1\", \"2\"]}");
+    	JsonObject object = new JsonObject ();
+    	object.set ("source", "[ asset.source | '{ format: mp4, type: \"video/mp4\" }' ] >> json");
+    	JsonObject data = new JsonObject ("{tags:['1', '2']}");
     	System.out.println (Json.template (object, data, false));
     }
     
