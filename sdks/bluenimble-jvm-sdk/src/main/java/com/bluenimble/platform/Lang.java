@@ -38,6 +38,7 @@ import java.util.regex.Pattern;
 
 import com.bluenimble.platform.api.ApiResponse;
 import com.bluenimble.platform.api.ApiServiceExecutionException;
+import com.bluenimble.platform.encoding.Base64;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.regex.WildcardCompiler;
@@ -978,7 +979,15 @@ public class Lang {
     }
     
     public static void main (String[] args) throws Exception {
-    	System.out.print (UUID(12));
+    	String token 	= "giVOyRNSxlgh0qoU";
+    	String expiry 	= "1685636172";
+    	String path 	= "/644ed1b0f403ca2f9adaa099/assets/64765d3ee3724b10a1ceca1f.th";
+    	String hash 	= expiry + path + token;
+    	
+    	String signature = new String (Base64.encodeBase64 (com.bluenimble.platform.Crypto.md5 (hash, "ISO-8859-1").getBytes ()));
+    	
+    	System.out.println ("Signature " + signature);
+    	
 	}
     
 }

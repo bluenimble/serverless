@@ -32,6 +32,7 @@ import com.bluenimble.platform.FileUtils;
 import com.bluenimble.platform.IOUtils;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
+import com.bluenimble.platform.PackageClassLoader;
 import com.bluenimble.platform.Recyclable;
 import com.bluenimble.platform.api.Api;
 import com.bluenimble.platform.api.ApiAccessDeniedException;
@@ -919,6 +920,15 @@ public class ApiSpaceImpl extends AbstractApiSpace {
 	@Override
 	public CodeExecutor executor () {
 		return executor;
+	}
+
+	@Override
+	public Object getRegisteredObject (String pluginName, String objectName) {
+		PackageClassLoader pcl = (PackageClassLoader)server.getPluginsRegistry ().lockup (pluginName).getClass ().getClassLoader ();
+		if (pcl == null) {
+			return null;
+		}
+		return pcl.lookupObject (objectName);
 	}
 
 }

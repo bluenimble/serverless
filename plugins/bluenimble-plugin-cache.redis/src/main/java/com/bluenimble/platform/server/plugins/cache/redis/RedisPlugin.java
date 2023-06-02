@@ -23,12 +23,14 @@ import java.util.Set;
 import com.bluenimble.platform.Feature;
 import com.bluenimble.platform.Json;
 import com.bluenimble.platform.Lang;
+import com.bluenimble.platform.PackageClassLoader;
 import com.bluenimble.platform.Recyclable;
 import com.bluenimble.platform.api.ApiSpace;
 import com.bluenimble.platform.api.Manageable;
 import com.bluenimble.platform.cache.Cache;
 import com.bluenimble.platform.cache.impls.redis.RedisCache;
 import com.bluenimble.platform.cache.impls.redis.RedisClusterCache;
+import com.bluenimble.platform.cache.impls.redis.local.LocalCache;
 import com.bluenimble.platform.json.JsonArray;
 import com.bluenimble.platform.json.JsonObject;
 import com.bluenimble.platform.plugins.Plugin;
@@ -47,6 +49,10 @@ import redis.clients.jedis.JedisPoolConfig;
 public class RedisPlugin extends AbstractPlugin {
 
 	private static final long serialVersionUID = 3203657740159783537L;
+	
+	interface Registered {
+		String LocalCache 	= "LocalCache";
+	}
 	
 	interface Spec {
 		String Cluster 	= "cluster";
@@ -68,6 +74,10 @@ public class RedisPlugin extends AbstractPlugin {
 		String Auth 		= "auth";
 			String User 	= "user";
 			String Password = "password";
+			
+		String LocalCache		= "localCache";
+			String Capacity = "capacity";
+		
 	}
 	
 	private String 		feature;
@@ -145,7 +155,6 @@ public class RedisPlugin extends AbstractPlugin {
 		while (keys.hasNext ()) {
 			createClient (space, allFeatures, keys.next (), false);
 		}
-		
 	}
 	
 	private void createClient (ApiSpace space, JsonObject allFeatures, String name, boolean overwrite) throws PluginRegistryException {
@@ -215,6 +224,18 @@ public class RedisPlugin extends AbstractPlugin {
 		
 		space.addRecyclable (sessionKey, new RecyclableCacheClient (client, cluster));
 		
+		// add local cache
+		JsonObject localCache = Json.getObject (spec, Spec.LocalCache);
+		if (!Json.isNullOrEmpty (localCache)) {
+			PackageClassLoader pcl = (PackageClassLoader)RedisPlugin.class.getClassLoader ();
+			Iterator<String> keys = localCache.keys ();
+			while (keys.hasNext ()) {
+				String cacheName = keys.next ();
+				pcl.registerObject (name + Lang.COLON + cacheName, new LocalCache (Json.getInteger (Json.getObject (localCache, cacheName), Spec.Capacity, 100)));
+			}
+			
+		}
+		
 		feature.set (ApiSpace.Spec.Installed, true);
 		
 	}
@@ -225,10 +246,26 @@ public class RedisPlugin extends AbstractPlugin {
 		if (recyclable == null) {
 			return;
 		}
+		
 		// remove from recyclables
 		space.removeRecyclable (key);
+		
 		// recycle
 		recyclable.recycle ();
+		
+		// recycle local cache if any
+		JsonObject localCache = (JsonObject)Json.find (space.getFeatures (), feature, featureName, ApiSpace.Features.Spec, Spec.LocalCache);
+		if (!Json.isNullOrEmpty (localCache)) {
+			PackageClassLoader pcl = (PackageClassLoader)RedisPlugin.class.getClassLoader ();
+			Iterator<String> keys = localCache.keys ();
+			while (keys.hasNext ()) {
+				String cacheName = keys.next ();
+				LocalCache lc = (LocalCache)pcl.lookupObject (featureName + Lang.COLON + cacheName);
+				if (lc != null) {
+					lc.destroy ();
+				}
+			}
+		}
 	}
 	
 	private String createKey (String name) {

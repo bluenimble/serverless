@@ -344,6 +344,10 @@ function Api (proxy) {
 		}
 		return new ApiRequest (JC_ApiUtils.request (proxy, consumer.proxy, request.proxy, JC_ValueConverter.convert (spec), true), true);
 	};
+	
+	this.getRegisteredObject = function (pluginName, objectName) {
+		return proxy.space ().getRegisteredObject (pluginName, objectName);
+	};
 
 	// private
 	this._feature = function (featureType, feature) {

@@ -150,5 +150,7 @@ public interface ApiSpace extends Traceable, Manageable {
 	SpaceKeyStore		keystore				();
 	
 	JsonArray			keys					();
+	
+	Object				getRegisteredObject		(String pluginName, String objectName);
 
 }
