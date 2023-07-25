@@ -75,9 +75,4 @@ public class JProcShell implements Shell {
 		return result;
 	}
 	
-	public static void main (String [] args) {
-		JProcShell shell = new JProcShell ("/Users/lilya/Downloads");
-		System.err.println (shell.run ("./video-info.sh", null));
-	}
-	
 }
